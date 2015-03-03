@@ -1,4 +1,4 @@
-import json, urllib.request, ast, itertools
+import json, urllib2, ast, itertools
 import sys
 from pykml.factory import KML_ElementMaker as KML
 from collections import OrderedDict
@@ -9,7 +9,7 @@ origin ='Los_Angeles'
 destination ='San_Francisco'
 
 """Number of points in polygon"""
-N = 5
+N = 300
 
 def HTTPToString(HTTPData):
     byteData = HTTPData.read()
@@ -17,18 +17,8 @@ def HTTPToString(HTTPData):
     return stringData
 
 def getData():    
-    cache = open('cache.txt','w+')
-    if cache.read() == '' :
-        try:
-            Data = urllib.request.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
-            stringData = HTTPToString(Data) 
-            cache.write(stringData)
-        except IOError:   
-            print("Warning : Connect to the Internet ")
-            sys.exit(0)
-    else : 
-        Data = cache.read()            
-    cache.close()
+    Data = urllib2.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
+    stringData = HTTPToString(Data) 
     return stringData
 
 def StringtoPolylines( stringData ):
@@ -95,7 +85,7 @@ def decode_line(encoded):
 
     return array
 
-def decodePolylines( polylines ):
+def decodedPolylines( polylines ):
 	decoded = []
 	for polyline in polylines:
 		decoded.append(decode_line(polyline))
@@ -159,21 +149,19 @@ def polygonsToMultiGeometry(inputPolygons):
 
 def removeDuplicates(inputList):
     outputList = list(OrderedDict.fromkeys(list(itertools.chain(*inputList))))
-    return outputList    
+    return outputList
 
+"""Removes duplicate coordinate pairs"""
+CoordinateList = removeDuplicates(decodedPolylines(StringtoPolylines(getData())))
 
-
-"""
-CoordinateList = removeDuplicates(decodePolylines(StringtoPolylines(getData())))
-
-CoordinateTuples = toTuples(CoordinateList[11:18])
+CoordinateTuples = toTuples(CoordinateList)
 Polygons = CoordinateTuplestoPolygons(CoordinateTuples)
 MultiGeometry = polygonsToMultiGeometry(Polygons)
 PlacemarkMulti = KML.Placemark(MultiGeometry)
 kmlMulti = KML.kml(PlacemarkMulti)
 printableMulti = etree.tostring(kmlMulti, pretty_print = True).decode("utf-8")
 
-outputFile = open('tinyOutput.kml','w+')
+outputFile = open('MultigeometryPolygonalRegion.kml','w+')
 outputFile.write(printableMulti)
 outputFile.close()
-"""
+
