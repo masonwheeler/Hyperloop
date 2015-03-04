@@ -17,8 +17,8 @@ t0 = time.time()
 ORIGIN ='Los_Angeles'
 DESTINATION ='San_Francisco'
 NUM_PTS = 4
-TOLERANCE = 0.00000001
-BUFFER = 0.00000001
+TOLERANCE = 0.000001
+BUFFER = 0.000001
 MAX_UNION_LENGTH = 5
 SCALE_FACTOR = 1000000
 
@@ -205,6 +205,15 @@ def recursive_union(shapelyPolygons):
     simplifiedPolygon = unionPolygon.simplify(TOLERANCE, preserve_topology=True)
     return simplifiedPolygon
 
+def tuples_to_lists(tuples):
+    lists = [list(eachTuple) for eachTuple in tuples]
+    return lists
+
+def shapelyPolygon_to_listOfPoints(shapelyPolygon):
+    tuplesOfPoints = list(shapelyPolygon.exterior.coords)
+    listsOfPoints = tuples_to_lists(tuplesOfPoints)
+    return listsOfPoints
+
 stringDirections = get_directions()
 polylineDirections = string_to_polylines(stringDirections)
 rawCoordinateList = decode_polylines(polylineDirections)
@@ -218,7 +227,8 @@ coordinateTuples = list_to_tuples(shortList, False)
 rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
 shapelyPolygons = repair_shapelyPolygons(rawPolygons)
 simplifiedPolygon = recursive_union(shapelyPolygons)
-print(simplifiedPolygon)
+listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
+print(listOfPoints)
 
 """
 Polygons = CoordinateTuplestoPolygons(CoordinateTuples)
