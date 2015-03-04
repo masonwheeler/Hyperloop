@@ -7,12 +7,13 @@ import matplotlib.patches as patches
 
 t0 = time.time()
  
-POLYGON = [[0,0], [0,1], [1,1], [1,0]] 
+POLYGON = [[0,0], [0.25,1], [0.75,1], [1,0], [0.75,0.25], [0.25,0.25], [0,0]] 
 START = [0,0]
-END = [1,1]
+END = [1,0]
 
 NDIGITS = 6
-LATTICE_SIZE = 0.2
+LATTICE_SIZE = 0.1
+SCALE = 10
 
 def round_nums(listOfNums):
     outputList = [round(value, NDIGITS) for value in listOfNums]
@@ -46,9 +47,9 @@ def rotate_point(angle, point):
     rotatedPoint = [rotatedX, rotatedY]
     return rotatedPoint
     
-def scale_point(scaleFactor, point):
-    scaledPoint = [point[0] / scaleFactor, point[1] / scaleFactor]    
-    return scaledPoint
+def scale_point(distance, point):
+    scaledPt = [(point[0] / distance) * SCALE, (point[1] / distance) * SCALE]   
+    return scaledPt
 
 def transform_point(start, end, point):
     distance = get_distance(start, end)
@@ -60,30 +61,29 @@ def transform_point(start, end, point):
     return trsPoint
     
 def transform_polygon(start, end, polygon):
-    transformedPolygon = [transform_point(start, end, point) for point in polygon]
-    return transformedPolygon
+    transPolygon = [transform_point(start, end, point) for point in polygon]
+    return transPolygon
     
 def create_x_lattice():
-    numPointsInLattice = int(1 / LATTICE_SIZE)
+    numPointsInLattice = int(SCALE / LATTICE_SIZE)
     xLattice = [ LATTICE_SIZE * i for i in range(1, numPointsInLattice) ]
     return xLattice
     
-def create_edge_list(polygon):
-    edgeList = [ [polygon[i], polygon[i+1]] for i in range(0, len(polygon) - 1)]
-    edgeList.append([polygon[len(polygon) - 1], polygon[0]])
-    return edgeList
+def list_to_pairs(inList):
+    pairs = [ [inList[i], inList[i+1]] for i in range(0, len(inList) - 1)]
+    return pairs
 
 def is_edge_relevant(edge, xValue):
     firstPointXValue = edge[0][0]
     secondPointXValue = edge[1][0]
-    relevance = (((firstPointXValue <= xValue and xValue <= secondPointXValue ) or
-                  (secondPointXValue <= xValue and xValue <= firstPointXValue )) and
-                   firstPointXValue != secondPointXValue )                
-    return relevance
+    rel = (((firstPointXValue <= xValue and xValue <= secondPointXValue ) or
+            (secondPointXValue <= xValue and xValue <= firstPointXValue )) and
+                                   firstPointXValue != secondPointXValue )   
+    return rel
 
 def relevant_edges_for_xvalue(edgeList, xValue):
-    relevantEdges = [edge for edge in edgeList if is_edge_relevant(edge, xValue)]
-    return relevantEdges
+    relEdges = [edge for edge in edgeList if is_edge_relevant(edge, xValue)]
+    return relEdges
     
 def edge_to_slopeIntercept(edge):
     slope = ((edge[1][1] - edge[0][1]) / (edge[1][0] - edge[0][0]))
@@ -93,8 +93,8 @@ def edge_to_slopeIntercept(edge):
 
 def get_intersections(relevantEdges, xValue):
     slopeInts = [edge_to_slopeIntercept(edge) for edge in relevantEdges]
-    intersections = [slopeInt[0] * xValue + slopeInt[1] for slopeInt in slopeInts]
-    return intersections
+    inters = [slopeInt[0] * xValue + slopeInt[1] for slopeInt in slopeInts]
+    return inters
     
 def get_maxANDmin(inputList):
     maxANDmin = [max(inputList), min(inputList)]
@@ -132,7 +132,7 @@ def build_lattice_slice(maxANDmin, xValue):
 def generate_lattice(polygon):
     lattice = []
     xLattice = create_x_lattice()
-    edgeList = create_edge_list(polygon)
+    edgeList = list_to_pairs(polygon)
     for xValue in xLattice:
         relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
         intersections = get_intersections(relevantEdges, xValue)
@@ -157,41 +157,143 @@ def lists_to_tuples(lists):
     tuples = [tuple(eachList) for eachList in lists]
     return tuples
 
-def generate_random_path(lattice):
-    path = [[0,0]]
+def generate_random_route(lattice):
+    route = [[0,0]]
     for latticeSlice in lattice:
-        path.append(random.choice(latticeSlice))
-    path.append([1,0])        
-    return path
+        route.append(random.choice(latticeSlice))
+    route.append([SCALE,0])        
+    return route
 
-def create_codes(path):
-    numEdges = len(path)
+def edge_to_vector(edge):
+    firstPoint = edge[0]
+    secondPoint = edge[1]
+    firstX = firstPoint[0]
+    secondX = secondPoint[0]
+    firstY = firstPoint[1]
+    secondY = secondPoint[1]
+    vector = [secondX - firstX, secondY - firstY]
+    return vector
+
+def is_edge_deltaY_valid(edge, allowedRange):
+    vector = edge_to_vector(edge)
+    yDifference = abs(vector[1])
+    edge_valid = yDifference <= allowedRange
+    return edge_valid
+
+def is_route_deltaY_valid(route, allowedDeltaYRange):
+    routeDeltaYValid = True
+    edges = list_to_pairs(route)
+    for edge in edges:
+        currentEdgeDeltaYValid = is_edge_deltaY_valid(edge, allowedDeltaYRange)
+        routeDeltaYValid = (routeDeltaYValid and currentEdgeDeltaYValid)
+    return routeDeltaYValid
+
+def create_vectors(edges):
+    vectors = [edge_to_vector(edge) for edge in edges]
+    return vectors
+
+def create_vector_pairs(vectors):
+    vectorPairs = list_to_pairs(vectors)
+    return vectorPairs
+
+def get_deltaTheta_between_vectorPair(vectorPair):
+    firstVector = vectorPair[0]
+    secondVector = vectorPair[1]
+    theta1 = math.atan2(firstVector[1], firstVector[0])
+    theta2 = math.atan2(secondVector[1], secondVector[0])
+    deltaTheta = abs(theta2 - theta1)
+    return deltaTheta
+
+def vecPair_deltaTheta_valid(vectorPair, allowedDegreeRange):
+    deltaTheta = get_deltaTheta_between_vectorPair(vectorPair)
+    vectorPairDeltaThetaValid = (deltaTheta <= math.radians(allowedDegreeRange))
+    return vectorPairDeltaThetaValid
+
+def is_route_deltaTheta_valid(route, degreeRange):
+    routeDeltaThetaValid = True
+    edges = list_to_pairs(route)
+    vectors = create_vectors(edges)
+    vectorPairs = create_vector_pairs(vectors)
+    for vecPair in vectorPairs:
+        vecPairDeltaThetaValid = vecPair_deltaTheta_valid(vecPair, degreeRange)
+        routeDeltaThetaValid = (routeDeltaThetaValid and vecPairDeltaThetaValid)
+    return routeDeltaThetaValid
+
+def gen_ran_sat_route(degreeRange, lattice):
+    testRoute = generate_random_route(lattice)
+    while (not is_route_deltaTheta_valid(testRoute, 60)):
+        testRoute = generate_random_route(lattice)
+    return testRoute
+
+def create_codes(route, isPolygon):
+    numEdges = len(route) - isPolygon
     codes = [Path.MOVETO]
     for edgeNum in range(1, numEdges):
         codes.append(Path.LINETO)
     return codes
 
-transformedPolygon = transform_polygon(START, END, POLYGON)
+def unzip_polygon(polygon):
+    xValues = []
+    yValues = []
+    for point in polygon:
+        xValues.append(point[0])
+        yValues.append(point[1])
+    return [xValues, yValues]
 
-matplotPolygon = lists_to_tuples(transformedPolygon)
-plottablePolygon = patches.Polygon(matplotPolygon, closed = True)
+def get_bounding_box(polygon):
+    values = unzip_polygon(polygon) 
+    xValues = values[0]
+    yValues = values[1]
+    xRange = get_maxANDmin(xValues)
+    yRange = get_maxANDmin(yValues)
+    return [xRange, yRange]
+
+def get_lattice_heights(lattice):
+    latticeHeights = [len(latticeSlice) for latticeSlice in lattice]
+    return latticeHeights
+
+
+transformedPolygon = transform_polygon(START, END, POLYGON)
+polygonVerts = lists_to_tuples(transformedPolygon)
+plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+
+#For treating Polygon as Path
+"""
+polygonCodes = create_codes(polygonVerts, 1)
+polygonCodes.append(Path.CLOSEPOLY)
+print(polygonVerts)
+print(polygonCodes)
+polygonPath = Path(polygonVerts, polygonCodes)
+"""
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 ax.add_patch(plottablePolygon)
-ax.set_xlim(-2,2)
-ax.set_ylim(-2,2)
+boundingBox = get_bounding_box(transformedPolygon)
+xRange = boundingBox[0]
+yRange = boundingBox[1]
+ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
+ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
 
 lattice = generate_lattice(transformedPolygon)
+print(get_lattice_heights(lattice))
+
+#For displaying Lattice
+"""
 plotLattice = lattice_to_plotLattice(lattice)
 xvals = plotLattice[0]
 yvals = plotLattice[1]
 plt.plot(xvals, yvals, 'ro')
+"""
 
-vertices = lists_to_tuples(generate_random_path(lattice))
-codes = create_codes(vertices)
+#route = generate_random_route(lattice) 
+route = gen_ran_sat_route(60,lattice) 
+print(is_route_deltaY_valid(route, 5))
+print(is_route_deltaTheta_valid(route, 30))
+vertices = lists_to_tuples(route)
+codes = create_codes(vertices, 0)
 path = Path(vertices, codes)
-pathPatch = patches.PathPatch(path, lw=2)
+pathPatch = patches.PathPatch(path, lw=2, fill = False)
 ax.add_patch(pathPatch)
 
 t1 = time.time()
