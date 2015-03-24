@@ -1,0 +1,26 @@
+from mpl_toolkits.basemap import Basemap
+import numpy as np
+import matplotlib.pyplot as plt
+
+m = Basemap(height=1000000,width=1000000,
+            resolution='l',area_thresh=100.,projection='omerc',
+            lon_0=-122.4167,lat_0=37.7833,lon_2=-122.4167,lat_2=37.7833,lon_1=-118.2500,lat_1=34.0500)
+m.drawcoastlines()
+m.fillcontinents(color='coral',lake_color='aqua')
+parallels = np.arange(-80.,81.,20.)
+m.drawparallels(parallels)
+meridians = np.arange(-180.,181.,20.)
+m.drawmeridians(meridians)
+lon1, lat1 = -118.2500, 34.0500
+xpt1, ypt1 = m(lon1,lat1)
+lonpt1, latpt1 = m(xpt1, ypt1, inverse=True)
+m.plot(xpt1,ypt1,'bo')
+plt.text(xpt1 + 10000, ypt1 + 10000, 'LA (%5.1fW, %5.1fN)' % (lonpt1, latpt1))
+lon2, lat2 = -122.4167, 37.7833
+xpt2, ypt2 = m(lon2,lat2)
+lonpt2, latpt2 = m(xpt2, ypt2, inverse=True)
+m.plot(xpt2,ypt2,'bo')
+plt.text(xpt2 + 10000, ypt2 + 10000, 'SF (%5.1fW, %5.1fN)' % (lonpt2, latpt2))
+m.drawmapboundary(fill_color='aqua')
+plt.title("Oblique Mercator Projection")
+plt.show()
