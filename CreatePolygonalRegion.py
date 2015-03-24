@@ -10,7 +10,6 @@ from shapely.ops import cascaded_union
 from shapely.geometry import MultiPolygon
 from shapely.geometry import Polygon
 from shapely.geometry import Point
-from copy import deepcopy
 
 t0 = time.time()
 
@@ -101,6 +100,13 @@ def decode_polylines( polylines ):
 def removeDuplicates(inputList):
     outputList = list(OrderedDict.fromkeys(list(itertools.chain(*inputList))))
     return outputList
+
+def get_coordinateList():
+    stringDirections = get_directions()
+    polylineDirections = string_to_polylines(stringDirections)
+    rawCoordinateList = decode_polylines(polylineDirections)
+    coordinateList = removeDuplicates(rawCoordinateList)
+    return coordinateList         
 
 def list_to_tuples( inputList, repeatFirst ):
     CoordTuples = []
@@ -214,10 +220,7 @@ def shapelyPolygon_to_listOfPoints(shapelyPolygon):
     listsOfPoints = tuples_to_lists(tuplesOfPoints)
     return listsOfPoints
 
-stringDirections = get_directions()
-polylineDirections = string_to_polylines(stringDirections)
-rawCoordinateList = decode_polylines(polylineDirections)
-coordinateList = removeDuplicates(rawCoordinateList)
+coordinateList = get_coordinateList()
 
 rawShortList = coordinateList[0:17]
 shortList = scale_list_of_points(rawShortList)
@@ -228,7 +231,10 @@ rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
 shapelyPolygons = repair_shapelyPolygons(rawPolygons)
 simplifiedPolygon = recursive_union(shapelyPolygons)
 listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
-print(listOfPoints)
+
+pointsFile = open('listOfPoints.txt','w+')
+pointsFile.write(listOfPoints)
+pointsFile.close()
 
 """
 Polygons = CoordinateTuplestoPolygons(CoordinateTuples)
