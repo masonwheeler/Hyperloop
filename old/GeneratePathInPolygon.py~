@@ -164,23 +164,19 @@ def generate_random_route(lattice):
     route.append([SCALE,0])        
     return route
 
-def get_last_vector(route):
+def get_last_vector(route)
     routeLen = len(route)
     x2, y2 = route[routeLen-1]
-    x1, y1 = route[routeLen-2]
-    lastVector = [x2 - x1, y2 - y1]
+    x1, x1 = route[routeLen-2]
+    lastVector =
     return lastVector
 
-def get_valid_range(lastVector, accAngle, latticeSlice):
-    lastDeltaY = lastVector[1]
-    lastDeltaX = lastVector[0]
-    lastAngle = math.atan2(lastDeltaY, lastDeltaX)
-    angleRange = 0
-    return angleRange
+def get_valid_range(mostRecentEdge, accAngle, latticeSlice):
+    return
 
 def smart_add(route, latticeSlice):
     lastEdge = get_last_edge(route)
-    validRange = get_valid_range(lastVector, accAngle, latticeSlice)
+    validRange = get_valid_range(mostRecentEdge, accAngle, latticeSlice)
     validChoice = random.choice(validRange)
     newRoute = route.append(validChoice)
     return newroute
