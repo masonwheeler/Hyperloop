@@ -7,9 +7,10 @@ import matplotlib.patches as patches
 
 t0 = time.time()
  
-POLYGON = [[0,0], [0.25,1], [0.75,1], [1,0], [0.75,0.25], [0.25,0.25], [0,0]] 
+#POLYGON = [[0,0], [0.25,1], [0.75,1], [1,0], [0.75,0.25], [0.25,0.25], [0,0]] 
+POLYGON = [[0,0],[0,1],[1,1],[1,0]]
 START = [0,0]
-END = [1,0]
+END = [1,1]
 
 NDIGITS = 6
 LATTICE_SIZE = 0.1
@@ -66,19 +67,22 @@ def transform_polygon(start, end, polygon):
     
 def create_x_lattice():
     numPointsInLattice = int(SCALE / LATTICE_SIZE)
-    xLattice = [ LATTICE_SIZE * i for i in range(1, numPointsInLattice) ]
+    rawXLattice = [ LATTICE_SIZE * i for i in range(1, numPointsInLattice) ]
+    xLattice = round_nums(rawXLattice)
     return xLattice
     
-def list_to_pairs(inList):
+def list_to_pairs(inList, cycle):
     pairs = [ [inList[i], inList[i+1]] for i in range(0, len(inList) - 1)]
+    if cycle:
+        pairs.append([inList[-1], inList[0]])
     return pairs
 
 def is_edge_relevant(edge, xValue):
     firstPointXValue = edge[0][0]
     secondPointXValue = edge[1][0]
     rel = (((firstPointXValue <= xValue and xValue <= secondPointXValue ) or
-            (secondPointXValue <= xValue and xValue <= firstPointXValue )) and
-                                   firstPointXValue != secondPointXValue )   
+            (secondPointXValue <= xValue and xValue <= firstPointXValue ) and
+                                   firstPointXValue != secondPointXValue))   
     return rel
 
 def relevant_edges_for_xvalue(edgeList, xValue):
@@ -132,7 +136,7 @@ def build_lattice_slice(maxANDmin, xValue):
 def generate_lattice(polygon):
     lattice = []
     xLattice = create_x_lattice()
-    edgeList = list_to_pairs(polygon)
+    edgeList = list_to_pairs(polygon, True)
     for xValue in xLattice:
         relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
         intersections = get_intersections(relevantEdges, xValue)
@@ -157,41 +161,6 @@ def lists_to_tuples(lists):
     tuples = [tuple(eachList) for eachList in lists]
     return tuples
 
-def generate_random_route(lattice):
-    route = [[0,0]]
-    for latticeSlice in lattice:
-        route.append(random.choice(latticeSlice))
-    route.append([SCALE,0])        
-    return route
-
-def get_last_vector(route):
-    routeLen = len(route)
-    x2, y2 = route[routeLen-1]
-    x1, y1 = route[routeLen-2]
-    lastVector = [x2 - x1, y2 - y1]
-    return lastVector
-
-def get_valid_range(lastVector, accAngle, latticeSlice):
-    lastDeltaY = lastVector[1]
-    lastDeltaX = lastVector[0]
-    lastAngle = math.atan2(lastDeltaY, lastDeltaX)
-    angleRange = 0
-    return angleRange
-
-def smart_add(route, latticeSlice):
-    lastEdge = get_last_edge(route)
-    validRange = get_valid_range(lastVector, accAngle, latticeSlice)
-    validChoice = random.choice(validRange)
-    newRoute = route.append(validChoice)
-    return newroute
-
-def smartgen_random_route(lattice):
-    route = [[0,0]]
-    for latticeSlice in lattice:
-        route = smart_add(route, latticeSlice)
-    route.append([SCALE,0])        
-    return route
-
 def edge_to_vector(edge):
     firstPoint = edge[0]
     secondPoint = edge[1]
@@ -202,6 +171,90 @@ def edge_to_vector(edge):
     vector = [secondX - firstX, secondY - firstY]
     return vector
 
+def generate_random_route(lattice):
+    route = [[0,0]]
+    for latticeSlice in lattice:
+        route.append(random.choice(latticeSlice))
+    route.append([SCALE,0])        
+    return route
+
+def get_last_edge(route): 
+    lastEdge = [route[-2], route[-1]]
+    return lastEdge
+
+def get_valid_range(lastEdge, accAngle, latticeSlice):
+    angleInRadians = math.radians(accAngle)
+    sliceHeight = len(latticeSlice)
+    lastVector = edge_to_vector(lastEdge)
+    lastPoint = lastEdge[1]
+    lastYVal = lastPoint[1]
+    lastDeltaY = lastVector[1]
+    lastDeltaX = lastVector[0]
+    lastAngle = math.atan2(lastDeltaY, lastDeltaX)
+    upAngle = lastAngle + angleInRadians
+    downAngle = lastAngle - angleInRadians
+    if upAngle >= math.pi/2:
+        yMaxPoint = latticeSlice[sliceHeight - 1]
+        yMax = yMaxPoint[1]
+    else:
+        upSlope = math.tan(upAngle)
+        stepUp = upSlope * LATTICE_SIZE
+        rawYMax = lastYVal + stepUp
+        yMax = value_to_lattice(rawYMax, 0)
+    if downAngle <= -math.pi/2:
+        yMinPoint = latticeSlice[0]
+        yMin = yMinPoint[1]
+    else:
+        downSlope = math.tan(downAngle)
+        stepDown = downSlope * LATTICE_SIZE
+        rawYMin = lastYVal + stepDown
+        yMin = value_to_lattice(rawYMin, 1)
+    validRange = [point for point in latticeSlice if (point[1] <= yMax and point[1] >= yMin)]
+    return validRange
+
+def get_trialPoint(isStartLastEdge, accAngle, nextSlice):
+    if isStartLastEdge[0]:
+        trialPoint = random.choice(nextSlice) 
+    else:
+        trialPointRange=get_valid_range(isStartLastEdge[1],accAngle,nextSlice)
+        print(trialPointRange)
+        trialPoint = random.choice(trialPointRange)
+    return trialPoint
+
+def nextRange_empty(lastPoint, trialPoint, accAngle, nextSlice):
+    potentialEdge = [lastPoint, trialPoint]
+    nextRange = get_valid_range(potentialEdge, accAngle, nextSlice)
+    nextRange_empty = (len(nextRange) == 0)
+    return nextRange_empty
+
+def choose_nonempty(isStartLastEdge,lastPoint,accAngle,lattice,sliceIndex):   
+    nextSlice = lattice[sliceIndex]
+    trialPoint = get_trialPoint(isStartLastEdge, accAngle, nextSlice)   
+    while nextRange_empty(lastPoint, trialPoint, accAngle, nextSlice):
+        trialPoint = get_trialPoint(isStartLastEdge, accAngle, nextSlice)    
+    point = trialPoint        
+    return point
+
+def smart_add(route, accAngle, lattice, sliceIndex):
+    if len(route) == 1:
+        isStartLastEdge = [True]
+        lastPoint = route[0]
+    else:        
+        lastEdge = get_last_edge(route)
+        isStartLastEdge = [False, lastEdge]
+        lastPoint = lastEdge[1]
+    validChoice = choose_nonempty(isStartLastEdge,lastPoint,accAngle,lattice,sliceIndex)    
+    route.append(validChoice)
+    return route
+
+def smartgen_random_route(accAngle, lattice):
+    route = [[0,0]]
+    latticeLen = len(lattice)
+    for sliceIndex in range(0, latticeLen):
+        route = smart_add(route, accAngle, lattice, sliceIndex)
+    route.append([SCALE,0])        
+    return route
+
 def is_edge_deltaY_valid(edge, allowedRange):
     vector = edge_to_vector(edge)
     yDifference = abs(vector[1])
@@ -210,7 +263,7 @@ def is_edge_deltaY_valid(edge, allowedRange):
 
 def is_route_deltaY_valid(route, allowedDeltaYRange):
     routeDeltaYValid = True
-    edges = list_to_pairs(route)
+    edges = list_to_pairs(route, True)
     for edge in edges:
         currentEdgeDeltaYValid = is_edge_deltaY_valid(edge, allowedDeltaYRange)
         routeDeltaYValid = (routeDeltaYValid and currentEdgeDeltaYValid)
@@ -221,7 +274,7 @@ def create_vectors(edges):
     return vectors
 
 def create_vector_pairs(vectors):
-    vectorPairs = list_to_pairs(vectors)
+    vectorPairs = list_to_pairs(vectors, False)
     return vectorPairs
 
 def get_deltaTheta_between_vectorPair(vectorPair):
@@ -239,7 +292,7 @@ def vecPair_deltaTheta_valid(vectorPair, allowedDegreeRange):
 
 def is_route_deltaTheta_valid(route, degreeRange):
     routeDeltaThetaValid = True
-    edges = list_to_pairs(route)
+    edges = list_to_pairs(route,True)
     vectors = create_vectors(edges)
     vectorPairs = create_vector_pairs(vectors)
     for vecPair in vectorPairs:
@@ -280,7 +333,6 @@ def get_lattice_heights(lattice):
     latticeHeights = [len(latticeSlice) for latticeSlice in lattice]
     return latticeHeights
 
-
 transformedPolygon = transform_polygon(START, END, POLYGON)
 polygonVerts = lists_to_tuples(transformedPolygon)
 plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
@@ -304,6 +356,7 @@ ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
 ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
 
 lattice = generate_lattice(transformedPolygon)
+#print(lattice[0])
 #print(get_lattice_heights(lattice))
 
 #For displaying Lattice
@@ -313,8 +366,8 @@ xvals = plotLattice[0]
 yvals = plotLattice[1]
 plt.plot(xvals, yvals, 'ro')
 """
-
-route = generate_random_route(lattice) 
+#route = generate_random_route(lattice) 
+route = smartgen_random_route(60, lattice)
 #route = gen_ran_sat_route(60,lattice) 
 #print(is_route_deltaY_valid(route, 5))
 #print(is_route_deltaTheta_valid(route, 30))
@@ -329,4 +382,11 @@ totalTime = t1 - t0
 print(totalTime)
 plt.show()
 
+"""
+def replace_last_point(route, lastValidRange):
+    last_point = route.pop()    
+    new_point = random.choice(lastValidRange)
+    route.append(new_point)
+    return route
+"""
 
