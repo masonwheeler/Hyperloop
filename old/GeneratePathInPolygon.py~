@@ -2,14 +2,20 @@ import time
 import math 
 import random
 import sys
+
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 import matplotlib.patches as patches
 
+from shapely.ops import cascaded_union
+from shapely.geometry import MultiPolygon
+from shapely.geometry import Polygon
+from shapely.geometry import Point
+
 t0 = time.time()
- 
-#POLYGON = [[0,0], [0.25,1], [0.75,1], [1,0], [0.75,0.25], [0.25,0.25], [0,0]] 
-POLYGON = [[0,0],[0,1],[1,1],[1,0]]
+
+#ROAD = [[0,0],[0.1,0.2],[0.3,0.4], [0.4,0.3],[0.5,0.5],[0.6,0.6],[0.7,0.5],[0.8,0.9],[0.9,0.9],[1,1]]
+ROAD = [[0,0],[0.2,0.1],[0.4,0.2], [0.6,0.4],[0.8,0.7],[1,1]]
 START = [0,0]
 END = [1,1]
 
@@ -101,9 +107,9 @@ def get_intersections(relevantEdges, xValue):
     inters = [slopeInt[0] * xValue + slopeInt[1] for slopeInt in slopeInts]
     return inters
     
-def get_maxANDmin(inputList):
-    maxANDmin = [max(inputList), min(inputList)]
-    return maxANDmin
+def get_maxMin(inputList):
+    maxMin = [max(inputList), min(inputList)]
+    return maxMin
 
 def value_to_lattice(value, shiftUp):
     latticeSteps = value/LATTICE_SIZE
@@ -116,35 +122,36 @@ def onLattice(value):
     isOnLattice = (value_to_lattice(value,0) == value)
     return isOnLattice
     
-def maxANDmin_to_lattice(maxANDmin):
-    maxOnLattice = value_to_lattice(maxANDmin[0],0)
-    if onLattice(maxANDmin[1]):
-        minOnLattice = value_to_lattice(maxANDmin[1],0)
+def maxMin_to_lattice(maxMin):
+    maxOnLattice = value_to_lattice(maxMin[0],0)
+    if onLattice(maxMin[1]):
+        minOnLattice = value_to_lattice(maxMin[1],0)
     else:
-        minOnLattice = value_to_lattice(maxANDmin[1],1)
-    maxANDminOnLattice = [ maxOnLattice, minOnLattice ]
-    return maxANDminOnLattice
+        minOnLattice = value_to_lattice(maxMin[1],1)
+    maxMinOnLattice = [ maxOnLattice, minOnLattice ]
+    return maxMinOnLattice
     
-def build_lattice_slice(maxANDmin, xValue):
-    maxim = maxANDmin[0]
-    minim = maxANDmin[1]
-    gap = maxANDmin[0] - maxANDmin[1]
+def build_lattice_slice(maxMin, xValue):
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    gap = maxVal - minVal
     ySteps = int(round(gap/LATTICE_SIZE)) + 1
-    latticeYSlice = [minim + (LATTICE_SIZE * i) for i in range(0, ySteps)]
+    latticeYSlice = [minVal + (LATTICE_SIZE * i) for i in range(0, ySteps)]
     latticeSlice = [[xValue, yValue] for yValue in latticeYSlice]
     return latticeSlice
     
 def generate_lattice(polygon):
     lattice = []
     xLattice = create_x_lattice()
-    edgeList = list_to_pairs(polygon, True)
+    edgeList = list_to_pairs(polygon, False)
     for xValue in xLattice:
         relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
-        intersections = get_intersections(relevantEdges, xValue)
-        intersections = round_nums(intersections)
-        roughMaxAndMin = get_maxANDmin(intersections)
-        maxANDmin = maxANDmin_to_lattice(roughMaxAndMin)
-        RoughLatticeSlice = build_lattice_slice(maxANDmin, xValue)
+        roughIntersections = get_intersections(relevantEdges, xValue)
+        intersections = round_nums(roughIntersections)
+        roughMaxMin = get_maxMin(intersections)
+        maxMin = maxMin_to_lattice(roughMaxMin)
+        print(maxMin)        
+        RoughLatticeSlice = build_lattice_slice(maxMin, xValue)
         latticeSlice = round_points(RoughLatticeSlice)
         lattice.append(latticeSlice)
     return lattice
@@ -222,8 +229,8 @@ def get_bounding_box(polygon):
     values = unzip_polygon(polygon) 
     xValues = values[0]
     yValues = values[1]
-    xRange = get_maxANDmin(xValues)
-    yRange = get_maxANDmin(yValues)
+    xRange = get_maxMin(xValues)
+    yRange = get_maxMin(yValues)
     return [xRange, yRange]
 
 def get_latticeHeights(lattice):
@@ -241,91 +248,22 @@ def generate_validRoutes(lattice, degreeRange):
         currentRoute = incrementPath(currentRoute)
     return validRoutes
 
-transformedPolygon = transform_polygon(START, END, POLYGON)
-polygonVerts = lists_to_tuples(transformedPolygon)
-plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+def road_to_polygonTuples(road,polygonDegree):
+    numPolygons = len(road) - polygonDegree + 1
+    polygonTuples = [road[i:i+polygonDegree] + [road[i]] for i in range(0,numPolygons)]
+    return polygonTuples
 
-#For treating Polygon as Path
-"""
-polygonCodes = create_codes(polygonVerts, 1)
-polygonCodes.append(Path.CLOSEPOLY)
-print(polygonVerts)
-print(polygonCodes)
-polygonPath = Path(polygonVerts, polygonCodes)
-"""
+def tuples_to_shapelyPolygons(tuples):
+    polygons = [Polygon(eachTuple) for eachTuple in tuples]
+    return polygons
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.add_patch(plottablePolygon)
-boundingBox = get_bounding_box(transformedPolygon)
-xRange = boundingBox[0]
-yRange = boundingBox[1]
-ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
-ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
-
-lattice = generate_lattice(transformedPolygon)
-print(get_num_paths(lattice))
-#print(lattice[0])
-#print(get_lattice_heights(lattice))
-
-#For displaying Lattice
-"""
-plotLattice = lattice_to_plotLattice(lattice)
-xvals = plotLattice[0]
-yvals = plotLattice[1]
-plt.plot(xvals, yvals, 'ro')
-"""
-
-#For displaying Path
-"""
-route = smartgen_random_route(10,10,70, lattice)
-vertices = lists_to_tuples(route)
-codes = create_codes(vertices, 0)
-path = Path(vertices, codes)
-pathPatch = patches.PathPatch(path, lw=2, fill = False)
-ax.add_patch(pathPatch)
-"""
-
-t1 = time.time()
-totalTime = t1 - t0
-print(totalTime)
-plt.show()
-
-
-"""
-
-def get_num_paths(lattice):
-    num_paths = 1
-    for latticeSlice in lattice:
-        num_paths = num_paths * len(latticeSlice)
-    return num_paths
-
-def gen_ran_sat_route(degreeRange, lattice):
-    testRoute = generate_random_route(lattice)
-    while (not is_route_deltaTheta_valid(testRoute, 60)):
-        testRoute = generate_random_route(lattice)
-    return testRoute
-
-def is_edge_deltaY_valid(edge, allowedRange):
-    vector = edge_to_vector(edge)
-    yDifference = abs(vector[1])
-    edge_valid = yDifference <= allowedRange
-    return edge_valid
-
-def is_route_deltaY_valid(route, allowedDeltaYRange):
-    routeDeltaYValid = True
-    edges = list_to_pairs(route, True)
-    for edge in edges:
-        currentEdgeDeltaYValid = is_edge_deltaY_valid(edge, allowedDeltaYRange)
-        routeDeltaYValid = (routeDeltaYValid and currentEdgeDeltaYValid)
-    return routeDeltaYValid
-
-def generate_random_route(lattice):
-    route = [[0,0]]
-    for latticeSlice in lattice:
-        route.append(random.choice(latticeSlice))
-    route.append([SCALE,0])        
-    return route
+def road_to_boundingPolygon(road,polygonDegree):
+    polygonTuples = road_to_polygonTuples(road,polygonDegree)
+    #print(polygonTuples)
+    polygons = tuples_to_shapelyPolygons(polygonTuples)
+    boundingPolygon = cascaded_union(polygons)
+    boundingPolygonCoords = list(boundingPolygon.exterior.coords)
+    return boundingPolygonCoords
 
 def get_last_edge(route): 
     lastEdge = [route[-2], route[-1]]
@@ -456,9 +394,93 @@ def smartgen_random_route(lookaheadDepth,maxAttempts,accAngle,lattice):
     route.append(start)
     for sliceIndex in range(0, latticeLen):
         route = smart_add(route,lookaheadDepth,maxAttempts,accAngle, lattice, sliceIndex)
-        print("route")
-        print(route)
+        #print("route")
+        #print(route)
     route.append(end)        
+    return route
+
+boundingPolygon = road_to_boundingPolygon(ROAD, 4)
+transformedPolygon = transform_polygon(START, END, boundingPolygon )
+polygonVerts = lists_to_tuples(transformedPolygon)
+plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+
+#For treating Polygon as Path
+
+polygonCodes = create_codes(polygonVerts, 1)
+polygonCodes.append(Path.CLOSEPOLY)
+#print(polygonVerts)
+polygonPath = Path(polygonVerts, polygonCodes)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.add_patch(plottablePolygon)
+boundingBox = get_bounding_box(transformedPolygon)
+xRange = boundingBox[0]
+yRange = boundingBox[1]
+ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
+ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
+
+lattice = generate_lattice(transformedPolygon)
+print(lattice)
+#print(get_num_paths(lattice))
+#print(lattice[0])
+#print(get_lattice_heights(lattice))
+
+#For displaying Lattice
+plotLattice = lattice_to_plotLattice(lattice)
+xvals = plotLattice[0]
+yvals = plotLattice[1]
+plt.plot(xvals, yvals, 'ro')
+
+#For displaying Path
+"""
+route = smartgen_random_route(10,10,70, lattice)
+vertices = lists_to_tuples(route)
+codes = create_codes(vertices, 0)
+path = Path(vertices, codes)
+pathPatch = patches.PathPatch(path, lw=2, fill = False)
+ax.add_patch(pathPatch)
+"""
+
+t1 = time.time()
+totalTime = t1 - t0
+print(totalTime)
+plt.show()
+
+
+"""
+
+def get_num_paths(lattice):
+    num_paths = 1
+    for latticeSlice in lattice:
+        num_paths = num_paths * len(latticeSlice)
+    return num_paths
+
+def gen_ran_sat_route(degreeRange, lattice):
+    testRoute = generate_random_route(lattice)
+    while (not is_route_deltaTheta_valid(testRoute, 60)):
+        testRoute = generate_random_route(lattice)
+    return testRoute
+
+def is_edge_deltaY_valid(edge, allowedRange):
+    vector = edge_to_vector(edge)
+    yDifference = abs(vector[1])
+    edge_valid = yDifference <= allowedRange
+    return edge_valid
+
+def is_route_deltaY_valid(route, allowedDeltaYRange):
+    routeDeltaYValid = True
+    edges = list_to_pairs(route, True)
+    for edge in edges:
+        currentEdgeDeltaYValid = is_edge_deltaY_valid(edge, allowedDeltaYRange)
+        routeDeltaYValid = (routeDeltaYValid and currentEdgeDeltaYValid)
+    return routeDeltaYValid
+
+def generate_random_route(lattice):
+    route = [[0,0]]
+    for latticeSlice in lattice:
+        route.append(random.choice(latticeSlice))
+    route.append([SCALE,0])        
     return route
 
 def replace_last_point(route, lastValidRange):
