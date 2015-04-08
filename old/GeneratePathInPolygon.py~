@@ -175,7 +175,6 @@ print(truncateUp(-0.6) == 0)
 print(truncateUp(-1.0) == -1)
 print(truncateUp(-1) == -1)
 """
-#print(truncateUp(-3.0) == -3.0)
 
 def truncateDown(inFloat):
     if (int(inFloat) == inFloat):
@@ -212,7 +211,6 @@ print(get_sliceCoordinateAbove(-0.3,0.2) == -1)
 print(get_sliceCoordinateAbove(-0.2,0.2) == -1)
 print(get_sliceCoordinateAbove(-0.1,0.2) == 0)
 """
-#print(get_sliceCoordinateAbove(-0.3,0.1))
 
 def get_sliceCoordinateBelow(inFloat,sliceSpacing):
     roughSliceCoordinate = inFloat/sliceSpacing
@@ -280,7 +278,6 @@ print(move_maxMin_onto_slice([0.4,0.2],0.2) == [0.4,0.2])
 print(move_maxMin_onto_slice([0.3,0.1],0.1) == [0.3,0.1])
 print(move_maxMin_onto_slice([-0.1,-0.3],0.1) == [-0.1,-0.3])
 """
-print(move_maxMin_onto_slice([-0.1,-0.3],0.1))
 
 def maxMin_isValid(maxMin):
     maxVal = maxMin[0]
@@ -306,18 +303,51 @@ def get_sliceBounds(maxMin,initialSliceSpacing):
     sliceBounds = [maxMinOnSlice,currentSliceSpacing]        
     return sliceBounds
 
-#print(get_sliceBounds([0.3,0.1],0.2) == [[0.3,0.1],0.1])
-#print(get_sliceBounds([-0.1,-0.3],0.2) == [[-0.1,-0.3],0.1])
-#print(get_sliceBounds([-0.1,-0.3],0.2))
+"""
+print(get_sliceBounds([0.3,0.1],0.2) == [[0.3,0.1],0.1])
+print(get_sliceBounds([-0.1,-0.3],0.2) == [[-0.1,-0.3],0.1])
+"""
 
-def build_latticeSlice(sliceBounds):
+def build_latticeYSlice(sliceBounds):
     maxMin = sliceBounds[0]
     maxVal = maxMin[0]
     minVal = maxMin[1]
     sliceSpacing = sliceBounds[1]
-    latticeSlice = range(maxVal,minVal,sliceSpacing)
+    gap = maxVal - minVal
+    roughFloatNumPoints = gap/sliceSpacing + 1
+    floatNumPoints = round(roughFloatNumPoints,NDIGITS)
+    numPoints = int(floatNumPoints)
+    latticeYSlice = [round(minVal + sliceSpacing*index,NDIGITS) for index in range(0,numPoints)]
+    return latticeYSlice
+
+"""
+print(build_latticeSlice([[-0.1,-0.3],0.1]) == [-0.3,-0.2,-0.1])
+print(build_latticeSlice([[0.3,0.1],0.1]) == [0.1,0.2,0.3])
+"""
+
+def add_xValue(latticeYSlice,xValue):
+    latticeSlice = [[xValue,yValue] for yValue in latticeYSlice]
     return latticeSlice
 
+print(add_xValue([0.1,0.2,0.3],0.1) == [[0.1,0.1],[0.1,0.2],[0.1,0.3]])
+
+def generate_lattice(polygon):
+    initialSliceSpacing = LATTICE_SIZE
+    lattice = []
+    xLattice = create_x_lattice()
+    edgeList = list_to_pairs(polygon, False)
+    for xValue in xLattice:
+        relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
+        roughIntersections = get_intersections(relevantEdges, xValue)
+        intersections = round_nums(roughIntersections)
+        maxMin = get_maxMin(intersections)
+        sliceBounds = get_sliceBounds(maxMin,initialSliceSpacing)
+        latticeYSlice = build_latticeYSlice(sliceBounds)
+        latticeSlice = add_xValue(latticeYSlice,xValue)
+        lattice.append(latticeSlice)
+    return lattice
+
+"""
 def generate_lattice(polygon):
     lattice = []
     xLattice = create_x_lattice()
@@ -331,6 +361,7 @@ def generate_lattice(polygon):
         latticeSlice = round_points(roughLatticeSlice)
         lattice.append(latticeSlice)
     return lattice
+"""
 
 def lattice_to_plotLattice(lattice):
     xValues = []
