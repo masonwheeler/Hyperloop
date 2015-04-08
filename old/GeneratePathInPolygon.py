@@ -549,6 +549,39 @@ def smartgen_random_route(lookaheadDepth,maxAttempts,accAngle,lattice):
     route.append(end)        
     return route
 
+def load_listOfPoints(fileName):
+    pointsFile = open(fileName,'r')
+    stringListOfPoints = pointsFile.read()
+    listOfPoints = eval(stringListOfPoints)
+    return listOfPoints
+
+listOfPoints = load_listOfPoints('listOfPoints.txt')
+print(len(listOfPoints))
+
+"""
+boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
+transformedPolygon = transform_polygon(START, END, boundingPolygon )
+polygonVerts = lists_to_tuples(transformedPolygon)
+plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+
+#For treating Polygon as Path
+
+polygonCodes = create_codes(polygonVerts, 1)
+polygonCodes.append(Path.CLOSEPOLY)
+#print(polygonVerts)
+polygonPath = Path(polygonVerts, polygonCodes)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.add_patch(plottablePolygon)
+boundingBox = get_bounding_box(transformedPolygon)
+xRange = boundingBox[0]
+yRange = boundingBox[1]
+ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
+ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
+"""
+
+"""
 boundingPolygon = road_to_boundingPolygon(ROAD, 4)
 transformedPolygon = transform_polygon(START, END, boundingPolygon )
 polygonVerts = lists_to_tuples(transformedPolygon)
@@ -581,6 +614,7 @@ plotLattice = lattice_to_plotLattice(lattice)
 xvals = plotLattice[0]
 yvals = plotLattice[1]
 plt.plot(xvals, yvals, 'ro')
+"""
 
 #For displaying Path
 """

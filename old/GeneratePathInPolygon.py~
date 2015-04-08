@@ -111,48 +111,6 @@ def get_maxMin(inputList):
     maxMin = [max(inputList), min(inputList)]
     return maxMin
 
-def value_to_lattice(value, shiftUp, sliceSpacing):
-    latticeSteps = value/sliceSpacing
-    if (value >= 0):
-        truncatedLatticeSteps = int(latticeSteps)
-    else:        
-        truncatedLatticeSteps = int(latticeSteps) - 1       
-    shiftedTruncatedLatticeSteps = truncatedLatticeSteps + shiftUp
-    shiftedValue = shiftedTruncatedLatticeSteps * sliceSpacing
-    return shiftedValue
-
-def onLattice(value,sliceSpacing):
-    isOnLattice = (value_to_lattice(value,0,sliceSpacing) == value)
-    return isOnLattice
-
-def maxMin_to_lattice(maxMin,sliceSpacing):
-    maxVal = maxMin[0]
-    minVal = maxMin[1]
-    maxOnLattice = value_to_lattice(maxVal,0,sliceSpacing) #problem is here
-    if onLattice(minVal,sliceSpacing):
-        minOnLattice = value_to_lattice(minVal,0,sliceSpacing)
-    else:
-        minOnLattice = value_to_lattice(minVal,1,sliceSpacing)
-    maxMinOnLattice = [ maxOnLattice, minOnLattice ]
-    return maxMinOnLattice
-    
-def build_lattice_slice(maxMin, xValue):
-    maxVal = maxMin[0]
-    minVal = maxMin[1]
-    sliceSpacing = LATTICE_SIZE
-    maxOnLattice, minOnLattice = maxMin_to_lattice(maxMin,sliceSpacing)
-    gap = maxOnLattice - minOnLattice
-    while (gap <= 0):
-        sliceSpacing = sliceSpacing/2
-        maxOnLattice, minOnLattice = maxMin_to_lattice(maxMin,sliceSpacing)
-        gap = maxOnLattice - minOnLattice
-    #print((maxVal - maxOnLattice)/(sliceSpacing))
-    #print(gap/sliceSpacing)
-    ySteps = int(gap/sliceSpacing) + 1
-    latticeYSlice = [minVal + (sliceSpacing * i) for i in range(0, ySteps)]
-    latticeSlice = [[xValue, yValue] for yValue in latticeYSlice]        
-    return latticeSlice
-
 def truncateUp(inFloat):
     if (int(inFloat) == inFloat):
         outInt = inFloat
@@ -329,7 +287,9 @@ def add_xValue(latticeYSlice,xValue):
     latticeSlice = [[xValue,yValue] for yValue in latticeYSlice]
     return latticeSlice
 
+"""
 print(add_xValue([0.1,0.2,0.3],0.1) == [[0.1,0.1],[0.1,0.2],[0.1,0.3]])
+"""
 
 def generate_lattice(polygon):
     initialSliceSpacing = LATTICE_SIZE
@@ -346,22 +306,6 @@ def generate_lattice(polygon):
         latticeSlice = add_xValue(latticeYSlice,xValue)
         lattice.append(latticeSlice)
     return lattice
-
-"""
-def generate_lattice(polygon):
-    lattice = []
-    xLattice = create_x_lattice()
-    edgeList = list_to_pairs(polygon, False)
-    for xValue in xLattice:
-        relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
-        roughIntersections = get_intersections(relevantEdges, xValue)
-        intersections = round_nums(roughIntersections)
-        maxMin = get_maxMin(intersections)
-        roughLatticeSlice = build_lattice_slice(maxMin, xValue)
-        latticeSlice = round_points(roughLatticeSlice)
-        lattice.append(latticeSlice)
-    return lattice
-"""
 
 def lattice_to_plotLattice(lattice):
     xValues = []
@@ -605,6 +549,36 @@ def smartgen_random_route(lookaheadDepth,maxAttempts,accAngle,lattice):
     route.append(end)        
     return route
 
+def load_listOfPoints(fileName):
+    pointsFile = open(fileName,'r')
+    stringListOfPoints = pointsFile.read()
+    listOfPoints = eval(stringListOfPoints)
+    return listOfPoints
+
+listOfPoints = load_listOfPoints('listOfPoints.txt')
+
+boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
+transformedPolygon = transform_polygon(START, END, boundingPolygon )
+polygonVerts = lists_to_tuples(transformedPolygon)
+plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+
+#For treating Polygon as Path
+
+polygonCodes = create_codes(polygonVerts, 1)
+polygonCodes.append(Path.CLOSEPOLY)
+#print(polygonVerts)
+polygonPath = Path(polygonVerts, polygonCodes)
+
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.add_patch(plottablePolygon)
+boundingBox = get_bounding_box(transformedPolygon)
+xRange = boundingBox[0]
+yRange = boundingBox[1]
+ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
+ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
+
+
 """
 boundingPolygon = road_to_boundingPolygon(ROAD, 4)
 transformedPolygon = transform_polygon(START, END, boundingPolygon )
@@ -657,6 +631,61 @@ plt.show()
 
 
 """
+def value_to_lattice(value, shiftUp, sliceSpacing):
+    latticeSteps = value/sliceSpacing
+    if (value >= 0):
+        truncatedLatticeSteps = int(latticeSteps)
+    else:        
+        truncatedLatticeSteps = int(latticeSteps) - 1       
+    shiftedTruncatedLatticeSteps = truncatedLatticeSteps + shiftUp
+    shiftedValue = shiftedTruncatedLatticeSteps * sliceSpacing
+    return shiftedValue
+
+def onLattice(value,sliceSpacing):
+    isOnLattice = (value_to_lattice(value,0,sliceSpacing) == value)
+    return isOnLattice
+
+def maxMin_to_lattice(maxMin,sliceSpacing):
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    maxOnLattice = value_to_lattice(maxVal,0,sliceSpacing) #problem is here
+    if onLattice(minVal,sliceSpacing):
+        minOnLattice = value_to_lattice(minVal,0,sliceSpacing)
+    else:
+        minOnLattice = value_to_lattice(minVal,1,sliceSpacing)
+    maxMinOnLattice = [ maxOnLattice, minOnLattice ]
+    return maxMinOnLattice
+    
+def build_lattice_slice(maxMin, xValue):
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    sliceSpacing = LATTICE_SIZE
+    maxOnLattice, minOnLattice = maxMin_to_lattice(maxMin,sliceSpacing)
+    gap = maxOnLattice - minOnLattice
+    while (gap <= 0):
+        sliceSpacing = sliceSpacing/2
+        maxOnLattice, minOnLattice = maxMin_to_lattice(maxMin,sliceSpacing)
+        gap = maxOnLattice - minOnLattice
+    #print((maxVal - maxOnLattice)/(sliceSpacing))
+    #print(gap/sliceSpacing)
+    ySteps = int(gap/sliceSpacing) + 1
+    latticeYSlice = [minVal + (sliceSpacing * i) for i in range(0, ySteps)]
+    latticeSlice = [[xValue, yValue] for yValue in latticeYSlice]        
+    return latticeSlice
+
+def generate_lattice(polygon):
+    lattice = []
+    xLattice = create_x_lattice()
+    edgeList = list_to_pairs(polygon, False)
+    for xValue in xLattice:
+        relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
+        roughIntersections = get_intersections(relevantEdges, xValue)
+        intersections = round_nums(roughIntersections)
+        maxMin = get_maxMin(intersections)
+        roughLatticeSlice = build_lattice_slice(maxMin, xValue)
+        latticeSlice = round_points(roughLatticeSlice)
+        lattice.append(latticeSlice)
+    return lattice    
 
 def get_num_paths(lattice):
     num_paths = 1

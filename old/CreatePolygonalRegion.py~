@@ -231,10 +231,9 @@ rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
 shapelyPolygons = repair_shapelyPolygons(rawPolygons)
 simplifiedPolygon = recursive_union(shapelyPolygons)
 listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
-pointsString = str(listOfPoints)
 
 pointsFile = open('listOfPoints.txt','w+')
-pointsFile.write(pointsString)
+pointsFile.write(listOfPoints)
 pointsFile.close()
 
 """
