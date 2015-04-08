@@ -175,6 +175,7 @@ print(truncateUp(-0.6) == 0)
 print(truncateUp(-1.0) == -1)
 print(truncateUp(-1) == -1)
 """
+#print(truncateUp(-3.0) == -3.0)
 
 def truncateDown(inFloat):
     if (int(inFloat) == inFloat):
@@ -196,10 +197,11 @@ print(truncateDown(-0.5) == -1)
 print(truncateDown(-0.6) == -1)
 print(truncateDown(-1.0) == -1)
 """
+
 def get_sliceCoordinateAbove(inFloat,sliceSpacing):
     roughSliceCoordinate = inFloat/sliceSpacing
     sliceCoordinate = round(roughSliceCoordinate,NDIGITS)
-    sliceCoordinateAbove = truncateUp(roughSliceCoordinate)
+    sliceCoordinateAbove = truncateUp(sliceCoordinate)
     return sliceCoordinateAbove
 
 """
@@ -224,6 +226,7 @@ print(get_sliceCoordinateBelow(0.1,0.2) == 0)
 print(get_sliceCoordinateBelow(-0.3,0.2) == -2)
 print(get_sliceCoordinateBelow(-0.2,0.2) == -1)
 print(get_sliceCoordinateBelow(-0.1,0.2) == -1)
+print(get_sliceCoordinateBelow(-0.3,0.1) == -3)
 """
 
 def get_closestSlicePointAbove(inFloat,sliceSpacing):
@@ -240,6 +243,7 @@ print(get_closestSlicePointAbove(-0.3,0.2) == -0.2)
 print(get_closestSlicePointAbove(-0.2,0.2) == -0.2)
 print(get_closestSlicePointAbove(-0.1,0.2) == 0.0)
 print(get_closestSlicePointAbove(0.3,0.1) == 0.3)
+print(get_closestSlicePointAbove(-0.3,0.1) == -0.3)
 """
 
 def get_closestSlicePointBelow(inFloat,sliceSpacing):
@@ -256,6 +260,7 @@ print(get_closestSlicePointBelow(-0.3,0.2) == -0.4)
 print(get_closestSlicePointBelow(-0.2,0.2) == -0.2)
 print(get_closestSlicePointBelow(-0.1,0.2) == -0.2)
 print(get_closestSlicePointBelow(0.3,0.1) == 0.3)
+print(get_closestSlicePointBelow(-0.3,0.1) == -0.3)
 """
 
 def move_maxMin_onto_slice(maxMin,sliceSpacing):
@@ -271,6 +276,8 @@ print(move_maxMin_onto_slice([0.5,0.1],0.2) == [0.4,0.2])
 print(move_maxMin_onto_slice([0.5,0.2],0.2) == [0.4,0.2])
 print(move_maxMin_onto_slice([0.4,0.1],0.2) == [0.4,0.2])
 print(move_maxMin_onto_slice([0.4,0.2],0.2) == [0.4,0.2])
+print(move_maxMin_onto_slice([0.3,0.1],0.1) == [0.3,0.1])
+print(move_maxMin_onto_slice([-0.1,-0.3],0.1) == [-0.1,-0.3])
 """
 
 def maxMin_isValid(maxMin):
@@ -294,8 +301,19 @@ def get_sliceBounds(maxMin,initialSliceSpacing):
         currentSliceSpacing = currentSliceSpacing/2
         maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing)
         isValid = maxMin_isValid(maxMinOnSlice)
-    maxMinSliceSpacing = [maxMinOnSlice,currentSliceSpacing]        
-    return maxMinSliceSpacing
+    sliceBounds = [maxMinOnSlice,currentSliceSpacing]        
+    return sliceBounds
+
+print(get_sliceBounds([0.3,0.1],0.2) == [[0.3,0.1],0.1])
+print(get_sliceBounds([-0.1,-0.3],0.2) == [[-0.1,-0.3],0.1])
+
+def build_latticeSlice(sliceBounds):
+    maxMin = sliceBounds[0]
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    sliceSpacing = sliceBounds[1]
+    latticeSlice = range(maxVal,minVal,sliceSpacing)
+    return latticeSlice
 
 def generate_lattice(polygon):
     lattice = []
