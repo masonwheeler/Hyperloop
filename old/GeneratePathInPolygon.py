@@ -399,22 +399,6 @@ def generate_validRoutes(lattice, degreeRange):
         currentRoute = incrementPath(currentRoute)
     return validRoutes
 
-def road_to_polygonTuples(road,polygonDegree):
-    numPolygons = len(road) - polygonDegree + 1
-    polygonTuples = [road[i:i+polygonDegree] + [road[i]] for i in range(0,numPolygons)]
-    return polygonTuples
-
-def tuples_to_shapelyPolygons(tuples):
-    polygons = [Polygon(eachTuple) for eachTuple in tuples]
-    return polygons
-
-def road_to_boundingPolygon(road,polygonDegree):
-    polygonTuples = road_to_polygonTuples(road,polygonDegree)
-    polygons = tuples_to_shapelyPolygons(polygonTuples)
-    boundingPolygon = cascaded_union(polygons)
-    boundingPolygonCoords = list(boundingPolygon.exterior.coords)
-    return boundingPolygonCoords
-
 def get_last_edge(route): 
     lastEdge = [route[-2], route[-1]]
     return lastEdge
@@ -555,30 +539,59 @@ def load_listOfPoints(fileName):
     listOfPoints = eval(stringListOfPoints)
     return listOfPoints
 
+def road_to_polygonTuples(road,polygonDegree):
+    numPolygons = len(road) - polygonDegree + 1
+    polygonTuples = [road[i:i+polygonDegree] for i in range(0,numPolygons)]
+    return polygonTuples
+
+def tuples_to_shapelyPolygons(tuples):
+    polygons = [Polygon(eachTuple) for eachTuple in tuples]
+    return polygons
+
+def cleanPolygons(polygons):
+    cleanedPolygons = [polygon.buffer(0.0) for polygon in polygons]    
+    return cleanedPolygons
+
+def road_to_boundingPolygon(road,polygonDegree):
+    polygonTuples = road_to_polygonTuples(road,polygonDegree)
+    polygons = tuples_to_shapelyPolygons(polygonTuples)
+    cleanedPolygons = cleanPolygons(polygons)
+    boundingPolygon = cascaded_union(cleanedPolygons)
+    boundingPolygonCoords = list(boundingPolygon.exterior.coords)
+    return boundingPolygonCoords
+
 listOfPoints = load_listOfPoints('listOfPoints.txt')
-print(len(listOfPoints))
+boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
+print(boundingPolygon)
+#print(len(listOfPoints))
+#polygonTuples = road_to_polygonTuples(listOfPoints, 4)
+#polygons1 = tuples_to_shapelyPolygons(polygonTuples)
+#print(polygons1)
+#unionedPolygon1 = cascaded_union(polygons1)
+#print(unionedPolygon1)
+#polygons2 = [Polygon(eachTuple) for eachTuple in polygonTuples]
+#print(polygons2)
+#polygonsValid = [polygon.is_valid for polygon in polygons2]
+#badTuples =[eachTuple for eachTuple in polygonTuples if not Polygon(eachTuple).is_valid]
+#print(badTuples)
+#print(multiPolygo)
+#print(polygonsValid)
+#unionedPolygon2 = cascaded_union(polygons2)
+#print(unionedPolygon2)
 
 """
-boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
-transformedPolygon = transform_polygon(START, END, boundingPolygon )
-polygonVerts = lists_to_tuples(transformedPolygon)
-plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
-
-#For treating Polygon as Path
-
-polygonCodes = create_codes(polygonVerts, 1)
-polygonCodes.append(Path.CLOSEPOLY)
-#print(polygonVerts)
-polygonPath = Path(polygonVerts, polygonCodes)
-
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.add_patch(plottablePolygon)
-boundingBox = get_bounding_box(transformedPolygon)
-xRange = boundingBox[0]
-yRange = boundingBox[1]
-ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
-ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
+#print(polygonTuples)
+firstTuple = polygonTuples[0]
+#print(firstTuple)
+firstPolygon = Polygon(firstTuple)
+#print(firstPolygon)
+secondTuple = polygonTuples[1]
+#print(secondTuple)
+secondPolygon = Polygon(secondTuple)
+#print(secondPolygon)
+polygons = [firstPolygon, secondPolygon]
+unionedPolygon = cascaded_union(polygons)
+print(unionedPolygon)
 """
 
 """

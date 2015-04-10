@@ -15,7 +15,7 @@ t0 = time.time()
 
 ORIGIN ='Los_Angeles'
 DESTINATION ='San_Francisco'
-NUM_PTS = 4
+NUM_PTS = 3
 TOLERANCE = 0.000001
 BUFFER = 0.000001
 MAX_UNION_LENGTH = 5
@@ -108,12 +108,12 @@ def get_coordinateList():
     coordinateList = removeDuplicates(rawCoordinateList)
     return coordinateList         
 
-def list_to_tuples( inputList, repeatFirst ):
+def list_to_tuples( inputList, repeatFirst, polygonDegree ):
     CoordTuples = []
-    numTuples = len(inputList) - NUM_PTS
+    numTuples = len(inputList) - polygonDegree
     """Creates each of the N+1 tuples which define each N-gon"""
     for x in range(0, numTuples):
-        currentSlice = inputList[x:x + NUM_PTS] 
+        currentSlice = inputList[x:x + polygonDegree] 
         if repeatFirst:
             currentSlice.append(inputList[x])
         CoordTuples.append(currentSlice)        
@@ -187,29 +187,82 @@ def validate_shapelyPolygons(shapelyPolygons):
         isValid = (isValid and polygonValid)
     return isValid
 
-def repair_shapelyPolygons(shapelyPolygons):
+def repair_shapelyPolygons(shapelyPolygons,tolerance):
     repairedPolygons = []
     for shapelyPolygon in shapelyPolygons:
-        if (not shapelyPolygon.is_valid):
-            shapelyPolygon = shapelyPolygon.buffer(BUFFER)
-        repairedPolygons.append(shapelyPolygon)            
+        repairedPolygon = shapelyPolygon.buffer(tolerance)
+        repairedPolygons.append(repairedPolygon)            
     return repairedPolygons
 
-def split_list_into_pieces(inList, pieceLen):
-    pieceLen = max(1, pieceLen)
-    outList = [inList[i:i + pieceLen] for i in range(0, len(inList), pieceLen)]
-    return outList
+def repair_multiPolygon(multiPolygon,tolerance):
+    shapelyPolygons = multiPolygon.geoms
+    repairedPolygons = repair_shapelyPolygons(shapelyPolygons,tolerance)
+    repairedMultiPolygon = MultiPolygon(repairedPolygons)
+    return repairedMultiPolygon
 
-def recursive_union(shapelyPolygons):
-    numPolygons = len(shapelyPolygons)
-    numPolygonSets = math.ceil(numPolygons / MAX_UNION_LENGTH)
-    shapelyPieces = split_list_into_pieces(shapelyPolygons, MAX_UNION_LENGTH)
-    shapelyMultis = [MultiPolygon(piece) for piece in shapelyPieces]
-    shapelyUnions = [cascaded_union(multi) for multi in shapelyMultis]
-    multiPolygon = cascaded_union(shapelyUnions)
-    unionPolygon = cascaded_union(multiPolygon)
-    simplifiedPolygon = unionPolygon.simplify(TOLERANCE, preserve_topology=True)
-    return simplifiedPolygon
+def split_list_into_sets(inList, pieceLen):
+    pieceLen = max(1, pieceLen)
+    sets = []
+    for index in range(0, len(inList), pieceLen):
+        lenLeft = len(inList) - index
+        setLen = min(pieceLen,lenLeft)
+        sets.append(inList[index:index + setLen])
+    return sets
+
+"""
+print(split_list_into_sets([1,2,3,4,5],2) == [[1,2],[3,4],[5]])
+"""
+def recursiveRepair_PolygonSet(polygonSet,initialTolerance):
+    testSet = polygonSet
+    currentBuffer = initialTolerance
+    while (not validate_shapelyPolygons(testSet)):
+        currentBuffer = currentBuffer * 10
+        testSet = repair_shapelyPolygons(testSet,currentBuffer)
+    repairedSet = testSet    
+    return repairedSet
+
+def multiPolygon_to_polygon(testPolygon,initialTolerance,maxAttempts):
+    currentTolerance = initialTolerance
+    currentAttempt = 0
+    while(testPolygon.geom_type=="MultiPolygon" and currentAttempt<maxAttempts):
+        currentAttempt = currentAttempt + 1
+        currentPolygonSet = testPolygon.geoms
+        repairedPolygonSet = repair_shapelyPolygons(currentPolygonSet,currentTolerance)
+        testPolygon = cascaded_union(repairedPolygonSet)
+        currentTolerance = currentTolerance * 10
+    if testPolygon.geom_type=="MultiPolygon":
+        print('Failed to fuse polygons:')
+        print(testPoly)
+        print('with buffer: ')
+        print(currentTolerance)
+        print('The polygons were valid: ')
+        print(validate_shapelyPolygons(testPolygon.geoms))
+        polygon = None
+        sys.exit()
+    else:
+        #print('Successfully fused polygon with tolerance: ')
+        #print(currentTolerance)
+        polygon = testPolygon        
+    return polygon
+
+def polygonSet_to_polygon(polygonSet,initialTolerance,maxAttempts):
+    repairedPolygons = recursiveRepair_PolygonSet(polygonSet,initialTolerance)
+    testPolygon = cascaded_union(repairedPolygons)
+    polygon = multiPolygon_to_polygon(testPolygon,initialTolerance,maxAttempts)
+    return polygon
+
+def recursive_union(shapelyPolygons,maxUnionNum,initialTolerance,maxAttempts):
+    currentNumPolygons = len(shapelyPolygons)
+    currentNumPolygonSets = math.ceil(float(currentNumPolygons) / float(maxUnionNum))
+    polygonSets = split_list_into_sets(shapelyPolygons, maxUnionNum)
+    unionedPolygons = [polygonSet_to_polygon(polygonSet,initialTolerance,maxAttempts) for polygonSet in polygonSets]
+    return unionedPolygons
+
+def unionAllPolygons(shapelyPolygons,maxUnionNum,initialTolerance,maxAttempts):
+    while (len(shapelyPolygons) > 1):
+        shapelyPolygons = recursive_union(shapelyPolygons,maxUnionNum,initialTolerance,maxAttempts)
+    boundingPolygon = shapelyPolygons[0]    
+    return boundingPolygon
 
 def tuples_to_lists(tuples):
     lists = [list(eachTuple) for eachTuple in tuples]
@@ -222,20 +275,24 @@ def shapelyPolygon_to_listOfPoints(shapelyPolygon):
 
 coordinateList = get_coordinateList()
 
-rawShortList = coordinateList[0:17]
+rawShortList = coordinateList[0:10000]
 shortList = scale_list_of_points(rawShortList)
-coordinateTuples = list_to_tuples(shortList, False)
+coordinateTuples = list_to_tuples(shortList, False,10)
 #coordinateTuples = list_to_tuples(coordinateList, False)
 
 rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
-shapelyPolygons = repair_shapelyPolygons(rawPolygons)
-simplifiedPolygon = recursive_union(shapelyPolygons)
+#shapelyPolygons = repair_shapelyPolygons(rawPolygons,)
+boundingPolygon = unionAllPolygons(rawPolygons,3,TOLERANCE,20) #not buffering
+#print(boundingPolygon.geom_type == "MultiPolygon")
+
+"""
 listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
 pointsString = str(listOfPoints)
 
 pointsFile = open('listOfPoints.txt','w+')
 pointsFile.write(pointsString)
 pointsFile.close()
+"""
 
 """
 Polygons = CoordinateTuplestoPolygons(CoordinateTuples)
@@ -250,3 +307,5 @@ outputFile.close()
 """
 t1 = time.time()
 print(t1 - t0)
+
+
