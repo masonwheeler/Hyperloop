@@ -15,9 +15,7 @@ t0 = time.time()
 
 ORIGIN ='Los_Angeles'
 DESTINATION ='San_Francisco'
-NUM_PTS = 3
 TOLERANCE = 0.000001
-BUFFER = 0.000001
 MAX_UNION_LENGTH = 5
 SCALE_FACTOR = 1000000
 
@@ -278,22 +276,19 @@ coordinateList = get_coordinateList()
 rawShortList = coordinateList[0:10000]
 shortList = scale_list_of_points(rawShortList)
 coordinateTuples = list_to_tuples(shortList, False,10)
-#coordinateTuples = list_to_tuples(coordinateList, False)
 
 rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
-#shapelyPolygons = repair_shapelyPolygons(rawPolygons,)
-boundingPolygon = unionAllPolygons(rawPolygons,3,TOLERANCE,20) #not buffering
-#print(boundingPolygon.geom_type == "MultiPolygon")
+boundingPolygon = unionAllPolygons(rawPolygons,3,TOLERANCE,20)
 
-"""
 listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
 pointsString = str(listOfPoints)
 
-pointsFile = open('listOfPoints.txt','w+')
+fileName = ORIGIN + 'to' + DESTINATION + 'BoundingPolygon.txt' 
+pointsFile = open(fileName,'w+')
 pointsFile.write(pointsString)
 pointsFile.close()
-"""
 
+#For KML output
 """
 Polygons = CoordinateTuplestoPolygons(CoordinateTuples)
 MultiGeometry = polygonsToMultiGeometry(Polygons)
@@ -305,6 +300,7 @@ outputFile = open('MultigeometryPolygonalRegion.kml','w+')
 outputFile.write(printableMulti)
 outputFile.close()
 """
+
 t1 = time.time()
 print(t1 - t0)
 
