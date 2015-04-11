@@ -15,9 +15,6 @@ t0 = time.time()
 
 ORIGIN ='Los_Angeles'
 DESTINATION ='San_Francisco'
-TOLERANCE = 0.000001
-MAX_UNION_LENGTH = 5
-SCALE_FACTOR = 1000000
 
 def HTTP_to_string(HTTPData):
     byteData = HTTPData.read()
@@ -106,10 +103,10 @@ def get_coordinateList():
     coordinateList = removeDuplicates(rawCoordinateList)
     return coordinateList         
 
-def list_to_tuples( inputList, repeatFirst, polygonDegree ):
+def list_to_sets( inputList, repeatFirst, polygonDegree ):
     CoordTuples = []
     numTuples = len(inputList) - polygonDegree
-    """Creates each of the N+1 tuples which define each N-gon"""
+    """Creates each of the N+1 sets which define each N-gon"""
     for x in range(0, numTuples):
         currentSlice = inputList[x:x + polygonDegree] 
         if repeatFirst:
@@ -124,13 +121,13 @@ def CoordinateToString (inputCoordinate):
     coordinateString = ''.join(['\n','              ',yCoord,',',xCoord, '\n','              '])
     return coordinateString
 
-def tupleToKMLPolygon (inputTuple):
+def setToKMLPolygon (inputSet):
     """initializes container list for Polygon Coordinates"""
     PolygonCoords = [] 
 
     """Adds input coordinates to container list"""
-    for Tuple in inputTuple:
-        PolygonCoords.append(CoordinateToString(Tuple))
+    for eachCoord in inputSet:
+        PolygonCoords.append(CoordinateToString(eachCoord))
 
     """initializes string which contains polygon coordinates """
     PolygonCoordinatesString = ''
@@ -150,10 +147,14 @@ def tupleToKMLPolygon (inputTuple):
     )
     return KMLPolygon
 
-def CoordinateTuplestoPolygons(inputCoordinateTuples):
+def displayKMLObject(KMLObject):
+    displayableKMLObject = etree.tostring(KMLObject, pretty_print = True).decode("utf-8")
+    return displayableKMLObject
+
+def CoordinateSetstoPolygons(inputCoordinateTuples):
     Polygons = []
     for coordTuple in inputCoordinateTuples:
-        Polygons.append(tupleToKMLPolygon(coordTuple))
+        Polygons.append(setToKMLPolygon(coordTuple))
     return Polygons
 
 def polygonsToMultiGeometry(inputPolygons):
@@ -162,13 +163,21 @@ def polygonsToMultiGeometry(inputPolygons):
         multigeometry.append(polygon)
     return multigeometry
 
-def scale_point(inPoint):
-    outPoint = [value * SCALE_FACTOR for value in inPoint]
+def scaleUp_point(inPoint, scaleFactor):
+    outPoint = [value * scaleFactor for value in inPoint]
     return outPoint
 
-def scale_list_of_points(inList):
-    outList = [scale_point(point) for point in inList]
+def scaleUp_list_of_points(inList,scaleFactor):
+    outList = [scaleUp_point(point,scaleFactor) for point in inList]
     return outList
+
+def scaleDown_point(inPoint, scaleFactor):
+    outPoint = [value / scaleFactor for value in inPoint]
+    return outPoint
+
+def scaleDown_list_of_points(inList,scaleFactor):
+    outList = [scaleDown_point(point,scaleFactor) for point in inList]
+    return outList    
 
 def tuple_to_shapelyPolygon(aTuple):
     shapelyPolygon = Polygon(aTuple)
@@ -271,26 +280,50 @@ def shapelyPolygon_to_listOfPoints(shapelyPolygon):
     listsOfPoints = tuples_to_lists(tuplesOfPoints)
     return listsOfPoints
 
-coordinateList = get_coordinateList()
+scaleFactor = 1000000.0
+tolerance = 0.000001
+repeatFirst = False 
+maxUnionNum = 3
 
-rawShortList = coordinateList[0:10000]
-shortList = scale_list_of_points(rawShortList)
-coordinateTuples = list_to_tuples(shortList, False,10)
+coordinateList = get_coordinateList()
+#shortList = coordinateList[0:10]
+#print(shortList)
+
+scaledUpList = scaleUp_list_of_points(coordinateList,scaleFactor)
+coordinateTuples = list_to_sets(scaledUpList,repeatFirst,10)
 
 rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
-boundingPolygon = unionAllPolygons(rawPolygons,3,TOLERANCE,20)
+boundingPolygon = unionAllPolygons(rawPolygons,maxUnionNum, tolerance,20)
 
-listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
-pointsString = str(listOfPoints)
+listOfPoints = shapelyPolygon_to_listOfPoints(boundingPolygon)
+scaledDownList = scaleDown_list_of_points(listOfPoints,scaleFactor)
+shortList = scaledDownList[0:10]
+testKMLPolygon = setToKMLPolygon(shortList)
+displayableKMLObject = displayKMLObject(testKMLPolygon)
+print(displayableKMLObject)
+#print(shortList)
 
+#pointsString = str(listOfPoints)
+
+
+#scaledBackDownList = scale_list_of_points(coordinateList, 1.0/scaleFactor)
+
+
+
+#For writing to file
+"""
 fileName = ORIGIN + 'to' + DESTINATION + 'BoundingPolygon.txt' 
 pointsFile = open(fileName,'w+')
 pointsFile.write(pointsString)
 pointsFile.close()
-
-#For KML output
 """
-Polygons = CoordinateTuplestoPolygons(CoordinateTuples)
+
+#For KML Polygon Output
+
+
+#For KML MultiGeometry Output
+"""
+Polygons = CoordinateSetstoPolygons(CoordinateTuples)
 MultiGeometry = polygonsToMultiGeometry(Polygons)
 PlacemarkMulti = KML.Placemark(MultiGeometry)
 kmlMulti = KML.kml(PlacemarkMulti)
