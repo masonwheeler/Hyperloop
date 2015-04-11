@@ -294,20 +294,19 @@ coordinateTuples = list_to_sets(scaledUpList,repeatFirst,10)
 
 rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
 boundingPolygon = unionAllPolygons(rawPolygons,maxUnionNum, tolerance,20)
+#this simplifies using the tolerance given
+simplifiedPolygon = boundingPolygon.simplify(1.0, preserve_topology=True) 
+listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
+shortList = listOfPoints[0:10]
+print(len(listOfPoints))
 
-listOfPoints = shapelyPolygon_to_listOfPoints(boundingPolygon)
+""""
 scaledDownList = scaleDown_list_of_points(listOfPoints,scaleFactor)
 shortList = scaledDownList[0:10]
 testKMLPolygon = setToKMLPolygon(shortList)
 displayableKMLObject = displayKMLObject(testKMLPolygon)
 print(displayableKMLObject)
-#print(shortList)
-
-#pointsString = str(listOfPoints)
-
-
-#scaledBackDownList = scale_list_of_points(coordinateList, 1.0/scaleFactor)
-
+"""
 
 
 #For writing to file
