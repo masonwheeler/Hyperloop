@@ -114,20 +114,23 @@ def list_to_sets( inputList, repeatFirst, polygonDegree ):
         CoordTuples.append(currentSlice)        
     return CoordTuples
 
-def CoordinateToString (inputCoordinate):
+def CoordinateToString (inputCoordinate, isMultiGeometry):
     xCoord = str(inputCoordinate[0])
     yCoord = str(inputCoordinate[1])
     """formats the coordinates"""
-    coordinateString = ''.join(['\n','              ',yCoord,',',xCoord, '\n','              '])
+    if isMultiGeometry:
+        coordinateString = ''.join(['\n','              ',yCoord,',',xCoord, '\n','              '])
+    else:    
+        coordinateString = ''.join(['\n','          ',yCoord,',',xCoord, '\n','          '])
     return coordinateString
 
-def setToKMLPolygon (inputSet):
+def setToKMLPolygon (inputSet, isMultiGeometry):
     """initializes container list for Polygon Coordinates"""
     PolygonCoords = [] 
 
     """Adds input coordinates to container list"""
     for eachCoord in inputSet:
-        PolygonCoords.append(CoordinateToString(eachCoord))
+        PolygonCoords.append(CoordinateToString(eachCoord, isMultiGeometry))
 
     """initializes string which contains polygon coordinates """
     PolygonCoordinatesString = ''
@@ -147,14 +150,20 @@ def setToKMLPolygon (inputSet):
     )
     return KMLPolygon
 
+def wrapKMLObject(unwrappedObject):
+    placemarkObject = KML.Placemark(unwrappedObject)
+    wrappedObject = KML.kml(placemarkObject)    
+    return wrappedObject
+
 def displayKMLObject(KMLObject):
-    displayableKMLObject = etree.tostring(KMLObject, pretty_print = True).decode("utf-8")
+    wrappedObject = wrapKMLObject(KMLObject)
+    displayableKMLObject = etree.tostring(wrappedObject, pretty_print = True).decode("utf-8")
     return displayableKMLObject
 
-def CoordinateSetstoPolygons(inputCoordinateTuples):
+def CoordinateSetstoPolygons(inputCoordinateTuples, isMultiGeometry):
     Polygons = []
     for coordTuple in inputCoordinateTuples:
-        Polygons.append(setToKMLPolygon(coordTuple))
+        Polygons.append(setToKMLPolygon(coordTuple, isMultiGeometry))
     return Polygons
 
 def polygonsToMultiGeometry(inputPolygons):
@@ -282,32 +291,27 @@ def shapelyPolygon_to_listOfPoints(shapelyPolygon):
 
 scaleFactor = 1000000.0
 tolerance = 0.000001
+simplifyTolerance = 10000.0
 repeatFirst = False 
 maxUnionNum = 3
+polygonSides = 30
+maxAttempts = 20
+isMultiGeometry = False
 
 coordinateList = get_coordinateList()
-#shortList = coordinateList[0:10]
-#print(shortList)
 
 scaledUpList = scaleUp_list_of_points(coordinateList,scaleFactor)
-coordinateTuples = list_to_sets(scaledUpList,repeatFirst,10)
-
-rawPolygons = tuples_to_shapelyPolygons(coordinateTuples)
-boundingPolygon = unionAllPolygons(rawPolygons,maxUnionNum, tolerance,20)
-#this simplifies using the tolerance given
-simplifiedPolygon = boundingPolygon.simplify(1.0, preserve_topology=True) 
+scaledUpCoordinateTuples = list_to_sets(scaledUpList,repeatFirst,polygonSides)
+rawPolygons = tuples_to_shapelyPolygons(scaledUpCoordinateTuples)
+boundingPolygon = unionAllPolygons(rawPolygons,maxUnionNum, tolerance,maxAttempts)
+simplifiedPolygon = boundingPolygon.simplify(simplifyTolerance, preserve_topology=True) 
 listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
-shortList = listOfPoints[0:10]
 print(len(listOfPoints))
 
-""""
 scaledDownList = scaleDown_list_of_points(listOfPoints,scaleFactor)
-shortList = scaledDownList[0:10]
-testKMLPolygon = setToKMLPolygon(shortList)
+testKMLPolygon = setToKMLPolygon(scaledDownList, isMultiGeometry)
 displayableKMLObject = displayKMLObject(testKMLPolygon)
 print(displayableKMLObject)
-"""
-
 
 #For writing to file
 """
@@ -319,17 +323,20 @@ pointsFile.close()
 
 #For KML Polygon Output
 
+fileName = ORIGIN + 'to' + DESTINATION + 'BoundingPolygon.kml' 
+kmlFile = open(fileName,'w+')
+kmlFile.write(displayableKMLObject)
+kmlFile.close()
 
 #For KML MultiGeometry Output
 """
-Polygons = CoordinateSetstoPolygons(CoordinateTuples)
-MultiGeometry = polygonsToMultiGeometry(Polygons)
-PlacemarkMulti = KML.Placemark(MultiGeometry)
-kmlMulti = KML.kml(PlacemarkMulti)
-printableMulti = etree.tostring(kmlMulti, pretty_print = True).decode("utf-8")
+CoordinateTuples = list_to_sets(coordinateList,repeatFirst,polygonSides)
+Polygons = CoordinateSetstoPolygons(CoordinateTuples,True)
+multiGeometry = polygonsToMultiGeometry(Polygons)
+displayableMultiGeometry = displayKMLObject(multiGeometry)
 
 outputFile = open('MultigeometryPolygonalRegion.kml','w+')
-outputFile.write(printableMulti)
+outputFile.write(displayableMultiGeometry)
 outputFile.close()
 """
 
