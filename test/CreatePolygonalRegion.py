@@ -293,8 +293,8 @@ scaleFactor = 1000000.0
 tolerance = 0.000001
 simplifyTolerance = 10000.0
 repeatFirst = False 
-maxUnionNum = 3
-polygonSides = 30
+maxUnionNum = 1000
+polygonSides = 100
 maxAttempts = 20
 isMultiGeometry = False
 
@@ -304,29 +304,29 @@ scaledUpList = scaleUp_list_of_points(coordinateList,scaleFactor)
 scaledUpCoordinateTuples = list_to_sets(scaledUpList,repeatFirst,polygonSides)
 rawPolygons = tuples_to_shapelyPolygons(scaledUpCoordinateTuples)
 boundingPolygon = unionAllPolygons(rawPolygons,maxUnionNum, tolerance,maxAttempts)
-simplifiedPolygon = boundingPolygon.simplify(simplifyTolerance, preserve_topology=True) 
-listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
+#simplifiedPolygon = boundingPolygon.simplify(simplifyTolerance, preserve_topology=True) 
+#listOfPoints = shapelyPolygon_to_listOfPoints(simplifiedPolygon)
+listOfPoints = shapelyPolygon_to_listOfPoints(boundingPolygon)
 print(len(listOfPoints))
 
-scaledDownList = scaleDown_list_of_points(listOfPoints,scaleFactor)
-testKMLPolygon = setToKMLPolygon(scaledDownList, isMultiGeometry)
-displayableKMLObject = displayKMLObject(testKMLPolygon)
-print(displayableKMLObject)
-
 #For writing to file
-"""
+pointsString = str(listOfPoints)
 fileName = ORIGIN + 'to' + DESTINATION + 'BoundingPolygon.txt' 
 pointsFile = open(fileName,'w+')
 pointsFile.write(pointsString)
 pointsFile.close()
-"""
 
 #For KML Polygon Output
-
+"""
+scaledDownList = scaleDown_list_of_points(listOfPoints,scaleFactor)
+testKMLPolygon = setToKMLPolygon(scaledDownList, isMultiGeometry)
+displayableKMLObject = displayKMLObject(testKMLPolygon)
+#print(displayableKMLObject)
 fileName = ORIGIN + 'to' + DESTINATION + 'BoundingPolygon.kml' 
 kmlFile = open(fileName,'w+')
 kmlFile.write(displayableKMLObject)
 kmlFile.close()
+"""
 
 #For KML MultiGeometry Output
 """

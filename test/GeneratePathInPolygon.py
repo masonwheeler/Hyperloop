@@ -560,9 +560,16 @@ def road_to_boundingPolygon(road,polygonDegree):
     boundingPolygonCoords = list(boundingPolygon.exterior.coords)
     return boundingPolygonCoords
 
-listOfPoints = load_listOfPoints('listOfPoints.txt')
-boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
+Origin = 'Los_Angeles'
+Destination = 'San_Francisco'
+fileName = Origin + 'to' + Destination + 'BoundingPolygon.txt'
+
+#listOfPoints = load_listOfPoints(fileName)
+#boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
+
+boundingPolygon = load_listOfPoints(fileName)
 print(boundingPolygon)
+
 #print(len(listOfPoints))
 #polygonTuples = road_to_polygonTuples(listOfPoints, 4)
 #polygons1 = tuples_to_shapelyPolygons(polygonTuples)
