@@ -14,21 +14,12 @@ from shapely.geometry import Point
 
 t0 = time.time()
 
-#ROAD = [[0,0],[0.1,0.2],[0.3,0.4], [0.4,0.3],[0.5,0.5],[0.6,0.6],[0.7,0.5],[0.8,0.9],[0.9,0.9],[1,1]]
-ROAD = [[0,0],[0.2,0.1],[0.4,0.2], [0.6,0.4],[0.8,0.7],[1,1]]
-START = [0,0]
-END = [1,1]
-
-NDIGITS = 6
-LATTICE_SIZE = 1.0
-SCALE = 10
-
-def round_nums(listOfNums):
-    outputList = [round(value, NDIGITS) for value in listOfNums]
+def round_nums(listOfNums,ndigits):
+    outputList = [round(value, ndigits) for value in listOfNums]
     return outputList    
     
-def round_points(listOfPoints):
-    outputList = [round_nums(point) for point in listOfPoints]
+def round_points(listOfPoints,ndigits):
+    outputList = [round_nums(point,ndigits) for point in listOfPoints]
     return outputList
 
 def get_distance(start, end):
@@ -55,27 +46,27 @@ def rotate_point(angle, point):
     rotatedPoint = [rotatedX, rotatedY]
     return rotatedPoint
     
-def scale_point(distance, point):
-    scaledPt = [(point[0] / distance) * SCALE, (point[1] / distance) * SCALE]   
+def scale_point(distance, point, scale):
+    scaledPt = [(point[0] / distance) * scale, (point[1] / distance) * scale]   
     return scaledPt
 
-def transform_point(start, end, point):
+def transform_point(start, end, point, ndigits, scale):
     distance = get_distance(start, end)
     angle = get_angle(start, end)
     tPoint = translate_point(start, point)
     trPoint = rotate_point(-angle, tPoint)
-    trsPoint = scale_point(distance, trPoint)
-    trsPoint = round_nums(trsPoint)
+    trsPoint = scale_point(distance,trPoint, scale)
+    trsPoint = round_nums(trsPoint,ndigits)
     return trsPoint
     
-def transform_polygon(start, end, polygon):
-    transPolygon = [transform_point(start, end, point) for point in polygon]
+def transform_polygon(start, end, polygon, ndigits, scale):
+    transPolygon = [transform_point(start, end, point, ndigits, scale) for point in polygon]
     return transPolygon
     
-def create_x_lattice():
-    numPointsInLattice = int(SCALE / LATTICE_SIZE)
-    rawXLattice = [ LATTICE_SIZE * i for i in range(1, numPointsInLattice) ]
-    xLattice = round_nums(rawXLattice)
+def create_x_lattice(scale, latticeSize, ndigits):
+    numPointsInLattice = int(scale / latticeSize)
+    rawXLattice = [ latticeSize * i for i in range(1, numPointsInLattice) ]
+    xLattice = round_nums(rawXLattice,ndigits)
     return xLattice
     
 def list_to_pairs(inList, cycle):
@@ -155,9 +146,9 @@ print(truncateDown(-0.6) == -1)
 print(truncateDown(-1.0) == -1)
 """
 
-def get_sliceCoordinateAbove(inFloat,sliceSpacing):
+def get_sliceCoordinateAbove(inFloat,sliceSpacing,ndigits):
     roughSliceCoordinate = inFloat/sliceSpacing
-    sliceCoordinate = round(roughSliceCoordinate,NDIGITS)
+    sliceCoordinate = round(roughSliceCoordinate,ndigits)
     sliceCoordinateAbove = truncateUp(sliceCoordinate)
     return sliceCoordinateAbove
 
@@ -170,9 +161,9 @@ print(get_sliceCoordinateAbove(-0.2,0.2) == -1)
 print(get_sliceCoordinateAbove(-0.1,0.2) == 0)
 """
 
-def get_sliceCoordinateBelow(inFloat,sliceSpacing):
+def get_sliceCoordinateBelow(inFloat,sliceSpacing,ndigits):
     roughSliceCoordinate = inFloat/sliceSpacing
-    sliceCoordinate = round(roughSliceCoordinate,NDIGITS)
+    sliceCoordinate = round(roughSliceCoordinate,ndigits)
     sliceCoordinateBelow = truncateDown(sliceCoordinate)
     return sliceCoordinateBelow
 
@@ -186,10 +177,10 @@ print(get_sliceCoordinateBelow(-0.1,0.2) == -1)
 print(get_sliceCoordinateBelow(-0.3,0.1) == -3)
 """
 
-def get_closestSlicePointAbove(inFloat,sliceSpacing):
-    sliceCoordinateAbove = get_sliceCoordinateAbove(inFloat,sliceSpacing)
+def get_closestSlicePointAbove(inFloat,sliceSpacing,ndigits):
+    sliceCoordinateAbove=get_sliceCoordinateAbove(inFloat,sliceSpacing,ndigits)
     roughClosestSlicePointAbove = sliceCoordinateAbove * sliceSpacing
-    closestSlicePointAbove=round(roughClosestSlicePointAbove,NDIGITS)
+    closestSlicePointAbove = round(roughClosestSlicePointAbove,ndigits)
     return closestSlicePointAbove
 
 """
@@ -203,10 +194,10 @@ print(get_closestSlicePointAbove(0.3,0.1) == 0.3)
 print(get_closestSlicePointAbove(-0.3,0.1) == -0.3)
 """
 
-def get_closestSlicePointBelow(inFloat,sliceSpacing):
-    sliceCoordinateBelow = get_sliceCoordinateBelow(inFloat,sliceSpacing)
+def get_closestSlicePointBelow(inFloat,sliceSpacing,ndigits):
+    sliceCoordinateBelow=get_sliceCoordinateBelow(inFloat,sliceSpacing,ndigits)
     roughClosestSlicePointBelow = sliceCoordinateBelow * sliceSpacing
-    closestSlicePointBelow=round(roughClosestSlicePointBelow,NDIGITS)
+    closestSlicePointBelow = round(roughClosestSlicePointBelow,ndigits)
     return closestSlicePointBelow
 
 """
@@ -220,11 +211,11 @@ print(get_closestSlicePointBelow(0.3,0.1) == 0.3)
 print(get_closestSlicePointBelow(-0.3,0.1) == -0.3)
 """
 
-def move_maxMin_onto_slice(maxMin,sliceSpacing):
+def move_maxMin_onto_slice(maxMin,sliceSpacing,ndigits):
     maxVal = maxMin[0]
     minVal = maxMin[1]
-    maxOnSliceInPolygon = get_closestSlicePointBelow(maxVal,sliceSpacing)
-    minOnSliceInPolygon = get_closestSlicePointAbove(minVal,sliceSpacing)
+    maxOnSliceInPolygon=get_closestSlicePointBelow(maxVal,sliceSpacing,ndigits)
+    minOnSliceInPolygon=get_closestSlicePointAbove(minVal,sliceSpacing,ndigits)
     maxMinOnSlice = [maxOnSliceInPolygon,minOnSliceInPolygon]
     return maxMinOnSlice 
 
@@ -250,13 +241,15 @@ print(maxMin_isValid([1.0,1.0]) == False)
 print(maxMin_isValid([0.9,1.0]) == False)
 """
 
-def get_sliceBounds(maxMin,initialSliceSpacing):
+def get_sliceBounds(maxMin,initialSliceSpacing,ndigits):
+    print(maxMin)
     currentSliceSpacing = initialSliceSpacing
-    maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing)
+    maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing,ndigits)
     isValid = maxMin_isValid(maxMinOnSlice)
     while (not isValid):
-        currentSliceSpacing = currentSliceSpacing/2
-        maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing)
+        print(currentSliceSpacing)
+        currentSliceSpacing = currentSliceSpacing/2.0
+        maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing,ndigits)
         isValid = maxMin_isValid(maxMinOnSlice)
     sliceBounds = [maxMinOnSlice,currentSliceSpacing]        
     return sliceBounds
@@ -266,16 +259,16 @@ print(get_sliceBounds([0.3,0.1],0.2) == [[0.3,0.1],0.1])
 print(get_sliceBounds([-0.1,-0.3],0.2) == [[-0.1,-0.3],0.1])
 """
 
-def build_latticeYSlice(sliceBounds):
+def build_latticeYSlice(sliceBounds,ndigits):
     maxMin = sliceBounds[0]
     maxVal = maxMin[0]
     minVal = maxMin[1]
     sliceSpacing = sliceBounds[1]
     gap = maxVal - minVal
     roughFloatNumPoints = gap/sliceSpacing + 1
-    floatNumPoints = round(roughFloatNumPoints,NDIGITS)
+    floatNumPoints = round(roughFloatNumPoints,ndigits)
     numPoints = int(floatNumPoints)
-    latticeYSlice = [round(minVal + sliceSpacing*index,NDIGITS) for index in range(0,numPoints)]
+    latticeYSlice = [round(minVal + sliceSpacing*index,ndigits) for index in range(0,numPoints)]
     return latticeYSlice
 
 """
@@ -291,18 +284,18 @@ def add_xValue(latticeYSlice,xValue):
 print(add_xValue([0.1,0.2,0.3],0.1) == [[0.1,0.1],[0.1,0.2],[0.1,0.3]])
 """
 
-def generate_lattice(polygon):
-    initialSliceSpacing = LATTICE_SIZE
+def generate_lattice(polygon,scale,latticeSize,ndigits):
+    initialSliceSpacing = latticeSize
     lattice = []
-    xLattice = create_x_lattice()
+    xLattice = create_x_lattice(scale,latticeSize,ndigits)
     edgeList = list_to_pairs(polygon, False)
     for xValue in xLattice:
         relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
         roughIntersections = get_intersections(relevantEdges, xValue)
-        intersections = round_nums(roughIntersections)
+        intersections = round_nums(roughIntersections,ndigits)
         maxMin = get_maxMin(intersections)
-        sliceBounds = get_sliceBounds(maxMin,initialSliceSpacing)
-        latticeYSlice = build_latticeYSlice(sliceBounds)
+        sliceBounds = get_sliceBounds(maxMin,initialSliceSpacing,ndigits)
+        latticeYSlice = build_latticeYSlice(sliceBounds,ndigits)
         latticeSlice = add_xValue(latticeYSlice,xValue)
         lattice.append(latticeSlice)
     return lattice
@@ -560,52 +553,45 @@ def road_to_boundingPolygon(road,polygonDegree):
     boundingPolygonCoords = list(boundingPolygon.exterior.coords)
     return boundingPolygonCoords
 
-Origin = 'Los_Angeles'
-Destination = 'San_Francisco'
-fileName = Origin + 'to' + Destination + 'BoundingPolygon.txt'
+origin = 'Los_Angeles'
+destination = 'San_Francisco'
+ndigits = 6
+scale = math.pow(10, 6)
+latticeSize = 1.0
 
-#listOfPoints = load_listOfPoints(fileName)
-#boundingPolygon = road_to_boundingPolygon(listOfPoints, 4)
+boundingPolygonFileName = origin + 'to' + destination + 'BoundingPolygon.txt'
+boundingPolygon = load_listOfPoints(boundingPolygonFileName)
+#print(boundingPolygon)
 
-boundingPolygon = load_listOfPoints(fileName)
-print(boundingPolygon)
+EndpointCoordinatesFileName = origin + 'to' + destination + 'scaledEndpointCoordinates.txt'
+endpointCoordinates = load_listOfPoints(EndpointCoordinatesFileName)
+startCoords = endpointCoordinates[0]
+endCoords = endpointCoordinates[1]
+#print(startCoordinates)
+#print(endCoordinates)
 
-#print(len(listOfPoints))
-#polygonTuples = road_to_polygonTuples(listOfPoints, 4)
-#polygons1 = tuples_to_shapelyPolygons(polygonTuples)
-#print(polygons1)
-#unionedPolygon1 = cascaded_union(polygons1)
-#print(unionedPolygon1)
-#polygons2 = [Polygon(eachTuple) for eachTuple in polygonTuples]
-#print(polygons2)
-#polygonsValid = [polygon.is_valid for polygon in polygons2]
-#badTuples =[eachTuple for eachTuple in polygonTuples if not Polygon(eachTuple).is_valid]
-#print(badTuples)
-#print(multiPolygo)
-#print(polygonsValid)
-#unionedPolygon2 = cascaded_union(polygons2)
-#print(unionedPolygon2)
+transformedPolygon = transform_polygon(startCoords,endCoords,boundingPolygon,ndigits,scale)
+lattice = generate_lattice(transformedPolygon,scale,latticeSize,ndigits)
+polygonVerts = lists_to_tuples(transformedPolygon)
+plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.add_patch(plottablePolygon)
+boundingBox = get_bounding_box(transformedPolygon)
+xRange = boundingBox[0]
+yRange = boundingBox[1]
+minVal = min([min(xRange) - 1, min(yRange) - 1])
+maxVal = max([max(xRange) + 1, max(yRange) + 1])
+ax.set_xlim(minVal, maxVal)
+ax.set_ylim(minVal, maxVal)
 
-"""
-#print(polygonTuples)
-firstTuple = polygonTuples[0]
-#print(firstTuple)
-firstPolygon = Polygon(firstTuple)
-#print(firstPolygon)
-secondTuple = polygonTuples[1]
-#print(secondTuple)
-secondPolygon = Polygon(secondTuple)
-#print(secondPolygon)
-polygons = [firstPolygon, secondPolygon]
-unionedPolygon = cascaded_union(polygons)
-print(unionedPolygon)
-"""
+
 
 """
 boundingPolygon = road_to_boundingPolygon(ROAD, 4)
 transformedPolygon = transform_polygon(START, END, boundingPolygon )
-polygonVerts = lists_to_tuples(transformedPolygon)
-plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
+
+
 
 #For treating Polygon as Path
 
@@ -614,16 +600,9 @@ polygonCodes.append(Path.CLOSEPOLY)
 #print(polygonVerts)
 polygonPath = Path(polygonVerts, polygonCodes)
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-ax.add_patch(plottablePolygon)
-boundingBox = get_bounding_box(transformedPolygon)
-xRange = boundingBox[0]
-yRange = boundingBox[1]
-ax.set_xlim(min(xRange) - 1, max(xRange) + 1)
-ax.set_ylim(min(yRange) - 1, max(yRange) + 1)
 
-lattice = generate_lattice(transformedPolygon)
+
+
 #print(lattice)
 #print(get_num_paths(lattice))
 #print(lattice[0])
@@ -653,6 +632,33 @@ plt.show()
 
 
 """
+#print(len(listOfPoints))
+#polygonTuples = road_to_polygonTuples(listOfPoints, 4)
+#polygons1 = tuples_to_shapelyPolygons(polygonTuples)
+#print(polygons1)
+#unionedPolygon1 = cascaded_union(polygons1)
+#print(unionedPolygon1)
+#polygons2 = [Polygon(eachTuple) for eachTuple in polygonTuples]
+#print(polygons2)
+#polygonsValid = [polygon.is_valid for polygon in polygons2]
+#badTuples =[eachTuple for eachTuple in polygonTuples if not Polygon(eachTuple).is_valid]
+#print(badTuples)
+#print(multiPolygo)
+#print(polygonsValid)
+#unionedPolygon2 = cascaded_union(polygons2)
+#print(unionedPolygon2)
+#print(polygonTuples)
+firstTuple = polygonTuples[0]
+#print(firstTuple)
+firstPolygon = Polygon(firstTuple)
+#print(firstPolygon)
+secondTuple = polygonTuples[1]
+#print(secondTuple)
+secondPolygon = Polygon(secondTuple)
+#print(secondPolygon)
+polygons = [firstPolygon, secondPolygon]
+unionedPolygon = cascaded_union(polygons)
+print(unionedPolygon)
 def value_to_lattice(value, shiftUp, sliceSpacing):
     latticeSteps = value/sliceSpacing
     if (value >= 0):
@@ -695,17 +701,17 @@ def build_lattice_slice(maxMin, xValue):
     latticeSlice = [[xValue, yValue] for yValue in latticeYSlice]        
     return latticeSlice
 
-def generate_lattice(polygon):
+def generate_lattice(polygon,ndigits):
     lattice = []
     xLattice = create_x_lattice()
     edgeList = list_to_pairs(polygon, False)
     for xValue in xLattice:
         relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
         roughIntersections = get_intersections(relevantEdges, xValue)
-        intersections = round_nums(roughIntersections)
+        intersections = round_nums(roughIntersections,ndigits)
         maxMin = get_maxMin(intersections)
         roughLatticeSlice = build_lattice_slice(maxMin, xValue)
-        latticeSlice = round_points(roughLatticeSlice)
+        latticeSlice = round_points(roughLatticeSlice,ndigits)
         lattice.append(latticeSlice)
     return lattice    
 

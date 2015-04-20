@@ -13,16 +13,13 @@ from shapely.geometry import Point
 
 t0 = time.time()
 
-ORIGIN ='Los_Angeles'
-DESTINATION ='San_Francisco'
-
 def HTTP_to_string(HTTPData):
     byteData = HTTPData.read()
     stringData = byteData.decode("utf-8")
     return stringData
 
-def get_directions():    
-    rawDirections = urllib2.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + ORIGIN + '&destination=' + DESTINATION + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
+def get_directions(origin, destination):    
+    rawDirections = urllib2.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
     stringDirections = HTTP_to_string(rawDirections) 
     return stringDirections
 
@@ -96,8 +93,8 @@ def removeDuplicates(inputList):
     outputList = list(OrderedDict.fromkeys(list(itertools.chain(*inputList))))
     return outputList
 
-def get_coordinateList():
-    stringDirections = get_directions()
+def get_coordinateList(origin, destination):
+    stringDirections = get_directions(origin, destination)
     polylineDirections = string_to_polylines(stringDirections)
     rawCoordinateList = decode_polylines(polylineDirections)
     coordinateList = removeDuplicates(rawCoordinateList)
@@ -297,9 +294,16 @@ maxUnionNum = 1000
 polygonSides = 100
 maxAttempts = 20
 isMultiGeometry = False
+origin ='Los_Angeles'
+destination ='San_Francisco'
 
-coordinateList = get_coordinateList()
-
+coordinateList = get_coordinateList(origin, destination)
+start = coordinateList[0]
+scaledStart = scaleUp_point(start,scaleFactor)
+end = coordinateList[-1]
+scaledEnd = scaleUp_point(end,scaleFactor)
+endpoints = [start,end]
+scaledEndpoints = [scaledStart, scaledEnd]
 scaledUpList = scaleUp_list_of_points(coordinateList,scaleFactor)
 scaledUpCoordinateTuples = list_to_sets(scaledUpList,repeatFirst,polygonSides)
 rawPolygons = tuples_to_shapelyPolygons(scaledUpCoordinateTuples)
@@ -310,9 +314,15 @@ listOfPoints = shapelyPolygon_to_listOfPoints(boundingPolygon)
 print(len(listOfPoints))
 
 #For writing to file
+scaledEndpointsString = str(scaledEndpoints)
+scaledEndpointsFileName = origin + 'To' + destination + 'scaledEndpointCoordinates.txt'
+scaledEndpointsFile = open(scaledEndpointsFileName,'w+')
+scaledEndpointsFile.write(scaledEndpointsString)
+scaledEndpointsFile.close()
+
 pointsString = str(listOfPoints)
-fileName = ORIGIN + 'to' + DESTINATION + 'BoundingPolygon.txt' 
-pointsFile = open(fileName,'w+')
+pointsFileName = origin + 'To' + destination + 'BoundingPolygon.txt' 
+pointsFile = open(pointsFileName,'w+')
 pointsFile.write(pointsString)
 pointsFile.close()
 
