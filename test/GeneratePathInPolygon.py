@@ -3,6 +3,7 @@ import math
 import random
 import sys
 
+"""
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 import matplotlib.patches as patches
@@ -11,13 +12,14 @@ from shapely.ops import cascaded_union
 from shapely.geometry import MultiPolygon
 from shapely.geometry import Polygon
 from shapely.geometry import Point
+"""
 
 t0 = time.time()
 
 def round_nums(listOfNums,ndigits):
     outputList = [round(value, ndigits) for value in listOfNums]
     return outputList    
-    
+   
 def round_points(listOfPoints,ndigits):
     outputList = [round_nums(point,ndigits) for point in listOfPoints]
     return outputList
@@ -27,6 +29,8 @@ def get_distance(start, end):
     yDelta = end[1] - start[1]
     distance = math.sqrt(math.pow(xDelta,2) + math.pow(yDelta,2))
     return distance 
+
+#print(get_distance(0.0,1.0) == 1.0)
     
 def get_angle(start, end):
     xDelta = end[0] - start[0]
@@ -37,6 +41,10 @@ def get_angle(start, end):
 def translate_point(start, point):
     translatedPoint = [point[i] - start[i] for i in range(0,len(start)) ] 
     return translatedPoint
+
+def inverseTranslate_point(start, point):
+    inverseTranslatedPoint = [point[i] + start[i] for i in range(0,len(start))]
+    return inverseTranslatedPoint
     
 def rotate_point(angle, point):
     originalX = point[0]
@@ -45,23 +53,46 @@ def rotate_point(angle, point):
     rotatedY = originalX * math.sin(angle) + originalY * math.cos(angle)
     rotatedPoint = [rotatedX, rotatedY]
     return rotatedPoint
+
+def inverseRotate_point(angle, point):
+    inverseRotatedPoint = rotate_point(angle,point)
+    return inverseRotatedPoint
     
-def scale_point(distance, point, scale):
+def scale_point(distance, scale, point):
     scaledPt = [(point[0] / distance) * scale, (point[1] / distance) * scale]   
     return scaledPt
 
-def transform_point(start, end, point, ndigits, scale):
-    distance = get_distance(start, end)
-    angle = get_angle(start, end)
+def inverseScale_point(distance, scale, point):	
+    invScaledPt = [(point[0] * distance) / scale, (point[1] * distance) / scale]
+    return invScaledPt
+
+def transform_point(distance, angle, scale, start, point, ndigits):
     tPoint = translate_point(start, point)
     trPoint = rotate_point(-angle, tPoint)
-    trsPoint = scale_point(distance,trPoint, scale)
-    trsPoint = round_nums(trsPoint,ndigits)
-    return trsPoint
+    trsPoint = scale_point(distance, scale, trPoint)
+    transformedPoint = round_nums(trsPoint,ndigits)
+    return transformedPoint
     
-def transform_polygon(start, end, polygon, ndigits, scale):
-    transPolygon = [transform_point(start, end, point, ndigits, scale) for point in polygon]
-    return transPolygon
+def transform_object(distance, angle, scale, start, anObject, ndigits):
+    transObject = [transform_point(distance, angle, scale, start, point, ndigits) for point in anObject]
+    return transObject
+
+def inverseTransform_point(distance, angle, scale, start, trspoint, ndigits):
+    trpoint = inverseScale_point(distance, scale, trspoint)
+    tpoint = inverseRotate_point(angle, trpoint)
+    point = inverseTranslate_point(start, tpoint)
+    original = round_nums(point,ndigits)
+    return original
+
+#point = [2.0, 0.0]
+#transformedPoint = transform_point(1,math.pi/4,100,[1.0,0.0], point, 6)
+#print(transformedPoint)
+#original=inverseTransform_point(1, math.pi/4,100,[1.0,0.0],transformedPoint, 6)
+#print(original)
+
+def inverseTransform_object(distance, angle, scale, start, anObject, ndigits):
+    invTransObject = [inverseTransform_point(distance, angle, scale, start, trspoint, ndigits) for trspoint in anObject]
+    return invTransObject
     
 def create_x_lattice(scale, latticeSize, ndigits):
     numPointsInLattice = int(scale / latticeSize)
@@ -242,12 +273,12 @@ print(maxMin_isValid([0.9,1.0]) == False)
 """
 
 def get_sliceBounds(maxMin,initialSliceSpacing,ndigits):
-    print(maxMin)
+    #print(maxMin)
     currentSliceSpacing = initialSliceSpacing
     maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing,ndigits)
     isValid = maxMin_isValid(maxMinOnSlice)
     while (not isValid):
-        print(currentSliceSpacing)
+        #print(currentSliceSpacing)
         currentSliceSpacing = currentSliceSpacing/2.0
         maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing,ndigits)
         isValid = maxMin_isValid(maxMinOnSlice)
@@ -526,6 +557,13 @@ def smartgen_random_route(lookaheadDepth,maxAttempts,accAngle,lattice):
     route.append(end)        
     return route
 
+def gen_randomRoute(lattice,scale):
+    route = [[0,0]]
+    for latticeSlice in lattice:
+        route.append(random.choice(latticeSlice))
+    route.append([scale,0])
+    return route
+
 def load_listOfPoints(fileName):
     pointsFile = open(fileName,'r')
     stringListOfPoints = pointsFile.read()
@@ -553,25 +591,37 @@ def road_to_boundingPolygon(road,polygonDegree):
     boundingPolygonCoords = list(boundingPolygon.exterior.coords)
     return boundingPolygonCoords
 
+
 origin = 'Los_Angeles'
 destination = 'San_Francisco'
 ndigits = 6
-scale = math.pow(10, 6)
+scale = math.pow(10, 3)
 latticeSize = 1.0
 
 boundingPolygonFileName = origin + 'to' + destination + 'BoundingPolygon.txt'
 boundingPolygon = load_listOfPoints(boundingPolygonFileName)
 #print(boundingPolygon)
 
-EndpointCoordinatesFileName = origin + 'to' + destination + 'scaledEndpointCoordinates.txt'
+EndpointCoordinatesFileName = origin + 'To' + destination + 'scaledEndpointCoordinates.txt'
 endpointCoordinates = load_listOfPoints(EndpointCoordinatesFileName)
 startCoords = endpointCoordinates[0]
 endCoords = endpointCoordinates[1]
-#print(startCoordinates)
-#print(endCoordinates)
+translateVec = startCoords
+distance = get_distance(startCoords,endCoords)
+angle = get_angle(startCoords,endCoords)
+#print(startCoords)
+#print(endCoords)
 
-transformedPolygon = transform_polygon(startCoords,endCoords,boundingPolygon,ndigits,scale)
+transformedPolygon = transform_object(distance, angle, scale, translateVec,boundingPolygon,ndigits)
 lattice = generate_lattice(transformedPolygon,scale,latticeSize,ndigits)
+randomRoute = gen_randomRoute(lattice,scale)
+routeInLatLon = inverseTransform_object(distance, angle, scale, translateVec, randomRoute, ndigits)
+print(routeInLatLon)
+#print(randomRoute)
+#print(lattice)
+
+
+"""
 polygonVerts = lists_to_tuples(transformedPolygon)
 plottablePolygon = patches.Polygon(polygonVerts, closed = True, fill = False)
 fig = plt.figure()
@@ -584,7 +634,7 @@ minVal = min([min(xRange) - 1, min(yRange) - 1])
 maxVal = max([max(xRange) + 1, max(yRange) + 1])
 ax.set_xlim(minVal, maxVal)
 ax.set_ylim(minVal, maxVal)
-
+"""
 
 
 """
@@ -628,7 +678,7 @@ ax.add_patch(pathPatch)
 t1 = time.time()
 totalTime = t1 - t0
 print(totalTime)
-plt.show()
+#plt.show()
 
 
 """
