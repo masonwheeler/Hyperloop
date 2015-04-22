@@ -1,5 +1,5 @@
 """
-Jonathan Ward 3/18/2015
+Jonathan Ward 4/22/2015
 
 This file contains the function definitions for inputing a bounding polygonal
 region and outputing a lattice.
@@ -31,6 +31,10 @@ def get_angle(start, end):
 def translate_point(start, point):
     translatedPoint = [point[i] - start[i] for i in range(0,len(start)) ] 
     return translatedPoint
+
+def inverseTranslate_point(start, point):
+    inverseTranslatedPoint = [point[i] + start[i] for i in range(0,len(start))]
+    return inverseTranslatedPoint    
     
 def rotate_point(angle, point):
     originalX = point[0]
@@ -44,6 +48,10 @@ def scale_point(distance, point, scale):
     scaledPt = [(point[0] / distance) * scale, (point[1] / distance) * scale]   
     return scaledPt
 
+def inverseScale_point(distance, scale, point): 
+    invScaledPt = [(point[0] * distance) / scale, (point[1] * distance) / scale]
+    return invScaledPt    
+
 def transform_point(start, end, point, scale):
     distance = get_distance(start, end)
     angle = get_angle(start, end)
@@ -56,10 +64,22 @@ def transform_point(start, end, point, scale):
 def transform_polygon(start, end, polygon, scale):
     transPolygon = [transform_point(start, end, point, scale) for point in polygon]
     return transPolygon
+
+def inverseTransform_point(distance, angle, scale, start, trspoint, ndigits):
+    trpoint = inverseScale_point(distance, scale, trspoint)
+    tpoint = inverseRotate_point(angle, trpoint)
+    point = inverseTranslate_point(start, tpoint)
+    original = round_nums(point,ndigits)
+    return original
+
+def inverseTransform_object(distance, angle, scale, start, anObject, ndigits):
+    invTransObject = [inverseTransform_point(distance, angle, scale, start, trspoint, ndigits) for trspoint in anObject]
+    return invTransObject
     
-def create_x_lattice(scale, latticeSize):
+def create_x_lattice(scale, latticeSize, ndigits):
     numPointsInLattice = int(scale / latticeSize)
-    xLattice = [ latticeSize * i for i in range(1, numPointsInLattice) ]
+    rawXLattice = [ latticeSize * i for i in range(1, numPointsInLattice) ]
+    xLattice = round_nums(rawXLattice,ndigits)
     return xLattice
     
 def list_to_pairs(inList):
@@ -93,47 +113,106 @@ def get_maxANDmin(inputList):
     maxANDmin = [max(inputList), min(inputList)]
     return maxANDmin
 
-def value_to_lattice(value, latticeSize, shiftUp):
-    latticeSteps = value/latticeSize
-    truncatedLatticeSteps = int(value/latticeSize)
-    shiftedTruncatedLatticeSteps = truncatedLatticeSteps + shiftUp
-    shiftedValue = shiftedTruncatedLatticeSteps * latticeSize
-    return shiftedValue
+def truncateUp(inFloat):
+    if (int(inFloat) == inFloat):
+        outInt = inFloat
+    else:        
+        if (inFloat > 0):
+            outInt = int(inFloat) + 1
+        else:
+            outInt = int(inFloat)
+    return outInt
 
-def onLattice(value, latticeSize):
-    isOnLattice = (value_to_lattice(value, latticeSize, 0) == value)
-    return isOnLattice
-    
-def maxANDmin_to_lattice(maxANDmin, latticeSize):
-    maxOnLattice = value_to_lattice(maxANDmin[0], latticeSize, 0)
-    if onLattice(maxANDmin[1]):
-        minOnLattice = value_to_lattice(maxANDmin[1], latticeSize, 0)
-    else:
-        minOnLattice = value_to_lattice(maxANDmin[1], latticeSize, 1)
-    maxANDminOnLattice = [ maxOnLattice, minOnLattice ]
-    return maxANDminOnLattice
-    
-def build_lattice_slice(maxANDmin, xValue, latticeSize):
-    maxim = maxANDmin[0]
-    minim = maxANDmin[1]
-    gap = maxANDmin[0] - maxANDmin[1]
-    ySteps = int(round(gap/latticeSize)) + 1
-    latticeYSlice = [minim + (latticeSize * i) for i in range(0, ySteps)]
-    latticeSlice = [[xValue, yValue] for yValue in latticeYSlice]
+def truncateDown(inFloat):
+    if (int(inFloat) == inFloat):
+        outInt = inFloat
+    else:        
+        if (inFloat > 0):
+            outInt = int(inFloat)
+        else:
+            outInt = int(inFloat) - 1
+    return outInt
+
+def get_sliceCoordinateAbove(inFloat,sliceSpacing,ndigits):
+    roughSliceCoordinate = inFloat/sliceSpacing
+    sliceCoordinate = round(roughSliceCoordinate,ndigits)
+    sliceCoordinateAbove = truncateUp(sliceCoordinate)
+    return sliceCoordinateAbove
+
+def get_sliceCoordinateBelow(inFloat,sliceSpacing,ndigits):
+    roughSliceCoordinate = inFloat/sliceSpacing
+    sliceCoordinate = round(roughSliceCoordinate,ndigits)
+    sliceCoordinateBelow = truncateDown(sliceCoordinate)
+    return sliceCoordinateBelow
+
+def get_closestSlicePointAbove(inFloat,sliceSpacing,ndigits):
+    sliceCoordinateAbove=get_sliceCoordinateAbove(inFloat,sliceSpacing,ndigits)
+    roughClosestSlicePointAbove = sliceCoordinateAbove * sliceSpacing
+    closestSlicePointAbove = round(roughClosestSlicePointAbove,ndigits)
+    return closestSlicePointAbove
+
+def get_closestSlicePointBelow(inFloat,sliceSpacing,ndigits):
+    sliceCoordinateBelow=get_sliceCoordinateBelow(inFloat,sliceSpacing,ndigits)
+    roughClosestSlicePointBelow = sliceCoordinateBelow * sliceSpacing
+    closestSlicePointBelow = round(roughClosestSlicePointBelow,ndigits)
+    return closestSlicePointBelow
+
+def move_maxMin_onto_slice(maxMin,sliceSpacing,ndigits):
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    maxOnSliceInPolygon=get_closestSlicePointBelow(maxVal,sliceSpacing,ndigits)
+    minOnSliceInPolygon=get_closestSlicePointAbove(minVal,sliceSpacing,ndigits)
+    maxMinOnSlice = [maxOnSliceInPolygon,minOnSliceInPolygon]
+    return maxMinOnSlice 
+
+def maxMin_isValid(maxMin):
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    gap = (maxVal - minVal)
+    isValid = (gap > 0)
+    return isValid
+
+def get_sliceBounds(maxMin,initialSliceSpacing,ndigits):
+    #print(maxMin)
+    currentSliceSpacing = initialSliceSpacing
+    maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing,ndigits)
+    isValid = maxMin_isValid(maxMinOnSlice)
+    while (not isValid):
+        #print(currentSliceSpacing)
+        currentSliceSpacing = currentSliceSpacing/2.0
+        maxMinOnSlice = move_maxMin_onto_slice(maxMin,currentSliceSpacing,ndigits)
+        isValid = maxMin_isValid(maxMinOnSlice)
+    sliceBounds = [maxMinOnSlice,currentSliceSpacing]        
+    return sliceBounds
+
+def build_latticeYSlice(sliceBounds,ndigits):
+    maxMin = sliceBounds[0]
+    maxVal = maxMin[0]
+    minVal = maxMin[1]
+    sliceSpacing = sliceBounds[1]
+    gap = maxVal - minVal
+    roughFloatNumPoints = gap/sliceSpacing + 1
+    floatNumPoints = round(roughFloatNumPoints,ndigits)
+    numPoints = int(floatNumPoints)
+    latticeYSlice = [round(minVal + sliceSpacing*index,ndigits) for index in range(0,numPoints)]
+    return latticeYSlice
+
+def add_xValue(latticeYSlice,xValue):
+    latticeSlice = [[xValue,yValue] for yValue in latticeYSlice]
     return latticeSlice
-    
-def generate_lattice(polygon, scale, latticeSize):
+
+def generate_lattice(polygon,scale,latticeSize,ndigits):
+    initialSliceSpacing = latticeSize
     lattice = []
-    xLattice = create_x_lattice(scale, latticeSize)
-    edgeList = list_to_pairs(polygon)
+    xLattice = create_x_lattice(scale,latticeSize,ndigits)
+    edgeList = list_to_pairs(polygon, False)
     for xValue in xLattice:
         relevantEdges = relevant_edges_for_xvalue(edgeList, xValue)
         roughIntersections = get_intersections(relevantEdges, xValue)
-        intersections = round_nums(roughIntersections, ndigits)
-        roughMaxAndMin = get_maxANDmin(intersections, latticeSize)
-        maxANDmin = maxANDmin_to_lattice(roughMaxAndMin, latticeSize)
-        RoughLatticeSlice = build_lattice_slice(maxANDmin, xValue, latticeSize)
-        latticeSlice = round_points(RoughLatticeSlice, ndigits)
+        intersections = round_nums(roughIntersections,ndigits)
+        maxMin = get_maxMin(intersections)
+        sliceBounds = get_sliceBounds(maxMin,initialSliceSpacing,ndigits)
+        latticeYSlice = build_latticeYSlice(sliceBounds,ndigits)
+        latticeSlice = add_xValue(latticeYSlice,xValue)
         lattice.append(latticeSlice)
     return lattice
-

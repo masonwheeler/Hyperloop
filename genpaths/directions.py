@@ -1,5 +1,5 @@
 """
-Jonathan Ward 3/18/2015
+Jonathan Ward 4/22/2015
 
 This file contains the function definitions for getting the coordinates
 from the google driving directions for a pair of cities, as well as the 
@@ -97,12 +97,12 @@ def get_coordinateList(origin, destination):
     coordinateList = removeDuplicates(rawCoordinateList)
     return coordinateList     
 
-def list_to_tuples( inputList, repeatFirst, numPts ):
+def list_to_sets( inputList, repeatFirst, polygonDegree ):
     CoordTuples = []
-    numTuples = len(inputList) - numPts
-    """Creates each of the N+1 tuples which define each N-gon"""
+    numTuples = len(inputList) - polygonDegree
+    """Creates each of the N+1 sets which define each N-gon"""
     for x in range(0, numTuples):
-        currentSlice = inputList[x:x + numPts] 
+        currentSlice = inputList[x:x + polygonDegree] 
         if repeatFirst:
             currentSlice.append(inputList[x])
         CoordTuples.append(currentSlice)        
