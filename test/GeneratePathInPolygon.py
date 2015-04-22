@@ -38,57 +38,48 @@ def get_angle(start, end):
     angleFromAxis = math.atan2(yDelta,xDelta)
     return angleFromAxis
     
-def translate_point(start, point):
-    translatedPoint = [point[i] - start[i] for i in range(0,len(start)) ] 
+def translate_point(start, point, sign):
+    translatedPoint = [point[i] + sign*start[i] for i in range(0,len(start)) ] 
     return translatedPoint
-
-def inverseTranslate_point(start, point):
-    inverseTranslatedPoint = [point[i] + start[i] for i in range(0,len(start))]
-    return inverseTranslatedPoint
     
-def rotate_point(angle, point):
+def rotate_point(angle, point, sign):
+    effecAngle = angle * sign
     originalX = point[0]
     originalY = point[1]
-    rotatedX = originalX * math.cos(angle) + originalY * math.sin(-angle)
-    rotatedY = originalX * math.sin(angle) + originalY * math.cos(angle)
+    rotatedX=originalX*math.cos(effecAngle) + originalY * math.sin(-effecAngle)
+    rotatedY=originalX*math.sin(effecAngle) + originalY * math.cos(effecAngle)
     rotatedPoint = [rotatedX, rotatedY]
     return rotatedPoint
-
-def inverseRotate_point(angle, point):
-    inverseRotatedPoint = rotate_point(angle,point)
-    return inverseRotatedPoint
     
-def scale_point(distance, scale, point):
-    scaledPt = [(point[0] / distance) * scale, (point[1] / distance) * scale]   
+def scale_point(effectiveScale, point):
+    scaledPt = [val * effectiveScale for val in point]   
     return scaledPt
 
-def inverseScale_point(distance, scale, point):	
-    invScaledPt = [(point[0] * distance) / scale, (point[1] * distance) / scale]
-    return invScaledPt
-
-def transform_point(distance, angle, scale, start, point, ndigits):
-    tPoint = translate_point(start, point)
-    trPoint = rotate_point(-angle, tPoint)
-    trsPoint = scale_point(distance, scale, trPoint)
+def transform_point(effectiveScale, angle, start, point, ndigits,isInverse):
+    if isInverse:
+	sign = 1.0
+	effectiveScale = 1.0 / effectiveScale
+	sPoint = scale_point(effectiveScale, point)
+        rsPoint = rotate_point(angle, sPoint, - sign)
+        trsPoint = translate_point(start, rsPoint, sign)
+    else:
+	sign = -1.0
+	tPoint = translate_point(start, point, sign)
+        trPoint = rotate_point(angle, tPoint, -sign)
+        trsPoint = scale_point(effectiveScale, trPoint)
     transformedPoint = round_nums(trsPoint,ndigits)
     return transformedPoint
     
-def transform_object(distance, angle, scale, start, anObject, ndigits):
-    transObject = [transform_point(distance, angle, scale, start, point, ndigits) for point in anObject]
+def transform_object(effectiveScale, angle, start, anObject, ndigits,isInverse):
+    transObject = [transform_point(effectiveScale, angle, start, point, ndigits,isInverse) for point in anObject]
     return transObject
 
-def inverseTransform_point(distance, angle, scale, start, trspoint, ndigits):
-    trpoint = inverseScale_point(distance, scale, trspoint)
-    tpoint = inverseRotate_point(angle, trpoint)
-    point = inverseTranslate_point(start, tpoint)
-    original = round_nums(point,ndigits)
-    return original
-
-#point = [2.0, 0.0]
-#transformedPoint = transform_point(1,math.pi/4,100,[1.0,0.0], point, 6)
-#print(transformedPoint)
-#original=inverseTransform_point(1, math.pi/4,100,[1.0,0.0],transformedPoint, 6)
-#print(original)
+point = [5.0, 5.0]
+start = [0.0, 0.0]
+trans = transform_point(5.0*math.sqrt(2.0),math.pi/4,start, point, 6, True)
+original = transform_point(5.0*math.sqrt(2.0),math.pi/4,start, trans, 6, False)
+print(trans)
+print(original)
 
 def inverseTransform_object(distance, angle, scale, start, anObject, ndigits):
     invTransObject = [inverseTransform_point(distance, angle, scale, start, trspoint, ndigits) for trspoint in anObject]
@@ -591,7 +582,7 @@ def road_to_boundingPolygon(road,polygonDegree):
     boundingPolygonCoords = list(boundingPolygon.exterior.coords)
     return boundingPolygonCoords
 
-
+"""
 origin = 'Los_Angeles'
 destination = 'San_Francisco'
 ndigits = 6
@@ -615,11 +606,11 @@ angle = get_angle(startCoords,endCoords)
 transformedPolygon = transform_object(distance, angle, scale, translateVec,boundingPolygon,ndigits)
 lattice = generate_lattice(transformedPolygon,scale,latticeSize,ndigits)
 randomRoute = gen_randomRoute(lattice,scale)
-routeInLatLon = inverseTransform_object(distance, angle, scale, translateVec, randomRoute, ndigits)
-print(routeInLatLon)
-#print(randomRoute)
+#routeInLatLon = inverseTransform_object(distance, angle, math.pow(10,12), translateVec, randomRoute, ndigits)
+#print(routeInLatLon)
+print(randomRoute)
 #print(lattice)
-
+"""
 
 """
 polygonVerts = lists_to_tuples(transformedPolygon)
