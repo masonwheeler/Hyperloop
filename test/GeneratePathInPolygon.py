@@ -3,6 +3,8 @@ import math
 import random
 import sys
 
+import mpl_toolkits.basemap.pyproj as pyproj
+
 """
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
@@ -37,53 +39,56 @@ def get_angle(start, end):
     yDelta = end[1] - start[1]
     angleFromAxis = math.atan2(yDelta,xDelta)
     return angleFromAxis
-    
-def translate_point(start, point, sign):
-    translatedPoint = [point[i] + sign*start[i] for i in range(0,len(start)) ] 
+
+def translate_point(start, point):
+    translatedPoint = [point[i] - start[i] for i in range(0,len(start)) ] 
     return translatedPoint
+
+def inverseTranslate_point(start, point):
+    inverseTranslatedPoint = [point[i] + start[i] for i in range(0,len(start))]
+    return inverseTranslatedPoint
     
-def rotate_point(angle, point, sign):
-    effecAngle = angle * sign
+def rotate_point(angle, point):
     originalX = point[0]
     originalY = point[1]
-    rotatedX=originalX*math.cos(effecAngle) + originalY * math.sin(-effecAngle)
-    rotatedY=originalX*math.sin(effecAngle) + originalY * math.cos(effecAngle)
+    rotatedX = originalX * math.cos(angle) + originalY * math.sin(-angle)
+    rotatedY = originalX * math.sin(angle) + originalY * math.cos(angle)
     rotatedPoint = [rotatedX, rotatedY]
     return rotatedPoint
+
+def inverseRotate_point(angle, point):
+    inverseRotatedPoint = rotate_point(angle,point)
+    return inverseRotatedPoint
     
-def scale_point(effectiveScale, point):
-    scaledPt = [val * effectiveScale for val in point]   
+def scale_point(distance, scale, point):
+    scaledPt = [(point[0] / distance) * scale, (point[1] / distance) * scale]   
     return scaledPt
 
-def transform_point(effectiveScale, angle, start, point, ndigits,isInverse):
-    if isInverse:
-	sign = 1.0
-	effectiveScale = 1.0 / effectiveScale
-	sPoint = scale_point(effectiveScale, point)
-        rsPoint = rotate_point(angle, sPoint, - sign)
-        trsPoint = translate_point(start, rsPoint, sign)
-    else:
-	sign = -1.0
-	tPoint = translate_point(start, point, sign)
-        trPoint = rotate_point(angle, tPoint, -sign)
-        trsPoint = scale_point(effectiveScale, trPoint)
+def inverseScale_point(distance, scale, point): 
+    invScaledPt = [(point[0] * distance) / scale, (point[1] * distance) / scale]
+    return invScaledPt
+
+def transform_point(distance, angle, scale, start, point, ndigits):
+    tPoint = translate_point(start, point)
+    trPoint = rotate_point(-angle, tPoint)
+    trsPoint = scale_point(distance, scale, trPoint)
     transformedPoint = round_nums(trsPoint,ndigits)
     return transformedPoint
     
-def transform_object(effectiveScale, angle, start, anObject, ndigits,isInverse):
-    transObject = [transform_point(effectiveScale, angle, start, point, ndigits,isInverse) for point in anObject]
+def transform_object(distance, angle, scale, start, anObject, ndigits):
+    transObject = [transform_point(distance, angle, scale, start, point, ndigits) for point in anObject]
     return transObject
 
-point = [5.0, 5.0]
-start = [0.0, 0.0]
-trans = transform_point(5.0*math.sqrt(2.0),math.pi/4,start, point, 6, True)
-original = transform_point(5.0*math.sqrt(2.0),math.pi/4,start, trans, 6, False)
-print(trans)
-print(original)
+def inverseTransform_point(distance, angle, scale, start, trspoint, ndigits):
+    trpoint = inverseScale_point(distance, scale, trspoint)
+    tpoint = inverseRotate_point(angle, trpoint)
+    point = inverseTranslate_point(start, tpoint)
+    original = round_nums(point,ndigits)
+    return original
 
 def inverseTransform_object(distance, angle, scale, start, anObject, ndigits):
-    invTransObject = [inverseTransform_point(distance, angle, scale, start, trspoint, ndigits) for trspoint in anObject]
-    return invTransObject
+    transObject = [inverseTransform_point(distance, angle, scale, start, point, ndigits) for point in anObject]
+    return transObject
     
 def create_x_lattice(scale, latticeSize, ndigits):
     numPointsInLattice = int(scale / latticeSize)
@@ -121,6 +126,7 @@ def get_intersections(relevantEdges, xValue):
     return inters
     
 def get_maxMin(inputList):
+    #print(inputList)
     maxMin = [max(inputList), min(inputList)]
     return maxMin
 
@@ -582,35 +588,109 @@ def road_to_boundingPolygon(road,polygonDegree):
     boundingPolygonCoords = list(boundingPolygon.exterior.coords)
     return boundingPolygonCoords
 
-"""
+def scaleUp_point(inPoint, scaleFactor):
+    outPoint = [value * scaleFactor for value in inPoint]
+    return outPoint
+
+def scaleUp_list_of_points(inList,scaleFactor):
+    outList = [scaleUp_point(point,scaleFactor) for point in inList]
+    return outList
+
+def scaleDown_point(inPoint, scaleFactor):
+    outPoint = [value / scaleFactor for value in inPoint]
+    return outPoint
+
+def scaleDown_list_of_points(inList,scaleFactor):
+    outList = [scaleDown_point(point,scaleFactor) for point in inList]
+    return outList    
+
+def omerc_proj(startLonLat, endLonLat):
+    startLon, startLat = startLonLat
+    startLatStr = str(startLat)
+    startLonStr = str(startLon)
+    endLon, endLat = endLonLat
+    endLatStr = str(endLat)
+    endLonStr = str(endLon)
+    centerLat = (startLat + endLat)/2.0
+    centerLatStr = str(centerLat)
+    centerLon = (startLon + endLon)/2.0
+    centerLonStr = str(centerLon)
+    omerc=pyproj.Proj('+proj=omerc +lon_0=' + centerLonStr + ' +lat_0=' + centerLatStr  + ' +lon_2=' + endLonStr + ' +lat_2= ' + endLatStr + ' +lon_1=' + startLonStr + ' +lat_1=' + startLatStr)
+    return omerc
+
+def mrlc_proj():
+    mrlc=pyproj.Proj("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+    return mrlc
+
+def lonlat_to_xy(lonlat,proj):
+    lon, lat = lonlat
+    xy = proj(lon, lat)
+    return xy
+
+def xy_to_lonlat(xy,proj):
+    x, y = xy
+    lonlat = proj(x, y, inverse=True)
+    return lonlat
+
+def lonlatList_to_xyList(lonlatList,proj):
+    xyList = [lonlat_to_xy(lonlat,proj) for lonlat in lonlatList]
+    return xyList   
+
+def xyList_to_lonlatList(xyList,proj):
+    lonlatList = [xy_to_lonlat(xy) for xy in xyList]
+    return lonlatList
+
+def latlon_to_lonLat(latlon):
+    lonlat = [latlon[1], latlon[0]]
+    return lonlat
+
+def latlonList_to_lonlatList(latlonList):
+    lonlatList = [latlon_to_lonLat(latlon) for latlon in latlonList]
+    return lonlatList
+
 origin = 'Los_Angeles'
 destination = 'San_Francisco'
 ndigits = 6
-scale = math.pow(10, 3)
+scale = math.pow(10, 4)
 latticeSize = 1.0
+scaleDown = math.pow(10,6)
 
-boundingPolygonFileName = origin + 'to' + destination + 'BoundingPolygon.txt'
+boundingPolygonFileName = origin + 'To' + destination + 'BoundingPolygon.txt'
 boundingPolygon = load_listOfPoints(boundingPolygonFileName)
-#print(boundingPolygon)
 
 EndpointCoordinatesFileName = origin + 'To' + destination + 'scaledEndpointCoordinates.txt'
-endpointCoordinates = load_listOfPoints(EndpointCoordinatesFileName)
-startCoords = endpointCoordinates[0]
-endCoords = endpointCoordinates[1]
-translateVec = startCoords
-distance = get_distance(startCoords,endCoords)
-angle = get_angle(startCoords,endCoords)
-#print(startCoords)
-#print(endCoords)
+startEndCoords = load_listOfPoints(EndpointCoordinatesFileName)
+start, end = startEndCoords
+scaledStartEndCoords = scaleDown_list_of_points(startEndCoords,scaleDown)
+scaledStart, scaledEnd = scaledStartEndCoords
+startLonLat, endLonLat = latlonList_to_lonlatList(scaledStartEndCoords)
 
-transformedPolygon = transform_object(distance, angle, scale, translateVec,boundingPolygon,ndigits)
+omerc = omerc_proj(startLonLat,endLonLat)
+distance = get_distance(start,end)
+angle = get_angle(start,end)
+transformedPolygon = transform_object(distance, angle, scale, start, boundingPolygon, ndigits)
+
 lattice = generate_lattice(transformedPolygon,scale,latticeSize,ndigits)
 randomRoute = gen_randomRoute(lattice,scale)
-#routeInLatLon = inverseTransform_object(distance, angle, math.pow(10,12), translateVec, randomRoute, ndigits)
+routeInLatLon = inverseTransform_object(distance, angle, scale, start, randomRoute, ndigits)
+
+scaledRoute = scaleDown_list_of_points(routeInLatLon,scaleDown)
+routeInLonLat = latlonList_to_lonlatList(scaledRoute)
+routeInXY = lonlatList_to_xyList(routeInLonLat,omerc)
+#startInXY = routeInXY[0]
+
+#print(boundingPolygon)
+#print(startLonLat)
+#print(endLonLat)
+#print(transformedPolygon)
 #print(routeInLatLon)
-print(randomRoute)
+#print(scaledRoute)
+#print(randomRoute)
 #print(lattice)
-"""
+#print(routeInXY)
+print(startInXY)
+
+
 
 """
 polygonVerts = lists_to_tuples(transformedPolygon)
@@ -846,5 +926,51 @@ def choose_valid(lookaheadDepth,attempts,isStart,lastEdge,accAngle,lattice,slice
     #lastPoint = [0,0] if isStart else lastPoint = lastEdge[1]
     #potentialEdge = [lastPoint, trialPoint]    
 
+def translate_point2(start, point, sign):
+    translatedPoint = [point[i] + sign*start[i] for i in range(0,len(start)) ] 
+    return translatedPoint
+    
+def rotate_point2(angle, point, sign):
+    effecAngle = angle * sign
+    originalX = point[0]
+    originalY = point[1]
+    rotatedX=originalX*math.cos(effecAngle) + originalY * math.sin(-effecAngle)
+    rotatedY=originalX*math.sin(effecAngle) + originalY * math.cos(effecAngle)
+    rotatedPoint = [rotatedX, rotatedY]
+    return rotatedPoint
+    
+def scale_point2(effectiveScale, point):
+    scaledPt = [val * effectiveScale for val in point]   
+    return scaledPt
+
+def transform_point2(effectiveScale, angle, start, point, ndigits,isInverse):
+    if isInverse:
+        sign = 1.0
+        effectiveScale = 1.0 / effectiveScale
+        sPoint = scale_point2(effectiveScale, point)
+        rsPoint = rotate_point2(angle, sPoint, - sign)
+        trsPoint = translate_point2(start, rsPoint, sign)
+    else:
+        sign = -1.0
+        tPoint = translate_point2(start, point, sign)
+        trPoint = rotate_point2(angle, tPoint, -sign)
+        trsPoint = scale_point2(effectiveScale, trPoint)
+    transformedPoint = round_nums(trsPoint,ndigits)
+    return transformedPoint
+    
+def transform_object2(effectiveScale, angle, start, anObject, ndigits,isInverse):
+    transObject = [transform_point2(effectiveScale, angle, start, point, ndigits,isInverse) for point in anObject]
+    return transObject
+
+point = [5.0, 5.0]
+start = [0.0, 0.0]
+trans = transform_point2(5.0*math.sqrt(2.0),math.pi/4,start, point, 6, True)
+original = transform_point2(5.0*math.sqrt(2.0),math.pi/4,start, trans, 6, False)
+print(trans)
+print(original)
+
+#effectiveScale = scale / distance
+#transformedPolygon = transform_object2(effectiveScale, angle, start,boundingPolygon,ndigits, isInverse=True)
+#print(transformedPolygon)
 """
 
