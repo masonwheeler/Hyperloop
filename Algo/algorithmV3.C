@@ -21,7 +21,7 @@ struct Path {
     int endAngle;
     bool operator < (const Path& path) const
     {
-        return (cost + endpointCost < path.cost + path.endpointCost);
+        return (cost < path.cost);
     }
 };
 
@@ -88,6 +88,8 @@ vector<vector<Path*>*> lattice_to_pathsForXValPairs(vector<vector<pair<int,float
 vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float degreeConstraint, vector<float> angles, int numPaths)
 {
     vector<Path*>* merged = new vector<Path*>;
+    vector<Path*>* selected = new vector<Path*>;
+    selected->reserve(numPaths);
     for(vector<Path*>::iterator path0 = paths0->begin(); path0 != paths0->end(); path0++)
     {
         for(vector<Path*>::iterator path1 = paths1->begin(); path1 != paths1->end(); path1++)
@@ -101,9 +103,9 @@ vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float d
                     (mergedPath->points)->reserve((*path0)->size + (*path1)->size);
                     (mergedPath->points)->insert( (mergedPath->points)->end(),((*path0)->points)->begin(),((*path0)->points)->end()-1);
                     (mergedPath->points)->insert( (mergedPath->points)->end(),((*path1)->points)->begin(),((*path1)->points)->end());
-                    mergedPath->cost = (*path0)->cost + (*path1)->cost + (*path1)->endpointCost;
+                    mergedPath->cost = (*path0)->cost + (*path1)->cost - (*path0)->endpointCost;
                     mergedPath->endpointCost = (*path1)->endpointCost;
-                    mergedPath->size = (*path0)->size + (*path1)->size;
+                    mergedPath->size = (*path0)->size + (*path1)->size - 1;
                     mergedPath->startYVal = (*path0)->startYVal;
                     mergedPath->endYVal = (*path1)->endYVal;
                     mergedPath->startAngle = (*path0)->startAngle;
@@ -113,13 +115,15 @@ vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float d
             }
         }
     }
-    sort(merged->begin(), merged->end());
-    return merged;
+    sort(merged->begin(), merged->end());      
+    int selectionLength = min(int(merged->size()),numPaths); 
+    selected->insert(selected->end(), merged->begin(), merged->begin()+selectionLength);
+    return selected;
 }
 
 
 //Implements a tree fold
-vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeConstraint, vector<float> angles)
+vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeConstraint, vector<float> angles, int numPaths)
 {
     vector<vector<vector<Path*>*>*> layers;	
     vector<vector<Path*>*>* workingLayer = new vector<vector<Path*>*>;
@@ -189,7 +193,7 @@ vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeCon
             }   
             vector<Path*>* paths0 = (*layers[layersIndex])[workingLayerIndex];
             vector<Path*>* paths1 = (*layers[layersIndex])[workingLayerIndex+1];
-            vector<Path*>* merged = mergeFilter(paths0,paths1,degreeConstraint,angles);
+            vector<Path*>* merged = mergeFilter(paths0,paths1,degreeConstraint,angles,numPaths);
             layers[layersIndex+1]->push_back(merged);
             workingLayerIndex += 2;
         }        
@@ -201,22 +205,31 @@ vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeCon
 
 int main(int argc, char** argv)
 {
-    int height =10;
-    int length =10;
+    int height =3;
+    int length =100;
+    int numPaths = 100;
     vector<vector<pair<int,float>>*> lattice = generate_lattice(length, height);
     vector<float> angles = yDelta_to_angles(height);
     vector<vector<Path*>*> pathsForXValPairs = lattice_to_pathsForXValPairs(lattice,angles);
     float degreeConstraint = 60.0;
-    //vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles);
+    //vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles, numPaths);
     
     clock_t startTime = clock();
-    vector<Path*> goodPaths = treefold(pathsForXValPairs, degreeConstraint, angles); 
-    //for(<
+    vector<Path*>goodPaths=treefold(pathsForXValPairs,degreeConstraint,angles,numPaths); 
     clock_t endTime = clock();
     clock_t clockTicks = endTime - startTime;
     double timeInSeconds = clockTicks / (double) CLOCKS_PER_SEC;
     cout << timeInSeconds << endl;
-    cout << goodPaths.size() << endl;
+    //cout << goodPaths.size() << endl;
+    /*for(vector<Path*>::iterator gp=goodPaths.begin(); gp!=goodPaths.end(); ++gp)
+    {
+        cout << "cost: " <<  (*gp)->cost << endl;
+        for(vector<int>::iterator pt=((*gp)->points)->begin(); pt!=((*gp)->points)->end(); ++pt)
+        {
+            cout << *pt << ",";
+        }
+        cout << endl;
+    }*/
     return 0;
 }
 
