@@ -12,6 +12,7 @@ using namespace std;
 struct Path {
     vector<int>* points;
     float cost;
+    float endpointCost;
     int size;
     int startXVal;
     int startYVal;
@@ -187,8 +188,8 @@ vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeCon
 
 int main(int argc, char** argv)
 {
-    int height =3;
-    int length =20;
+    int height =10;
+    int length =10;
     vector<vector<int>*> lattice = generate_lattice(length, height);
     vector<float> angles = yDelta_to_angles(height);
     vector<vector<Path*>*> pathsForXValPairs = lattice_to_pathsForXValPairs(lattice,angles);

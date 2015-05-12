@@ -19,6 +19,10 @@ struct Path {
     int endYVal;
     int startAngle;
     int endAngle;
+    bool operator < (const Path& path) const
+    {
+        return (cost + endpointCost < path.cost + path.endpointCost);
+    }
 };
 
 vector<vector<pair<int,float>>*> generate_lattice(int latticeLength, int latticeHeight)
@@ -75,12 +79,13 @@ vector<vector<Path*>*> lattice_to_pathsForXValPairs(vector<vector<pair<int,float
                 pathsForXValPair->push_back(path);                
             }
         }        
+        sort(pathsForXValPair->begin(), pathsForXValPair->end());
 	pathsForXValPairs.push_back(pathsForXValPair);
     }
     return pathsForXValPairs;
 }
 
-vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float degreeConstraint, vector<float> angles)
+vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float degreeConstraint, vector<float> angles, int numPaths)
 {
     vector<Path*>* merged = new vector<Path*>;
     for(vector<Path*>::iterator path0 = paths0->begin(); path0 != paths0->end(); path0++)
@@ -108,6 +113,7 @@ vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float d
             }
         }
     }
+    sort(merged->begin(), merged->end());
     return merged;
 }
 
@@ -200,16 +206,17 @@ int main(int argc, char** argv)
     vector<vector<pair<int,float>>*> lattice = generate_lattice(length, height);
     vector<float> angles = yDelta_to_angles(height);
     vector<vector<Path*>*> pathsForXValPairs = lattice_to_pathsForXValPairs(lattice,angles);
-    /*float degreeConstraint = 60.0;
+    float degreeConstraint = 60.0;
     //vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles);
     
     clock_t startTime = clock();
     vector<Path*> goodPaths = treefold(pathsForXValPairs, degreeConstraint, angles); 
+    //for(<
     clock_t endTime = clock();
     clock_t clockTicks = endTime - startTime;
     double timeInSeconds = clockTicks / (double) CLOCKS_PER_SEC;
     cout << timeInSeconds << endl;
-    cout << goodPaths.size() << endl;*/
+    cout << goodPaths.size() << endl;
     return 0;
 }
 
