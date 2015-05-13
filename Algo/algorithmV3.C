@@ -1,3 +1,10 @@
+/*
+Dev: Jonathan Ward
+Last Modified: 5/12/2015
+Last Modification: Added cost-based filtration.
+Todo: fix bug that generates the same routes independent of cost. 
+*/
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -9,7 +16,8 @@
 
 using namespace std;
 
-struct Path {
+struct Path 
+{
     vector<int>* points;
     float cost;
     float endpointCost;
@@ -19,23 +27,50 @@ struct Path {
     int endYVal;
     int startAngle;
     int endAngle;
-    bool operator < (const Path& path) const
+    /*bool operator < (const Path& path) const
     {
         return (cost < path.cost);
-    }
+    }*/
 };
+
+bool path_sorter(Path* const& lhs, Path* const& rhs)
+{
+    return lhs->cost < rhs->cost;
+}
+
+int print_pathsVect(vector<Path*>* pathsVect)
+{   
+    //cout << pathsVect->size() << endl; 
+    for(vector<Path*>::iterator path=pathsVect->begin(); path!=pathsVect->end(); ++path)
+    {
+        //cout << (*path)->points->size() << endl;
+        cout << "Path points: ";
+        for(vector<int>::iterator pt=((*path)->points)->begin(); pt!=((*path)->points)->end(); ++pt)
+        {
+            cout << *pt;
+        }
+        cout << ". Path Cost: " << (*path)->cost;
+        cout << endl;
+    }
+    return 0;
+}
 
 vector<vector<pair<int,float>>*> generate_lattice(int latticeLength, int latticeHeight)
 {
+    srand (time(NULL));
     vector<vector<pair<int,float>>*> lattice;
     for(int j=0; j < latticeLength; j++)
     {
         vector<pair<int,float>>* column = new vector<pair<int,float>>(latticeHeight);    
         for(int i=0; i < column->size();i++ )
         {
+            float random = float(rand() % latticeHeight + 1);	    
             (*column)[i].first = i;
-            (*column)[i].second = float(i);
+            //(*column)[i].second = float(i)
+            (*column)[i].second = random;
+            //cout << random << " ";            
         }
+        //cout << endl;
         lattice.push_back(column);
     }
     return lattice;
@@ -79,7 +114,7 @@ vector<vector<Path*>*> lattice_to_pathsForXValPairs(vector<vector<pair<int,float
                 pathsForXValPair->push_back(path);                
             }
         }        
-        sort(pathsForXValPair->begin(), pathsForXValPair->end());
+        sort(pathsForXValPair->begin(), pathsForXValPair->end(), &path_sorter);
 	pathsForXValPairs.push_back(pathsForXValPair);
     }
     return pathsForXValPairs;
@@ -115,7 +150,11 @@ vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float d
             }
         }
     }
-    sort(merged->begin(), merged->end());      
+    cout << "Unsorted: " << endl;
+    print_pathsVect(merged);
+    sort(merged->begin(), merged->end(),&path_sorter);      
+    cout << "Sorted: " << endl;
+    print_pathsVect(merged);
     int selectionLength = min(int(merged->size()),numPaths); 
     selected->insert(selected->end(), merged->begin(), merged->begin()+selectionLength);
     return selected;
@@ -123,7 +162,7 @@ vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float d
 
 
 //Implements a tree fold
-vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeConstraint, vector<float> angles, int numPaths)
+vector<Path*>* treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeConstraint, vector<float> angles, int numPaths)
 {
     vector<vector<vector<Path*>*>*> layers;	
     vector<vector<Path*>*>* workingLayer = new vector<vector<Path*>*>;
@@ -199,29 +238,29 @@ vector<Path*> treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeCon
         }        
         if(breakFlag){break;}
     }
-    return *(*layers[layersIndex])[0];
+    return (*layers[layersIndex])[0];
 }
 
 
 int main(int argc, char** argv)
 {
-    int height =3;
-    int length =100;
-    int numPaths = 100;
+    int height =5;
+    int length =5;
+    int numPaths = 5;
     vector<vector<pair<int,float>>*> lattice = generate_lattice(length, height);
     vector<float> angles = yDelta_to_angles(height);
     vector<vector<Path*>*> pathsForXValPairs = lattice_to_pathsForXValPairs(lattice,angles);
     float degreeConstraint = 60.0;
-    //vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles, numPaths);
+    vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles, numPaths);
     
-    clock_t startTime = clock();
+    /*clock_t startTime = clock();
     vector<Path*>goodPaths=treefold(pathsForXValPairs,degreeConstraint,angles,numPaths); 
     clock_t endTime = clock();
     clock_t clockTicks = endTime - startTime;
     double timeInSeconds = clockTicks / (double) CLOCKS_PER_SEC;
     cout << timeInSeconds << endl;
     //cout << goodPaths.size() << endl;
-    /*for(vector<Path*>::iterator gp=goodPaths.begin(); gp!=goodPaths.end(); ++gp)
+    for(vector<Path*>::iterator gp=goodPaths.begin(); gp!=goodPaths.end(); ++gp)
     {
         cout << "cost: " <<  (*gp)->cost << endl;
         for(vector<int>::iterator pt=((*gp)->points)->begin(); pt!=((*gp)->points)->end(); ++pt)
