@@ -2,7 +2,7 @@
 Dev: Jonathan Ward
 Last Modified: 5/12/2015
 Last Modification: Added cost-based filtration.
-Todo: fix bug that generates the same routes independent of cost. 
+Todo: Add Failure notification system.
 */
 
 #include <iostream>
@@ -27,10 +27,6 @@ struct Path
     int endYVal;
     int startAngle;
     int endAngle;
-    /*bool operator < (const Path& path) const
-    {
-        return (cost < path.cost);
-    }*/
 };
 
 bool path_sorter(Path* const& lhs, Path* const& rhs)
@@ -40,7 +36,7 @@ bool path_sorter(Path* const& lhs, Path* const& rhs)
 
 int print_pathsVect(vector<Path*>* pathsVect)
 {   
-    //cout << pathsVect->size() << endl; 
+    cout << pathsVect->size() << endl; 
     for(vector<Path*>::iterator path=pathsVect->begin(); path!=pathsVect->end(); ++path)
     {
         //cout << (*path)->points->size() << endl;
@@ -150,11 +146,11 @@ vector<Path*>* mergeFilter(vector<Path*>* paths0, vector<Path*>* paths1, float d
             }
         }
     }
-    cout << "Unsorted: " << endl;
-    print_pathsVect(merged);
+    //cout << "Unsorted: " << endl;
+    //print_pathsVect(merged);
     sort(merged->begin(), merged->end(),&path_sorter);      
-    cout << "Sorted: " << endl;
-    print_pathsVect(merged);
+    //cout << "Sorted: " << endl;
+    //print_pathsVect(merged);
     int selectionLength = min(int(merged->size()),numPaths); 
     selected->insert(selected->end(), merged->begin(), merged->begin()+selectionLength);
     return selected;
@@ -244,31 +240,23 @@ vector<Path*>* treefold(vector<vector<Path*>*> pathsForXValPairs, float degreeCo
 
 int main(int argc, char** argv)
 {
-    int height =5;
-    int length =5;
-    int numPaths = 5;
+    int height =10;
+    int length =10;
+    int numPaths = 100;
     vector<vector<pair<int,float>>*> lattice = generate_lattice(length, height);
     vector<float> angles = yDelta_to_angles(height);
     vector<vector<Path*>*> pathsForXValPairs = lattice_to_pathsForXValPairs(lattice,angles);
+    cout << pathsForXValPairs.size() << endl;
     float degreeConstraint = 60.0;
-    vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles, numPaths);
+    //vector<Path*>* merged = mergeFilter(pathsForXValPairs[0], pathsForXValPairs[1],degreeConstraint, angles, numPaths);
     
-    /*clock_t startTime = clock();
-    vector<Path*>goodPaths=treefold(pathsForXValPairs,degreeConstraint,angles,numPaths); 
+    clock_t startTime = clock();
+    vector<Path*>* goodPaths=treefold(pathsForXValPairs,degreeConstraint,angles,numPaths); 
     clock_t endTime = clock();
     clock_t clockTicks = endTime - startTime;
     double timeInSeconds = clockTicks / (double) CLOCKS_PER_SEC;
     cout << timeInSeconds << endl;
-    //cout << goodPaths.size() << endl;
-    for(vector<Path*>::iterator gp=goodPaths.begin(); gp!=goodPaths.end(); ++gp)
-    {
-        cout << "cost: " <<  (*gp)->cost << endl;
-        for(vector<int>::iterator pt=((*gp)->points)->begin(); pt!=((*gp)->points)->end(); ++pt)
-        {
-            cout << *pt << ",";
-        }
-        cout << endl;
-    }*/
+    print_pathsVect(goodPaths); 
     return 0;
 }
 
