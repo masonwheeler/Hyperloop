@@ -16,8 +16,8 @@ def lagrange_polynomial(X, Y, D):
     Sx = [L(i) for i in range(D)]  # summands
     return lambda x: np.sum([s(x) for s in Sx])
 
-def join_lists(*lists):
-    return sum(lists, [])
+def join_lists(lists):
+   return reduce(lambda x, y: x + y, lists)
 
 # points is an array of points (ex: [[-1, 4], [0, 2], [1,6]])
 # Returns N-d polynomials
@@ -81,17 +81,24 @@ def plot_polynomials(points, polynomials, D):
     x = [map(polynomials[i][0],t_ranges[i]) for i in range(N-D)]
     y = [map(polynomials[i][1],t_ranges[i]) for i in range(N-D)]
     z = [map(polynomials[i][2],t_ranges[i]) for i in range(N-D)]
+
     x = join_lists(x)
+    print len(x)
     y = join_lists(y)
     z = join_lists(z)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(x, y, z,'ro')
-    
+
     x_i = [point[1] for point in points]
     y_i = [point[2] for point in points]
     z_i = [point[3] for point in points]
-    ax.scatter(x_i, y_i, z_i,'b')
+
+    for i in range(len(x)):
+        if i%(int(math.floor(200/5))) == 0:
+            ax.scatter(x_i[i%(int(math.floor(200/5)))], y_i[i%(int(math.floor(200/5)))], z_i[i%(int(math.floor(200/5)))], 'ro')
+            print i%100
+        else:
+            ax.scatter(x[i], y[i], z[i],'b^')
     
     ax.set_xlabel(r'$f(t)$')
     ax.set_ylabel(r'$g(t)$')
