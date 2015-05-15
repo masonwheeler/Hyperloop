@@ -25,7 +25,7 @@ def lagrange_polynomials(points, D):
     X = [pair[0] for pair in points]
     Y = [pair[1] for pair in points]
     polynomials = []
-    for i in range(0, len(X) - D - 1):
+    for i in range(len(X) - D):
         polynomials.append(lagrange_polynomial(X[i:i+(D+2)], Y[i:(D+2)], D))
     return polynomials
 
@@ -60,7 +60,7 @@ def F_i(t_i, r_i, D):
     f_i = lagrange_polynomials(np.column_stack((t_i,r_i[:,0])), D)
     g_i = lagrange_polynomials(np.column_stack((t_i,r_i[:,1])), D)
     h_i = lagrange_polynomials(np.column_stack((t_i,r_i[:,2])), D)
-    return [[f_i[i], g_i[i], h_i[i]] for i in range(N-D-1)]   
+    return [[f_i[i], g_i[i], h_i[i]] for i in range(N-D)]   
 
 def comfort_calculation(coordinates, v_i, D):
     r_i_results = r_i(coordinates)
@@ -73,27 +73,29 @@ def comfort_calculation(coordinates, v_i, D):
 #STUFF NEEDED TO PLOT THE RESULTS of TASK 1a,b
 def plot_polynomials(points, polynomials, D):
     N = len(points)
-    a = math.floor((D+1)/2)
+    a = int(math.floor((D+1)/2))
     t_i = [point[0] for point in points]
-    t_polys = [0]+[t_i[a+i] for i in range(N-D-2)]+[t_i[-1]]  #x-values at which the polynomial switches
-    t_ranges = [np.linspace(t_polys[i], t_polys[i+1], 100) for i in range(N-D-1)]
+    t_polys = [0]+[t_i[a+i] for i in range(N-D-1)]+[t_i[-1]]  #x-values at which the polynomial switches
+    t_ranges = [np.linspace(t_polys[i], t_polys[i+1], 100) for i in range(N-D)]
 
-    x = [map(polynomials[i][0],t_ranges[i]) for i in range(N-D-1)]
-    y = [map(polynomials[i][1],t_ranges[i]) for i in range(N-D-1)]
-    z = [map(polynomials[i][2],t_ranges[i]) for i in range(N-D-1)]
+    x = [map(polynomials[i][0],t_ranges[i]) for i in range(N-D)]
+    y = [map(polynomials[i][1],t_ranges[i]) for i in range(N-D)]
+    z = [map(polynomials[i][2],t_ranges[i]) for i in range(N-D)]
     x = join_lists(x)
     y = join_lists(y)
     z = join_lists(z)
-    plt.plot(x, y, z,'ro')
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(x, y, z,'ro')
     
     x_i = [point[1] for point in points]
     y_i = [point[2] for point in points]
     z_i = [point[3] for point in points]
-    plt.plot(x_i, y_i, z_i,'ro')
+    ax.scatter(x_i, y_i, z_i,'b')
     
-    plt.xlabel(r'$f(t)$')
-    plt.ylabel(r'$g(t)$')      
-    plt.zlabel(r'$h(t)$')
+    ax.set_xlabel(r'$f(t)$')
+    ax.set_ylabel(r'$g(t)$')
+    ax.set_zlabel(r'$h(t)$')   
     plt.title('Polynomial')
     plt.grid(True)
     plt.show()
@@ -108,4 +110,4 @@ comfort_results = comfort_calculation(coordinates, v_i_numbers, 3)
 points_xyz = r_i(coordinates)
 points_t = t_i(v_i_numbers, points_xyz)
 points_txyz = [[points_t[i],points_xyz[i][0],points_xyz[i][1],points_xyz[i][2]] for i in range(len(points_t))]
-plot_polynomials(points_txyz, comfort_results[0], 3)
+plot_polynomials(points_txyz, comfort_results, 3)
