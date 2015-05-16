@@ -12,8 +12,8 @@ R =  6.371*(10**6)
 # Returns the unique lagrange polynomial of degree D
 def lagrange_polynomial(X, Y, D):
     def L(i):
-        return lambda x: np.prod([(x-X[j])/(X[i]-X[j]) for j in range(D) if i != j]) * Y[i]
-    Sx = [L(i) for i in range(D)]  # summands
+        return lambda x: np.prod([(x-X[j])/(X[i]-X[j]) for j in range(D+1) if i != j]) * Y[i]
+    Sx = [L(i) for i in range(D+1)]  # summands
     return lambda x: np.sum([s(x) for s in Sx])
 
 def join_lists(lists):
@@ -26,7 +26,7 @@ def lagrange_polynomials(points, D):
     Y = [pair[1] for pair in points]
     polynomials = []
     for i in range(len(X) - D):
-        polynomials.append(lagrange_polynomial(X[i:i+(D+1)], Y[i:(D+1)], D))
+        polynomials.append(lagrange_polynomial(X[i:i+(D+1)], Y[i:i+(D+1)], D))
     return polynomials
 
 # coordinates is a list of N longitude and latitude points
@@ -37,7 +37,7 @@ def r_i(coordinates):
         x_i = R*math.cos(coordinate[0])*math.cos(coordinate[1])
         y_i = R*math.cos(coordinate[0])*math.sin(coordinate[1])
         z_i = R*math.sin(coordinate[0])
-        r_i_results.append((x_i, y_i, z_i))
+        r_i_results.append([x_i, y_i, z_i])
     return r_i_results
 
 # v_i is a list of N-1 numbers
@@ -51,22 +51,14 @@ def t_i(v_i, r_i):  #you made a mistake here.
 
 def F_i(t_i, r_i, D):
     N = len(t_i)
-    t_i = np.array(t_i)
-    r_i = np.array(r_i)
-    np.column_stack((t_i,r_i[:,0]))
-    f_i = lagrange_polynomials(np.column_stack((t_i,r_i[:,0])), D)
-    g_i = lagrange_polynomials(np.column_stack((t_i,r_i[:,1])), D)
-    h_i = lagrange_polynomials(np.column_stack((t_i,r_i[:,2])), D)
-    print 'number of polynomials in "F_i" (N-D)'
-    print len(f_i),len(g_i),len(h_i)
+    f_i = lagrange_polynomials([[t_i[i],r_i[i][0]] for i in range(N)], D)
+    g_i = lagrange_polynomials([[t_i[i],r_i[i][1]] for i in range(N)], D)
+    h_i = lagrange_polynomials([[t_i[i],r_i[i][2]] for i in range(N)], D)
     return [[f_i[i], g_i[i], h_i[i]] for i in range(N-D)]   
 
 def comfort_calculation(coordinates, v_i, D):
     r_i_results = r_i(coordinates)
     t_i_results = t_i(v_i, r_i_results)
-    print 'number of checkpoint times (N)'
-    print len(t_i_results)
-
     F_i_results = F_i(t_i_results, r_i_results, D)
     return F_i_results
 #_________________________________END OF TASK 1a,b______________________________
@@ -80,8 +72,6 @@ def plot_polynomials(points, polynomials, D):
     t_polys = [0]+[t_i[a+i] for i in range(N-D-1)]+[t_i[-1]]  #x-values at which the polynomial switches
     t_ranges = [np.linspace(t_polys[i], t_polys[i+1], 100) for i in range(N-D)]
 
-    print '# of polynomials (N-D):'
-    print len(polynomials)
     x = [map(polynomials[i][0],t_ranges[i]) for i in range(N-D)]
     y = [map(polynomials[i][1],t_ranges[i]) for i in range(N-D)]
     z = [map(polynomials[i][2],t_ranges[i]) for i in range(N-D)]
@@ -103,7 +93,7 @@ def plot_polynomials(points, polynomials, D):
     ax.set_xlabel(r'$f(t)$')
     ax.set_ylabel(r'$g(t)$')
     ax.set_zlabel(r'$h(t)$')   
-    plt.title('Polynomial')
+    plt.title('Interpolation (LA-SF)')
     plt.grid(True)
     plt.show()
 
@@ -130,15 +120,10 @@ coordinates = [
 [-118.8668964617316,34.79224217738597]]
 coordinates=[[2*math.pi*point[0]/360,2*math.pi*point[1]/360] for point in coordinates]
 v_i_numbers = [100*i for i in range(1,len(coordinates))]
-print '# of points (N):'
-print len(coordinates)   
-print '# of segments (N-1):'
-print len(v_i_numbers)
 comfort_results = comfort_calculation(coordinates, v_i_numbers, 3)
 
 #Extra work required to plot output:
 points_xyz = r_i(coordinates)
 points_t = t_i(v_i_numbers, points_xyz)
 points_txyz = [[points_t[i],points_xyz[i][0],points_xyz[i][1],points_xyz[i][2]] for i in range(len(points_t))]
-print points_t
 plot_polynomials(points_txyz, comfort_results, 3)
