@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+import math as m
+import numpy as np
+import scipy as sp
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D 
+
+eps = m.pow(10,-10)
+
+def rLommel(mu, nu, b):
+	t = (1/(mu + nu + 1)) * (1/(mu - nu + 1))
+	r = t
+	n = 2
+	while m.fabs(t) > eps:
+		t = t * ((-b) / (mu + 2*n - 1 - nu)) * (b / (mu + 2*n - 1 + nu)) 
+		r = r + t
+		n = n + 1
+	return r
+
+def evalXYaZero(b, k):
+	X = [0]*(k + 1)
+	Y = [0]*(k + 1)
+	if m.fabs(b) < eps:
+		X[0] = 1 - (m.pow(b,2)/6) * (1-m.pow(b,2)/20)
+		Y[0] = (m.pow(b,2)/2) * (1 - (m.pow(b,2)/6) * (1-m.pow(b,2)/30))
+	else:
+		X[0] = m.sin(b)/b
+		Y[0] = (1 - m.cos(b))/b
+	A = b * m.sin(b)
+	D = m.sin(b) - b * m.cos(b)
+	B = b * D
+	C = -m.pow(b,2) * m.sin(b)
+	for n in range(1, k + 1):
+		X[n] = (n * A * rLommel(n + 0.5, 1.5, b) + B * rLommel(n + 1.5, 0.5, b) + m.cos(b)) / (1 + n)
+		Y[n] = (C * rLommel(n + 1.5, 1.5, b) + m.sin(b)) / (2 + n) + D * rLommel(n + 0.5, 0.5, b)
+	return [X, Y]
+
+print evalXYaZero(3, 5)
