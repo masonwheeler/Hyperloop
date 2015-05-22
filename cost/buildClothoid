@@ -17,10 +17,10 @@ def SinF(t):
 	return m.sin((m.pi/2) * m.pow(t,2))
 
 def C(t):
-	return quad(CosF, 0, t, limit = 400)[0]
+	return quad(CosF, 0, t, limit = 50000)[0]
 
 def S(t):
-	return quad(SinF, 0, t, limit = 400)[0]
+	return quad(SinF, 0, t, limit = 50000)[0]
 
 def evalXYaLarge(a, b, k):
 	X, Y = [[0]*(k + 1), [0]*(k + 1)]
@@ -118,15 +118,12 @@ def buildClothoid(x0, y0, tht0, x1, y1, tht1):
 	Dx = x1 - x0
 	Dy = y1 - y0
 	r = m.sqrt(m.pow(Dx,2) + m.pow(Dy,2))
-	print Dy
-	print Dx
-	phi = m.atan2(Dx, Dy)
-	print phi
+	phi = m.atan2(Dy, Dx)
 	Dphi = normalizeAngle(tht0 - phi)
 	Dtht = normalizeAngle(tht1 - tht0)
 	A = findA(2.4674 * Dtht + 5.2478 * Dphi, Dtht, Dphi, eps)
-	I = evalXY(2 * A, Dtht - A, Dphi + m.pi / 2, 1)
-	L = r / I[1][0]
+	I = evalXY(2 * A, Dtht - A, Dphi, 1)
+	L = r / I[0][0]
 	kappa = (Dtht - A) / L
 	kappa_prime = (2 * A) / m.pow(L,2)
 	return [kappa, kappa_prime, L]
@@ -137,13 +134,24 @@ x0 = 3.87058
 y0 = 1.51173
 x1 = 8.90679
 y1 = 1.0062
-tht0 = m.pi/2
-tht1 = m.pi/2
+tht0 = 0
+tht1 = 0
 
 
 start_time = time.time()
-print buildClothoid(x0, y0, tht0, x1, y1, tht1)
+
+kappa, kappa_prime, L = buildClothoid(x0, y0, tht0, x1, y1, tht1)
+xvals = [x0 + s * evalXY(kappa_prime * m.pow(s,2), kappa * s, tht0, 1)[0][0] for s in np.linspace(0, L , 100)]
+yvals = [y0 + s * evalXY(kappa_prime * m.pow(s,2), kappa * s, tht0, 1)[1][0] for s in np.linspace(0, L , 100)]
+fig = plt.figure()
+plt.plot(xvals, yvals)
+fig.suptitle('Clothoid, tht0 = 0, tht1 = 0.')
+plt.xlabel('x')
+plt.ylabel('y')
+
 print("--- %s seconds ---" % (time.time() - start_time))
+
+plt.show()
 
 
 
