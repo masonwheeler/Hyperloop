@@ -9,6 +9,7 @@ import time
 eps = m.pow(10,-10)
 p = 2
 
+#Computes Fresnel integrals and related momenta:
 def CosF(t):
 	return m.cos((m.pi/2) * m.pow(t,2))
 
@@ -94,14 +95,52 @@ def evalXY(a, b, c, k):
 		X[j] = X0[j] * m.cos(c) - Y0[j] * m.sin(c)
 		Y[j] = X0[j] * m.sin(c) + Y0[j] * m.cos(c)
 	return [X, Y]
-	
 
-a = 0.00000000000000004
-b = .343
-c = 120
+
+#Computes minimum-length clothoid:
+def findA(Ag, Dtht, Dphi, tol):
+	A = Ag
+	I = evalXY(2 * A, Dtht - A, Dphi, 2)
+	while m.fabs(I[1][0]) > tol:
+		A += - I[1][0]/(I[0][2]-I[0][1])
+		I = evalXY(2 * A, Dtht - A, Dphi, 2)
+	return A
+
+def normalizeAngle(phi):
+	while phi > m.pi:
+		phi += - 2 * m.pi
+	while phi < m.pi:
+		phi += 2 * m.pi
+	return phi
+
+
+def buildClothoid(x0, y0, tht0, x1, y1, tht1):
+	Dx = x1 - x0
+	Dy = y1 - y0
+	r = m.sqrt(m.pow(Dx,2) + m.pow(Dy,2))
+	print r
+	phi = m.atan(y0 / x0)
+	Dphi = normalizeAngle(tht0 - phi)
+	Dtht = normalizeAngle(tht1 - tht0)
+	A = findA(2.4674 * Dtht + 5.2478 * Dphi, Dtht, Dphi, eps)
+	I = evalXY(2 * A, Dtht - A, Dphi + m.pi / 2, 1)
+	L = r / I[1][0]
+	kappa = (Dtht - A) / L
+	kappa_prime = (2 * A) / m.pow(L,2)
+	return [kappa, kappa_prime, L]
+
+
+
+x0 = 36
+y0 = -35
+x1 = 10
+y1 = 135
+tht0 = m.pi/2
+tht1 = m.pi/3
+
 
 start_time = time.time()
-print evalXY(a, b, c, 2)
+print buildClothoid(x0, y0, tht0, x1, y1, tht1)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 
