@@ -68,7 +68,7 @@ def elevationCost(cell_center, primitiveVector, pylon_spacing, base_cost, cost_p
 
 
 
-pylon_spacing = 5
+pylon_spacing = 7
 cost_per_length = 100
 base_cost = 10
 cell_center = [0,0]
