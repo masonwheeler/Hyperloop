@@ -130,12 +130,12 @@ def buildClothoid(x0, y0, tht0, x1, y1, tht1):
 
 
 
-x0 = 3.87058
-y0 = 1.51173
-x1 = 8.90679
-y1 = 1.0062
-tht0 = 0
-tht1 = 0
+x0 = 1.0
+y0 = 2.0
+x1 = 800.90679
+y1 = 1000.0062
+tht0 = -0.349066
+tht1 = 0.0
 
 
 start_time = time.time()
