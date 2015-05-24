@@ -4,8 +4,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-#import simplejson
+import simplejson
 import urllib
+import time
 
 ELEVATION_BASE_URL = 'https://maps.googleapis.com/maps/api/elevation/json'
 CHART_BASE_URL = 'http://chart.apis.google.com/chart'
@@ -73,9 +74,30 @@ cost_per_length = 100
 base_cost = 10
 cell_center = [0,0]
 primitiveVector = [1,0]
-print elevationCost(cell_center, primitiveVector, pylon_spacing, base_cost, cost_per_length)
+#print elevationCost(cell_center, primitiveVector, pylon_spacing, base_cost, cost_per_length)
+coordinates = [
+[-118.542569121974,34.39180314594903],
+[-118.5726782085907,34.42573843377703],
+[-118.588806279766,34.43246046885258],
+[-118.6127804458115,34.45237513675877],
+[-118.6144358771204,34.47380623839012],
+[-118.6212564796037,34.49095944887284],
+[-118.6331899475494,34.51309927611657],
+[-118.6774002503572,34.55924454709691],
+[-118.7096804992186,34.58604135082059],
+[-118.7426694608903,34.63241424132433],
+[-118.7530926999706,34.65317552437557], 
+[-118.7800247763688,34.68104965486667],
+[-118.7955193340742,34.7028802312189],
+[-118.8134599623722,34.72396607524714],
+[-118.8344722241956,34.7551438114581],
+[-118.8668964617316,34.79224217738597]]
 
+coordinates_array = [(coordinate[1], coordinate[0]) for coordinate in coordinates]
 
+start_time = time.time()
+print getElevation(coordinates_array)
+print("--- %s seconds ---" % (time.time() - start_time))
 
 
 

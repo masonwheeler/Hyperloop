@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+import math as m
+import numpy as np
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+import simplejson
+import urllib
+import time
+
+ELEVATION_BASE_URL = 'https://maps.googleapis.com/maps/api/elevation/json'
+CHART_BASE_URL = 'http://chart.apis.google.com/chart'
+
+def add(vector_1, vector_2):
+    return [vector_1[i] + vector_2[i] for i in range(len(vector_1))]
+
+def scale(scalar, vector):
+    return [scalar * vector[i] for i in range(len(vector))]
+
+def norm(vector): 
+    return sum([m.pow(vector[i],2) for i in range(len(vector))])
+
+def getElevation(coordinates):
+    args = {
+        'locations': '|'.join([str(coordinate[0]) + ',' + str(coordinate[1]) for coordinate in coordinates])
+    }
+
+    url = ELEVATION_BASE_URL + '?' + urllib.urlencode(args)
+    response = simplejson.load(urllib.urlopen(url))
+
+    # Create a dictionary for each results[] object
+    elevationArray = []
+
+    for resultset in response['results']:
+        elevationArray.append(resultset['elevation'])
+
+    return elevationArray
+
+
+def getLocations(cell_center, primitiveVector, pylon_spacing):
+    N = int(norm(primitiveVector) / pylon_spacing)
+    pylon_locations = [add(cell_center, scale(k * pylon_spacing / norm(primitiveVector), primitiveVector)) for k in range(int(-m.floor(N / 2)), int(m.floor(N / 2))+1)]
+    return [(location[1], location[0]) for location in pylon_locations]
+
+cell_center = [-80.0,40.0]
+primitiveVector = [1.0,0.0]
+pylon_spacing = 0.2
+coordinates = getLocations(cell_center,primitiveVector, pylon_spacing)
+print getElevation(coordinates)
+
+
+
+
+
+
+
