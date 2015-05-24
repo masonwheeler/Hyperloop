@@ -167,24 +167,46 @@ def getIndices(List):
     return [Indices_backwards[-i] for i in range(1, len(Indices_backwards))] + [Indices_backwards[0]]
 
 def curvature(location1, location2, List):
-    curvatures = buildClothoid(location1 * pylon_spacing, List[location1], 0, m * pylon_spacing, List[location2], 0)[0:1]
-    return 1.0 / max(curvatures)
+    curvatures = buildClothoid(location1 * pylon_spacing, List[location1], 0, location2 * pylon_spacing, List[location2], 0)[0:1]
+    return max(curvatures)
 
-def produceInterp_indices(sortedList, sortIndices, g_tol):
+def produceInterp_indices(List, sortIndices):
     sInd = sortIndices
-    Interp_indices = [0, sInd[0], -1]
+    Interp_indices = [0, sInd[0], len(sInd)-1]
+    sInd.remove(len(sInd)-1)
+    sInd.remove(0)
     i = 1
-    while curvature(Interp_indices[i - 1],Interp_indices[i]) < g_tol and curvature(Interp_indices[i],Interp_indices[i + 1]) < g_tol:
+    while m.fabs(curvature(Interp_indices[i - 1], Interp_indices[i], List)) < k_tol and m.fabs(curvature(Interp_indices[i],Interp_indices[i + 1], List)) < k_tol and Interp_indices != range(len(List)):
+        #print "trying a new point, because the curvatures for the previous choice are:"
+        #print curvature(Interp_indices[i - 1], Interp_indices[i], List)
+        #print curvature(Interp_indices[i],Interp_indices[i + 1], List)
         k = 0
+        #print "This is the index of the new point:"
+        #print sInd[1]
+        #print "we're trying to fit it in Interp_indices:"
+        #print Interp_indices
         while sInd[1] > Interp_indices[k]:
             k += 1
         i = k
-        insert(k - 1, k, Interp_indices, sInd[1])
-        remove(sInd, 1)
+        Interp_indices.insert(k, sInd[1])
+        #print "Did we insert the index in the right place?:"
+        #print Interp_indices        
+        #print "okay, done! - just one more thing: is sInd missing its first element?:"
+        #print sInd
+        del sInd[0]
+        #print sInd
+    #print "we did not continue, because the curvatures for the previous choice are:"
+    #print curvature(Interp_indices[i - 1], Interp_indices[i], List)
+    #print curvature(Interp_indices[i],Interp_indices[i + 1], List)
+    #print "or it could just be because we got 'em all:"
     return Interp_indices
 
-#pylon_spacing = 1
-#List = [0,1,2,3,2,5,6,7,8,5,2,1,0]
+pylon_spacing = 1
+List = [0,1,2,-1,2,5,8,7,8,5,2,-1,0]
+sortIndices = getIndices(List)
+k_tol = .5
+print produceInterp_indices(List, sortIndices)
+
 #kappa, kappa_prime, L = buildClothoid(3 * pylon_spacing, List[3], 0, 6 * pylon_spacing, List[6], 0)
 #maximum_curvature = max([kappa, kappa_prime])
 #print 'max radius, according to buildClothoid, is:'
