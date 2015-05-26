@@ -7,134 +7,25 @@ from scipy.integrate import quad
 import simplejson
 import urllib
 import time
+import buildClothoid
 
 ELEVATION_BASE_URL = 'https://maps.googleapis.com/maps/api/elevation/json'
 CHART_BASE_URL = 'http://chart.apis.google.com/chart'
 
-eps = m.pow(10,-10)
-p = 2
-
-#_________BEGINNING OF CLOTHOID FUNCTIONS_________________
-#Computes Fresnel integrals and related momenta:
-def CosF(t):
-    return m.cos((m.pi/2) * m.pow(t,2))
-
-def SinF(t):
-    return m.sin((m.pi/2) * m.pow(t,2))
-
-def C(t):
-    return quad(CosF, 0, t, limit = 50000)[0]
-
-def S(t):
-    return quad(SinF, 0, t, limit = 50000)[0]
-
-def evalXYaLarge(a, b, k):
-    X, Y = [[0]*(k + 1), [0]*(k + 1)]
-    s = a / m.fabs(a)
-    z = m.sqrt(m.fabs(a)) / m.sqrt(m.pi)
-    l = s * b / (z * m.pi)
-    gamma = - s * m.pow(b,2) / (2 * m.fabs(a))
-    t = 0.5 * a + b
-    DC0 = C(l + z) - C(l)
-    DS0 = S(l + z) - S(l)
-    X[0] = (m.cos(gamma) * DC0 - s * m.sin(gamma) * DS0) / z
-    Y[0] = (m.sin(gamma) * DC0 + s * m.cos(gamma) * DS0) / z
-    X[1] = (m.sin(t) - b * X[0]) / a
-    Y[1] = (1 - m.cos(t) - b * Y[0]) / a
-    for j in range(1, k):
-        X[j + 1] = (m.sin(t) - b * X[j] - j * Y[j - 1]) / a
-        Y[j + 1] = (j * X[j - 1] - b * Y[j] - m.cos(t)) / a
-    return [X, Y]
 
 
-eps = m.pow(10,-10)
+def add(vector_1, vector_2):
+    return [vector_1[i] + vector_2[i] for i in range(len(vector_1))]
 
-def rLommel(mu, nu, b):
-    t = (1/(mu + nu + 1)) * (1/(mu - nu + 1))
-    r = t
-    n = 2
-    while m.fabs(t) > eps:
-        t = t * ((-b) / (mu + 2*n - 1 - nu)) * (b / (mu + 2*n - 1 + nu)) 
-        r = r + t
-        n = n + 1
-    return r
+def subtract(vector_1, vector_2):
+    return [vector_1[i] - vector_2[i] for i in range(len(vector_1))]
 
-def evalXYaZero(b, k):
-    X, Y = [[0]*(k + 1), [0]*(k + 1)]
-    if m.fabs(b) < eps:
-        X[0] = 1 - (m.pow(b,2)/6) * (1-m.pow(b,2)/20)
-        Y[0] = (m.pow(b,2)/2) * (1 - (m.pow(b,2)/6) * (1-m.pow(b,2)/30))
-    else:
-        X[0] = m.sin(b)/b
-        Y[0] = (1 - m.cos(b))/b
-    A = b * m.sin(b)
-    D = m.sin(b) - b * m.cos(b)
-    B = b * D
-    C = -m.pow(b,2) * m.sin(b)
-    for n in range(1, k + 1):
-        X[n] = (n * A * rLommel(n + 0.5, 1.5, b) + B * rLommel(n + 1.5, 0.5, b) + m.cos(b)) / (1 + n)
-        Y[n] = (C * rLommel(n + 1.5, 1.5, b) + m.sin(b)) / (2 + n) + D * rLommel(n + 0.5, 0.5, b)
-    return [X, Y]
+def scale(scalar, vector):
+    return [scalar * vector[i] for i in range(len(vector))]
 
+def norm(vector): 
+    return sum([m.pow(vector[i],2) for i in range(len(vector))])
 
-def evalXYaSmall(a, b, k, p):
-    X0, Y0 = evalXYaZero(b, k + 4*p + 2)
-    X, Y = [[0]*(k + 1), [0]*(k + 1)]
-    t = 1
-    for j in range(k + 1):
-        X[j] = X0[j] - (a/2) * Y0[j + 2]
-        Y[j] = Y0[j] - (a/2) * X0[j + 2]
-    for n in range(1, p + 1):
-        t = -t * m.pow(a,2)/(16 * n * (2*n - 1))
-        for j in range(k + 1):
-            X[j] += t * ((X0[4*n + j] - a * Y0[4*n + j + 2])/(4*n + 2))
-            Y[j] += t * ((Y0[4*n + j] + a * X0[4*n + j + 2])/(4*n + 2))
-    return [X, Y]
-
-def evalXY(a, b, c, k):
-    X, Y = [[0]*(k + 1), [0]*(k + 1)]
-    if m.fabs(a) < eps:
-        [X0, Y0] = evalXYaSmall(a, b, k, p)
-    else:
-        [X0, Y0] = evalXYaLarge(a, b, k)
-    for j in range(k + 1):
-        X[j] = X0[j] * m.cos(c) - Y0[j] * m.sin(c)
-        Y[j] = X0[j] * m.sin(c) + Y0[j] * m.cos(c)
-    return [X, Y]
-
-
-#Computes minimum-length clothoid:
-def findA(Ag, Dtht, Dphi, tol):
-    A = Ag
-    I = evalXY(2 * A, Dtht - A, Dphi, 2)
-    while m.fabs(I[1][0]) > tol:
-        A += - I[1][0]/(I[0][2]-I[0][1])
-        I = evalXY(2 * A, Dtht - A, Dphi, 2)
-    return A
-
-def normalizeAngle(phi):
-    while phi > m.pi:
-        phi = phi - 2 * m.pi
-    while phi < - m.pi:
-        phi += 2 * m.pi
-    return phi
-
-
-def buildClothoid(x0, y0, tht0, x1, y1, tht1):
-    Dx = x1 - x0
-    Dy = y1 - y0
-    r = m.sqrt(m.pow(Dx,2) + m.pow(Dy,2))
-    phi = m.atan2(Dy, Dx)
-    Dphi = normalizeAngle(tht0 - phi)
-    Dtht = normalizeAngle(tht1 - tht0)
-    A = findA(2.4674 * Dtht + 5.2478 * Dphi, Dtht, Dphi, eps)
-    I = evalXY(2 * A, Dtht - A, Dphi, 1)
-    L = r / I[0][0]
-    kappa = (Dtht - A) / L
-    kappa_prime = (2 * A) / m.pow(L,2)
-    return [kappa, kappa_prime, L]
-
-#________________END OF CLOTHOID FUNCTIONS__________________
 
 #_____________BEGINNING OF ELEVATION FUNCTIONS______________
 
@@ -167,14 +58,14 @@ def getIndices(List):
     return [Indices_backwards[-i] for i in range(1, len(Indices_backwards))] + [Indices_backwards[0]]
 
 def curvature(location1, location2, List):
-    curvatures = buildClothoid(location1 * pylon_spacing, List[location1], 0, location2 * pylon_spacing, List[location2], 0)[0:1]
+    curvatures = buildClothoid.buildClothoid(location1 * pylon_spacing, List[location1], 0, location2 * pylon_spacing, List[location2], 0)[0:1]
     return max(curvatures)
 
 def produceInterp_indices(List, sortIndices):
-    sInd = sortIndices
-    Interp_indices = [0, sInd[0], len(sInd)-1]
-    sInd.remove(len(sInd)-1)
-    sInd.remove(0)
+    N = len(List)
+    truncated_List = [List[i] for i in range(1,N - 1)]
+    truncated_sortIndices = getIndices(truncated_List)
+    Interp_indices= [0, truncated_sortIndices[0] + 1, N - 1]
     i = 1
     while m.fabs(curvature(Interp_indices[i - 1], Interp_indices[i], List)) < k_tol and m.fabs(curvature(Interp_indices[i],Interp_indices[i + 1], List)) < k_tol and Interp_indices != range(len(List)):
         #print "trying a new point, because the curvatures for the previous choice are:"
@@ -182,19 +73,19 @@ def produceInterp_indices(List, sortIndices):
         #print curvature(Interp_indices[i],Interp_indices[i + 1], List)
         k = 0
         #print "This is the index of the new point:"
-        #print sInd[1]
+        #print truncated_sortIndices[1] + 1
         #print "we're trying to fit it in Interp_indices:"
         #print Interp_indices
-        while sInd[1] > Interp_indices[k]:
+        while truncated_sortIndices[1] + 1 > Interp_indices[k]:
             k += 1
         i = k
-        Interp_indices.insert(k, sInd[1])
+        Interp_indices.insert(k, truncated_sortIndices[1] + 1)
         #print "Did we insert the index in the right place?:"
         #print Interp_indices        
         #print "okay, done! - just one more thing: is sInd missing its first element?:"
-        #print sInd
-        del sInd[0]
-        #print sInd
+        #print truncated_sortIndices
+        del truncated_sortIndices[0]
+        #print truncated_sortIndices
     #print "we did not continue, because the curvatures for the previous choice are:"
     #print curvature(Interp_indices[i - 1], Interp_indices[i], List)
     #print curvature(Interp_indices[i],Interp_indices[i + 1], List)
@@ -202,18 +93,14 @@ def produceInterp_indices(List, sortIndices):
     return Interp_indices
 
 pylon_spacing = 1
-List = [0,1,2,-1,2,5,8,7,8,5,2,-1,0]
+List = [12,1,2,-1,2,5,8,7,8,5,2,-1,12]
 sortIndices = getIndices(List)
-k_tol = .5
+k_tol = 1
 print produceInterp_indices(List, sortIndices)
 
+
+
 #kappa, kappa_prime, L = buildClothoid(3 * pylon_spacing, List[3], 0, 6 * pylon_spacing, List[6], 0)
-#maximum_curvature = max([kappa, kappa_prime])
-#print 'max radius, according to buildClothoid, is:'
-#print 1.0 / maximum_curvature
-#print 'max radius, according to curvature(), is:'
-#max_radius = curvature(3, 6, List)
-#print max_radius
 
 #xvals = [3 + s * evalXY(kappa_prime * m.pow(s,2), kappa * s, 0, 1)[0][0] for s in np.linspace(0, L , 100)]
 #yvals = [List[3] + s * evalXY(kappa_prime * m.pow(s,2), kappa * s, 0, 1)[1][0] for s in np.linspace(0, L , 100)]

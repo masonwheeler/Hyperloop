@@ -11,11 +11,27 @@ import time
 ELEVATION_BASE_URL = 'https://maps.googleapis.com/maps/api/elevation/json'
 CHART_BASE_URL = 'http://chart.apis.google.com/chart'
 
-eps = m.pow(10,-10)
-p = 2
+
+
+def add(vector_1, vector_2):
+    return [vector_1[i] + vector_2[i] for i in range(len(vector_1))]
+
+def subtract(vector_1, vector_2):
+    return [vector_1[i] - vector_2[i] for i in range(len(vector_1))]
+
+def scale(scalar, vector):
+    return [scalar * vector[i] for i in range(len(vector))]
+
+def norm(vector): 
+    return sum([m.pow(vector[i],2) for i in range(len(vector))])
+
 
 #_________BEGINNING OF CLOTHOID FUNCTIONS_________________
 #Computes Fresnel integrals and related momenta:
+
+eps = m.pow(10,-10)
+p = 2
+
 def CosF(t):
     return m.cos((m.pi/2) * m.pow(t,2))
 

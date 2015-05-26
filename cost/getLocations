@@ -37,16 +37,17 @@ def getElevation(coordinates):
     return elevationArray
 
 
-def getLocations(cell_center, primitiveVector, pylon_spacing):
+def getHeights(cell_center, primitiveVector, pylon_spacing):
     N = int(norm(primitiveVector) / pylon_spacing)
     pylon_locations = [add(cell_center, scale(k * pylon_spacing / norm(primitiveVector), primitiveVector)) for k in range(int(-m.floor(N / 2)), int(m.floor(N / 2))+1)]
-    return [(location[1], location[0]) for location in pylon_locations]
+    coordinates = [(location[1], location[0]) for location in pylon_locations]
+    return getElevation(coordinates)
 
 cell_center = [-80.0,40.0]
 primitiveVector = [1.0,0.0]
 pylon_spacing = 0.2
-coordinates = getLocations(cell_center,primitiveVector, pylon_spacing)
-print getElevation(coordinates)
+coordinates = getHeights(cell_center,primitiveVector, pylon_spacing)
+print coordinates
 
 
 
