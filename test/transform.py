@@ -31,3 +31,16 @@ def rotate_pointCCW(angle,point):
     rotatedX = originalX * math.cos(angle) + originalY * math.sin(-angle)
     rotatedY = originalX * math.sin(angle) + originalY * math.cos(angle)
     return [rotatedX,rotatedY]
+
+def transform_point (angle, scale, start, pointToTransform, ndigits):
+    pointWithStartAtOrigin = subtract_startVector(start,pointToTransform)
+    pointOnXAxis = rotate_pointCCW(-angle, pointWithStartAtOrigin)
+    scaledPointOnXAxis = scale_point(pointOnXAxis, scale)
+    return round_nums(scaledPointOnXAxis,ndigits)
+
+def inverseTransform_point(angle, scale, start, pointToUntransform, ndigits):
+    unscaledPoint = scale_point(pointOnXAxis, 1.0/float(scale))
+    pointInOriginalAngle = rotate_pointCCW(angle, unscaledPoint)
+    pointAtOriginalPosition = subtract_startVector(start, pointInOriginalAngle)
+    return round_nums(pointAtOriginalPosition, ndigits)
+
