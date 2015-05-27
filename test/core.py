@@ -1,6 +1,9 @@
+import config
 import database
-import generateRoutes
+import genBounds
+import genLattice
+import genRoutes
 
 def pairAnalysis(start,end):
-    pathsGenerated = generateRoutes.generateRoutes(start,end)
+    print(start,end)
     return 0

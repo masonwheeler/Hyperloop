@@ -64,7 +64,7 @@ def union_partitions(polygons, partitionSize, tolerance, maxAttempts):
     return [polygons_to_polygon(polygons,tolerance,maxAttempts) for polygons in polygonSets]
 
 def recursive_union(polygons, partitionSize, tolerance, maxAttempts):
-    while (len(polygons > 1):
+    while (len(polygons) > 1):
         polygons = union_partitions(polygons, partitionSize, tolerance, maxAttempts)
     return polygons[0]
 

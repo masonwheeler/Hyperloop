@@ -1,6 +1,8 @@
 import config
-import directionsCoords
+import filterRoutes
+import comfort
+import velocityProfile
 
-def generateRoutes(origin,destination):
-    #print(coordinatesList)
+def generateRoutes(lattice):
+    print(lattice)
     return 0

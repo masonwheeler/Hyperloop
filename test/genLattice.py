@@ -7,7 +7,7 @@ def gen_latticeXVals(scale, latticeSpacing, ndigits):
     return util.round_nums(latticeXVals)
 
 def list_to_pairs(inList):
-    return [ inList[i:i+2] for i in range(0,len(inList -1)]
+    return [ inList[i:i+2] for i in range(0,len(inList -1))]
 
 def is_edge_relevant(edge,xValue):
     return ((edge[0][0] != edge[0][1]) and 
@@ -18,7 +18,7 @@ def relevant_edges_for_xVal(edgeList, xVal):
     return [edge for edge in edgeList if is_edge_relevant(edge,xVal)]
 
 def edge_to_slopeIntercept(edge):
-    slope = (edge[1][1] - edge[0][1])/(edge[1][0] - edge[0][0]))
+    slope = (edge[1][1] - edge[0][1])/(edge[1][0] - edge[0][0])
     intercept = edge[1][1] - slope*edge[1][0]
     return [slope, intercept]
 
