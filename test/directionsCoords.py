@@ -8,10 +8,8 @@ def HTTP_to_string(HTTPData):
     stringData = byteData.decode("utf-8")
     return stringData
 
-def get_directionsCityPair(startCity, endCity):
-    base = 'https://maps.googleapis.com/maps/api/directions/json?origin='
-    key = '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4' 
-    rawDirections = urllib2.urlopen(base + startCity + '&destination=' + endCity + key)
+def get_directions(origin, destination):
+    rawDirections = urllib2.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
     stringDirections = HTTP_to_string(rawDirections)
     return stringDirections
 
@@ -61,13 +59,13 @@ def decode_line(encoded):
     return array
 
 def decode_polylines(polylines):
-    return [decode_line(polyline) for polyline in polylines)]
+    return [decode_line(polyline) for polyline in polylines]
 
 def removeDuplicates(inputList):
     return list(OrderedDict.fromkeys(list(itertools.chain(*inputList))))
 
 def get_coordinateList(start, end):
-    stringDirections = get_directionsCityPair(startCity, endCity)
+    stringDirections = get_directions(start, end)
     polylineDirections = string_to_polylines(stringDirections)
     rawCoordinateList = decode_polylines(polylineDirections)
     coordinateList = removeDuplicates(rawCoordinateList)

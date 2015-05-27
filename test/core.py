@@ -1,6 +1,6 @@
 import database
-import generatePaths
+import generateRoutes
 
-def pairAnalysis(startLatLng,endLatLng):
-    print(startLatLng,endLatLng)
+def pairAnalysis(start,end):
+    pathsGenerated = generateRoutes.generateRoutes(start,end)
     return 0
