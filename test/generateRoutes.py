@@ -1,6 +1,6 @@
+import config
 import directionsCoords
 
 def generateRoutes(origin,destination):
-    coordinatesList = directionsCoords.get_coordinateList(origin,destination)
-    print(coordinatesList)
+    #print(coordinatesList)
     return 0
