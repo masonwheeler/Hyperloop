@@ -1,0 +1,19 @@
+import math
+import numpy as np
+import time
+
+def radius(three_points):
+	p1, p2, p3 = three_points
+	a = np.linalg.norm(np.subtract(p1, p2))
+	b = np.linalg.norm(np.subtract(p2, p3))
+	c = np.linalg.norm(np.subtract(p1, p3))
+	p = (a + b + c) / 2
+	A = math.sqrt(p * (p - a) * (p - b) * (p - c))
+	if A == 0:
+		return 1000000000000
+	else:
+		return a * b * c / (4 * A)
+
+start_time = time.time()
+print radius([[-1,0,0], [0,1,0], [1,0,0]])
+print("Task completed in  %s seconds" % (time.time() - start_time))
