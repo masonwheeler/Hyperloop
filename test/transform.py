@@ -1,4 +1,5 @@
 import config
+import util
 import math
 
 def scale_point(point, scaleFactor):
@@ -6,12 +7,6 @@ def scale_point(point, scaleFactor):
     
 def scale_points(points, scaleFactor):
     return [scale_point(point,scaleFactor) for point in points]
-
-def round_nums(nums,ndigits):
-    return [round(val,ndigits) for val in nums]
-
-def round_points(points,ndigits):
-    return [round_nums(point,ndigits) for point in points]
 
 def get_distance(start,end):
     return math.sqrt( sum( [math.pow(end[i] - start[i],2) for i in range(0,2)] ) )
