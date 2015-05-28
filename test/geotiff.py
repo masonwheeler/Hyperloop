@@ -6,10 +6,9 @@ from osgeo import gdal
 from osgeo import osr
 
 import struct
-import Image
 
-fp = config.geotiffFilePath
-costs = config.geotiffCosts
+#fp = config.geotiffFilePath
+#costs = config.geotiffCosts
 
 def latLngToPixel(geotiff, latLngPairs):
     ds = gdal.open
