@@ -1,14 +1,18 @@
 import config
-import shapely
+
+import math
+from shapely.geometry import Polygon
+from shapely.geometry import MultiPolygon
+from shapely.ops import cascaded_union
 
 def partition_to_polygon(partition):
-    return shapely.geometry.Polygon(partition)
+    return Polygon(partition)
 
 def partitions_to_polygons(partitions):
-    return [partition_to_polygon(polygon) for polygon in polygons]
+    return [partition_to_polygon(partition) for partition in partitions]
 
 def validate_polygons(polygons):
-    return all([polygon.is_valid for polygon in shapelyPolygons])
+    return all([polygon.is_valid for polygon in polygons])
 
 def repair_polygons(polygons,tolerance):
     return [polygon.buffer(tolerance) for polygon in polygons]
@@ -16,7 +20,7 @@ def repair_polygons(polygons,tolerance):
 def repair_multipolygon(multipolygon,tolerance):
     polygons = multipolygon.geoms
     repairedPolygons = repairPolygon(polygons,tolerance)
-    return shapely.geometry.MultiPolygon(repairedPolygons)
+    return MultiPolygon(repairedPolygons)
 
 def repeatedRepair_polygons(polygons,tolerance):
     while not validate_polygons(polygons):
@@ -29,43 +33,46 @@ def union_multiPolygon(polygonalObject,tolerance,maxAttempts):
     while(polygonalObject.geom_type=="MultiPolygon" and attemptNum < maxAttempts):
         attemptNum += 1
         repairedObjects = repair_polygons(polygonalObject.geoms,tolerance)
-        polygonalObject = shapely.ops.cascaded_union(repairedObjects)
+        polygonalObject = cascaded_union(repairedObjects)
         tolerance *= 10
-    if testPolygon.geom_type=="MultiPolygon":
+    if polygonalObject.geom_type=="MultiPolygon":
         print('Failed to fuse polygons:')
-        print(testPoly)
+        print(polygonalObject)
         print('with buffer: ')
-        print(currentTolerance)
-        print('The polygons were valid: ')
-        print(validate_shapelyPolygons(testPolygon.geoms))
-        polygon = None
+        print(tolerance)
+        print('Were the polygons were valid? ')
+        print(validate_polygons(polygonalObject.geoms))        
         sys.exit()
         return 0
     else:
-        return polygon
+        return polygonalObject
 
+#merges list of polygons into a polygon
 def polygons_to_polygon(polygons,tolerance,maxAttempts):
-    repairedPolygons = repeatedRepair_polygons(polygon,tolerance)
-    polygonalObject = shapely.ops.cascaded_union(repairedPolygons)
-    return union_multiPolygon(polygonalObject)
+    repairedPolygons = repeatedRepair_polygons(polygons,tolerance)
+    polygonalObject = cascaded_union(repairedPolygons)
+    return union_multiPolygon(polygonalObject,tolerance,maxAttempts)
 
+#
 def partition_list(inList, partitionSize):
     partitions = []
-    for index in range(0, len(alist), partitionSize):
+    for index in range(0, len(inList), partitionSize):
         lenLeft = len(inList) - index
         partitionLen = min(partitionSize,lenLeft)
         partitions.append(inList[index:index + partitionLen])
     return partitions
 
+#splits polygons into partitions and then merges those partitions
 def union_partitions(polygons, partitionSize, tolerance, maxAttempts):
     numPolygons = len(polygons)
     numPolygonPartitions = math.ceil(float(numPolygons)/float(partitionSize))
     polygonSets = partition_list(polygons,partitionSize)
     return [polygons_to_polygon(polygons,tolerance,maxAttempts) for polygons in polygonSets]
 
-def recursive_union(polygons, partitionSize, tolerance, maxAttempts):
+#Recursively merges sets of groupSize
+def recursive_union(polygons, groupSize, tolerance, maxAttempts):
     while (len(polygons) > 1):
-        polygons = union_partitions(polygons, partitionSize, tolerance, maxAttempts)
+        polygons = union_partitions(polygons, groupSize, tolerance, maxAttempts)
     return polygons[0]
 
 def tuples_to_lists(tuples):
@@ -74,3 +81,8 @@ def tuples_to_lists(tuples):
 def get_polygonPoints(polygon):
     tuples = list(polygon.exterior.coords)
     return tuples_to_lists(tuples)
+
+def merge_partitions(partitions, groupSize, tolerance, maxAttempts):
+    polygons = partitions_to_polygons(partitions)
+    mergedPolygon = recursive_union(polygons, groupSize, tolerance, maxAttempts)
+    return get_polygonPoints(mergedPolygon)

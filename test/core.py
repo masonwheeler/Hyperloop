@@ -5,5 +5,5 @@ import genLattice
 import genRoutes
 
 def pairAnalysis(start,end):
-    print(start,end)
+    bounds = genBounds.generatePolygonalRegion(start,end)
     return 0
