@@ -50,7 +50,7 @@ def xyz_cubic_spline(waypoints_spherical, g_tol,start_vel):
 
 start_time = time.time()
 g_tol = .5 * 9.81
-start_vel = 340
+start_vel = 50
 waypoints_spherical_deg = [
 [-118.542569121974,34.39180314594903],
 [-118.5545321592576,34.40532560522175],
@@ -78,33 +78,20 @@ t = t_i(v, p)
 
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
   
 polynomial = xyz_cubic_spline(waypoints_spherical, g_tol, start_vel)  
 x_poly = polynomial[0]
 y_poly = polynomial[1]
 z_poly = polynomial[2]
 
-t_plot = np.linspace(t[0], t[-1], 500)
+t_plot = np.linspace(t[2], t[-2], 500)
 
-x = scipy.interpolate.splev(t_plot, x_poly)
-y = scipy.interpolate.splev(t_plot, y_poly)
-z = scipy.interpolate.splev(t_plot, z_poly)
-ax.scatter(x, y, z,c='b',marker='+')
+x = scipy.interpolate.splev(t_plot, x_poly, der = 1)
+y = scipy.interpolate.splev(t_plot, y_poly, der = 1)
+z = scipy.interpolate.splev(t_plot, z_poly, der = 1)
 
-p = r_i(waypoints_spherical)
-x_i = [point[0] for point in p]
-y_i = [point[1] for point in p]
-z_i = [point[2] for point in p]
-ax.scatter(x_i, y_i, z_i, c='r', marker='o')
-    
-ax.set_xlabel(r'$x(t)$')
-ax.set_ylabel(r'$y(t)$')
-ax.set_zlabel(r'$z(t)$')   
-plt.title('Cubic-Spline Interpolation (LA-SF)')
-plt.grid(True)
-print("Task completed in  %s seconds" % (time.time() - start_time))
-
+velocity = [math.pow(x[i],2) + math.pow(y[i],2) + math.pow(z[i],2) for i in range(len(x))]
+plt.plot(t_plot,velocity)
 plt.show()
 
 
