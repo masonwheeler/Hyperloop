@@ -5,6 +5,6 @@ import genLattice
 import genRoutes
 
 def pairAnalysis(start,end):
-    bounds = genBounds.genBoundingPolygon(start,end)
-    startLatLng,endLatLng = genBounds.get_startEndLatLng()
+    bounds,startLatLng,endLatLng = genBounds.genBoundingPolygon(start,end)
+    genLattice.projectBounds(bounds,startLatLng,endLatLng)
     return 0
