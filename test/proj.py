@@ -1,4 +1,4 @@
-import mpl_toolkits.basemap.pyproj as pyproj
+import pyproj
 
 def omerc_proj(startLonLat, endLonLat):
     startLon, startLat = startLonLat
@@ -15,4 +15,8 @@ def lonlat_to_xy(lonlat,proj):
 def xy_to_lonlat(xy, proj):
     return proj(xy[0], xy[1], inverse=True)
 
+def lonLats_to_xys(lonlats,proj):
+    return [lonlat_to_xy(lonlat,proj) for lonlat in lonlats]
 
+def xys_to_lonlats(xys, proj):
+    return [xy_to_lonlat(xy,proj) for xy in xys]

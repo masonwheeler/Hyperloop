@@ -1,8 +1,15 @@
 import config
+import util
 
-def round_nums(nums,ndigits):
-    return [round(val,ndigits) for val in nums]
+global ndigits
+ndigits = config.ndigits
 
-def round_points(nums,ndigits):
-    return [round_nums(point,ndigits) for point in points]
+def round_num(num):
+    return round(num,ndigits)
+
+def round_nums(nums):
+    return [round_num(num) for num in nums]
+
+def round_points(points):
+    return [round_nums(point) for point in points]
  
