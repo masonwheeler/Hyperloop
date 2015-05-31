@@ -1,6 +1,7 @@
 import config
 
 import math
+import sys
 from shapely.geometry import Polygon
 from shapely.geometry import MultiPolygon
 from shapely.ops import cascaded_union
@@ -71,7 +72,7 @@ def union_partitions(polygons, partitionSize, tolerance, maxAttempts):
 
 #Recursively merges sets of groupSize
 def recursive_union(polygons, groupSize, tolerance, maxAttempts):
-    while (len(polygons) > 1):
+    while (len(polygons) > 1):    
         polygons = union_partitions(polygons, groupSize, tolerance, maxAttempts)
     return polygons[0]
 
@@ -82,7 +83,15 @@ def get_polygonPoints(polygon):
     tuples = list(polygon.exterior.coords)
     return tuples_to_lists(tuples)
 
+def simplifyPolygon(polygon):
+    return polygon.simplify(config.tolerance, preserve_topology=True)
+
+def bufferFinalPolygon(polygon):
+    return polygon.buffer(config.finalBuffer)
+
 def merge_partitions(partitions, groupSize, tolerance, maxAttempts):
     polygons = partitions_to_polygons(partitions)
     mergedPolygon = recursive_union(polygons, groupSize, tolerance, maxAttempts)
-    return get_polygonPoints(mergedPolygon)
+    simplifiedPolygon = simplifyPolygon(mergedPolygon)
+    bufferedPolygon = bufferFinalPolygon(simplifiedPolygon)
+    return get_polygonPoints(bufferedPolygon)

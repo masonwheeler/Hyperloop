@@ -1,18 +1,20 @@
 import config
 import util
 
-def gen_latticeXVals(scale, latticeSpacing):
-    latticeLength = int(scale /latticesize)
-    latticeXVals = [latticeSize * i for i in range(1,latticeLength)]
+import sys
+
+def gen_latticeXVals(baseScale, latticeXSpacing):
+    latticeLength = int(baseScale /latticeXSpacing)
+    latticeXVals = [latticeXSpacing * i for i in range(1,latticeLength)]
     return util.round_nums(latticeXVals)
 
 def list_to_pairs(inList):
-    return [ inList[i:i+2] for i in range(0,len(inList -1))]
+    return [ inList[i:i+2] for i in range(0,len(inList) -1)]
 
 def is_edge_relevant(edge,xValue):
-    return ((edge[0][0] != edge[0][1]) and 
-            ((edge[0][0] <= xValue and edge[0][1] >= xValue) or
-            (edge[0][1] <= xValue and edge[0][0] >= xValue)))
+    return ((edge[0][0] != edge[1][0]) and 
+            ((edge[0][0] <= xValue and xValue <= edge[1][0]) or
+             (edge[1][0] <= xValue and xValue <= edge[0][0])))
 
 def relevant_edges_for_xVal(edgeList, xVal):
     return [edge for edge in edgeList if is_edge_relevant(edge,xVal)]
@@ -47,47 +49,48 @@ def truncateDown(inFloat):
         else:
             return int(inFloat) + 1
 
-def get_sliceCoordAbove(inFloat,sliceSpacing):
-    return truncateUp(util.round_num(inFloat/sliceSpacing))
+def get_sliceCoordAbove(inFloat,sliceYSpacing):
+    return truncateUp(util.round_num(inFloat/sliceYSpacing))
     
-def get_sliceCoordBelow(inFloat,sliceSpacing):
-   return truncateDown(util.round_num(inFloat/sliceSpacing))
+def get_sliceCoordBelow(inFloat,sliceYSpacing):
+   return truncateDown(util.round_num(inFloat/sliceYSpacing))
 
-def get_closestSlicePointAbove(inFloat,sliceSpacing):
-    return round_num(get_sliceCoordAbove(inFloat,sliceSpacing)*sliceSpacing)
+def get_closestSlicePointAbove(inFloat,sliceYSpacing):
+    return util.round_num(get_sliceCoordAbove(inFloat,sliceYSpacing)*sliceYSpacing)
    
-def get_closestSlicePointBelow(inFloat,sliceSpacing):
-    return round_num(get_sliceCoordBelow(inFloat,sliceSpacing)*sliceSpacing)
+def get_closestSlicePointBelow(inFloat,sliceYSpacing):
+    return util.round_num(get_sliceCoordBelow(inFloat,sliceYSpacing)*sliceYSpacing)
 
-def snap_maxMin_to_slice(maxMin,sliceSpacing):
-    return [get_closestSlicePointBelow(maxMin[0],sliceSpacing),get_closestSlicePointAbove(maxMin[1],sliceSpacing)]
+def snap_maxMin_to_slice(maxMin,sliceYSpacing):
+    return [get_closestSlicePointBelow(maxMin[0],sliceYSpacing),get_closestSlicePointAbove(maxMin[1],sliceYSpacing)]
 
 def maxMin_isValid(maxMin):
     return (maxMin[0] - maxMin[1]) > 0
 
-def get_maxMinAndSpacing(maxMin, sliceSpacing):
+def get_maxMinAndYSpacing(maxMin, sliceYSpacing):
     while True:
-        maxMinOnSlice = snap_maxMin_to_slice(maxMin,sliceSpacing)
+        maxMinOnSlice = snap_maxMin_to_slice(maxMin,sliceYSpacing)
         if maxMin_isValid(maxMinOnSlice):
             break
         else:
-            sliceSpacing /= 2.0
-    return [maxMinOnSlice, sliceSpacing]
+            sliceYSpacing /= 2.0
+    return [maxMinOnSlice, sliceYSpacing]
 
-def build_latticeSlice(maxMinAndSpacing):
-    gap = maxMinAndSpacing[0][0] - maxMinAndSpacing[0][1]
-    numPoints = int(round_num(gap/sliceSpacing + 1))
-    minVal = maxMinAndSpacing[0][1]
-    spacing = maxMinAndSpacing[1]
-    return [round_num(minVal + spacing*i) for i in range(0,numPoints)]
+def build_latticeYSlice(maxMinAndYSpacing):
+    ySpacing = maxMinAndYSpacing[1]
+    gap = maxMinAndYSpacing[0][0] - maxMinAndYSpacing[0][1]
+    numPoints = int(util.round_num(gap/ySpacing + 1))
+    minVal = maxMinAndYSpacing[0][1]
+    return [[util.round_num(minVal + ySpacing*i)] for i in range(0,numPoints)]
 
-def generate_lattice(polygon,scale,latticeSpacing):
+def gen_baseLattice(polygon,baseScale,sliceYSpacing,latticeXSpacing):
     edges = list_to_pairs(polygon)
-    for xVal in gen_latticeXVals(scale,latticeSpacing):
+    lattice = []
+    latticeXVals = gen_latticeXVals(baseScale,latticeXSpacing)
+    for xVal in latticeXVals:
         relevantEdges = relevant_edges_for_xVal(edges,xVal)
         intersections = util.round_nums(get_intersections(relevantEdges,xVal))
         maxMin = get_maxMin(intersections)
-        maxMinAndSpacing = get_maxMinAndSpacing(maxMin,sliceSpacing)
-        lattice.append(build_latticeSlice(maxMinAndSpacing))
+        maxMinAndYSpacing = get_maxMinAndYSpacing(maxMin,sliceYSpacing)
+        lattice.append(build_latticeYSlice(maxMinAndYSpacing))
     return lattice
-        

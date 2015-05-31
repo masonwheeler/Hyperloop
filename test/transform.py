@@ -2,11 +2,11 @@ import config
 import util
 import math
 
-def scale_point(point, scaleFactor):
-    return [value * scaleFactor for value in point]
+def scale_point(point,sizeFactor):
+    return [value * sizeFactor for value in point]
     
-def scale_points(points, scaleFactor):
-    return [scale_point(point,scaleFactor) for point in points]
+def scale_points(points,sizeFactor):
+    return [scale_point(point,sizeFactor) for point in points]
 
 def get_distance(start,end):
     return math.sqrt( sum( [math.pow(end[i] - start[i],2) for i in range(0,2)] ) )
@@ -27,15 +27,25 @@ def rotate_pointCCW(angle,point):
     rotatedY = originalX * math.sin(angle) + originalY * math.cos(angle)
     return [rotatedX,rotatedY]
 
-def transform_point (angle, scale, start, pointToTransform, ndigits):
-    pointWithStartAtOrigin = subtract_startVector(start,pointToTransform)
+def transform_point(angle,sizeFactor,startVector,pointToTransform):
+    pointWithStartAtOrigin = subtract_startVector(startVector,pointToTransform)
     pointOnXAxis = rotate_pointCCW(-angle, pointWithStartAtOrigin)
-    scaledPointOnXAxis = scale_point(pointOnXAxis, scale)
-    return round_nums(scaledPointOnXAxis,ndigits)
+    scaledPointOnXAxis = scale_point(pointOnXAxis,sizeFactor)
+    return util.round_nums(scaledPointOnXAxis)
 
-def inverseTransform_point(angle, scale, start, pointToUntransform, ndigits):
-    unscaledPoint = scale_point(pointOnXAxis, 1.0/float(scale))
+def inverseTransform_point(angle,sizeFactor,start,pointToUntransform):
+    unscaledPoint = scale_point(pointToUntransform, 1.0/float(sizeFactor))
     pointInOriginalAngle = rotate_pointCCW(angle, unscaledPoint)
     pointAtOriginalPosition = subtract_startVector(start, pointInOriginalAngle)
-    return round_nums(pointAtOriginalPosition, ndigits)
+    return util.round_nums(pointAtOriginalPosition)
+
+def get_params(start,end):
+    return [get_angle(start,end),config.baseScale/get_distance(start,end),start]
+
+def transform_object(angle,sizeFactor,startVector,anObject):
+    return [transform_point(angle,sizeFactor,startVector,point) for point in anObject]
+
+def inverseTransform_object(angle,sizeFactor,startVector,anObject):
+    return [inverseTransform_point(angle,sizeFactor,startVector,point) for point in anObject]
+
 

@@ -12,4 +12,9 @@ def round_nums(nums):
 
 def round_points(points):
     return [round_nums(point) for point in points]
- 
+
+def swapPair(pair):
+    return [pair[1],pair[0]]
+
+def swapPairs(pairs):
+    return [swapPair(pair) for pair in pairs]

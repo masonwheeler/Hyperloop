@@ -1,3 +1,5 @@
+import util
+
 import urllib2
 import json
 import ast
@@ -80,13 +82,13 @@ def removeDuplicates(inputList):
 
 def get_coordinateList(start, end):
     stringDirections = get_directions(start, end)
-    print("Obtained directions")
+    print("Obtained directions.")
     polylineDirections = string_to_polylines(stringDirections)
-    print("Partially decoded directions")
+    print("Partially decoded directions.")
     rawCoordinateList = decode_polylines(polylineDirections)
-    print("Completely decoded directions")
+    print("Completely decoded directions.")
     coordinateList = removeDuplicates(rawCoordinateList)
-    print("Removed duplicate Coordinates")
-    return coordinateList
+    print("Removed duplicate Coordinates.")
+    return util.round_points(coordinateList)
 
 
