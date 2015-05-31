@@ -29,7 +29,8 @@ def GammaSt(t):
 		[1, t, t**2, t**3, t**4, t**5]])
 
 
-def interp(t, x, dx0, d2x0, dxN, d2xN):
+def interp(G):
+	t, x, dx0, d2x0, dxN, d2xN = G
 	N = len(x)-1
 	b0 = np.array([x[0], dx0, d2x0])
 	bN = np.array([x[N], dxN, d2xN])
