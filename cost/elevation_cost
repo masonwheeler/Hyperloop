@@ -104,7 +104,7 @@ def produceInterp_indices(List, sortIndices, pylon_spacing, k_tol):
 def pylon_cost(cell_center, primitiveVector, pylon_spacing, max_speed, g_tol, cost_perlength, base_cost):
     k_tol = g_tol/ m.pow(max_speed, 2)
     Listp = getHeights(cell_center,primitiveVector, pylon_spacing)
-    List = [max(Listp)-30]+Listp+[max(Listp)-30]
+    List = [max(Listp)]+Listp+[max(Listp)]
     sortIndices = getIndices(List)
     j = produceInterp_indices(List, sortIndices, pylon_spacing, k_tol)
     N = len(j)
@@ -140,8 +140,8 @@ def pylon_cost(cell_center, primitiveVector, pylon_spacing, max_speed, g_tol, co
     plt.show()
     return pylon_cost_total
 
-cell_center = [-80.0,40.0]
-primitiveVector = [0.05,0.0]
+cell_center = [-90.0,37.0]
+primitiveVector = [0.03,0.01]
 pylon_spacing = 100.
 max_speed = 80.
 g_tol = .2 * 9.8
