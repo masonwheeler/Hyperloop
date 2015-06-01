@@ -9,7 +9,7 @@ def scale_points(points,sizeFactor):
     return [scale_point(point,sizeFactor) for point in points]
 
 def get_distance(start,end):
-    return math.sqrt( sum( [math.pow(end[i] - start[i],2) for i in range(0,2)] ) )
+    return math.sqrt( sum( [math.pow(end[i] - start[i],2) for i in range(2)] ) )
 
 def get_angle(start,end):
     xDelta,yDelta = [end[i] - start[i] for i in range(0,2)]
