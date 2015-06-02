@@ -1,4 +1,13 @@
+
+
+
 #initialized
+proj = 0
+angle = 0
+sizeFactor = 0
+startVector = 0
+
+#unitialized
 partitionLength = 100
 mergeGroupSize = 100
 tolerance = 10**-6
@@ -10,9 +19,21 @@ ndigits = 6
 Nth = 5
 finalBuffer = 10**-6
 
-#unitialized
-proj = 0
-angle = 0
-sizeFactor = 0
-startVector = 0
+geotiffFilePath = ""
+
+costTable = {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

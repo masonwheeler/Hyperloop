@@ -18,3 +18,4 @@ def swapPair(pair):
 
 def swapPairs(pairs):
     return [swapPair(pair) for pair in pairs]
+
