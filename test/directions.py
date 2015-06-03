@@ -1,17 +1,14 @@
-import util
-
 import urllib2
-import json
 import ast
-import itertools
-from collections import OrderedDict
+
+import util
 
 def HTTP_to_string(HTTPData):
     byteData = HTTPData.read()
     stringData = byteData.decode("utf-8")
     return stringData
 
-def get_directions(origin, destination):
+def directions(origin, destination):
     rawDirections = urllib2.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
     stringDirections = HTTP_to_string(rawDirections)
     return stringDirections
@@ -33,7 +30,7 @@ Source: See Wah Chang
 (http://seewah.blogspot.com/2009/11/gpolyline-decoding-in-python.html)
 """
 
-def decode_line(encoded):
+def decode_polyline(encoded):
 
     encoded_len = len(encoded)
     index = 0
@@ -75,19 +72,16 @@ def decode_line(encoded):
     return array
 
 def decode_polylines(polylines):
-    return [decode_line(polyline) for polyline in polylines]
+    return [decode_polyline(polyline) for polyline in polylines]
 
-def removeDuplicates(inputList):
-    return list(OrderedDict.fromkeys(list(itertools.chain(*inputList))))
-
-def get_coordinateList(start, end):
-    stringDirections = get_directions(start, end)
+def coordinate_list(start, end):
+    stringDirections = directions(start, end)
     print("Obtained directions.")
     polylineDirections = string_to_polylines(stringDirections)
-    print("Partially decoded directions.")
+    print("Opened directions.")
     rawCoordinateList = decode_polylines(polylineDirections)
-    print("Completely decoded directions.")
-    coordinateList = removeDuplicates(rawCoordinateList)
+    print("Decoded directions.")
+    coordinateList = util.remove_duplicates(rawCoordinateList)
     print("Removed duplicate Coordinates.")
     return util.round_points(coordinateList)
 

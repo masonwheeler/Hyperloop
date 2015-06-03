@@ -24,10 +24,10 @@ def InterpolatingIndices(inList, pylonSpacing, kTolerance):
     i = 1
     while (Curvature(indices[i-1],indices[i],inList,pylonSpacing)<kTolerance
         and Curvature(indices[i],indices[i+1],inList,pylonSpacing)<kTolerance
-        and indices != range(len(inList)):
+        and indices != range(len(inList))):
         k = 0
-        while truncatedSortedIndices[1] + 1 > indices[k]:
-            k++
+        while (truncatedSortedIndices[1] + 1 > indices[k]):
+            ++k
         i = k
         indices.insert(k, truncatedSortedIndices[1] + 1)
         del truncatedSortedIndices[0]
@@ -35,7 +35,7 @@ def InterpolatingIndices(inList, pylonSpacing, kTolerance):
 
 
 def PylonCost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
-        costPerLength, baseCost):
+        costPerPylonLength, pylonBaseCost):
     kTolerance = gTolerance / math.pow(maxSpeed, 2)
     rawHeights=getHeights.getHeights(cellCenter,primitiveVector,pylonSpacing)
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]

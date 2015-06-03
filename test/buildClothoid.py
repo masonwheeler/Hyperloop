@@ -47,14 +47,14 @@ def rLommel(mu, nu, b):
     while m.fabs(t) > TOLERANCE:
         t *= ((-b) / (mu + 2*n - 1 - nu)) * (b / (mu + 2*n - 1 + nu))
         r += t
-        n++
+        ++n
     return r
 
 def exalXYaZero(b,k):
     X,Y = [0]*(k+1), [0]*(k+1)
     if m.fabs(b) < TOLERANCE:
         X[0] = 1 - (m.pow(b,2)/6) * (1-m,pow(b,2)/20)
-        Y[0] = (m.pow(b,2)/2) * (1 - (m.pow(b,2)/6) * (1 - m.pow(b,2)/ 30)
+        Y[0] = (m.pow(b,2)/2) * (1 - (m.pow(b,2)/6) * (1 - m.pow(b,2)/ 30))
     else:
         X[0] = m.sin(b)/b
         Y[0] = (1 - m.cos(b))/b

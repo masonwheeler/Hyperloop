@@ -10,7 +10,7 @@ import struct
 #fp = config.geotiffFilePath
 #costs = config.geotiffCosts
 
-def latLngToPixel(geotiff, latLngPairs):
+def latlng_to_pixel(geotiff, latLngPairs):
     ds = gdal.open
     gt = ds.GetGeoTransform()
     rb = ds.GetRasterBand(1)

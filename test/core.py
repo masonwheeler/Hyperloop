@@ -1,14 +1,14 @@
 import config
 import database
-import genBounds
-import genLattice
+import boundingpolygon
+import lattice
 import genRoutes
 
-def pairAnalysis(start,end):
-    bounds,startLatLng,endLatLng = genBounds.genBoundingPolygon(start,end)
-    boundsXY,startXY,endXY = genLattice.projectBounds(bounds,startLatLng,endLatLng)
-    genLattice.set_params(startXY,endXY)
-    transformedBounds = genLattice.transformBounds(boundsXY,startXY,endXY)
-    baseLattice = genLattice.gen_baseLattice(transformedBounds)
-    latticeWithLngLats = genLattice.attach_lngLat(baseLattice)
+def pair_analysis(start,end):
+    bounds,startLatLng,endLatLng = boundingpolygon.bounding_polygon(start,end)
+    boundsXY,startXY,endXY = lattice.project_bounds(bounds,startLatLng,endLatLng)
+    lattice.set_params(startXY,endXY)
+    transformedBounds = lattice.transform_bounds(boundsXY,startXY,endXY)
+    baseLattice = lattice.base_lattice(transformedBounds)
+    latticeWithLngLats = lattice.attach_lnglats(baseLattice)
     return 0

@@ -1,10 +1,11 @@
 import config
-import landCost
-import pylonCost
-import tubeCost
+import landcost
+import pyloncost
+import tubecost
 
-def get_latLngCost(latLng):
-    landCost = landCost.get_latLngLandCost(latLng)
-    tubeCost = 0
-    pylonCost = 0
-    return landCost + tubeCost + pylonCost
+def latlng_cost(latLng,primitiveVector):
+    landCost = landcost.latlng_landcost(latLng)
+    pylonCost = pylonCost.pylon_cost(latLng,primitiveVector,config.pylonSpacing,
+            config.maxSpeed,config.gTolerance,config.costPerPylonLength,
+            config.pylonBaseCost)    
+    return landCost + pylonCost
