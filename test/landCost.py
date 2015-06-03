@@ -5,11 +5,6 @@ import proj
 import transform
 import util
 
-def get_latLngLandCost(latLng):
-    pixelVal = geotiff.latLngToPixel(config.geotiffFilePath)
-    landCost = config.costTable[pixelVal]
-    return landCost
-
 def get_latLngDistance(latLngA,latLngB):
     lonLatA = util.swapPair(latLngA)
     lonLatB = util.swapPair(latLngB)
@@ -24,4 +19,10 @@ def is_latLng_in_rightOfWay(latLng,directionsCoords):
             return True
     return False
     
-    
+def get_latLngLandCost(latLng,directionsCoords):
+    if is_latLng_in_rightOfWay(latLng,directionsCoords):
+        landCost = 0
+    else:
+        pixelVal = geotiff.latLngToPixel(config.geotiffFilePath)
+        landCost = config.costTable[pixelVal]
+    return landCost

@@ -1,11 +1,11 @@
 import config
 
-def sample_coords(coordinatesList):
-    return coordinatesList[::config.Nth]
+def sample_list(inList):
+    return inList[::config.Nth]
 
-def partition_list(coordinatesList,partitionLength):
-    numPartitions = len(coordinatesList) - partitionLength
-    return [coordinatesList[x:x+partitionLength] for x in range(0,numPartitions)]
+def group_list(inList,groupSize):
+    numGroups = len(inList) - groupSize
+    return [coordinatesList[x:x+partitionLength] for x in range(0,numGroups)]
 
-def coords_to_partitions(coordinatesList,partitionLength):
-    return partition_list(sample_coords(coordinatesList),partitionLength)
+def coords_to_groups(coordinatesList,groupSize):
+    return group_list(sample_list(coordinatesList),groupSize)
