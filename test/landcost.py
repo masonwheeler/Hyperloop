@@ -23,6 +23,6 @@ def latlng_landCost(latLng,directionsCoords):
     if is_latlng_in_rightofway(latLng,directionsCoords):
         landCost = 0
     else:
-        pixelVal = geotiff.latlng_to_pixel(config.geotiffFilePath)
+        pixelVal = geotiff.latlng_to_pixel(config.geotiffFilePath,latLng)
         landCost = config.costTable[pixelVal]
     return landCost
