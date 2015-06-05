@@ -41,7 +41,7 @@ finalBuffer = 10**-6
 File paths.
 """
 
-geotiffFilePath = ""
+geotiffFilePath = "~/us.tif"
 
 
 """
