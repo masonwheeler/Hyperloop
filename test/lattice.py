@@ -59,26 +59,32 @@ def base_lattice(boundingPolygon):
             + str(config.sliceYSpacing) + ".")
     print("The horizontal spacing between lattice points is "
             + str(config.latticeXSpacing) + ".")
+    print("Now building the base lattice")
     baseLattice = baselattice.base_lattice(boundingPolygon,config.baseScale,
             config.sliceYSpacing,config.latticeXSpacing)
+    print("Here is a sample lattice point:")
+    print(baseLattice[0][0])
     return baseLattice
 
 def attach_lnglats(baseLattice):
     print("Now attaching longitudes and latitudes to the lattice...")
-    for xIndex in range(len(baseLattice)):
-        for yIndex in range(len(baseLattice[xIndex])):
-            pointData = baseLattice[xIndex][yIndex]
-            xValue = xIndex * config.latticeXSpacing
-            yValue = baseLattice[xIndex][yIndex][0]
+    for eachSlice in baseLattice:
+        for eachPoint in eachSlice:
+            latticeXY = eachPoint[0]
             unTransformedPoint = transform.untransform_point(config.angle,
-                    config.sizeFactor,config.startVector,[xValue,yValue])
+                    config.sizeFactor,config.startVector,latticeXY)
+            eachPoint.append(unTransformedPoint)
             unProjectedPoint = proj.xy_to_lonlat(unTransformedPoint,
                     config.proj)
-            baseLattice[xIndex][yIndex].append(unProjectedPoint)
+            eachPoint.append(unProjectedPoint)
     print("Completed attaching longitudes and latitudes.")
     print("Here is a sample Lattice point:")
     print(baseLattice[0][0])
     return baseLattice
 
-def attach_cost(lattice):
+def attach_cost(geotiff,lattice,directionsCoords):
+    lattice = cost.attach_cost(geotiff,lattice,directionsCoords) 
+    print("Completed attaching costs.")
+    print("Here is a sample Lattice point:")
+    print(lattice[0][0])
     return lattice

@@ -79,12 +79,14 @@ def maxmin_yspacing(maxMin, sliceYSpacing):
             sliceYSpacing /= 2.0
     return [maxMinOnSlice, sliceYSpacing]
 
-def lattice_yslice(maxMinAndYSpacing):
+def lattice_yslice(maxMinAndYSpacing,xVal):
     ySpacing = maxMinAndYSpacing[1]
     gap = maxMinAndYSpacing[0][0] - maxMinAndYSpacing[0][1]
     numPoints = int(util.round_num(gap/ySpacing + 1))
     minVal = maxMinAndYSpacing[0][1]
-    return [[util.round_num(minVal + ySpacing*i)] for i in range(0,numPoints)]
+    ySlice = [[[xVal,util.round_num(minVal + ySpacing*i)]]
+	for i in range(0,numPoints)]
+    return ySlice
 
 def base_lattice(polygon,baseScale,sliceYSpacing,latticeXSpacing):
     edges = list_to_pairs(polygon)
@@ -95,5 +97,5 @@ def base_lattice(polygon,baseScale,sliceYSpacing,latticeXSpacing):
         intersections = util.round_nums(get_intersections(relevantEdges,xVal))
         maxMin = get_maxmin(intersections)
         maxMinAndYSpacing = maxmin_yspacing(maxMin,sliceYSpacing)
-        lattice.append(lattice_yslice(maxMinAndYSpacing))
+        lattice.append(lattice_yslice(maxMinAndYSpacing,xVal))
     return lattice
