@@ -3,13 +3,13 @@ import filterroutes
 import comfort
 
 def filter_routes(lattice):
-    pairs = filterroutes.get_pairs(lattice)
-    angles = 
+    #pairs = filterroutes.get_pairs(lattice)
+    #angles = 0 
     return 0 #routes
 
 def interpolate_routes(routes):
     return 0
 
 def generate_routes(lattice):
-    routes = filterRoutes(lattice) 
+    #routes = filterRoutes(lattice) 
     return 0

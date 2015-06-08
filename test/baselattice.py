@@ -70,6 +70,37 @@ def maxmin_on_slice(maxMin,sliceYSpacing):
 def maxmin_valid(maxMin):
     return (maxMin[0] - maxMin[1]) > 0
 
+def get_stepup_stepdown(maxMins):
+    stepUps = []
+    stepDowns = []
+    for maxMinIndex in range(len(maxMins)-1):
+        maxA, minA = maxMins[maxMinIndex]
+        maxB, minB = maxMins[maxMinIndex+1]
+        stepUps.append(maxB - minA)
+        stepDowns.append(maxA - minB)
+    stepUp = max(stepUps)
+    stepDown = min(stepDowns)
+    return [stepUp,stepDown]
+
+def base_lattice(polygon,baseScale,sliceYSpacing,latticeXSpacing):
+    edges = list_to_pairs(polygon)
+    lattice = []
+    maxMins = []
+    latticeXVals = lattice_xvals(baseScale,latticeXSpacing)
+
+    for xVal in latticeXVals:
+        relevantEdges = relevant_edges_for_xval(edges,xVal)
+        intersections = util.round_nums(get_intersections(relevantEdges,xVal))
+        maxMin = get_maxmin(intersections)
+        maxMins.append(maxMin)
+        maxMinAndYSpacing = maxmin_yspacing(maxMin,sliceYSpacing)
+        lattice.append(lattice_yslice(maxMinAndYSpacing,xVal))
+        
+    return lattice
+
+"""
+#For variable spacing
+
 def maxmin_yspacing(maxMin, sliceYSpacing):
     while True:
         maxMinOnSlice = maxmin_on_slice(maxMin,sliceYSpacing)
@@ -87,15 +118,4 @@ def lattice_yslice(maxMinAndYSpacing,xVal):
     ySlice = [[[xVal,util.round_num(minVal + ySpacing*i)]]
 	for i in range(0,numPoints)]
     return ySlice
-
-def base_lattice(polygon,baseScale,sliceYSpacing,latticeXSpacing):
-    edges = list_to_pairs(polygon)
-    lattice = []
-    latticeXVals = lattice_xvals(baseScale,latticeXSpacing)
-    for xVal in latticeXVals:
-        relevantEdges = relevant_edges_for_xval(edges,xVal)
-        intersections = util.round_nums(get_intersections(relevantEdges,xVal))
-        maxMin = get_maxmin(intersections)
-        maxMinAndYSpacing = maxmin_yspacing(maxMin,sliceYSpacing)
-        lattice.append(lattice_yslice(maxMinAndYSpacing,xVal))
-    return lattice
+"""
