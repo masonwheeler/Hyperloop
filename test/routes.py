@@ -1,10 +1,10 @@
 import config
-import filter
+import filterroutes
 import comfort
-import velocityProfile
 
 def filter_routes(lattice):
-    #routes = filter.filter_routes(lattice)
+    pairs = filterroutes.get_pairs(lattice)
+    angles = 
     return 0 #routes
 
 def interpolate_routes(routes):

@@ -6,7 +6,6 @@ import routes
 import time
 
 def pair_analysis(start,end):
-    t1 = time.clock()
     bounds,startLatLng,endLatLng = boundingpolygon.bounding_polygon(start,end)
     boundsXY,startXY,endXY = lattice.project_bounds(bounds,startLatLng,endLatLng)
     lattice.set_params(startXY,endXY)
@@ -15,6 +14,5 @@ def pair_analysis(start,end):
     latticeWithLngLats = lattice.attach_lnglats(baseLattice)
     latticeWithCost = lattice.attach_cost(config.geotiffFilePath,
     	latticeWithLngLats,config.coordinatesList)
-    t2 = time.clock()
-    print(t2-t1)
+    routes.
     return 0
