@@ -1,5 +1,6 @@
 import sys
 import util
+import math
 
 import config
 
@@ -86,14 +87,22 @@ def get_ySpacing(maxMins,initialYSpacing):
     if all([maxMin[1] - maxMin[0] > initialYSpacing for maxMin in maxMins]):
         return initialYSpacing
     else:
-        return min([maxMin[1] - maxMin[0] for maxMin in maxMins])        
+        return min([maxMin[0] - maxMin[1] for maxMin in maxMins])        
 
-def build_slice(maxMin,spacing,xVal):
-    maxVal = int(maxMin[0] / spacing)
-    minVal = int(maxMin[1] / spacing) + 1
+def build_slice(maxMin,ySpacing,xVal):
+    maxVal = int(maxMin[0] / ySpacing)
+    minVal = int(maxMin[1] / ySpacing) + 1
     rawSlice = range(minVal,maxVal+1)
-    ySlice = map(lambda y: [xVal, y * spacing], rawSlice)
+    ySlice = map(lambda y: [[xVal, util.round_num(y * ySpacing)]], rawSlice)   
     return ySlice
+
+def get_angles(stepUp,stepDown,ySpacing,xSpacing):
+    maxIndex,holder = divmod(stepUp, ySpacing)        
+    minIndex,holder = divmod(stepDown, ySpacing)
+    angleIndices = range(int(minIndex),int(maxIndex))
+    angles = [math.atan2(float(angleIndex) * ySpacing, xSpacing)
+            for angleIndex in angleIndices]
+    return angles
 
 def base_lattice(polygon,baseScale,initialYSpacing,latticeXSpacing):
     edges = list_to_pairs(polygon)
@@ -107,14 +116,23 @@ def base_lattice(polygon,baseScale,initialYSpacing,latticeXSpacing):
         maxMin = get_maxmin(intersections)
         maxMins.append(maxMin)    
   
-    spacing = get_ySpacing(maxMins, initialYSpacing)
+    ySpacing = get_ySpacing(maxMins, initialYSpacing)
+    print("Using a vertical spacing of " + str(ySpacing) + " between lattice points")
     stepUp, stepDown = get_stepup_stepdown(maxMins)
+    angles = get_angles(stepUp, stepDown, ySpacing, latticeXSpacing)
 
     for index in range(len(latticeXVals)):
-        newSlice = build_slice(maxMins[index],spacing,latticeXVals[index])
+        newSlice = build_slice(maxMins[index],ySpacing,latticeXVals[index])
         lattice.append(newSlice)
 
-    return lattice
+    return [lattice, angles]
+
+    """
+    rawStepUp, rawStepDown = get_stepup_stepdown(maxMins)
+    stepUp, stepDown = util.round_num(rawStepUp), util.round_num(rawStepDown)
+    print("The maximum difference between a min and subsequent max is: " + str(stepUp))
+    print("The minimum difference between a max and subsequent min is: "+ str(stepDown))
+    """
 
 """
 #For variable spacing

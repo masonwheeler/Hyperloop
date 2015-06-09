@@ -60,11 +60,13 @@ def base_lattice(boundingPolygon):
     print("The horizontal spacing between lattice points is "
             + str(config.latticeXSpacing) + ".")
     print("Now building the base lattice")
-    baseLattice = baselattice.base_lattice(boundingPolygon,config.baseScale,
-            config.sliceYSpacing,config.latticeXSpacing)
+    baseLattice, angles = baselattice.base_lattice(boundingPolygon,
+            config.baseScale, config.sliceYSpacing, config.latticeXSpacing)
     print("Here is a sample lattice point:")
     print(baseLattice[0][0])
-    return baseLattice
+    print("Here are the angles:")
+    print(angles)
+    return [baseLattice, angles]
 
 def attach_lnglats(baseLattice):
     print("Now attaching longitudes and latitudes to the lattice...")

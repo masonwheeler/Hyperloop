@@ -1,8 +1,4 @@
-import numpy as np
-import random
 import math
-from functools import partial
-import itertools
 
 import config
 import util
@@ -27,11 +23,6 @@ class Path:
         self.endYVal = endYVal
         self.startAngle = startAngle
         self.endAngle = endAngle
-
-def get_angles(ydelta):
-    angles = [math.atan2(config.latticeXSpacing,yVal) for
-	 yVal in range(-yDelta,yDelta+1)]
-    return angles
 
 def get_pairs(lattice, angles):
     offset = (len(angles) -1)/2
