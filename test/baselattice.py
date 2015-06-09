@@ -78,7 +78,7 @@ def get_stepup_stepdown(maxMins):
         maxA, minA = maxMins[maxMinIndex]
         maxB, minB = maxMins[maxMinIndex+1]
         stepUps.append(maxB - minA)
-        stepDowns.append(maxA - minB)
+        stepDowns.append(minB - maxA)
     stepUp = max(stepUps)
     stepDown = min(stepDowns)
     return [stepUp,stepDown]
