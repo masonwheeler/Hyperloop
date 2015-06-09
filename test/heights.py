@@ -18,3 +18,5 @@ def getHeights(cellCenter, primVec, pylonSpacing):
     pylonCoordinates = [(location[1], location[0]) for location in pylonLocations]
     result = util.operationOnPieces(getElevation.getElevation,config.getElevationPieceSize,pylonCoordinates)
     return result
+
+def get_heights(cellCenter, xPrimVec, yPrimVec,

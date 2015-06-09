@@ -100,7 +100,7 @@ def get_angles(stepUp,stepDown,ySpacing,xSpacing):
     maxIndex,holder = divmod(stepUp, ySpacing)        
     minIndex,holder = divmod(stepDown, ySpacing)
     angleIndices = range(int(minIndex),int(maxIndex))
-    angles = [math.atan2(float(angleIndex) * ySpacing, xSpacing)
+    angles = [math.degrees(math.atan2(float(angleIndex) * ySpacing, xSpacing))
             for angleIndex in angleIndices]
     return angles
 

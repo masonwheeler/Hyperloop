@@ -82,7 +82,19 @@ def attach_lnglats(baseLattice):
     print("Completed attaching longitudes and latitudes.")
     print("Here is a sample Lattice point:")
     print(baseLattice[0][0])
-    return baseLattice
+
+    x0, y0 = transform.untransform_point(config.angle, config.sizeFactor,
+            config.startVector, [0,0])
+    x1, y1 = transform.untransform_point(config.angle, config.sizeFactor,
+            config.startVector, [0,1])
+    x2, y2 = transform.untransform_point(config.angle, config.sizeFactor,
+            config.startVector, [1,0])
+    xPrimVec = [x1 - x0, y1 - y0]
+    yPrimVec = [x2 - x0, y2 - y0]
+    print("Completed generating primitive vectors.")
+    print("In the x-direction: " + str(xPrimVec))
+    print("In the y-direction: " + str(yPrimVec))
+    return [baseLattice, xPrimVec, yPrimVec]
 
 def attach_cost(geotiff,lattice,directionsCoords):
     lattice = cost.attach_cost(geotiff,lattice,directionsCoords) 
