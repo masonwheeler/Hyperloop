@@ -4,12 +4,12 @@ import random
 
 import config
 import getHeights
-import buildClothoid as bC
+import clothoid
 import util
 
 
-def Curvature(location1,location2,inList,pylonSpacing):
-    data = buildClothoid.buildClothoid(location1 * pylonSpacing, 
+def curvature(location1,location2,inList,pylonSpacing):
+    data = clothoid.buildClothoid(location1 * pylonSpacing, 
             List[location1], 0, location2 * pylon_spacing, List[location2], 0)
     if data[0] < 0:
         return data[1]
@@ -17,7 +17,7 @@ def Curvature(location1,location2,inList,pylonSpacing):
         return data[0] + data[2] * data[1]
 
 
-def InterpolatingIndices(inList, pylonSpacing, kTolerance):
+def interpolating_indices(inList, pylonSpacing, kTolerance):
     truncatedList = inList[1 : len(inList) - 1]
     truncatedSortedIndices = util.getIndices(truncatedList)
     indices = [0, truncatedSortIndices[0] + 1, N - 1]
@@ -34,14 +34,14 @@ def InterpolatingIndices(inList, pylonSpacing, kTolerance):
     return indices
 
 
-def PylonCost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
+def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
         costPerPylonLength, pylonBaseCost):
     kTolerance = gTolerance / math.pow(maxSpeed, 2)
     rawHeights=getHeights.getHeights(cellCenter,primitiveVector,pylonSpacing)
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
     indices = InterpolatingIndices(fixedHeights,pylonSpacing,kTolerance)
     indicesNum = len(indices)
-    data = [bC.buildClothoid(indices[i] * pylonSpacing, 
+    data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
         fixedHeights[indices[i]], 0, j[i+1] * pylonSpacing, 
         fixedHeights[indices[i+1]], 0)
         for i in range(indicesNum - 1)]

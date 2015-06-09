@@ -1,5 +1,6 @@
 import sys
 import util
+import math
 
 import config
 
@@ -49,26 +50,92 @@ def truncate_down(inFloat):
         else:
             return int(inFloat) + 1
 
-def slice_coord_above(inFloat,sliceYSpacing):
-    return truncate_up(util.round_num(inFloat/sliceYSpacing))
+def slice_coord_above(inFloat,ySpacing):
+    return truncate_up(util.round_num(inFloat/ySpacing))
     
-def slice_coord_below(inFloat,sliceYSpacing):
-    return truncate_down(util.round_num(inFloat/sliceYSpacing))
+def slice_coord_below(inFloat,ySpacing):
+    return truncate_down(util.round_num(inFloat/ySpacing))
 
-def closest_slicepoint_above(inFloat,sliceYSpacing):
+def closest_slicepoint_above(inFloat,ySpacing):
     return util.round_num(
-            slice_coord_above(inFloat, sliceYSpacing) * sliceYSpacing)
+            slice_coord_above(inFloat, ySpacing) * ySpacing)
    
-def closest_slicepoint_below(inFloat,sliceYSpacing):
+def closest_slicepoint_below(inFloat,ySpacing):
     return util.round_num(
-            slice_coord_below(inFloat, sliceYSpacing) * sliceYSpacing)
+            slice_coord_below(inFloat, ySpacing) * ySpacing)
 
-def maxmin_on_slice(maxMin,sliceYSpacing):
-    return [closest_slicepoint_below(maxMin[0],sliceYSpacing),
-            closest_slicepoint_above(maxMin[1],sliceYSpacing)]
+def maxmin_on_slice(maxMin,ySpacing):
+    return [closest_slicepoint_below(maxMin[0],ySpacing),
+            closest_slicepoint_above(maxMin[1],ySpacing)]
 
 def maxmin_valid(maxMin):
     return (maxMin[0] - maxMin[1]) > 0
+
+def get_stepup_stepdown(maxMins):
+    stepUps = []
+    stepDowns = []
+    for maxMinIndex in range(len(maxMins)-1):
+        maxA, minA = maxMins[maxMinIndex]
+        maxB, minB = maxMins[maxMinIndex+1]
+        stepUps.append(maxB - minA)
+        stepDowns.append(minB - maxA)
+    stepUp = max(stepUps)
+    stepDown = min(stepDowns)
+    return [stepUp,stepDown]
+
+def get_ySpacing(maxMins,initialYSpacing):
+    if all([maxMin[1] - maxMin[0] > initialYSpacing for maxMin in maxMins]):
+        return initialYSpacing
+    else:
+        return min([maxMin[0] - maxMin[1] for maxMin in maxMins])        
+
+def build_slice(maxMin,ySpacing,xVal):
+    maxVal = int(maxMin[0] / ySpacing)
+    minVal = int(maxMin[1] / ySpacing) + 1
+    rawSlice = range(minVal,maxVal+1)
+    ySlice = map(lambda y: [[xVal, util.round_num(y * ySpacing)]], rawSlice)   
+    return ySlice
+
+def get_angles(stepUp,stepDown,ySpacing,xSpacing):
+    maxIndex,holder = divmod(stepUp, ySpacing)        
+    minIndex,holder = divmod(stepDown, ySpacing)
+    angleIndices = range(int(minIndex),int(maxIndex))
+    angles = [math.atan2(float(angleIndex) * ySpacing, xSpacing)
+            for angleIndex in angleIndices]
+    return angles
+
+def base_lattice(polygon,baseScale,initialYSpacing,latticeXSpacing):
+    edges = list_to_pairs(polygon)
+    lattice = []
+    maxMins = []
+    latticeXVals = lattice_xvals(baseScale,latticeXSpacing)
+
+    for xVal in latticeXVals:
+        relevantEdges = relevant_edges_for_xval(edges,xVal)
+        intersections = util.round_nums(get_intersections(relevantEdges,xVal))
+        maxMin = get_maxmin(intersections)
+        maxMins.append(maxMin)    
+  
+    ySpacing = get_ySpacing(maxMins, initialYSpacing)
+    print("Using a vertical spacing of " + str(ySpacing) + " between lattice points")
+    stepUp, stepDown = get_stepup_stepdown(maxMins)
+    angles = get_angles(stepUp, stepDown, ySpacing, latticeXSpacing)
+
+    for index in range(len(latticeXVals)):
+        newSlice = build_slice(maxMins[index],ySpacing,latticeXVals[index])
+        lattice.append(newSlice)
+
+    return [lattice, angles]
+
+    """
+    rawStepUp, rawStepDown = get_stepup_stepdown(maxMins)
+    stepUp, stepDown = util.round_num(rawStepUp), util.round_num(rawStepDown)
+    print("The maximum difference between a min and subsequent max is: " + str(stepUp))
+    print("The minimum difference between a max and subsequent min is: "+ str(stepDown))
+    """
+
+"""
+#For variable spacing
 
 def maxmin_yspacing(maxMin, sliceYSpacing):
     while True:
@@ -79,21 +146,12 @@ def maxmin_yspacing(maxMin, sliceYSpacing):
             sliceYSpacing /= 2.0
     return [maxMinOnSlice, sliceYSpacing]
 
-def lattice_yslice(maxMinAndYSpacing):
+def lattice_yslice(maxMinAndYSpacing,xVal):
     ySpacing = maxMinAndYSpacing[1]
     gap = maxMinAndYSpacing[0][0] - maxMinAndYSpacing[0][1]
     numPoints = int(util.round_num(gap/ySpacing + 1))
     minVal = maxMinAndYSpacing[0][1]
-    return [[util.round_num(minVal + ySpacing*i)] for i in range(0,numPoints)]
-
-def base_lattice(polygon,baseScale,sliceYSpacing,latticeXSpacing):
-    edges = list_to_pairs(polygon)
-    lattice = []
-    latticeXVals = lattice_xvals(baseScale,latticeXSpacing)
-    for xVal in latticeXVals:
-        relevantEdges = relevant_edges_for_xval(edges,xVal)
-        intersections = util.round_nums(get_intersections(relevantEdges,xVal))
-        maxMin = get_maxmin(intersections)
-        maxMinAndYSpacing = maxmin_yspacing(maxMin,sliceYSpacing)
-        lattice.append(lattice_yslice(maxMinAndYSpacing))
-    return lattice
+    ySlice = [[[xVal,util.round_num(minVal + ySpacing*i)]]
+	for i in range(0,numPoints)]
+    return ySlice
+"""

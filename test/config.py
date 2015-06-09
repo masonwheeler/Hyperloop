@@ -21,6 +21,7 @@ proj = 0
 angle = 0
 sizeFactor = 0
 startVector = 0
+coordinatesList = 0
 
 """
 Initialized Algorithm paramters.
@@ -41,7 +42,7 @@ finalBuffer = 10**-6
 File paths.
 """
 
-geotiffFilePath = "~/us.tif"
+geotiffFilePath = "/home/ubuntu/Hyperloop/test/cache/us.tif"
 
 
 """
