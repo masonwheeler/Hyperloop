@@ -7,6 +7,7 @@ radiusOfEarth = 6.371*(10**6)
 Engineering constraints.
 """
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
+maxSpeed = 80 #maximum speed of the capsule (in ???)
 
 """
 Comfort constraints.
@@ -31,9 +32,9 @@ groupSize = 100
 polygonMergeChunkSize = 100
 tolerance = 10**-6
 maxAttempts = 10
-baseScale = 10**3
-sliceYSpacing = 1
-latticeXSpacing = 10
+baseScale = 10**3 #distance between the start and end in lattice coordinates
+sliceYSpacing = 1 #default spacing between lattice points vertically
+latticeXSpacing = 10 #constant spacing between lattice points horizontally
 ndigits = 6
 Nth = 5
 finalBuffer = 10**-6

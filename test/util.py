@@ -37,7 +37,7 @@ def remove_duplicates(inList):
 def operation_on_pieces(operation,pieceSize,inList):
     pieces=[inList[index:index+pieceSize] for index in xrange(0,len(inList),pieceSize)]
     resultPieces = map(operation,pieces)
-    result = fastConcat(resultPieces)
+    result = fast_concat(resultPieces)
     return result
 
 
@@ -67,5 +67,5 @@ def entry_multiply(vectorA,vectorB):
     return safe_operation(operator.mul,vectorA,vectorB)
 
 
-def GetIndices(inList):
+def get_indices(inList):
     return sorted(range(len(inList)), key = lambda k: inList[k], reverse=True)

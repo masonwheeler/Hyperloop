@@ -1,8 +1,11 @@
-import getElevation
-import util
-
 import math
 
+import elevation
+import proj
+import util
+import config
+
+"""
 def dxdtheta(phi_theta):
     return math.fabs(config.radiusOfEarth * math.cos(2 * math.pi * phi_tht[0] / 360)) * 2 * math.pi / 360
 
@@ -18,5 +21,26 @@ def getHeights(cellCenter, primVec, pylonSpacing):
     pylonCoordinates = [(location[1], location[0]) for location in pylonLocations]
     result = util.operationOnPieces(getElevation.getElevation,config.getElevationPieceSize,pylonCoordinates)
     return result
+"""
 
-def get_heights(cellCenter, xPrimVec, yPrimVec,
+def get_pyloncoords(cellCenter, primVec, pylonSpacing):
+    vecNorm = util.norm(primVec)
+    unitVec = util.scale(1.0/vecNorm, primVec)     
+    numPylonsInGridHalf = int((vecNorm / 2.0) / pylonSpacing)
+    pylonIndices = range(-numPylonsInGridHalf,numPylonsInGridHalf + 1)
+    basePylonXYCoords = [util.scale(pylonIndex*pylonSpacing,unitVec)
+                         for pylonIndex in pylonIndices]
+    pylonXYCoords = [util.add(basePylonXYCoord,cellCenter)
+                     for basePylonXYCoord in basePylonXYCoords]
+    #print(pylonXYCoords)
+    pylonLonLatCoords = proj.xys_to_lonlats(pylonXYCoords, config.proj)
+    pylonLatLngCoords = util.swap_pairs(pylonLonLatCoords)
+    #print(pylonLonLatCoords)
+    return pylonLatLngCoords
+
+def get_pylonheights(cellCenter, primVec, pylonSpacing):
+    pylonLatLngCoords = get_pyloncoords(cellCenter, primVec, pylonSpacing)
+    pylonHeights = util.operation_on_pieces(elevation.get_elevation,
+                   config.getElevationPieceSize, pylonLatLngCoords)
+    return pylonHeights
+

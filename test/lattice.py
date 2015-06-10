@@ -22,6 +22,8 @@ def project_bounds(bounds, startLatLng, endLatLng):
     print("In geospatial coordinates the start is: " + str(startXY) + ".")
     endXY = proj.lonlat_to_xy(endLonLat,config.proj)
     print("In geospatial coordinates the end is: " + str(endXY) + ".")
+    print("The distance between the start and end in meters is: " +
+    str(util.norm(util.subtract(startXY,endXY))) + ".")
     return [boundsXY,startXY,endXY] 
 
 def set_params(startXY,endXY):
@@ -96,8 +98,8 @@ def attach_lnglats(baseLattice):
     print("In the y-direction: " + str(yPrimVec))
     return [baseLattice, xPrimVec, yPrimVec]
 
-def attach_cost(geotiff,lattice,directionsCoords):
-    lattice = cost.attach_cost(geotiff,lattice,directionsCoords) 
+def attach_cost(geotiff,lattice,directionsCoords,primVec):
+    lattice = cost.attach_cost(geotiff,lattice,directionsCoords,primVec) 
     print("Completed attaching costs.")
     print("Here is a sample Lattice point:")
     print(lattice[0][0])

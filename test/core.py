@@ -12,7 +12,7 @@ def pair_analysis(start,end):
     transformedBounds = lattice.transform_bounds(boundsXY,startXY,endXY)
     baseLattice, angles = lattice.base_lattice(transformedBounds)
     latticeWithLngLats,xPrimVec,yPrimVec = lattice.attach_lnglats(baseLattice)
-    #latticeWithCost = lattice.attach_cost(config.geotiffFilePath,
-    #	latticeWithLngLats,config.coordinatesList)
+    latticeWithCost = lattice.attach_cost(config.geotiffFilePath,
+    	latticeWithLngLats,config.coordinatesList,xPrimVec)
     #routes.
     return 0

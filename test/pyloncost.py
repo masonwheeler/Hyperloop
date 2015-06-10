@@ -3,11 +3,11 @@ import numpy as np
 import random
 
 import config
-import getHeights
+import heights
 import clothoid
 import util
 
-
+"""
 def curvature(location1,location2,inList,pylonSpacing):
     data = clothoid.buildClothoid(location1 * pylonSpacing, 
             List[location1], 0, location2 * pylon_spacing, List[location2], 0)
@@ -32,12 +32,14 @@ def interpolating_indices(inList, pylonSpacing, kTolerance):
         indices.insert(k, truncatedSortedIndices[1] + 1)
         del truncatedSortedIndices[0]
     return indices
-
+"""
 
 def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
         costPerPylonLength, pylonBaseCost):
-    kTolerance = gTolerance / math.pow(maxSpeed, 2)
-    rawHeights=getHeights.getHeights(cellCenter,primitiveVector,pylonSpacing)
+    #kTolerance = gTolerance / math.pow(maxSpeed, 2)
+    rawHeights=heights.get_pylonheights(cellCenter,primitiveVector,pylonSpacing)
+    print(rawHeights)
+    """
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
     indices = InterpolatingIndices(fixedHeights,pylonSpacing,kTolerance)
     indicesNum = len(indices)
@@ -70,7 +72,8 @@ def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
     print("The total number of pylons used is: " + numberOfPylons + ".")
     print("The sum of the lengths of the pylons used is: " + totalLength + ".")
     pylonCostTotal = baseCost * numberOfPylons + costPerLength * totalLength
-    return pylonCostTotal
+    """
+    return 0 #pylonCostTotal
 
     
         
