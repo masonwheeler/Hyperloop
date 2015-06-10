@@ -40,7 +40,9 @@ def get_pyloncoords(cellCenter, primVec, pylonSpacing):
 
 def get_pylonheights(cellCenter, primVec, pylonSpacing):
     pylonLatLngCoords = get_pyloncoords(cellCenter, primVec, pylonSpacing)
+    #print(pylonLatLngCoords)
     pylonHeights = util.operation_on_pieces(elevation.get_elevation,
                    config.getElevationPieceSize, pylonLatLngCoords)
+    print(pylonHeights)
     return pylonHeights
 

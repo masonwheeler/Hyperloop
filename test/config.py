@@ -51,7 +51,7 @@ API-Specific.
 """
 
 # Google Elevation API
-getElevationPieceSize = 80 #Constraint on number of simultaneous api calls.
+getElevationPieceSize = 70 #Constraint on number of simultaneous api calls.
 elevationBaseUrl = 'https://maps.googleapis.com/maps/api/elevation/json'
 
 """

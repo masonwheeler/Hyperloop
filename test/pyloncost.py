@@ -38,7 +38,7 @@ def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
         costPerPylonLength, pylonBaseCost):
     #kTolerance = gTolerance / math.pow(maxSpeed, 2)
     rawHeights=heights.get_pylonheights(cellCenter,primitiveVector,pylonSpacing)
-    print(rawHeights)
+    #print(rawHeights)
     """
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
     indices = InterpolatingIndices(fixedHeights,pylonSpacing,kTolerance)

@@ -11,11 +11,13 @@ def get_elevation(coords):
     url = config.elevationBaseUrl + '?' + urllib.urlencode(args)
     response = simplejson.load(urllib.urlopen(url))
 
-    #Create a dictionary for each results[] object
     elevationArray = []
-
-    for resultSet in response['results']:
-        elevationArray.append(resultSet['elevation'])
+    if response['status'] == 'OK':	 
+        #Create a dictionary for each results[] object
+        for resultSet in response['results']:
+            elevationArray.append(resultSet['elevation'])
+    else:
+        print(response['status'])
 
     return elevationArray
 
