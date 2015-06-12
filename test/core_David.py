@@ -32,3 +32,4 @@ numPaths = 50 #max = 500.
 latticeWithCost, angles = pair_analysis(start,end)
 route = sample_route(latticeWithCost, angles, degreeConstaint, numPaths)
 tht_i_phi_i = route.points[1]
+print tht_i_phi_i
