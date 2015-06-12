@@ -60,6 +60,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
 
 def treefold(pairs, degreeConstaint, angles, numPaths):
     layers = [pairs]
+    layersSize = 0
     workingLayerIndex = 0
     layersIndex = 0
     workingLayerSize = len(pairs)
