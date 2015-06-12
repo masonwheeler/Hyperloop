@@ -62,6 +62,7 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
     layers = [pairs]
     layersSize = 0
     workingLayerIndex = 0
+    breakFlag = False
     layersIndex = 0
     workingLayerSize = len(pairs)
     numLayers = 1
