@@ -28,6 +28,6 @@ def sample_route(latticeWithCost, angles, degreeConstaint, numPaths):
 start = "Los_Angeles"
 end = "San_Francisco"
 degreeConstaint = 60
-numPaths = 2
+numPaths = 100
 latticeWithCost, angles = pair_analysis(start,end)
 print sample_route(latticeWithCost, angles, degreeConstaint, numPaths) 
