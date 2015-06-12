@@ -100,7 +100,7 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
         if breakFlag:
             break
     filteredRoutes = layers[layersIndex][0]
-    print("Merged " +str(n) "routes in  %s seconds" % (time.time() - start_time))
+    print("Merged " +str(n) +"routes in  " + str(time.time() - start_time)) + " seconds"
     return filteredRoutes
 
 
