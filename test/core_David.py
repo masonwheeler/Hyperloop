@@ -20,12 +20,12 @@ def pair_analysis(start,end):
 
 def sample_route(lattice, angles):
     pairs = filterroutes.get_pairs(lattice, angles)
-    routes = filterroutes.treefold(pairs, degreeConstaint, angles, numPaths):
+    routes = filterroutes.treefold(pairs, degreeConstaint, angles, numPaths)
     sampleRoute = routes[0]
     return sampleRoute
 
 
 start = "Los_Angeles"
 end = "San_Francisco"
-lattice, angles = pair_analysis(start,end):
+lattice, angles = pair_analysis(start,end)
 print sample_route(lattice, angles) 
