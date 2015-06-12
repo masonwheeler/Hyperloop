@@ -59,7 +59,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
                     merged.append(mergedPath)
     merged.sort(key = lambda path: path.cost)
     selected = merged[:min(numPaths,len(merged))]
-    return selected
+    return [selected, m]
 
 def treefold(pairs, degreeConstraint, angles, numPaths):
     layers = [pairs]
@@ -70,10 +70,6 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
     numLayers = 1
     n = 0
     while(numLayers != 1 or workingLayerSize != 1):
-        n += 1
-        print "Reaching "+str(n)+"th stage"
-        print "numLayers is "+ str(numLayers)
-        print "layersIndex is "+ str(layersIndex)
         if(workingLayerSize - workingLayerIndex == 0):
             if(numLayers - layersIndex == 1):
                breakFlag = True;
@@ -96,12 +92,15 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
                numLayers += 1
            pathsA = layers[layersIndex][workingLayerIndex]
            pathsB = layers[layersIndex][workingLayerIndex + 1]
-           merged = merge_filter(pathsA,pathsB,degreeConstraint,angles,numPaths)
+           merged, mplus = merge_filter(pathsA,pathsB,degreeConstraint,angles,numPaths)
            layers[layersIndex+1].append(merged)
+           n += mplus
+           print n       
            workingLayerIndex += 2
         if breakFlag:
             break
     filteredRoutes = layers[layersIndex][0]
+    print("Merged " +str(n) "routes in  %s seconds" % (time.time() - start_time))
     return filteredRoutes
 
 
