@@ -9,7 +9,7 @@ import filterroutes
 def pair_analysis(start,end):
     bounds,startLatLng,endLatLng = boundingpolygon.bounding_polygon(start,end)
     boundsXY,startXY,endXY = lattice_David.project_bounds(bounds,startLatLng,endLatLng)
-    lattice.set_params(startXY,endXY)
+    lattice_David.set_params(startXY,endXY)
     transformedBounds = lattice_David.transform_bounds(boundsXY,startXY,endXY)
     baseLattice, angles = lattice_David.base_lattice(transformedBounds)
     latticeWithLngLats,xPrimVec,yPrimVec = lattice_David.attach_lnglats(baseLattice)
