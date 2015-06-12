@@ -18,8 +18,8 @@ def pair_analysis(start,end):
     #routes.
     return [latticeWithCost, angles]
 
-def sample_route(lattice, angles):
-    pairs = filterroutes.get_pairs(lattice, angles)
+def sample_route(latticeWithCost, angles, degreeConstaint, numPaths):
+    pairs = filterroutes.get_pairs(latticeWithCost, angles)
     routes = filterroutes.treefold(pairs, degreeConstaint, angles, numPaths)
     sampleRoute = routes[0]
     return sampleRoute
@@ -27,5 +27,7 @@ def sample_route(lattice, angles):
 
 start = "Los_Angeles"
 end = "San_Francisco"
-lattice, angles = pair_analysis(start,end)
-print sample_route(lattice, angles) 
+degreeConstaint = 60
+numPaths = 100
+latticeWithCost, angles = pair_analysis(start,end)
+print sample_route(latticeWithCost, angles) 
