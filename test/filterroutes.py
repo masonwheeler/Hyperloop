@@ -58,7 +58,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
     selected = merged[:min(numPaths,len(merged))]
     return selected
 
-def treefold(pairs, degreeConstaint, angles, numPaths):
+def treefold(pairs, degreeConstraint, angles, numPaths):
     layers = [pairs]
     layersSize = 0
     workingLayerIndex = 0
