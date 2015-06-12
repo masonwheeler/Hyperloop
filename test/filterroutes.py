@@ -100,6 +100,8 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
            workingLayerIndex += 2
         if breakFlag:
             break
+    print layers
+    print layers[layersIndex]
     filteredRoutes = layers[layersIndex][0]
     return filteredRoutes
 
