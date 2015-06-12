@@ -1,10 +1,7 @@
 import math
 import numpy as np
-import time
-import scipy
-import scipy.interpolate
-from matplotlib import pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#from matplotlib import pyplot as plt
+#from mpl_toolkits.mplot3d import Axes3D
 import radiusOfCurvature as rad
 import quintic as quint
 
