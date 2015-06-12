@@ -97,6 +97,7 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
            pathsA = layers[layersIndex][workingLayerIndex]
            pathsB = layers[layersIndex][workingLayerIndex + 1]
            merged = merge_filter(pathsA,pathsB,degreeConstraint,angles,numPaths)
+           workingLayerIndex += 2
         if breakFlag:
             break
     filteredRoutes = layers[layersIndex][0]
