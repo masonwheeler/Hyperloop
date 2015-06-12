@@ -73,6 +73,8 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
     while(numLayers != 0 or workingLayerSize != 1):
         n += 1
         print "Reaching "+str(n)+"th stage"
+        print "layersSize is "+ str(layersSize)
+        print "layersIndex is "+ str(layersIndex)
         if(workingLayerSize - workingLayerIndex == 0):
             if(layersSize - layersIndex == 1):
                breakFlag = True;
