@@ -19,17 +19,21 @@ def pair_analysis(start,end):
     #routes.
     return [latticeWithCost, angles]
 
-def sample_route(latticeWithCost, angles, degreeConstaint, numPaths):
+def gen_routes(latticeWithCost, angles, degreeConstaint, numPaths):
     pairs = filterroutes.get_pairs(latticeWithCost, angles)
     routes = filterroutes.treefold(pairs, degreeConstaint, angles, numPaths)
-    sampleRoute = routes[0]
-    return sampleRoute
+    return routes
 
 start = "Los_Angeles"
 end = "San_Francisco"
 degreeConstaint = 60
 numPaths = 50 #max = 500.
 latticeWithCost, angles = pair_analysis(start,end)
-route = sample_route(latticeWithCost, angles, degreeConstaint, numPaths)
-tht_i_phi_i = route.points[1]
-print tht_i_phi_i
+routes = gen_routes(latticeWithCost, angles, degreeConstaint, numPaths)
+routesPoints = [route.points for route in routes]
+routes_Longlat = [[point[2] for point in routePoints] for routePoints in routesPoints]
+route_comforts, route_triptimes = zip([compute.comfort_and_Triptime(Longlat) for Longlat in routes_Longlat])
+route_costs = [route.cost for route in routes]
+results = zip(route_costs, route_comforts, route_triptimes)
+print results
+
