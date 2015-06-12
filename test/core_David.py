@@ -30,4 +30,4 @@ end = "San_Francisco"
 degreeConstaint = 60
 numPaths = 100
 latticeWithCost, angles = pair_analysis(start,end)
-print sample_route(latticeWithCost, angles) 
+print sample_route(latticeWithCost, angles, degreeConstaint, numPaths) 
