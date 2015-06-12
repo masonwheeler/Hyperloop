@@ -63,27 +63,26 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
 
 def treefold(pairs, degreeConstraint, angles, numPaths):
     layers = [pairs]
-    layersSize = 0
     workingLayerIndex = 0
     breakFlag = False
     layersIndex = 0
     workingLayerSize = len(pairs)
     numLayers = 1
     n = 0
-    while(numLayers != 0 or workingLayerSize != 1):
+    while(numLayers != 1 or workingLayerSize != 1):
         n += 1
         print "Reaching "+str(n)+"th stage"
-        print "layersSize is "+ str(layersSize)
+        print "numLayers is "+ str(numLayers)
         print "layersIndex is "+ str(layersIndex)
         if(workingLayerSize - workingLayerIndex == 0):
-            if(layersSize - layersIndex == 1):
+            if(numLayers - layersIndex == 1):
                breakFlag = True;
             else:
                layersIndex += 1
                workingLayerIndex = 0
                workingLayerSize = len(layers[layersIndex])
         elif(workingLayerSize - workingLayerIndex == 1):
-            if(layersSize - layersIndex == 1):
+            if(numLayers - layersIndex == 1):
                 breakFlag = True;
             else:
                 layers[layersIndex+1].append(
@@ -92,9 +91,9 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
                 workingLayerIndex = 0
                 workingLayerSize = len(layers[layersIndex])
         else:
-           if(layersSize - layersIndex == 1):
+           if(numLayers - layersIndex == 1):
                layers.append([])
-               layersSize += 1
+               numLayers += 1
            pathsA = layers[layersIndex][workingLayerIndex]
            pathsB = layers[layersIndex][workingLayerIndex + 1]
            merged = merge_filter(pathsA,pathsB,degreeConstraint,angles,numPaths)
