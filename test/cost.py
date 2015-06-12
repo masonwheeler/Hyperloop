@@ -31,9 +31,9 @@ def pixel_val(ct, gt, rb, lonlatCoord):
 
 def land_cost(ct, gt, rb, xyCoord, lonlatCoord, directionsCoords):
     if xyCoord_in_rightofway(xyCoord, directionsCoords):
-	return 0
+	      return 0
     else:
-	return pixel_val(ct,gt,rb,lonlatCoord)
+	      return pixel_val(ct,gt,rb,lonlatCoord)
 
 def attach_cost(geotiff,lattice,directionsCoords,primVec):
     ds = gdal.Open(geotiff)
@@ -46,7 +46,7 @@ def attach_cost(geotiff,lattice,directionsCoords,primVec):
 
     for eachSlice in lattice:
         for eachPoint in eachSlice:
-	    latticeCoords, xyCoords, lonlatCoords = eachPoint
+	          latticeCoords, xyCoords, lonlatCoords = eachPoint
             landCost=land_cost(ct,gt,rb,xyCoords,lonlatCoords,directionsCoords)
             pylonCost = pyloncost.pylon_cost(xyCoords, primVec,
             config.pylonSpacing, config.maxSpeed, config.gTolerance,
