@@ -5,6 +5,7 @@ import lattice_David
 import routes
 import time
 import filterroutes
+import compute
 
 def pair_analysis(start,end):
     bounds,startLatLng,endLatLng = boundingpolygon.bounding_polygon(start,end)
@@ -27,7 +28,7 @@ def sample_route(latticeWithCost, angles, degreeConstaint, numPaths):
 start = "Los_Angeles"
 end = "San_Francisco"
 degreeConstaint = 60
-numPaths = 500
+numPaths = 50 #max = 500.
 latticeWithCost, angles = pair_analysis(start,end)
 route = sample_route(latticeWithCost, angles, degreeConstaint, numPaths)
-print route.points
+tht_i_phi_i = route.points[1]
