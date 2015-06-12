@@ -3,6 +3,7 @@ import math
 import config
 import util
 import cost
+import time
 
 class Path:
     cost = 0
@@ -62,6 +63,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
     return [selected, m]
 
 def treefold(pairs, degreeConstraint, angles, numPaths):
+    start_time = time.time()
     layers = [pairs]
     workingLayerIndex = 0
     breakFlag = False
