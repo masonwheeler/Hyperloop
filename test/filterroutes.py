@@ -72,7 +72,7 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
     n = 0
     while(numLayers != 0 or workingLayerSize != 1):
         n += 1
-        print "Starting to merge paths of length "+str(2**n)
+        print "Reaching "+str(n)+"th stage"
         print n
         if(workingLayerSize - workingLayerIndex == 0):
             if(layersSize - layersIndex == 1):
