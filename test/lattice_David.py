@@ -5,7 +5,7 @@ import util
 import baselattice
 import proj
 import transform       
-import cost
+import cost_David
 
 def project_bounds(bounds, startLatLng, endLatLng):
     #print("In latitude and longitude the bounds are: ")
