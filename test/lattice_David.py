@@ -63,7 +63,7 @@ def base_lattice(boundingPolygon):
             + str(config.latticeXSpacing) + ".")
     print("Now building the base lattice")
     baseLattice, angles = baselattice.base_lattice(boundingPolygon,
-            config.baseScale, config.sliceYSpacing, config.latticeXSpacing)
+            config.baseScale, config.latticeYSpacing, config.latticeXSpacing)
     print("Here is a sample lattice point:")
     print(baseLattice[0][0])
     print("Here are the angles:")
