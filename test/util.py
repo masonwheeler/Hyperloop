@@ -69,3 +69,7 @@ def entry_multiply(vectorA,vectorB):
 
 def get_indices(inList):
     return sorted(range(len(inList)), key = lambda k: inList[k], reverse=True)
+
+def fix_inputString(inputString):
+    titleString = inputString.title()
+    return titleString.replace(" ","_")

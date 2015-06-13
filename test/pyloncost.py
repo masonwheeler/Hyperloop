@@ -1,6 +1,7 @@
 import math 
 import numpy as np
 import random
+import time
 
 import config
 import heights
@@ -37,6 +38,7 @@ def interpolating_indices(inList, pylonSpacing, kTolerance):
 def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
         costPerPylonLength, pylonBaseCost):
     #kTolerance = gTolerance / math.pow(maxSpeed, 2)
+    time.sleep(0.2)
     rawHeights=heights.get_pylonheights(cellCenter,primitiveVector,pylonSpacing)
     #print(rawHeights)
     """

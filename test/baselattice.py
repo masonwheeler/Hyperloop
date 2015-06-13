@@ -108,6 +108,7 @@ def base_lattice(polygon,baseScale,initialYSpacing,latticeXSpacing):
     edges = list_to_pairs(polygon)
     lattice = []
     maxMins = []
+    numPoints = 0
     latticeXVals = lattice_xvals(baseScale,latticeXSpacing)
 
     for xVal in latticeXVals:
@@ -117,41 +118,15 @@ def base_lattice(polygon,baseScale,initialYSpacing,latticeXSpacing):
         maxMins.append(maxMin)    
   
     ySpacing = get_ySpacing(maxMins, initialYSpacing)
-    print("Using a vertical spacing of " + str(ySpacing) + " between lattice points")
+    print("Using a vertical spacing of " + str(ySpacing) + " between lattice points.")
     stepUp, stepDown = get_stepup_stepdown(maxMins)
     angles = get_angles(stepUp, stepDown, ySpacing, latticeXSpacing)
 
     for index in range(len(latticeXVals)):
         newSlice = build_slice(maxMins[index],ySpacing,latticeXVals[index])
+        numPoints += len(newSlice)
         lattice.append(newSlice)
+    print("The lattice consists of " + str(numPoints) + " points in total.")
+    
+    return [lattice, angles, ySpacing]
 
-    return [lattice, angles]
-
-    """
-    rawStepUp, rawStepDown = get_stepup_stepdown(maxMins)
-    stepUp, stepDown = util.round_num(rawStepUp), util.round_num(rawStepDown)
-    print("The maximum difference between a min and subsequent max is: " + str(stepUp))
-    print("The minimum difference between a max and subsequent min is: "+ str(stepDown))
-    """
-
-"""
-#For variable spacing
-
-def maxmin_yspacing(maxMin, sliceYSpacing):
-    while True:
-        maxMinOnSlice = maxmin_on_slice(maxMin,sliceYSpacing)
-        if maxmin_valid(maxMinOnSlice):
-            break
-        else:
-            sliceYSpacing /= 2.0
-    return [maxMinOnSlice, sliceYSpacing]
-
-def lattice_yslice(maxMinAndYSpacing,xVal):
-    ySpacing = maxMinAndYSpacing[1]
-    gap = maxMinAndYSpacing[0][0] - maxMinAndYSpacing[0][1]
-    numPoints = int(util.round_num(gap/ySpacing + 1))
-    minVal = maxMinAndYSpacing[0][1]
-    ySlice = [[[xVal,util.round_num(minVal + ySpacing*i)]]
-	for i in range(0,numPoints)]
-    return ySlice
-"""

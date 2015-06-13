@@ -33,7 +33,7 @@ polygonMergeChunkSize = 100
 tolerance = 10**-6
 maxAttempts = 10
 baseScale = 10**3 #distance between the start and end in lattice coordinates
-sliceYSpacing = 1 #default spacing between lattice points vertically
+latticeYSpacing = 1 #default spacing between lattice points vertically
 latticeXSpacing = 10 #constant spacing between lattice points horizontally
 ndigits = 6
 Nth = 5
@@ -51,7 +51,7 @@ API-Specific.
 """
 
 # Google Elevation API
-getElevationPieceSize = 70 #Constraint on number of simultaneous api calls.
+getElevationPieceSize = 512 #Constraint on number of simultaneous api calls.
 elevationBaseUrl = 'https://maps.googleapis.com/maps/api/elevation/json'
 
 """

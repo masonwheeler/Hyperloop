@@ -46,8 +46,8 @@ def attach_cost(geotiff,lattice,directionsCoords,primVec):
 
     for eachSlice in lattice:
         for eachPoint in eachSlice:
-	          latticeCoords, xyCoords, lonlatCoords = eachPoint
-            landCost=land_cost(ct,gt,rb,xyCoords,lonlatCoords,directionsCoords)
+            latticeCoords, xyCoords, lonlatCoords = eachPoint
+            landCost = land_cost(ct,gt,rb,xyCoords,lonlatCoords,directionsCoords)
             pylonCost = pyloncost.pylon_cost(xyCoords, primVec,
             config.pylonSpacing, config.maxSpeed, config.gTolerance,
             config.costPerPylonLength, config.pylonBaseCost)
