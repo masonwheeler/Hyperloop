@@ -58,7 +58,7 @@ def base_lattice(boundingPolygon):
     print("We rescale so that distance between the start and end becomes "
             + str(config.baseScale) + ".")
     print("The initial vertical spacing between lattice points is "
-            + str(config.sliceYSpacing) + ".")
+            + str(config.latticeYSpacing) + ".")
     print("The horizontal spacing between lattice points is "
             + str(config.latticeXSpacing) + ".")
     print("Now building the base lattice")
