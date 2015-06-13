@@ -54,7 +54,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
                 if(abs(pathA.endAngle - pathB.startAngle) < degreeConstraint):
                     mergedPath = Path(pathA.cost + pathB.cost - pathA.endCost,
                     pathA.endCost + pathB.endCost,
-                    pathA.points + pathB.points,
+                    pathA.points + pathB.points[1:],
                     pathA.startXVal, pathA.startYVal,
                     pathB.endYVal, pathA.startAngle, pathB.endAngle)
                     merged.append(mergedPath)

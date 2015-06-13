@@ -44,12 +44,13 @@ def interp(G):
   for j in range(1, N):
 		C[3 + 6*(j-1) : 3 + 6*j,6*(j-1):6*j] = GammaEn(t[j])
 		C[3 + 6*(j-1) : 3 + 6*j,6*j:6*(j+1)] = GammaSt(t[j])
-  conditionNumber = math.log(np.linalg.cond(C),10)
-  print("Solving for coefficients of quintic. Condition number of matrix is " + str(conditionNumber))
+  conditionNumber = np.linalg.cond(C)
+  print("Solving for coefficients of interpolating polynomial. Condition number of matrix is " + str(conditionNumber))
   a = np.linalg.solve(C,b)
   alist = np.zeros((N, 6))
   for i in range(N):
     alist[i] = a[6*i:6*(i+1)]
+  print "Condition number is at or below safe levels. coefficients computed succesully"
   return alist.tolist()
 
 

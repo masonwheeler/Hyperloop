@@ -9,9 +9,12 @@ def omerc_proj(startLonLat, endLonLat):
                        +' +lon_2='+str(endLon)+' +lat_2='+str(endLat)
                        +' +lon_1='+str(startLon)+' +lat_1='+str(startLat))
 
-def albers_Proj():
+def albers_proj():
     albers = pyproj.Proj("+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=+y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
     return albers
+
+def usgs_proj():
+    return pyproj.Proj(init='epsg:3857')
     
 def lonlat_to_xy(lonlat,proj):
     return proj(lonlat[0], lonlat[1])
