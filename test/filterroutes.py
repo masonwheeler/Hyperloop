@@ -23,7 +23,7 @@ class Path:
     comfort = "not noticeable"
 
     def __init__(self,cost,endCost,waypoints,startXVal,startYVal,endYVal,
-    startAngle,endAngle,comfort,triptime,plot_times,points,vel_points,accel_points):
+    startAngle,endAngle,comfort,triptime,plot_times,points,vel_points,accel_points,pylon_data):
         self.cost = cost
         self.comfort = comfort
         self.triptime = triptime
@@ -52,7 +52,7 @@ def get_pairs(lattice, angles):
                 costA = pointA[3]
                 costB = pointB[3]               
                 pair = Path(costA + costB, costB, [pointA,pointB],
-                pointA[0][0],pointA[0][1],pointB[0][1],0,0,"not noticeable",0,[],[],[],[])
+                pointA[0][0],pointA[0][1],pointB[0][1],0,0,"not noticeable",0,[],[],[],["Data about pylon placement and pylon cost."])
                 slicePairs.append(pair)
         slicePairs.sort(key = lambda pair: pair.cost)
         pairs.append(slicePairs)       
