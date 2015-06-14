@@ -7,13 +7,6 @@ import time
 
 class Path:
     cost = 0
-    comfort = "not noticeable"
-    triptime = 0
-    plot_times = []
-    points = []
-    vel_points = [] 
-    accel_points = []
-    pylon_data = ["Data about pylon placement and pylon cost."]
     endCost = 0
     waypoints = []
     startXVal = 0
@@ -21,8 +14,16 @@ class Path:
     endYVal = 0
     startAngle = 0
     endAngle = 0
-    def __init__(self,cost,comfort,triptime,endCost,waypoints,startXVal,startYVal,endYVal,
-    startAngle,endAngle):
+    triptime = 0
+    plot_times = []
+    points = []
+    vel_points = [] 
+    accel_points = []
+    pylon_data = ["Data about pylon placement and pylon cost."]
+    comfort = "not noticeable"
+
+    def __init__(self,cost,endCost,waypoints,startXVal,startYVal,endYVal,
+    startAngle,endAngle,comfort,triptime,plot_times,points,vel_points,accel_points):
         self.cost = cost
         self.comfort = comfort
         self.triptime = triptime
@@ -51,7 +52,7 @@ def get_pairs(lattice, angles):
                 costA = pointA[3]
                 costB = pointB[3]               
                 pair = Path(costA + costB, costB, [pointA,pointB],
-                pointA[0][0],pointA[0][1],pointB[0][1],0,0)
+                pointA[0][0],pointA[0][1],pointB[0][1],0,0,"not noticeable",0,[],[],[])
                 slicePairs.append(pair)
         slicePairs.sort(key = lambda pair: pair.cost)
         pairs.append(slicePairs)       
