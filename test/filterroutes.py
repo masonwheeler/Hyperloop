@@ -110,6 +110,7 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
            pathsB = layers[layersIndex][workingLayerIndex + 1]
            merged, mplus = merge_filter(pathsA,pathsB,degreeConstraint,angles,numPaths)
            layers[layersIndex+1].append(merged)
+           n += 1
            print "Catenating paths of length "+str(2**n)+"..."       
            workingLayerIndex += 2
         if breakFlag:
