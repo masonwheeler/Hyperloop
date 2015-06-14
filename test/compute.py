@@ -4,10 +4,17 @@ import math
 import time
 
 def Coeffs_to_VelAccel(a, s, t):
+   t0 = time.time()
    da = [[j * quintic[j+1] for j in range(5)] for quintic in a]
+   t1 = time.time()
+#   print "Computing coefficients of 1st derivative took " +str(t1-t0) +" seconds."
    d2a = [[j * quartic[j+1] for j in range(4)] for quartic in da]
+   t2 = time.time()
+#   print "Computing coefficients of 2nd derivative took " +str(t2-t1) +" seconds."
    v = [intrp.Coeffs_to_Vals(da, five_minute_interval, t) for five_minute_interval in s]
    A = [intrp.Coeffs_to_Vals(d2a, five_minute_interval, t) for five_minute_interval in s]
+   t3 = time.time()
+   print "Evaluating both 1st and 2nd derivatives took " + str(t3-t2) + " seconds."
    return [v, A]
 
 def comfort_and_Triptime(tht_i_phi_i):
@@ -24,8 +31,11 @@ def comfort_and_Triptime(tht_i_phi_i):
 
    # Sample velocity and acceleration at "s":
    print "Sampling velocity and acceleration at these times..."
+   print "Sampling the x-component..."
    vx, Ax = Coeffs_to_VelAccel(ax, s, t)
+   print "Sampling the y-component..."
    vy, Ay = Coeffs_to_VelAccel(ay, s, t)
+   print "Sampling the z-component..."
    vz, Az = Coeffs_to_VelAccel(az, s, t)
    v = [zip(vx[i], vy[i], vz[i]) for i in range(len(vx))]
    a = [zip(Ax[i], Ay[i], Az[i]) for i in range(len(Ax))]
@@ -37,7 +47,6 @@ def comfort_and_Triptime(tht_i_phi_i):
    comfort_Ratings = [cmft.comfort(v[i], a[i], T, mu) for i in range(len(v))]
    comfort = max(comfort_Ratings)
    triptime = t[-1]
-
    return [comfort, triptime]
 
 # pointsDeg = [
