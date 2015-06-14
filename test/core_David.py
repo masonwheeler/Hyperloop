@@ -32,8 +32,8 @@ def fetch_Interpolation_Data(route):
 
 start = "Los_Angeles"
 end = "San_Francisco"
-degreeConstaint = 60
-numPaths = 50 #max = 500.
+degreeConstaint = 30
+numPaths = 100 #max = 500.
 latticeWithCost, angles = pair_analysis(start,end)
 routes = gen_routes(latticeWithCost, angles, degreeConstaint, numPaths)
 print "Computing comfort and triptime..."
