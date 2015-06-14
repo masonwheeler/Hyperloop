@@ -21,8 +21,7 @@ def comfort_and_Triptime(tht_i_phi_i):
    #Input is waypoints in long-lat (in radians): tht_i_phi_i
    #Compute coefficients of piecewise quintic polynomial:
    print "Pulling coefficients of piecewise quintic polynomial..."
-   ax, ay, az, t = intrp.Points_to_Coeffs(tht_i_phi_i, 4)
-
+   ax, ay, az, t = intrp.Points_to_Coeffs(tht_i_phi_i, 6)
    # Form list "s" of sampling times:
    print "Forming list of sampling times..."
    Q = 2**8. # number of rectangles in the Riemann sum (for efficiency, keep this a power of two).

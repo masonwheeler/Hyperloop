@@ -9,7 +9,7 @@ def parse(tht_i_phi_i):
   N = len(tht_i_phi_i)-1
   p = rad.r_i(tht_i_phi_i)
   r = [rad.radius(p[(i - 1):(i + 2)]) for i in range(1, N-1)]
-  v = [150,250]+[min([(math.sqrt(r[i]*.1*9.81)+math.sqrt(r[i+1]*.1*9.81))/2,330]) for i in range(0,N-3)]+[150]
+  v = [150]+[min([(math.sqrt(r[i]*.5*9.81)+math.sqrt(r[i+1]*.5*9.81))/2,330]) for i in range(0,N-3)]+[250,150]
   t = rad.t_i(v, p)
   return [t, p, v]
 

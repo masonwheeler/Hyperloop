@@ -6,6 +6,7 @@ import routes
 import time
 import filterroutes
 import compute
+import math
 
 def pair_analysis(start,end):
     bounds,startLatLng,endLatLng = boundingpolygon.bounding_polygon(start,end)
@@ -29,18 +30,18 @@ end = "San_Francisco"
 degreeConstaint = 60
 numPaths = 50 #max = 500.
 latticeWithCost, angles = pair_analysis(start,end)
-routes = gen_routes(latticeWithCost, angles, degreeConstaint, numPaths)[0:3]
+routes = gen_routes(latticeWithCost, angles, degreeConstaint, numPaths)
 routesPoints = [route.points for route in routes]
-routes_Longlat = [[point[2] for point in routePoints] for routePoints in routesPoints]
+routes_Longlat = [[[(2*math.pi/360)*point[2][0],(2*math.pi/360)*point[2][1]] for point in routePoints] for routePoints in routesPoints]
 print "Computing comfort and triptime..."
-goodies = [[] for index in range(3)]
-n = 0
+goodies = [[] for index in range(len(routes))]
+n = 1
 for i in range(len(routes_Longlat)):
   n += 1
   print "Attaching comfort and triptime to "+ str(n) + "th route..."
   goodies[i] = [compute.comfort_and_Triptime(routes_Longlat[i])]
+  print routes_Longlat[i]
 goodies = [good[0] for good in goodies]
-print goodies
 route_comforts, route_triptimes = zip(*goodies)
 print "Computing land cost..."
 route_costs = [route.cost for route in routes]
@@ -63,5 +64,5 @@ def comfortToActual(comfort_rating):
      return "extremely irregular, unpleasant, annoying; prolonged exposure intolerable"
    else:
      return "extremely unpleasant; prolonged exposure harmful"
-results = [["Route #"+str(i),str(results[i][0])+" billion USD",comfortToActual(results[i][1]),str(results[i][2]/60)+" minutes"] for i in range(len(results))]
+results = [["Route #"+str(i+1),str(results[i][0])+" billion USD",str(results[i][1])+"Wz: "+comfortToActual(results[i][1]),str(results[i][2]/60)+" minutes"] for i in range(len(results))]
 print results
