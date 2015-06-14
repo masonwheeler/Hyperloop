@@ -52,7 +52,7 @@ def get_pairs(lattice, angles):
                 costA = pointA[3]
                 costB = pointB[3]               
                 pair = Path(costA + costB, costB, [pointA,pointB],
-                pointA[0][0],pointA[0][1],pointB[0][1],0,0,"not noticeable",0,[],[],[],[],["Data about pylon placement and pylon cost."])
+                pointA[0][0],pointA[0][1],pointB[0][1],0,0,0,0,0,0,0,0,0)
                 slicePairs.append(pair)
         slicePairs.sort(key = lambda pair: pair.cost)
         pairs.append(slicePairs)       
@@ -71,7 +71,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
                     pathA.endCost + pathB.endCost,
                     pathA.waypoints + pathB.waypoints[1:],
                     pathA.startXVal, pathA.startYVal,
-                    pathB.endYVal, pathA.startAngle, pathB.endAngle,"not noticeable",0,[],[],[],[],["Data about pylon placement and pylon cost."])
+                    pathB.endYVal, pathA.startAngle, pathB.endAngle,0,0,0,0,0,0,0)
                     merged.append(mergedPath)
     merged.sort(key = lambda path: path.cost)
     selected = merged[:min(numPaths,len(merged))]

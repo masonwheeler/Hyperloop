@@ -8,9 +8,26 @@ def Coeffs_to_VelAccel(a, s, t):
    d2a = [[j * quartic[j+1] for j in range(4)] for quartic in da]
    v = [intrp.Coeffs_to_Vals(da, five_minute_interval, t) for five_minute_interval in s]
    A = [intrp.Coeffs_to_Vals(d2a, five_minute_interval, t) for five_minute_interval in s]
-   t3 = time.time()
-   print "Evaluating both 1st and 2nd derivatives took " + str(t3-t2) + " seconds."
    return [v, A]
+
+def comfortToActual(comfort_rating):
+   if comfort_rating < 1:
+     return "not noticeable"
+   elif comfort_rating < 2:
+     return "just noticeable"
+   elif comfort_rating < 2.5:
+     return "clearly noticeable"
+   elif comfort_rating < 3:
+     return "more pronounced but not unpleasant"
+   elif comfort_rating < 3.25:
+     return "strong, irregular, but still tolerable"
+   elif comfort_rating < 3.5:
+     return "very irregular"
+   elif comfort_rating < 4:
+     return "extremely irregular, unpleasant, annoying; prolonged exposure intolerable"
+   else:
+     return "extremely unpleasant; prolonged exposure harmful"
+
 
 def interpolation_data(tht_i_phi_i):
    #Input is waypoints in long-lat (in radians): tht_i_phi_i
