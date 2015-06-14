@@ -30,19 +30,16 @@ def fetch_Interpolation_Data(route):
   thtiphii = [[(2*math.pi/360)*point[2][0],(2*math.pi/360)*point[2][1]] for point in routePoints]
   return compute.interpolation_data(thtiphii)
 
-start = "Los_Angeles"
-end = "San_Francisco"
-degreeConstaint = 30
-numPaths = 100 #max = 500.
-latticeWithCost, angles = pair_analysis(start,end)
-routes = gen_routes(latticeWithCost, angles, degreeConstaint, numPaths)
-print "Computing comfort and triptime..."
-n = 0
-for route in routes:
-  n += 1
-  print "Attaching comfort and triptime to "+ str(n) + "th route..."
-  route.comfort, route.triptime, route.plot_times, route.points, route.vel_points, route.accel_points = fetch_Interpolation_Data(route)
-print [route.comfort for route in routes]
+def outputRoutes(start,end,degreeConstaint,numPaths):
+  latticeWithCost, angles = pair_analysis(start,end)
+  routes = gen_routes(latticeWithCost, angles, degreeConstaint, numPaths)
+  print "Computing comfort and triptime..."
+  n = 0
+  for route in routes:
+    n += 1
+    print "Attaching comfort and triptime to "+ str(n) + "th route..."
+    route.comfort, route.triptime, route.plot_times, route.points, route.vel_points, route.accel_points = fetch_Interpolation_Data(route)
+  return routes
 
 
 
