@@ -7,18 +7,32 @@ import time
 
 class Path:
     cost = 0
-    endCost = 0
+    comfort = "not noticeable"
+    triptime = 0
+    plot_times = []
     points = []
+    vel_points = [] 
+    accel_points = []
+    pylon_data = ["Data about pylon placement and pylon cost."]
+    endCost = 0
+    waypoints = []
     startXVal = 0
     startYVal = 0
     endYVal = 0
     startAngle = 0
     endAngle = 0
-    def __init__(self,cost,endCost,points,startXVal,startYVal,endYVal,
+    def __init__(self,cost,comfort,triptime,endCost,waypoints,startXVal,startYVal,endYVal,
     startAngle,endAngle):
         self.cost = cost
-        self.endCost = endCost
+        self.comfort = comfort
+        self.triptime = triptime
+        self.plot_times = plot_times
         self.points = points
+        self.vel_points = vel_points
+        self.accel_points = accel_points
+        self.pylon_data = pylon_data
+        self.endCost = endCost
+        self.waypoints = waypoints
         self.startXVal = startXVal
         self.startYVal = startYVal
         self.endYVal = endYVal
@@ -54,7 +68,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
                 if(abs(pathA.endAngle - pathB.startAngle) < degreeConstraint):
                     mergedPath = Path(pathA.cost + pathB.cost - pathA.endCost,
                     pathA.endCost + pathB.endCost,
-                    pathA.points + pathB.points[1:],
+                    pathA.waypoints + pathB.waypoints[1:],
                     pathA.startXVal, pathA.startYVal,
                     pathB.endYVal, pathA.startAngle, pathB.endAngle)
                     merged.append(mergedPath)
