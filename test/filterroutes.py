@@ -60,11 +60,8 @@ def get_pairs(lattice, angles):
 
 def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
     merged = []
-    m = 0
     for pathA in pathsA:
         for pathB in pathsB:
-            m += 1
-            print "Merging "+str(m)+"th path"
             if(pathA.endYVal == pathB.startYVal):
                 if(abs(pathA.endAngle - pathB.startAngle) < degreeConstraint):
                     mergedPath = Path(pathA.cost + pathB.cost - pathA.endCost,
@@ -111,8 +108,8 @@ def treefold(pairs, degreeConstraint, angles, numPaths):
            pathsB = layers[layersIndex][workingLayerIndex + 1]
            merged, mplus = merge_filter(pathsA,pathsB,degreeConstraint,angles,numPaths)
            layers[layersIndex+1].append(merged)
-           n += mplus
-           print n       
+           n += 1
+           print "Catenating paths of length "+str(2**n)+"..."       
            workingLayerIndex += 2
         if breakFlag:
             break

@@ -39,6 +39,7 @@ def outputRoutes(start,end,degreeConstaint,numPaths):
     n += 1
     print "Attaching comfort and triptime to "+ str(n) + "th route..."
     route.comfort, route.triptime, route.plot_times, route.points, route.vel_points, route.accel_points = fetch_Interpolation_Data(route)
+    route.waypoints = [point[2] for point in route.waypoints]
   return routes
 
 
