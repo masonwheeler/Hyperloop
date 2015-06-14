@@ -62,6 +62,10 @@ def interpolation_data(tht_i_phi_i):
    
    plot_times = sum(s,[])
    joined_v = sum(v,[])
+   print "Sampling velocity is:"
+   print v
+   print "joined velocity is:"
+   print joined_v
    joined_a = sum(a,[])
    pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t), intrp.Coeffs_to_Vals(az, plot_times, t))
    vpts = [np.linalg.norm(vel_vector) for vel_vector in v]
