@@ -1,5 +1,6 @@
 import comfort as cmft
 import interpolation as intrp
+import numpy as np
 import math
 import time
 
