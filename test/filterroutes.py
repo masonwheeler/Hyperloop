@@ -71,7 +71,7 @@ def merge_filter(pathsA, pathsB, degreeConstraint, angles, numPaths):
                     pathA.endCost + pathB.endCost,
                     pathA.waypoints + pathB.waypoints[1:],
                     pathA.startXVal, pathA.startYVal,
-                    pathB.endYVal, pathA.startAngle, pathB.endAngle)
+                    pathB.endYVal, pathA.startAngle, pathB.endAngle,"not noticeable",0,[],[],[],[],["Data about pylon placement and pylon cost."])
                     merged.append(mergedPath)
     merged.sort(key = lambda path: path.cost)
     selected = merged[:min(numPaths,len(merged))]
