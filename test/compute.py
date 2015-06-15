@@ -6,9 +6,7 @@ import time
 
 def Coeffs_to_VelAccel(a, s, t):
    da = [[j * quintic[j] for j in range(1,6)] for quintic in a]
-   print da
    d2a = [[j * quartic[j] for j in range(1,5)] for quartic in da]
-   print d2a
    v = [intrp.Coeffs_to_Vals(da, five_minute_interval, t) for five_minute_interval in s]
    A = [intrp.Coeffs_to_Vals(d2a, five_minute_interval, t) for five_minute_interval in s]
    return [v, A]
