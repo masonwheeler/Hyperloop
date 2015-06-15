@@ -59,9 +59,9 @@ def interpolation_data(tht_i_phi_i):
    
    plot_times = sum(s,[])
    joined_v = sum(v,[])
+   joined_a = sum(a,[])
    print joined_v
    print joined_a
-   joined_a = sum(a,[])
    pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t), intrp.Coeffs_to_Vals(az, plot_times, t))
    vpts = [np.linalg.norm(vel_vector) for vel_vector in joined_v]
    apts = [np.linalg.norm(accel_vector) for accel_vector in joined_a]
