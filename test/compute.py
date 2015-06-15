@@ -33,17 +33,14 @@ def comfortToActual(comfort_rating):
 def interpolation_data(tht_i_phi_i):
    #Input is waypoints in long-lat (in radians): tht_i_phi_i
    #Compute coefficients of piecewise quintic polynomial:
-   print "Pulling coefficients of piecewise quintic polynomial..."
    ax, ay, az, t = intrp.Points_to_Coeffs(tht_i_phi_i, 6)
 
    # Form list "s" of sampling times:
-   print "Forming list of sampling times..."
    Q = 2**8. # number of rectangles in the Riemann sum (for efficiency, keep this a power of two).
    L = int(math.floor(t[-1]/300))
    s = [[t[-1] * (i + j/Q)/L + .05 for j in range(int(Q))] for i in range(L)]
 
    # Sample velocity and acceleration at "s":
-   print "Sampling velocity and acceleration at these times..."
    vx, Ax = Coeffs_to_VelAccel(ax, s, t)
    vy, Ay = Coeffs_to_VelAccel(ay, s, t)
    vz, Az = Coeffs_to_VelAccel(az, s, t)
@@ -53,7 +50,6 @@ def interpolation_data(tht_i_phi_i):
    #Output is comfort rating and triptime:
    T = t[-1] / L
    mu = 1
-   print "Computing comfort rating of sampled data..."
    comfort_Ratings = [cmft.comfort(v[i], a[i], T, mu) for i in range(len(v))]
    comfort = max(comfort_Ratings)
    triptime = t[-1]
