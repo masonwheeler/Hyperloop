@@ -43,11 +43,8 @@ def interpolation_data(tht_i_phi_i):
 
    # Sample velocity and acceleration at "s":
    print "Sampling velocity and acceleration at these times..."
-   print "Sampling the x-component..."
    vx, Ax = Coeffs_to_VelAccel(ax, s, t)
-   print "Sampling the y-component..."
    vy, Ay = Coeffs_to_VelAccel(ay, s, t)
-   print "Sampling the z-component..."
    vz, Az = Coeffs_to_VelAccel(az, s, t)
    v = [zip(vx[i], vy[i], vz[i]) for i in range(len(vx))]
    a = [zip(Ax[i], Ay[i], Az[i]) for i in range(len(Ax))]
@@ -62,6 +59,8 @@ def interpolation_data(tht_i_phi_i):
    
    plot_times = sum(s,[])
    joined_v = sum(v,[])
+   print joined_v
+   print joined_a
    joined_a = sum(a,[])
    pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t), intrp.Coeffs_to_Vals(az, plot_times, t))
    vpts = [np.linalg.norm(vel_vector) for vel_vector in joined_v]
