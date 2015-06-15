@@ -5,7 +5,7 @@ import numpy as np
 import radiusOfCurvature as rad
 import quintic as quint
 
-def rv(radius_):
+def rv(radius):
 	return math.sqrt(radius*.5*9.81)
 
 def parse(tht_i_phi_i):
