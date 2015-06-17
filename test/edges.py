@@ -8,8 +8,6 @@ import pyloncost
 
 class Edge:
     cost = 0
-    #startPoint = 0
-    #endPoint = 0
     startYVal = 0
     endYVal = 0
     angle = 0
@@ -40,8 +38,6 @@ class Edge:
         return pylonCost
 
     def __init__(self,startPoint,endPoint):
-        #self.startPoint = startPoint
-        #self.endPoint = endPoint
         self.latlngCoords = [startPoint.latlngCoords, endPoint.latlngCoords]
         self.xyCoords = [startPoint.xyCoords, endPoint.xyCoords]
         self.length = proj.xy_distance(startPoint.xyCoords,endPoint.xyCoords)
