@@ -1,5 +1,7 @@
 import pyproj
 
+import util
+
 def omerc_proj(startLonLat, endLonLat):
     startLon, startLat = startLonLat
     endLon, endLat = endLonLat
@@ -27,3 +29,7 @@ def lonlats_to_xys(lonlats,proj):
 
 def xys_to_lonlats(xys, proj):
     return [xy_to_lonlat(xy,proj) for xy in xys]
+
+def xy_distance(xyA, xyB):
+    distanceAB = util.norm(util.subtract(xyA,xyB))
+    return distanceAB

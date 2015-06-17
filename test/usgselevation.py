@@ -1,6 +1,18 @@
 import proj
+import geotiff
 
-usgsProj = proj.usgs_proj()
-print(proj.lonlats_to_xys([[-118,34],[-122,37]],usgsProj))
+
+
+def get_elevations(geotiff,lonlats):
+    ds = gdal.Open(geotiff)
+    gt = ds.GetGeoTransform()
+    rb = ds.GetRasterBand(1)
+    srs = osr.SpatialReference()
+    srs.ImportFromWkt(ds.GetProjection())
+    srsLatLon = srs.CloneGeogCS()
+    ct = osr.CoordinateTransformation(srsLatLon,srs)
+    
+    return
+
 
 #def get_boundingbox(latlng)

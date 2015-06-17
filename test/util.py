@@ -26,6 +26,8 @@ def swap_pair(pair):
 def swap_pairs(pairs):
     return [swap_pair(pair) for pair in pairs]
 
+def get_maxmin(inList):
+    return [max(inList), min(inList)]
 
 def fast_concat(listOfLists):
     return list(itertools.chain.from_iterable(listOfLists))
@@ -33,6 +35,9 @@ def fast_concat(listOfLists):
 def remove_duplicates(inList):
     return list(OrderedDict.fromkeys(list(itertools.chain(*inList))))
 
+def smart_concat(listA,listB):
+    newList = listA + listB[1:]
+    return newList
 
 def operation_on_pieces(operation,pieceSize,inList):
     pieces=[inList[index:index+pieceSize] for index in xrange(0,len(inList),pieceSize)]

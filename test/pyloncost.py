@@ -8,10 +8,9 @@ import heights
 import clothoid
 import util
 
-"""
 def curvature(location1,location2,inList,pylonSpacing):
     data = clothoid.buildClothoid(location1 * pylonSpacing, 
-            List[location1], 0, location2 * pylon_spacing, List[location2], 0)
+      inList[location1], 0, location2 * pylonSpacing, inList[location2], 0)
     if data[0] < 0:
         return data[1]
     else:
@@ -20,30 +19,29 @@ def curvature(location1,location2,inList,pylonSpacing):
 
 def interpolating_indices(inList, pylonSpacing, kTolerance):
     truncatedList = inList[1 : len(inList) - 1]
-    truncatedSortedIndices = util.getIndices(truncatedList)
-    indices = [0, truncatedSortIndices[0] + 1, N - 1]
+    truncatedSortedIndices = util.get_indices(truncatedList)
+    indices = [0, truncatedSortedIndices[0] + 1, len(inList) - 1]
     i = 1
-    while (Curvature(indices[i-1],indices[i],inList,pylonSpacing)<kTolerance
-        and Curvature(indices[i],indices[i+1],inList,pylonSpacing)<kTolerance
-        and indices != range(len(inList))):
+    while (curvature(indices[i-1],indices[i],inList,pylonSpacing) < kTolerance
+      and curvature(indices[i],indices[i+1],inList,pylonSpacing) < kTolerance
+      and indices != range(len(inList))):
         k = 0
+        print("b")
         while (truncatedSortedIndices[1] + 1 > indices[k]):
-            ++k
+            k += 1
+            print(k)
         i = k
         indices.insert(k, truncatedSortedIndices[1] + 1)
         del truncatedSortedIndices[0]
     return indices
-"""
 
-def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
-        costPerPylonLength, pylonBaseCost):
-    #kTolerance = gTolerance / math.pow(maxSpeed, 2)
-    time.sleep(0.2)
-    rawHeights=heights.get_pylonheights(cellCenter,primitiveVector,pylonSpacing)
-    #print(rawHeights)
-    """
+def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
+               costPerPylonLength, pylonBaseCost):
+    kTolerance = gTolerance / math.pow(maxSpeed, 2)
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
-    indices = InterpolatingIndices(fixedHeights,pylonSpacing,kTolerance)
+    print("a")
+    indices = interpolating_indices(fixedHeights,pylonSpacing,kTolerance)
+    print("c")
     indicesNum = len(indices)
     data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
         fixedHeights[indices[i]], 0, j[i+1] * pylonSpacing, 
@@ -72,10 +70,9 @@ def pylon_cost(cellCenter, primitiveVector, pylonSpacing, maxSpeed, gTolerance,
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
     print("The total number of pylons used is: " + numberOfPylons + ".")
-    print("The sum of the lengths of the pylons used is: " + totalLength + ".")
+    print("The sum of the lengths of the pylons is: " + totalLength + ".")
     pylonCostTotal = baseCost * numberOfPylons + costPerLength * totalLength
-    """
-    return 0 #pylonCostTotal
+    return pylonCostTotal
 
     
         

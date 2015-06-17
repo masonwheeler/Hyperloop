@@ -20,8 +20,8 @@ def bounding_polygon(origin,destination):
             " coordinates in the directions.")
     startLatLng = coordinatesList[0]
     endLatLng = coordinatesList[-1]
-    print("The coordinates of the start are: " + str(startLatLng) +
-            ". The coordinates of the end are: " + str(endLatLng) + ".")
+    print("The coordinates of the start are: " + str(startLatLng) + ".")
+    print("The coordinates of the end are: " + str(endLatLng) + ".")
     coordGroups = groupcoords.group_coords(coordinatesList,groupSize)
     print("Using polygons with " + str(groupSize) + " edges there are "
             + str(len(coordGroups)) + " polygons in total.")
@@ -33,4 +33,3 @@ def bounding_polygon(origin,destination):
     print("Merging the polygons took: " + str(t3-t2) + " seconds.")
     print("The boundary polygon has " + str(len(polygon)) + " sides.")
     return [polygon,startLatLng,endLatLng]
-

@@ -1,5 +1,4 @@
 from osgeo import gdal
-from osgeo import osr
 import struct
 
 import config

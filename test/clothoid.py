@@ -50,19 +50,19 @@ def rLommel(mu, nu, b):
         ++n
     return r
 
-def exalXYaZero(b,k):
+def evalXYaZero(b,k):
     X,Y = [0]*(k+1), [0]*(k+1)
     if m.fabs(b) < TOLERANCE:
-        X[0] = 1 - (m.pow(b,2)/6) * (1-m,pow(b,2)/20)
+        X[0] = 1 - (m.pow(b,2)/6) * (1-m.pow(b,2)/20)
         Y[0] = (m.pow(b,2)/2) * (1 - (m.pow(b,2)/6) * (1 - m.pow(b,2)/ 30))
     else:
         X[0] = m.sin(b)/b
         Y[0] = (1 - m.cos(b))/b
     A = b * m.sin(b)
-    B = b * D
     C = -m.pow(b,2) * m.sin(b)
     D = m.sin(b) - b * m.cos(b)
-    for n in raneg(1,k+1):
+    B = b * D
+    for n in range(1,k+1):
         X[n] = (n * A * rLommel(n + 0.5, 1.5, b) + B * rLommel(n + 1.5, 0.5, b) + m.cos(b)) / (1 + n)
         Y[n] = (C * rLommel(n + 1.5, 1.5, b) + m.sin(b)) / (2 + n) + D * rLommel(n + 0.5, 0.5, b)
     return [X,Y]
@@ -84,8 +84,10 @@ def evalXYaSmall(a,b,k,p):
 def evalXY(a,b,c,k):
     X,Y = [0]*(k+1), [0]*(k+1)
     if m.fabs(a) < TOLERANCE:
+        print("a is small")
         [X0,Y0] = evalXYaSmall(a,b,k,2)
     else:
+        print("a is large")
         [X0,Y0] = evalXYaLarge(a,b,k)
     for j in range(k+1):
         X[j] = X0[j] * m.cos(c) - Y0[j] * m.sin(c)
@@ -94,10 +96,15 @@ def evalXY(a,b,c,k):
 
 #Computes minimum-length clothoid:
 def findA(AGuess, DeltaTheta, DeltaPhi, tolerance):
-    A = Aguess
+    A = AGuess
     I = evalXY(2 * A, DeltaTheta - A, DeltaPhi, 2)
-    while m.fabs(I[1][0]) > tol:
-        A += - I[1][0]/(I[0][2] - I[0][1])
+    i = 0
+    while m.fabs(I[1][0]) > tolerance:
+        print("finding A...")
+        print(i)
+        print(m.fabs(I[1][0]))
+        i += 1
+        A += - I[1][0] / (I[0][2] - I[0][1])
         I = evalXY(2 * A, DeltaTheta - A, DeltaPhi, 2)
     return A
 
@@ -116,7 +123,7 @@ def buildClothoid(x0, y0, theta0, x1, y1, theta1):
     Dphi = normalizeAngle(theta0 - phi)
     Dtheta = normalizeAngle(theta1 - theta0)
     A = findA(2.4674 * Dtheta + 5.2478 * Dphi, Dtheta, Dphi, TOLERANCE)
-    I = evalXY(2 * A, Dtht - A, Dphi, 1)
+    I = evalXY(2 * A, Dtheta - A, Dphi, 1)
     L = r/ I[0][0]
     kappa = (Dtheta - A) / L
     kappaPrime = (2 * A) / m.pow(L,2)
