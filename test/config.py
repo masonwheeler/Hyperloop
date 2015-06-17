@@ -1,4 +1,9 @@
 """
+Runtime Parameters
+"""
+testingMode = True
+
+"""
 Physical Constants.
 """
 radiusOfEarth = 6.371*(10**6)

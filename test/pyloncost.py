@@ -8,7 +8,9 @@ import heights
 import clothoid
 import util
 
-def curvature(location1,location2,inList,pylonSpacing):
+def curvature(location1, location2, inList, pylonSpacing):
+    #print("Called curvature with variables:")
+    #print(location1, location2, inList, pylonSpacing)
     data = clothoid.buildClothoid(location1 * pylonSpacing, 
       inList[location1], 0, location2 * pylonSpacing, inList[location2], 0)
     if data[0] < 0:
@@ -28,8 +30,9 @@ def interpolating_indices(inList, pylonSpacing, kTolerance):
         k = 0
         print("b")
         while (truncatedSortedIndices[1] + 1 > indices[k]):
+            print("entered loop")
             k += 1
-            print(k)
+        print(i)
         i = k
         indices.insert(k, truncatedSortedIndices[1] + 1)
         del truncatedSortedIndices[0]
@@ -39,9 +42,9 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
                costPerPylonLength, pylonBaseCost):
     kTolerance = gTolerance / math.pow(maxSpeed, 2)
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
-    print("a")
+    #print(fixedHeights)
     indices = interpolating_indices(fixedHeights,pylonSpacing,kTolerance)
-    print("c")
+    #print("c")
     indicesNum = len(indices)
     data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
         fixedHeights[indices[i]], 0, j[i+1] * pylonSpacing, 
