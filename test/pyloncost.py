@@ -28,11 +28,11 @@ def interpolating_indices(inList, pylonSpacing, kTolerance):
       and curvature(indices[i],indices[i+1],inList,pylonSpacing) < kTolerance
       and indices != range(len(inList))):
         k = 0
-        print("b")
+        #print("b")
         while (truncatedSortedIndices[1] + 1 > indices[k]):
-            print("entered loop")
+            #print("entered loop")
             k += 1
-        print(i)
+        #print(i)
         i = k
         indices.insert(k, truncatedSortedIndices[1] + 1)
         del truncatedSortedIndices[0]
@@ -47,19 +47,19 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     #print("c")
     indicesNum = len(indices)
     data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
-        fixedHeights[indices[i]], 0, j[i+1] * pylonSpacing, 
+        fixedHeights[indices[i]], 0, indices[i+1] * pylonSpacing, 
         fixedHeights[indices[i+1]], 0)
         for i in range(indicesNum - 1)]
     kappas, kappaPs, Ls = zip(*data)
-    x0s = [n * pylonSpacing for n in range(len(List))]
-    xVals = util.fastConcat(
+    x0s = [n * pylonSpacing for n in range(len(fixedHeights))]
+    xVals = util.fast_concat(
         [[x0s[indices[i]] + 
-        s * bC.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[0][0]
+        s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[0][0]
         for s in np.linspace(0, Ls[i], 100)]
         for i in range(len(indices)-1)])
-    yVals = util.fastConcat(
+    yVals = util.fast_concat(
         [[fixedHeights[indices[i]] + 
-        s * bC.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[1][0]
+        s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[1][0]
         for s in np.linspace(0, Ls[i], 100)]
         for i in range(len(indices)-1)])
     yValsPlot = [0] * len(fixedHeights)
@@ -68,13 +68,13 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
             yValsPlot[indexB] = yVals[100 * indexA
                 + int((indexB - indices[indexA]) * 100 / 
                     (indices[indexA + 1] - indices[indexA]))]
-    pylonHeights = [m.fabs(pylonHeight) for pylonHeight in 
-        util.subtract(yvalsPlot,fixedHeights)]
+    pylonHeights = [math.fabs(pylonHeight) for pylonHeight in 
+        util.subtract(yValsPlot,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
-    print("The total number of pylons used is: " + numberOfPylons + ".")
-    print("The sum of the lengths of the pylons is: " + totalLength + ".")
-    pylonCostTotal = baseCost * numberOfPylons + costPerLength * totalLength
+    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
+    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
+    pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength
     return pylonCostTotal
 
     

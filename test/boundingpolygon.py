@@ -12,8 +12,8 @@ maxAttempts = config.maxAttempts
 
 def bounding_polygon(origin,destination):
     t0 = time.clock()
-    config.coordinatesList = directions.coordinate_list(origin,destination)
-    coordinatesList = config.coordinatesList
+    config.directionsCoords = directions.coordinate_list(origin,destination)
+    coordinatesList = config.directionsCoords
     t1 = time.clock()
     print("Getting the coordinates took: " + str(t1-t0) + " seconds.")
     print("There are " + str(len(coordinatesList)) +

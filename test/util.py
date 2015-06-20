@@ -78,3 +78,16 @@ def get_indices(inList):
 def fix_inputString(inputString):
     titleString = inputString.title()
     return titleString.replace(" ","_")
+
+def get_vectors(vector, spacing):
+    effectiveScale = util.norm(vector) / spacing
+    unitVector = util.scale(1.0 / effectiveScale, vector)
+    numPoints = int(effectiveScale)
+    pointIndices = range(1, numPoints + 1)
+    pointVectors = [util.scale(index, unitVector) for index in pointIndices]
+    return pointVectors
+
+def build_grid(vector, spacing, startVector):
+    vectors = get_vectors(vector, spacing)
+    grid = [add(vector, startVector) for vector in vectors]
+    return grid

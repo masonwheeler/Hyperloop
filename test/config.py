@@ -2,6 +2,8 @@
 Runtime Parameters
 """
 testingMode = True
+hasNlcd = False
+cachePath = "/home/jonward/Devel/Hyperloop/test/cache/"
 
 """
 Physical Constants.
@@ -23,11 +25,12 @@ gTolerance = 0.2 * 9.8
 Uninitialized, hence for storage.
 """
 
+
 proj = 0
 angle = 0
 sizeFactor = 0
 startVector = 0
-coordinatesList = 0
+directionsCoords = 0
 
 """
 Initialized Algorithm paramters.
@@ -47,14 +50,20 @@ Nth = 5
 finalBuffer = 10**-6
 
 """
-File paths.
+For Usgs-Elevation.
+"""
+
+usgsFtpPath = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
+
+"""
+For Landcover.
 """
 
 geotiffFilePath = "/home/ubuntu/Hyperloop/test/cache/us.tif"
-
+landPointSpacing = 30 #spacing between points for land cost sampling in meters
 
 """
-API-Specific.
+For Google-Elevation
 """
 
 # Google Elevation API
@@ -66,11 +75,13 @@ Legal Parameters
 """
 
 rightOfWayDistance = 30 #Distance right of way extends to on both sides of road.
+landPadding = 30
 
 """
 Financial Parameters, all costs in dollars.
 """
 
+rightOfWayCost = 0
 costPerPylonLength = 10000
 pylonBaseCost = 2000
 

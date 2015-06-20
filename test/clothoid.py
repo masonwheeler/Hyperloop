@@ -29,8 +29,8 @@ def evalXYaLarge(a, b, k):
     l = s * b / (z * m.pi)
     gamma = - s * m.pow(b, 2) / (2 * m.fabs(a))
     t = 0.5 * a + b
-    DC0 = C(1 + z) - C(1)
-    DS0 = S(1 + z) - S(1)
+    DC0 = C(l + z) - C(l)
+    DS0 = S(l + z) - S(l)
     X[0] = (m.cos(gamma) * DC0 - s * m.sin(gamma) * DS0) / z
     Y[0] = (m.sin(gamma) * DC0 + s * m.cos(gamma) * DS0) / z
     X[1] = (m.sin(t) - b * X[0]) / a
@@ -38,7 +38,7 @@ def evalXYaLarge(a, b, k):
     for j in range(1, k):
         X[j + 1] = (m.sin(t) - b * X[j] - j * Y[j - 1]) / a
         Y[j + 1] = (j * X[j - 1] - b * Y[j] - m.cos(t)) / a
-    return [X,Y]
+    return [X, Y]
 
 def rLommel(mu, nu, b):
     t = (1/(mu + nu + 1)) * (1/(mu - nu + 1))
@@ -121,16 +121,16 @@ def normalizeAngle(phi):
     return phi
 
 def buildClothoid(x0, y0, theta0, x1, y1, theta1):
-    print("called buildClothoid with variables: ")
-    print(x0, y0, theta0, x1, y1, theta1)
+    #print("called buildClothoid with variables: ")
+    #print(x0, y0, theta0, x1, y1, theta1)
     Dx = x1 - x0
     Dy = y1 - y0
     r = m.sqrt(m.pow(Dx,2) + m.pow(Dy,2))
     phi = m.atan2(Dy,Dx)
     Dphi = normalizeAngle(theta0 - phi)
     Dtheta = normalizeAngle(theta1 - theta0)
-    print("then tried to find A with variables: ")
-    print(2.4674 * Dtheta + 5.2478 * Dphi, Dtheta, Dphi, TOLERANCE)
+    #print("then tried to find A with variables: ")
+    #print(2.4674 * Dtheta + 5.2478 * Dphi, Dtheta, Dphi, TOLERANCE)
     A = findA(2.4674 * Dtheta + 5.2478 * Dphi, Dtheta, Dphi, TOLERANCE)
     I = evalXY(2 * A, Dtheta - A, Dphi, 1)
     L = r / I[0][0]

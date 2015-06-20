@@ -13,7 +13,9 @@ def build_lattice(start,end):
     lattice.set_params(startXY,endXY)
     transformedBounds = lattice.transform_bounds(boundsXY,startXY,endXY)
     baseLattice = lattice.base_lattice(transformedBounds)
-    finishedLattice = lattice.attach_lnglats(baseLattice)    
+    lnglatsLattice = lattice.attach_lnglats(baseLattice)    
+    rightOfWayLattice = lattice.add_rightOfWay(lnglatsLattice,
+                           config.directionsCoords)
     return finishedLattice
 
 def get_routes(finishedLattice): 

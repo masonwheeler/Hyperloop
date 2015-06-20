@@ -3,7 +3,7 @@ import simplejson
 
 import config
 
-def get_elevation(coords):
+def google_elevation(coords):
     args = {
         'locations': '|'.join([str(coord[0]) + ',' + str(coord[1]) for coord in coords])
     }
@@ -20,4 +20,8 @@ def get_elevation(coords):
         print(response['status'])
 
     return elevationArray
+
+def usgs_elevation(coords):
+
+    return 
 

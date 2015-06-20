@@ -82,30 +82,23 @@ def attach_lnglats(lattice):
     lattice[0][0].display()
     return lattice
 
-    """
-    x0, y0 = transform.untransform_point(config.angle, config.sizeFactor,
-            config.startVector, [0,0])
-    x1, y1 = transform.untransform_point(config.angle, config.sizeFactor,
-            config.startVector, [0,config.latticeXSpacing])
-    x2, y2 = transform.untransform_point(config.angle, config.sizeFactor,
-            config.startVector, [config.latticeYSpacing,0])
-    xPrimVec = [x1 - x0, y1 - y0]
-    yPrimVec = [x2 - x0, y2 - y0]
-    #print("Completed generating primitive vectors.")
-    #print("In the x-direction: " + str(xPrimVec))
-    #print("In the y-direction: " + str(yPrimVec))
-    """
+def distance_from_rightofway(point, xydirectionsCoords):
+    distances = [proj.xy_distance(point.xyCoords, xyCoord) for xyCoord in 
+                 xyDirectionsCoords]
+    distance = min(distances)
+    return distance
 
-"""def download_elevationdata(lattice):
-      for eachSlice in lattice:
-          for eachPoint in eachSlice:           
-    return"""
 
-"""
-def attach_cost(geotiff,lattice,directionsCoords,primVec):
-    lattice = cost.attach_cost(geotiff,lattice,directionsCoords,primVec) 
-    print("Completed attaching costs.")
-    print("Here is a sample Lattice point:")
-    print(lattice[0][0])
+def add_rightOfWay(lattice, directionsCoords):
+    lonlatDirectionsCoords = util.swap_pairs(directionsCoords)
+    xyDirectionsCoords = proj.lonlats_to_xys(lonlatDirectionsCoords)
+    for eachSlice in lattice:
+        for eachPoint in eachSlice:
+            eachPoint.distanceFromRightOfWay = distance_from_rightofway(
+                                               eachPoint, xyDirectionsCoords)
+        sortedSlice = sorted(eachSlice,
+                      key = lambda point : point.distanceFromRightOfWay)
+        closestPoint = sortedSlice[0]
+        closestPoint.inRightOfWay = True
     return lattice
-"""
+
