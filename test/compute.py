@@ -33,7 +33,7 @@ def comfortToActual(comfort_rating):
 def interpolation_data(p):
    #Input is waypoints in a chart: p
    #Compute coefficients of piecewise quintic polynomial:
-   ax, ay, az, t = intrp.Points_to_Coeffs(p, 6)
+   ax, ay, t = intrp.Points_to_Coeffs(p, 6)
 
    # Form list "s" of sampling times:
    Q = 2**8. # number of rectangles in the Riemann sum (for efficiency, keep this a power of two).
@@ -43,9 +43,9 @@ def interpolation_data(p):
    # Sample velocity and acceleration at "s":
    vx, Ax = Coeffs_to_VelAccel(ax, s, t)
    vy, Ay = Coeffs_to_VelAccel(ay, s, t)
-   vz, Az = Coeffs_to_VelAccel(az, s, t)
-   v = [zip(vx[i], vy[i], vz[i]) for i in range(len(vx))]
-   a = [zip(Ax[i], Ay[i], Az[i]) for i in range(len(Ax))]
+#   vz, Az = Coeffs_to_VelAccel(az, s, t)
+   v = [zip(vx[i], vy[i]) for i in range(len(vx))]
+   a = [zip(Ax[i], Ay[i]) for i in range(len(Ax))]
 
    #Output is comfort rating and triptime:
    T = t[-1] / L
