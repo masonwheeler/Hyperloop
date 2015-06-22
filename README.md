@@ -1,4 +1,3 @@
-This is a repository for work on the Hyperloop
+By Jonathan Ward and David Roberts for Hyperloop Transportation Technologies.
 
-In the process of writing this code we have used a few libraries and modules.
-In particular we have used pykml for kml editing and creation.
+This repository contains the code necessary to generate and evaluate arbitrary Hyperloop routes.
