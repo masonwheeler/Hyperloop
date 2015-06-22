@@ -4,6 +4,17 @@ import numpy as np
 import math
 import time
 
+
+def list_differentiate(List, dt):
+  N = len(List)
+  dList = [0]*N
+  for i in range(1,N):
+    dList[i] = (List[i+1]-List[i-1])/(2*dt)
+  dList[0] = (List[1]-List[0])/dt
+  dList[N-1] = (List[N-1]-List[N-2])/dt
+  return dList
+
+
 def Coeffs_to_VelAccel(a, s, t):
    da = [[j * quintic[j] for j in range(1,6)] for quintic in a]
    d2a = [[j * quartic[j] for j in range(1,5)] for quartic in da]
@@ -30,22 +41,27 @@ def comfortToActual(comfort_rating):
      return "extremely unpleasant; prolonged exposure harmful"
 
 
-def interpolation_data(p):
+def interpolation_data(p, edges):
    #Input is waypoints in a chart: p
    #Compute coefficients of piecewise quintic polynomial:
    ax, ay, t = intrp.Points_to_Coeffs(p, 6)
 
    # Form list "s" of sampling times:
+   N = len(p) - 1
    Q = 2**8. # number of rectangles in the Riemann sum (for efficiency, keep this a power of two).
-   L = int(math.floor(t[-1]/300))
-   s = [[t[-1] * (i + j/Q)/L + .05 for j in range(int(Q))] for i in range(L)]
+   s = [[t[i] * (j/Q)*(t[i+1] - t[i]) + .05 for j in range(int(Q))] for i in range(N + 1)]
+
+   h = [edge.heights for edge in edges]
+   dt = [times[1]-times[0] for times in s]
+   dh = [list_differentiate(heights, dt[i]) for i in range(len(h))]
+   d2h = [list_differentiate(dheights, dt[i]) for for i in range(len(h))]
+
 
    # Sample velocity and acceleration at "s":
    vx, Ax = Coeffs_to_VelAccel(ax, s, t)
    vy, Ay = Coeffs_to_VelAccel(ay, s, t)
-#   vz, Az = Coeffs_to_VelAccel(az, s, t)
-   v = [zip(vx[i], vy[i]) for i in range(len(vx))]
-   a = [zip(Ax[i], Ay[i]) for i in range(len(Ax))]
+   v = [zip(vx[i], vy[i], dh[i]) for i in range(len(vx))]
+   a = [zip(Ax[i], Ay[i], d2h[i]) for i in range(len(Ax))]
 
    #Output is comfort rating and triptime:
    T = t[-1] / L
