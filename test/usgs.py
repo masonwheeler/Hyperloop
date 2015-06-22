@@ -16,46 +16,51 @@ def get_bounding_coordinates(latlngCoord):
     lngBound = int(math.ceil(abs(lng)))
     return [latBound, lngBound]
 
-def get_ftpBaseName(latlngCoord):
+def get_coordstring(latlngCoord):
     latBound, lngBound = get_bounding_coordinates(latlngCoord)
     latstr, lngstr = "n" + str(latBound), "w" + str(lngBound).zfill(3)
-    ftpBaseName = ("_").join(["USGS","NED","13",latstr + lngstr,"IMG"])
-    return ftpBaseName
+    coordstring = latstr + lngstr
+    #ftpBaseName = ("_").join(["USGS","NED","13",latstr + lngstr,"IMG"])
+    return coordstring
 
-def needed_files(ftpBaseName):
-    extensions = [".img",".img.xml",".img.aux.xml"]
-    neededFiles = [ftpBaseName + extension for extension in extensions]
-    return neededFiles
+def img_filename(coordstring):
+    imgFilename = "img" + coordstring + "_13" + ".img"
+    return imgFilename
 
-def file_needed(fileName, neededFiles):
-    return (fileName in neededFiles)
+#def img_filename(imgBasename):
+#    imgFilename = imgBasename + ".img"
+#    return imgFilename
+
+#def file_needed(fileName, neededFiles):
+#    return (fileName in neededFiles)
 
 def file_exists(localFilePath):
     return os.path.isfile(localFilePath)
 
-def unzip_zipfile(zipFile, outPath, ftpBaseName):
-    fileHandle = open(zipFile, 'rb')
+def unzip_zipfile(zipFilePath, outPath, imgFileName):
+    fileHandle = open(zipFilePath, 'rb')
     zipFileData = zipfile.ZipFile(fileHandle)
-    neededFiles = needed_files(ftpBaseName)
-    neededFilePaths = [outPath + neededFile for neededFile in neededFiles]
-    existingFiles = map(file_exists, neededFilePaths)
-    allFilesExist = all(existingFiles)
-    if allFilesExist:
-        print("Already unzipped files.")
+    #neededFiles = needed_files(ftpBaseName)
+    #neededFilePaths = [outPath + neededFile for neededFile in neededFiles]
+    #existingFiles = map(file_exists, neededFilePaths)
+    #allFilesExist = all(existingFiles)
+    imgFilePath = outPath + imgFileName
+    imgExists = file_exists(imgFilePath)
+    if imgExists:
+        print("Already unzipped folder.")
         return 0
     else:
-        print("Unzipping files...")
+        print("Unzipping folder...")
         for fileName in zipFileData.namelist():
-            if file_needed(fileName, neededFiles):
-                print("Unzipping:")
-                print(name)
-                zipFileData.extract(name, outPath)
+            if (fileName == imgFileName):                
+                print(fileName + " extracted.")
+                zipFileData.extract(fileName, outPath)
         fileHandle.close()
         return 0
 
-def img_to_geotiff(ftpBaseName, unzipDirectory):    
-    imgFilePath = unzipDirectory + ftpBaseName + ".img"
-    tifFilePath = unzipDirectory + ftpBaseName + ".tif"
+def img_to_geotiff(imgFileName, unzipDirectory, coordstring):    
+    imgFilePath = unzipDirectory + imgFileName
+    tifFilePath = unzipDirectory + coordstring + ".tif"
     call(["gdal_translate","-of","Gtiff",imgFilePath,tifFilePath])
     return tifFilePath
 
@@ -71,39 +76,39 @@ def geotiff_pixelVal(geotiffFilePath, lonlatCoord):
     return pixelVal
 
 def get_elevation(latlngCoord):
-    ftpBaseName = get_ftpBaseName(latlngCoord)
-    ftpZipFileName = ftpBaseName + ".zip"
-    ftpFolderName = ftpBaseName + "/"
+    coordstring = get_coordstring(latlngCoord)
+    coordZipfile = coordstring + ".zip"
+    coordFolderName = coordstring + "/"
 
-    url = config.usgsFtpPath + ftpZipFileName
+    url = config.usgsFtpPath + coordZipfile
     downloadDirectory = config.cachePath
-    localFilePath = downloadDirectory + ftpZipFileName
+    zipFilePath = downloadDirectory + coordZipfile
 
-    if file_exists(localFilePath):
-        print("Already downloaded " + ftpZipFileName)
+    if file_exists(zipFilePath):
+        print("Already downloaded " + coordZipfile)
     else:
         print("Not yet downloaded.")
-        print("Now downloading " + ftpZipFileName + "...")
-        urllib.urlretrieve(url, localFilePath)
+        print("Now downloading " + coordZipfile + "...")
+        urllib.urlretrieve(url, zipFilePath)
         
-    unzipDirectory = downloadDirectory + ftpFolderName
-    unzip_zipfile(localFilePath, unzipDirectory, ftpBaseName)
-
+    unzipDirectory = downloadDirectory + coordFolderName
+    imgFileName = img_filename(coordstring)
+    unzip_zipfile(zipFilePath, unzipDirectory, imgFileName)
     
-    geotiffFilePath = unzipDirectory + ftpBaseName + ".tif"
+    geotiffFilePath = unzipDirectory + coordstring + ".tif"
     if file_exists(geotiffFilePath):
         print("Already converted to geotiff.")
     else:
-        img_to_geotiff(ftpBaseName, unzipDirectory)
+        img_to_geotiff(imgFileName, unzipDirectory, coordstring)
 
     lonlatCoord = util.swap_pair(latlngCoord)
     pixelVal = geotiff_pixelVal(geotiffFilePath, lonlatCoord)
-    print("Pixel Value is: ")
-    print(pixelVal)
+    #print("Pixel Value is: ")
+    #print(pixelVal)
     
-    return 0
+    return pixelVal
 
-latlngCoord = (37, -76)
+#latlngCoord = (37, -76)
 
-get_elevation(latlngCoord)
+#get_elevation(latlngCoord)
 

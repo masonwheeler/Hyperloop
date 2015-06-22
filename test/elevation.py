@@ -2,6 +2,7 @@ import urllib
 import simplejson
 
 import config
+import usgs
 
 def google_elevation(coords):
     args = {
@@ -22,6 +23,13 @@ def google_elevation(coords):
     return elevationArray
 
 def usgs_elevation(coords):
+    elevations = [usgs.get_elevation(latlngCoord) for latlngCoord in coords]
+    return elevations
 
-    return 
 
+coords = [(37.7833,-122.4167), (34.0500, -118.2500)]
+
+googleElevation = google_elevation(coords)
+usgsElevation = usgs_elevation(coords)
+print("Google gives " + str(googleElevation))
+print("USGS gives " + str(usgsElevation))
