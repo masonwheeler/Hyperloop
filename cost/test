@@ -1,5 +1,0 @@
-def f(x): 
-    return x + y
-
-y = 3
-print f(4)
