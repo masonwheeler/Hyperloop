@@ -26,9 +26,7 @@ def gen_routes(latticeWithCost, angles, degreeConstaint, numPaths):
     return routes
 
 def fetch_Interpolation_Data(route):
-  routePoints = route.waypoints
-  thtiphii = [[(2*math.pi/360)*point[2][0],(2*math.pi/360)*point[2][1]] for point in routePoints]
-  return compute.interpolation_data(thtiphii)
+  return compute.interpolation_data(route.xyCoords, route.edges)
 
 def outputRoutes(start,end,degreeConstaint,numPaths):
   latticeWithCost, angles = pair_analysis(start,end)

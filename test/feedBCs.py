@@ -8,13 +8,12 @@ import quintic as quint
 def rv(radius):
 	return math.sqrt(radius*.5*9.81)
 
-def parse(tht_i_phi_i):
-  N = len(tht_i_phi_i)-1
-  p = rad.r_i(tht_i_phi_i)
+def parse(p):
+  N = len(p)-1
   r = [rad.radius(p[(i - 1):(i + 2)]) for i in range(1, N-1)]
   v = [150]+[min([(rv(r[i])+rv(r[i+1])+rv(r[i+2])+rv(r[i+3])+rv(r[i+4])+rv(r[i+5])+rv(r[i+6])+rv(r[i+7]))/8,330]) for i in range(0,N-9)]+[330,330,330,330,330,330,250,150]
   t = rad.t_i(v, p)
-  return [t, p, v]
+  return [t, v]
 
 def process(t, p, v, n, mu):
 	N = len(p) - 1

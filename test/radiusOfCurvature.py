@@ -16,14 +16,14 @@ def radius(three_points):
 	else:
 		return a * b * c / (4 * A)
 
-def r_i(coordinates):
-    r_i_results = []
-    for coordinate in coordinates:
-        x_i = R*math.cos(coordinate[0])*math.cos(coordinate[1])
-        y_i = R*math.cos(coordinate[0])*math.sin(coordinate[1])
-        z_i = R*math.sin(coordinate[0])
-        r_i_results.append([x_i, y_i, z_i])
-    return r_i_results
+# def r_i(coordinates):
+#     r_i_results = []
+#     for coordinate in coordinates:
+#         x_i = R*math.cos(coordinate[0])*math.cos(coordinate[1])
+#         y_i = R*math.cos(coordinate[0])*math.sin(coordinate[1])
+#         z_i = R*math.sin(coordinate[0])
+#         r_i_results.append([x_i, y_i, z_i])
+#     return r_i_results
 
 def t_i(v_i, r_i):
     t_i_results = [0]

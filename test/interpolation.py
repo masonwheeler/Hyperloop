@@ -6,19 +6,16 @@ import radiusOfCurvature as rad
 import quintic as quint
 import feedBCs as bc
 
-def Points_to_Coeffs(tht_i_phi_i, n):
-	t, p, v = bc.parse(tht_i_phi_i)
+def Points_to_Coeffs(p, n):
+	t, v = bc.parse(p)
 	Gx = bc.process(t, p, v, n, 0)
 	Gy = bc.process(t, p, v, n, 1)
-	Gz = bc.process(t, p, v, n, 2)
 	ax = []
 	ay = []
-	az = []
 	for i in range(len(Gx)):
 		ax += quint.interp(Gx[i])
 		ay += quint.interp(Gy[i])
-		az += quint.interp(Gz[i])
-	return [ax, ay, az, t]
+	return [ax, ay, t]
 
 def Coeffs_to_Vals(a, s, t_i):
 	condlist = [(t_i[j] < s)*(s < t_i[j+1]) for j in range(len(t_i)-2)]
