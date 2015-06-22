@@ -30,10 +30,10 @@ def comfortToActual(comfort_rating):
      return "extremely unpleasant; prolonged exposure harmful"
 
 
-def interpolation_data(tht_i_phi_i):
-   #Input is waypoints in long-lat (in radians): tht_i_phi_i
+def interpolation_data(p):
+   #Input is waypoints in a chart: p
    #Compute coefficients of piecewise quintic polynomial:
-   ax, ay, az, t = intrp.Points_to_Coeffs(tht_i_phi_i, 6)
+   ax, ay, az, t = intrp.Points_to_Coeffs(p, 6)
 
    # Form list "s" of sampling times:
    Q = 2**8. # number of rectangles in the Riemann sum (for efficiency, keep this a power of two).
