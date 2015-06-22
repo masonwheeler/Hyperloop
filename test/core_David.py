@@ -26,7 +26,7 @@ def gen_routes(latticeWithCost, angles, degreeConstaint, numPaths):
     return routes
 
 def fetch_Interpolation_Data(route):
-  return compute.interpolation_data(route.xyCoords)
+  return compute.interpolation_data(route.xyCoords, route.edges)
 
 def outputRoutes(start,end,degreeConstaint,numPaths):
   latticeWithCost, angles = pair_analysis(start,end)
