@@ -10,14 +10,58 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[       775,         34]
-NotebookOptionsPosition[       561,         21]
-NotebookOutlinePosition[       915,         37]
-CellTagsIndexPosition[       872,         34]
+NotebookDataLength[      2423,         82]
+NotebookOptionsPosition[      2061,         65]
+NotebookOutlinePosition[      2415,         81]
+CellTagsIndexPosition[      2372,         78]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Import", " ", 
+   RowBox[{"data", "."}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.6440130125526733`*^9, 3.644013016311504*^9}, {
+  3.6440130579115763`*^9, 3.644013059070232*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"polygonPoints", "=", 
+   RowBox[{"Import", "[", "\"\<~/Desktop/Hyperloop/polygon.csv\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"lattice", "=", 
+   RowBox[{"Import", "[", "\"\<~/Desktop/Hyperloop/lattice.csv\>\"", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"routes", "=", 
+   RowBox[{"Import", "[", "\"\<~/Desktop/Hyperloop/routes.csv\>\"", "]"}]}], 
+  ";"}]}], "Input",
+ CellChangeTimes->{{3.6440128291267767`*^9, 3.6440128440308533`*^9}, {
+  3.644012901392663*^9, 3.644012956367971*^9}}],
+
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{"Plot", " ", 
+   RowBox[{"data", "."}]}], " ", "*)"}]], "Input",
+ CellChangeTimes->{{3.644013010574944*^9, 3.644013010767799*^9}, {
+  3.64401309127463*^9, 3.64401310120485*^9}}],
+
+Cell[BoxData[
+ RowBox[{"Graphics", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"Polygon", "[", "polygonPoints", "]"}], ",", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Point", "[", "#", "]"}], "&"}], "/@", "lattice"}], ",", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Point", "[", "#", "]"}], "&"}], "/@", 
+     RowBox[{"routes", "[", 
+      RowBox[{"[", "1", "]"}], "]"}]}]}], "}"}], "]"}]], "Input",
+ CellChangeTimes->{{3.644012959853684*^9, 3.644013004111949*^9}}]
 },
 WindowSize->{808, 668},
 WindowMargins->{{12, Automatic}, {Automatic, 24}},
@@ -36,9 +80,12 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
+Cell[558, 20, 230, 5, 43, "Input"],
+Cell[791, 27, 571, 14, 119, "Input"],
+Cell[1365, 43, 222, 5, 43, "Input"],
+Cell[1590, 50, 467, 13, 69, "Input"]
 }
 ]
 *)
 
 (* End of internal cache information *)
-
