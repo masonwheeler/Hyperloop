@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      2423,         82]
-NotebookOptionsPosition[      2061,         65]
-NotebookOutlinePosition[      2415,         81]
-CellTagsIndexPosition[      2372,         78]
+NotebookDataLength[      2500,         86]
+NotebookOptionsPosition[      2138,         69]
+NotebookOutlinePosition[      2492,         85]
+CellTagsIndexPosition[      2449,         82]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -28,18 +28,22 @@ Cell[BoxData[
 Cell[BoxData[{
  RowBox[{
   RowBox[{"polygonPoints", "=", 
-   RowBox[{"Import", "[", "\"\<~/Desktop/Hyperloop/polygon.csv\>\"", "]"}]}], 
+   RowBox[{
+   "Import", "[", "\"\<~/Desktop/Hyperloop/data/polygon.csv\>\"", "]"}]}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"lattice", "=", 
-   RowBox[{"Import", "[", "\"\<~/Desktop/Hyperloop/lattice.csv\>\"", "]"}]}], 
+   RowBox[{
+   "Import", "[", "\"\<~/Desktop/Hyperloop/data/lattice.csv\>\"", "]"}]}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"routes", "=", 
-   RowBox[{"Import", "[", "\"\<~/Desktop/Hyperloop/routes.csv\>\"", "]"}]}], 
+   RowBox[{
+   "Import", "[", "\"\<~/Desktop/Hyperloop/data/routes.csv\>\"", "]"}]}], 
   ";"}]}], "Input",
  CellChangeTimes->{{3.6440128291267767`*^9, 3.6440128440308533`*^9}, {
-  3.644012901392663*^9, 3.644012956367971*^9}}],
+  3.644012901392663*^9, 3.644012956367971*^9}, {3.64401325067362*^9, 
+  3.6440132554310417`*^9}}],
 
 Cell[BoxData[
  RowBox[{"(*", " ", 
@@ -81,9 +85,9 @@ CellTagsIndex->{}
 (*NotebookFileOutline
 Notebook[{
 Cell[558, 20, 230, 5, 43, "Input"],
-Cell[791, 27, 571, 14, 119, "Input"],
-Cell[1365, 43, 222, 5, 43, "Input"],
-Cell[1590, 50, 467, 13, 69, "Input"]
+Cell[791, 27, 648, 18, 119, "Input"],
+Cell[1442, 47, 222, 5, 43, "Input"],
+Cell[1667, 54, 467, 13, 69, "Input"]
 }
 ]
 *)
