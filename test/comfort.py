@@ -65,16 +65,22 @@ def fw_RMS(af, T, mu):
 	L = int(math.floor(N/2))
 	awf = [w(m/T)[mu] * af[m] for m in range(-L, L+1)]
  	Sum = sum([np.absolute(accel)**2 for accel in awf])
-	return (T/(N**2)) * Sum
+	return Sum
 
 def comfort(v, a, T, mu):
 	N = len(v)
 	al = aPassenger(v, a, mu)
-	alf = np.fft.fft(al) / (N + 0.0)
+	alf = np.fft.fft(al) / N
 	afw_RMS = fw_RMS(alf, T, mu)
-	return (((100*math.sqrt(2))**2)*afw_RMS)**0.15
+	return 4.42*(afw_RMS)**0.3
 
-
+# T = 300
+# N = 10000
+# al = [5*math.cos(2*math.pi*2*t/T) for t in np.linspace(0,T,N)]
+# alf = np.fft.fft(al)/ N
+# afw_RMS = fw_RMS(alf, T, 1)
+# print 4.42*(afw_RMS)**0.3
+# print 4.42*(w(2./T)[1]**2*(25/2.))**0.3
 #UNIT TEST (script #2):
 #v = [[-3.83292, 2.99503, -3.05167],
 #[2.21044, -7.71139, 4.37497]]
