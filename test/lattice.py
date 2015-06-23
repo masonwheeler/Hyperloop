@@ -82,7 +82,7 @@ def attach_lnglats(lattice):
     lattice[0][0].display()
     return lattice
 
-def distance_from_rightofway(point, xydirectionsCoords):
+def distance_from_rightofway(point, xyDirectionsCoords):
     distances = [proj.xy_distance(point.xyCoords, xyCoord) for xyCoord in 
                  xyDirectionsCoords]
     distance = min(distances)
@@ -91,7 +91,7 @@ def distance_from_rightofway(point, xydirectionsCoords):
 
 def add_rightOfWay(lattice, directionsCoords):
     lonlatDirectionsCoords = util.swap_pairs(directionsCoords)
-    xyDirectionsCoords = proj.lonlats_to_xys(lonlatDirectionsCoords)
+    xyDirectionsCoords = proj.lonlats_to_xys(lonlatDirectionsCoords,config.proj)
     for eachSlice in lattice:
         for eachPoint in eachSlice:
             eachPoint.distanceFromRightOfWay = distance_from_rightofway(

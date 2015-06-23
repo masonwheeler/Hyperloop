@@ -13,13 +13,12 @@ def build_lattice(start,end):
     lattice.set_params(startXY,endXY)
     transformedBounds = lattice.transform_bounds(boundsXY,startXY,endXY)
     baseLattice = lattice.base_lattice(transformedBounds)
-    lnglatsLattice = lattice.attach_lnglats(baseLattice)    
-    rightOfWayLattice = lattice.add_rightOfWay(lnglatsLattice,
-                           config.directionsCoords)
+    lnglatLattice = lattice.attach_lnglats(baseLattice)    
+    finishedLattice = lattice.add_rightOfWay(lnglatLattice, config.directionsCoords)
     return finishedLattice
 
 def get_routes(finishedLattice): 
-    edgessets = edges.get_edgessets(finishedLattice)
+    edgessets = edges.get_edgessets(finishedLattice)    
     #routessets = genroutes.edgessets_to_routessets(edgessets)
     #filteredRoutes = genroutes.recursivemerge_routessets(routessets)
     return 0 #filteredRoutes
@@ -27,7 +26,7 @@ def get_routes(finishedLattice):
 def pair_analysis(start,end):
     t0 = time.time()
     finishedLattice = build_lattice(start,end)
-    filteredRoutes = get_routes(finishedLattice)
+    routes = get_routes(finishedLattice)
     t1 = time.time()
     print("Analysis of a single pair took " + str(t1-t0) + " seconds.")
     return 0

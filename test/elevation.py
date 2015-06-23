@@ -27,9 +27,8 @@ def usgs_elevation(coords):
     return elevations
 
 
-coords = [(37.7833,-122.4167), (34.0500, -118.2500)]
-
-googleElevation = google_elevation(coords)
-usgsElevation = usgs_elevation(coords)
-print("Google gives " + str(googleElevation))
-print("USGS gives " + str(usgsElevation))
+#coords = [(37.7833,-122.4167), (34.0500, -118.2500)]
+#googleElevation = google_elevation(coords)
+#usgsElevation = usgs_elevation(coords)
+#print("Google gives " + str(googleElevation))
+#print("USGS gives " + str(usgsElevation))

@@ -3,7 +3,8 @@ Runtime Parameters
 """
 testingMode = True
 hasNlcd = False
-cachePath = "/home/jonward/Devel/Hyperloop/test/cache/"
+cwd = ""
+usgsFolder = "/usgs/"
 
 """
 Physical Constants.
@@ -59,7 +60,7 @@ usgsFtpPath = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13
 For Landcover.
 """
 
-geotiffFilePath = "/home/ubuntu/Hyperloop/test/cache/us.tif"
+geotiffFilePath = "/nlcd/us.tif"
 landPointSpacing = 30 #spacing between points for land cost sampling in meters
 
 """

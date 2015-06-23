@@ -1,10 +1,12 @@
 import sys
+import os
 
 import core
 import util
 import config
 
-if __name__ == "__main__":    
+if __name__ == "__main__":   
+    config.cwd = os.getcwd()
     if config.testingMode:                
         core.pair_analysis("Los_Angeles","San_Francisco")
     else:

@@ -11,7 +11,8 @@ def normalize_cost(cost):
     return normalizedCost
 
 def land_cost(landPointsLonLatCoords):
-    ds = gdal.Open(config.geotiffFilePath)
+    geotiffFilePath = config.cwd + config.geotiffPath
+    ds = gdal.Open()
     gt = ds.GetGeoTransform()
     rb = ds.GetRasterBand(1)
     srs = osr.SpatialReference()

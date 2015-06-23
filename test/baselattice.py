@@ -17,7 +17,7 @@ class Point:
 
     def display(self):
         print("The lattice coords are: " + str(self.latticeCoords) + ".")
-        print("Is the point in the right of way? " + str(self.inRightofWay))
+        print("Is the point in the right of way? " + str(self.inRightOfWay))
         if (self.latlngCoords != []):
             print("The lat-lng coords are: " + str(self.latlngCoords) + ".")
         if (self.xyCoords != []):
