@@ -28,5 +28,5 @@ def pair_analysis(start,end):
     finishedLattice = build_lattice(start,end)
     routes = get_routes(finishedLattice)
     t1 = time.time()
-    print("Analysis of a single pair took " + str(t1-t0) + " seconds.")
+    print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     return 0

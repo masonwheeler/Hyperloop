@@ -2,6 +2,7 @@
 Runtime Parameters
 """
 testingMode = True
+verboseMode = False
 hasNlcd = False
 cwd = ""
 usgsFolder = "/usgs/"
