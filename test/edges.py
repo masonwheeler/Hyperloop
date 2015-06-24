@@ -79,38 +79,75 @@ class Edge:
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
 
-def get_projection(angleStep, xValStep, angle, point, angleConstraint, xValConstraint):
-    projection = []    
+def get_extension(angleStep, xValStep, angleTest, xValTest, angle, point):
+    extension = []    
     xVal = point[0]
     previousPoint = point
-    while (angleConstraint(angle) and xValConstraint(xVal)):
+    while (angleTest(angle) and xValTest(xVal)):
         angle += angleStep
         xVal += xValStep
         nextVector = [xValStep, math.tan(angle) * xValStep]
         nextPoint = util.add(previousPoint, nextVector)
-        forwardProjection.append(nextPoint)
+        extension.append(nextPoint)
         lastPoint = nextPoint
-    return forwardProjection
+    return extension
 
-def forward_project(edge):
-    if edge.angle > 0:
-        forwardProjection = forward_project_up(edge)
-    else:
-        forwardProjection = forward_project_down(edge)
-    return forwardProjection
+def get_anglestep(upDownSign):
+    angleStep = config.degreeConstraint * -upDownSign
+    return angleStep
+      
+def get_xvalstep(forwardBackSign):
+    xValStep =  config.latticeXSpacing * forwardBackSign
+    return xValStep
 
-def backward_project(edge):
-    if edge.angle < 0:
-        backwardProjection = backward_project_up(edge)
+def get_angletest(upDownSign):
+    if upDownSign == 1:
+        return lambda angle: angle > 0
+    elif upDownSign == -1:
+        return lambda angle: angle < 0
+
+def get_xvaltest(forwardBackSign):
+    if forwardBackSign == 1:
+        return lambda xVal: xVal < config.baseScale
+    elif forwardBackSign == -1:
+        return lambda xVal: xVal > 0
+
+def get_params(edge, upDownSign, forwardBackSign):
+    angleStep = get_anglestep(upDownSign)
+    xValStep = get_xvalstep(forwardBackSign)
+    angleTest = get_angletest(upDownSign)
+    xValTest = get_xvaltest(forwardBackSign)
+    angle = edge.angle
+    if forwardBackSign == 1:
+        point = edge.latticeCoords[1]
+    elif forwardBackSign == -1:
+        point = edge.latticeCoords[0]
+    return [angleStep, xValStep, angleTest, xValTest, angle, point]
+
+def get_updownsign(edge):
+    if edge.angle >= 0:
+        return 1
     else:
-        backwardProjection = backward_project_down(edge)
-    return backwardProjection
+        return -1
+
+def get_extensions(edge):   
+    upDownSign = get_updownsign(edge) 
+    forwardParams = get_params(edge, upDownSign, 1)
+    backParams = get_params(edge, upDownSign, -1)
+    forwardExtension = get_extension(*forwardParams)
+    backExtension = get_extension(*backParams)
+    return [forwardExtension, backExtension]
+
+def point_in_envelope(point, envelope):
+    pointXVal, pointYVal = point
+    correspondingMaxMin = envelope[pointXVal]    
+    return 0
         
-def filter_edge(edge,envelope):
-    forwardProjection = forward_project(edge)
-    backwardProjection = backward_project(edge)
-    edgeValid =  (projection_in_envelope(forwardProjection,envelope) and
-                  projection_in_envelope(backwardProjection,envelope))
+def filter_edge(edge, envelope):
+    forwardExtension, backExtension = get_extensions(edge)
+    forwardValid = extension_in_envelope(forwardExtension, envelope)
+    backValid = extension_in_envelope(backExtension, envelope)
+    edgeValid = forwardValid and edgeValid
     return edgeValid     
 
 def filter_edgesset(edgesSet, envelope):
