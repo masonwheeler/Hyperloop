@@ -112,13 +112,16 @@ def get_xvaltest(forwardBackSign):
     elif forwardBackSign == -1:
         return lambda xVal: xVal > 0
 
-def get_forwardbackparams(edge, upDownSign, forwardBackSign):
+def get_params(edge, upDownSign, forwardBackSign):
     angleStep = get_anglestep(upDownSign)
     xValStep = get_xvalstep(forwardBackSign)
     angleTest = get_angletest(upDownSign)
     xValTest = get_xvaltest(forwardBackSign)
     angle = edge.angle
-    point = edge.latticeCoords[1]
+    if forwardBackSign == 1:
+        point = edge.latticeCoords[1]
+    elif forwardBackSign == -1:
+        point = edge.latticeCoords[0]
     return [angleStep, xValStep, angleTest, xValTest, angle, point]
 
 def get_updownsign(edge):
@@ -127,21 +130,24 @@ def get_updownsign(edge):
     else:
         return -1
 
-def get_params(edge):   
+def get_extensions(edge):   
     upDownSign = get_updownsign(edge) 
-    forwardParams = get_forwardbackparams(edge, upDownSign, 1)
-    backParams = get_forwardbackparams(edge, upDownSign, -1)
+    forwardParams = get_params(edge, upDownSign, 1)
+    backParams = get_params(edge, upDownSign, -1)
     forwardExtension = get_extension(*forwardParams)
     backExtension = get_extension(*backParams)
     return [forwardExtension, backExtension]
 
-def get_extensions(edge):
+def point_in_envelope(point, envelope):
+    pointXVal, pointYVal = point
+    correspondingMaxMin = envelope[pointXVal]    
+    return 0
         
-def filter_edge(edge,envelope):
-    forwardProjection = forward_project(edge)
-    backwardProjection = backward_project(edge)
-    edgeValid =  (projection_in_envelope(forwardProjection,envelope) and
-                  projection_in_envelope(backwardProjection,envelope))
+def filter_edge(edge, envelope):
+    forwardExtension, backExtension = get_extensions(edge)
+    forwardValid = extension_in_envelope(forwardExtension, envelope)
+    backValid = extension_in_envelope(backExtension, envelope)
+    edgeValid = forwardValid and edgeValid
     return edgeValid     
 
 def filter_edgesset(edgesSet, envelope):
