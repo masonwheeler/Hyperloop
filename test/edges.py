@@ -62,6 +62,7 @@ class Edge:
 
         self.latlngCoords = [startPoint.latlngCoords, endPoint.latlngCoords]
         self.xyCoords = [startPoint.xyCoords, endPoint.xyCoords]
+        self.latticeCoords = [startPoint.latticeCoords, endPoint.latticeCoords]
         self.length = proj.xy_distance(startPoint.xyCoords,endPoint.xyCoords)
         self.vector = self.get_vector()
 
@@ -70,7 +71,6 @@ class Edge:
         self.angle = math.degrees(math.atan(
           (self.endYVal - self.startYVal) / (endXVal - startXVal)))
         
-
     def display(self):
         print("The edge's cost is: " + str(self.cost) + ".")
         print("The edge's length is: " + str(self.length) + ".")
@@ -78,8 +78,33 @@ class Edge:
         print("The edge's xy coords are: " + str(self.xyCoords) + ".")
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
+
+def get_projection(angleStep, xValStep, angle, point, angleConstraint, xValConstraint):
+    projection = []    
+    xVal = point[0]
+    previousPoint = point
+    while (angleConstraint(angle) and xValConstraint(xVal)):
+        angle += angleStep
+        xVal += xValStep
+        nextVector = [xValStep, math.tan(angle) * xValStep]
+        nextPoint = util.add(previousPoint, nextVector)
+        forwardProjection.append(nextPoint)
+        lastPoint = nextPoint
+    return forwardProjection
+
 def forward_project(edge):
-    
+    if edge.angle > 0:
+        forwardProjection = forward_project_up(edge)
+    else:
+        forwardProjection = forward_project_down(edge)
+    return forwardProjection
+
+def backward_project(edge):
+    if edge.angle < 0:
+        backwardProjection = backward_project_up(edge)
+    else:
+        backwardProjection = backward_project_down(edge)
+    return backwardProjection
         
 def filter_edge(edge,envelope):
     forwardProjection = forward_project(edge)
