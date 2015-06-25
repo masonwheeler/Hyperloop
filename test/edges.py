@@ -140,10 +140,16 @@ def get_extensions(edge):
 
 def point_in_envelope(point, envelope):
     pointXVal, pointYVal = point
-    correspondingMaxMin = envelope[pointXVal]    
-    return 0
+    maxYVal, minYVal = envelope[pointXVal]   
+    pointInEnvelope = (maxYVal >= pointYVal and pointYVal >= minYVal)
+    return pointInEnvelope
+
+def extension_in_envelope(extension, envelope):
+    pointsInEnvelope = [point_in_envelope(point, envelope) for point in extension]
+    extensionInEnvelope = all(pointsInEnvelope)
+    return extensionInEnvelope
         
-def filter_edge(edge, envelope):
+def edge_valid(edge, envelope):
     forwardExtension, backExtension = get_extensions(edge)
     forwardValid = extension_in_envelope(forwardExtension, envelope)
     backValid = extension_in_envelope(backExtension, envelope)
@@ -151,7 +157,7 @@ def filter_edge(edge, envelope):
     return edgeValid     
 
 def filter_edgesset(edgesSet, envelope):
-    filteredEdgesSet = [edge for edge in edgesSet if filter_edge(edge,envelope)]
+    filteredEdgesSet = [edge for edge in edgesSet if edge_valid(edge,envelope)]
     return filteredEdgesSet
 
 def filter_edgessets(edgesSets, envelope):

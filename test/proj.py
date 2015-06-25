@@ -33,3 +33,8 @@ def xys_to_lonlats(xys, proj):
 def xy_distance(xyA, xyB):
     distanceAB = util.norm(util.subtract(xyA,xyB))
     return distanceAB
+
+#albersProj = albers_proj()
+#lonlats = [(i]
+#xys = lonlats_to_xys(lonlats, proj)
+#print(xys)
