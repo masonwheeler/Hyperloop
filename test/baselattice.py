@@ -126,23 +126,25 @@ def base_lattice(polygon,baseScale,initialYSpacing,latticeXSpacing):
     maxMins = []
     numPoints = 0
     latticeXVals = lattice_xvals(baseScale,latticeXSpacing)
+    envelope = {}
 
     for xVal in latticeXVals:
         relevantEdges = relevant_edges_for_xval(edges,xVal)
         intersections = util.round_nums(get_intersections(relevantEdges,xVal))
         maxMin = util.get_maxmin(intersections)
+        envelope[xVal] = maxMin
         maxMins.append(maxMin)    
   
     ySpacing = get_ySpacing(maxMins, initialYSpacing)
-    print("Using a vertical spacing of " + str(ySpacing) + " between lattice points.")
-    #stepUp, stepDown = get_stepup_stepdown(maxMins)
-    #angles = get_angles(stepUp, stepDown, ySpacing, latticeXSpacing)
 
     for index in range(len(latticeXVals)):
         newSlice = build_slice(maxMins[index],ySpacing,latticeXVals[index])
         numPoints += len(newSlice)
         lattice.append(newSlice)
-    print("The lattice consists of " + str(numPoints) + " points in total.")
+
+    if config.verboseMode:
+        print("We now use a vertical spacing of " + str(ySpacing) + ".")
+        print("The lattice consists of " + str(numPoints) + " points in total.")
     
-    return lattice #, angles, ySpacing]
+    return lattice, envelope
 

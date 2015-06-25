@@ -108,9 +108,9 @@ def get_angletest(upDownSign):
 
 def get_xvaltest(forwardBackSign):
     if forwardBackSign == 1:
-        return lambda xVal: xVal < config.baseScale
+        return lambda xVal: xVal < (config.baseScale - config.latticeXSpacing)
     elif forwardBackSign == -1:
-        return lambda xVal: xVal > 0
+        return lambda xVal: xVal > (0 + config.latticeXSpacing)
 
 def get_params(edge, upDownSign, forwardBackSign):
     angleStep = get_anglestep(upDownSign)
@@ -153,7 +153,7 @@ def edge_valid(edge, envelope):
     forwardExtension, backExtension = get_extensions(edge)
     forwardValid = extension_in_envelope(forwardExtension, envelope)
     backValid = extension_in_envelope(backExtension, envelope)
-    edgeValid = forwardValid and edgeValid
+    edgeValid = forwardValid and backValid
     return edgeValid     
 
 def filter_edgesset(edgesSet, envelope):
@@ -166,21 +166,18 @@ def filter_edgessets(edgesSets, envelope):
 
 def base_edgessets(lattice):
     edgesSets = []
-    numEdges = 0
     for sliceIndex in range(len(lattice) - 1):
         sliceA = lattice[sliceIndex]
         sliceB = lattice[sliceIndex + 1]
         edgesSet = []
         for startPoint in sliceA:
             for endPoint in sliceB:
-                numEdges += 1                
                 edgesSet.append(Edge(startPoint,endPoint))
         edgesSet.sort(key = lambda edge: edge.cost)
         edgesSets.append(edgesSet)
     if config.verboseMode:
         print("Here is a sample Edge object: ")
         edgesSets[0][0].display()
-    print("The total number of edges: " + str(numEdges))
     return edgesSets
 
 def add_costs(edgesSets):
@@ -189,11 +186,15 @@ def add_costs(edgesSets):
             edge.add_cost()
     return edgesSets
     
-def build_edgesets(lattice):
+def build_edgessets(lattice, envelope):
     baseEdgesSets = base_edgessets(lattice)
-    filterEdgesSets = filter_edgessets(baseEdgesSets)
-    finishedEdgesSets = add_costs(baseEdgesSets)
-    return finishedEdgesSets
+    numEdges = sum(map(len,baseEdgesSets))
+    filteredEdgesSets = filter_edgessets(baseEdgesSets, envelope)
+    numFilteredEdges = sum(map(len,filteredEdgesSets))
+    print("The number of unfiltered edges is: " + str(numEdges))
+    print("The number of filtered edges is: " + str(numFilteredEdges))
+    #finishedEdgesSets = add_costs(baseEdgesSets)
+    return 0 #finishedEdgesSets
 
 
 

@@ -48,8 +48,8 @@ def transform_bounds(boundsXY,startXY,endXY):
     return transformedBounds
 
 def base_lattice(boundingPolygon):
-    baseLattice = baselattice.base_lattice(boundingPolygon, config.baseScale,
-       config.latticeYSpacing, config.latticeXSpacing)
+    baseLattice, envelope = baselattice.base_lattice(boundingPolygon, 
+        config.baseScale, config.latticeYSpacing, config.latticeXSpacing)
     if config.verboseMode:
         print("We rescale so that distance between the start and end becomes "
                 + str(config.baseScale) + ".")
@@ -59,7 +59,7 @@ def base_lattice(boundingPolygon):
                 + str(config.latticeXSpacing) + ".")
         print("Here is a sample lattice point:")
         baseLattice[0][0].display()
-    return baseLattice
+    return [baseLattice, envelope]
 
 def attach_lnglats(lattice):
     for eachSlice in lattice:
@@ -82,7 +82,6 @@ def distance_from_rightofway(point, xyDirectionsCoords):
     distance = min(distances)
     return distance
 
-
 def add_rightOfWay(lattice, directionsCoords):
     lonlatDirectionsCoords = util.swap_pairs(directionsCoords)
     xyDirectionsCoords = proj.lonlats_to_xys(lonlatDirectionsCoords,config.proj)
@@ -95,4 +94,5 @@ def add_rightOfWay(lattice, directionsCoords):
         closestPoint = sortedSlice[0]
         closestPoint.inRightOfWay = True
     return lattice
+
 

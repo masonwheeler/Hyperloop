@@ -12,21 +12,21 @@ def build_lattice(start,end):
     boundsXY,startXY,endXY = lattice.project_bounds(bounds,startLatLng,endLatLng)
     lattice.set_params(startXY,endXY)
     transformedBounds = lattice.transform_bounds(boundsXY,startXY,endXY)
-    baseLattice = lattice.base_lattice(transformedBounds)
+    baseLattice, envelope = lattice.base_lattice(transformedBounds)
     lnglatLattice = lattice.attach_lnglats(baseLattice)    
     finishedLattice = lattice.add_rightOfWay(lnglatLattice, config.directionsCoords)
-    return finishedLattice
+    return finishedLattice, envelope
 
-def get_routes(finishedLattice): 
-    edgessets = edges.get_edgessets(finishedLattice)    
+def get_routes(finishedLattice, envelope): 
+    edgessets = edges.build_edgessets(finishedLattice, envelope)    
     #routessets = genroutes.edgessets_to_routessets(edgessets)
     #filteredRoutes = genroutes.recursivemerge_routessets(routessets)
     return 0 #filteredRoutes
 
 def pair_analysis(start,end):
     t0 = time.time()
-    finishedLattice = build_lattice(start,end)
-    routes = get_routes(finishedLattice)
+    finishedLattice, envelope = build_lattice(start,end)
+    routes = get_routes(finishedLattice, envelope)
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     return 0

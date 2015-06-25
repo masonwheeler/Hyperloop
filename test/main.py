@@ -20,7 +20,7 @@ if __name__ == "__main__":
             startCity = sys.argv[1]
             endCity = sys.argv[2]
             if config.verboseMode:
-            print("You entered: " + startCity + " and " + endCity)
+                print("You entered: " + startCity + " and " + endCity)
             core.pair_analysis(startCity,endCity)
         else:        
             print(" ")
