@@ -8,4 +8,8 @@
 *.zip
 *.img
 *.xml
+*.shp
+*.shx
+*.dbf
+*.csv
 throwaway.py

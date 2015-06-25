@@ -2,10 +2,9 @@
 Runtime Parameters
 """
 testingMode = True
-verboseMode = False
+verboseMode = True
 hasNlcd = False
 cwd = ""
-usgsFolder = "/usgs/"
 
 """
 Physical Constants.
@@ -27,7 +26,6 @@ gTolerance = 0.2 * 9.8
 Uninitialized, hence for storage.
 """
 
-
 proj = 0
 angle = 0
 sizeFactor = 0
@@ -35,27 +33,33 @@ startVector = 0
 directionsCoords = 0
 
 """
-Initialized Algorithm paramters.
+Polygon Generation Parameters.
 """
 
-groupSize = 100
-polygonMergeChunkSize = 100
-tolerance = 10**-6
-maxAttempts = 10
+groupSize = 100 #The number of points in a polygon
+polygonMergeChunkSize = 100 #the number of polygons to attempt to merge at once
+tolerance = 10**-6 #the merge tolerance
+maxAttempts = 10 #Maximum number of times to attempt to merge a polygon
+Nth = 5 #Sample every Nth point in the polygon
+finalBuffer = 10**-6 #The final buffer to apply to the polygon
+
+"""
+Lattice Generation Parameters.
+"""
+
 baseScale = 10**3 #distance between the start and end in lattice coordinates
 latticeYSpacing = 1 #default spacing between lattice points vertically
 latticeXSpacing = 10 #constant spacing between lattice points horizontally
-degreeConstraint = 30
-numPaths = 1000
-ndigits = 6
-Nth = 5
-finalBuffer = 10**-6
+degreeConstraint = 30 #the angular constraint between subsequent edges
+numPaths = 1000 #the number of paths to output from the merge step
+ndigits = 6 #the number of digits used for rounding
 
 """
 For Usgs-Elevation.
 """
 
 usgsFtpPath = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
+usgsFolder = "/usgs/"
 
 """
 For Landcover.

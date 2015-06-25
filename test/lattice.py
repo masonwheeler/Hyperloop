@@ -6,12 +6,14 @@ import baselattice
 import proj
 import transform       
 import cost
+import import_export as io
 
 def project_bounds(bounds, startLatLng, endLatLng):
     startLonLat = util.swap_pair(startLatLng)
     endLonLat = util.swap_pair(endLatLng)
     swappedBounds = util.swap_pairs(bounds)
-    config.proj = proj.omerc_proj(startLonLat,endLonLat)
+    #config.proj = proj.omerc_proj(startLonLat,endLonLat)
+    config.proj = proj.albers_proj()
     boundsXY = proj.lonlats_to_xys(swappedBounds,config.proj)
     startXY = proj.lonlat_to_xy(startLonLat,config.proj)
     endXY = proj.lonlat_to_xy(endLonLat,config.proj)
@@ -85,6 +87,7 @@ def distance_from_rightofway(point, xyDirectionsCoords):
 def add_rightOfWay(lattice, directionsCoords):
     lonlatDirectionsCoords = util.swap_pairs(directionsCoords)
     xyDirectionsCoords = proj.lonlats_to_xys(lonlatDirectionsCoords,config.proj)
+    RightOfWay = [[]]
     for eachSlice in lattice:
         for eachPoint in eachSlice:
             eachPoint.distanceFromRightOfWay = distance_from_rightofway(
@@ -93,6 +96,11 @@ def add_rightOfWay(lattice, directionsCoords):
                       key = lambda point : point.distanceFromRightOfWay)
         closestPoint = sortedSlice[0]
         closestPoint.inRightOfWay = True
+        RightOfWay += [closestPoint]
+    RightOfWay.pop(0)
+    data = [point.xyCoords for point in RightOfWay]
+    print "exporting highway..."
+    io.export(data, 'highway')
     return lattice
 
 

@@ -35,13 +35,15 @@ def unzip_zipfile(zipFilePath, outPath, imgFileName):
     imgFilePath = outPath + imgFileName
     imgExists = file_exists(imgFilePath)
     if imgExists:
-        #print("Already unzipped folder.")
-        return 0
+        if config.verboseMode:
+            print(".img file already exists")
     else:
-        print("Unzipping folder...")
+        if config.verboseMode:
+            print("Unzipping folder...")
         for fileName in zipFileData.namelist():
             if (fileName == imgFileName):                
-                print(fileName + " extracted.")
+                if config.verboseMode:
+                    print(fileName + " extracted.")
                 zipFileData.extract(fileName, outPath)
         fileHandle.close()
         return 0
@@ -74,12 +76,11 @@ def get_elevation(latlngCoord):
 
     if file_exists(zipFilePath):
         pass
-        #print("Already downloaded " + coordZipfile)
     else:
-        print("Not yet downloaded.")
-        print("Now downloading " + coordZipfile + "...")
+        if config.verboseMode:
+            print("Not yet downloaded.")
+            print("Now downloading " + coordZipfile + "...")
         urllib.urlretrieve(url, zipFilePath)
-        print("Downloaded file? " + str(file_exists(zipFilePath)))       
         
     unzipDirectory = downloadDirectory + coordFolderName
     imgFileName = img_filename(coordstring)
