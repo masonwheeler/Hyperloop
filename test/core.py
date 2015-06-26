@@ -2,6 +2,7 @@ import time
 
 import config
 import database
+import directions
 import boundingpolygon
 import lattice
 import edges
@@ -11,7 +12,9 @@ import cacher
 #import itertools
 
 def build_lattice(start,end):
-    bounds,startLatLng,endLatLng = boundingpolygon.bounding_polygon(start,end)
+    directionsCoords = directions.get_directions(start, end)
+    startLatLng, endLatLng = directionsCoords[0], directionsCoords[-1]
+    boundingPolygon = boundingpolygon.get_boundingpolygon(directionsCoords)
     #boundsXY,startXY,endXY = lattice.project_bounds(bounds,startLatLng,endLatLng)
     #print "exporting polygon..."
     #io.export(boundsXY,'polygon')

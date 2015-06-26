@@ -1,19 +1,17 @@
 import time
 
 import config
-import directions
 import groupcoords
 import mergepolygons
 import cacher
 
-def bounding_polygon(start, end):    
-    t0 = time.clock()
-    config.directionsCoords = directions.get_directions(start, end)  
-    t1 = time.clock()
-    startLatLng = config.directionsCoords[0]
-    endLatLng = config.directionsCoords[-1]
-    coordGroups = groupcoords.group_coords(config.directionsCoords,
-                  config.groupSize)
+def bounding_polygon(directionsCoords):    
+    #t0 = time.clock()
+    #config.directionsCoords = directions.get_directions(start, end)  
+    #t1 = time.clock()
+    #startLatLng = config.directionsCoords[0]
+    #endLatLng = config.directionsCoords[-1]
+    coordGroups = groupcoords.group_coords(directionsCoords, config.groupSize)
     t2 = time.clock()
     polygon = mergepolygons.merge_coordgroups(coordGroups,
       config.polygonMergeChunkSize, config.tolerance, config.maxAttempts)
@@ -21,8 +19,6 @@ def bounding_polygon(start, end):
     if config.verboseMode:
         print("There are " + str(len(coordinatesList)) +
               " coordinates in the directions.")
-        print("The coordinates of the start are: " + str(startLatLng) + ".")
-        print("The coordinates of the end are: " + str(endLatLng) + ".")
         print("Using polygons with " + str(groupSize) + " edges there are "
               + str(len(coordGroups)) + " polygons in total.")
         print("Merging polygons...")
@@ -30,4 +26,9 @@ def bounding_polygon(start, end):
     if config.timingMode:
         print("Getting the coordinates took: " + str(t1-t0) + " seconds.")
         print("Merging the polygons took: " + str(t3-t2) + " seconds.")
-    return [polygon,startLatLng,endLatLng]
+    return polygon
+
+def get_boundingpolygon(directions):
+    boundingPolygon = cacher.get_object("boundingpolygon", bounding_polygon,
+                      [directions], cacher.save_bounds)
+    return boundingPolygon
