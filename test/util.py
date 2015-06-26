@@ -91,3 +91,7 @@ def build_grid(vector, spacing, startVector):
     vectors = get_vectors(vector, spacing)
     grid = [add(vector, startVector) for vector in vectors]
     return grid
+
+def smart_print(string):
+    if config.verboseMode:
+        print(string)     

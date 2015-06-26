@@ -17,27 +17,27 @@ def create_basefolders():
         os.makedirs(saveDirectory)
 
 def create_workingcachename(start,end):
-    workingCacheName = "_".join([start,"to",end,"cache"])
+    workingCacheName = "_".join([start,"to",end])
     config.workingCacheName = workingCacheName
     return workingCacheName
 
 def create_workingsavedirname(start,end):
-    workingSaveDirName = "_".join([start,"to",end,"savedir"])
+    workingSaveDirName = "_".join([start,"to",end])
     config.workingSaveDirName = workingSaveDirName
     return workingSaveDirName
 
 def create_workingcachedirectory(workingCacheName):
     workingCacheDirectory = config.cacheDirectory + workingCacheName + "/"
+    config.workingCacheDirectory = workingCacheDirectory
     if not os.path.exists(workingCacheDirectory):
         os.makedirs(workingCacheDirectory)
-        config.workingCacheDirectory = workingCacheDirectory
     return workingCacheDirectory
 
 def create_workingsavedirectory(workingSaveDirName):
     workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
+    config.workingSaveDirectory = workingSaveDirectory
     if not os.path.exists(workingSaveDirectory):
         os.makedirs(workingSaveDirectory)
-        config.workingSaveDirectory = workingSaveDirectory
     return workingSaveDirectory
 
 def create_necessaryfolders(start, end):
@@ -51,12 +51,14 @@ def create_necessaryfolders(start, end):
 def get_object_cachepath(objectName):
     objectFileBase = "_".join([config.workingCacheName, objectName])
     objectFileName = objectFileBase + ".p"
-    objectPath = config.cwd + config.workingCacheDirectory + objectFileName
+    objectPath = config.workingCacheDirectory + objectFileName
+    print(config.workingCacheDirectory)
+    print(objectFileName)
     return objectPath
 
 def get_object_savepath(objectName):
     objectFileBase = "_".join([config.workingSaveDirName, objectName])
-    objectPath = config.cwd + config.workingSaveDirectory + objectFileBase
+    objectPath = config.workingSaveDirectory + objectFileBase + ".csv"
     return objectPath
 
 def cache_object(inObject, objectName):
@@ -80,23 +82,26 @@ def object_saved(objectName):
     objectSaved = os.path.isfile(objectSavePath)
     return objectSaved
 
-def get_object(objectName, computeFunction, functionArgs, saveFunction):    
-    if (object_saved(objectName) and object_cached(objectName):
+def get_object(objectName, computeFunction, computeArgs, saveFunction):    
+    if (object_saved(objectName) and object_cached(objectName)):
+        print("object exists")
         loadedObject = load_object(objectName)
         return loadedObject
     else:
-        computedObject = computeFunction(*functionArgs)
+        print("computed object")
+        computedObject = computeFunction(*computeArgs)
         saveFunction(computedObject)
         return computedObject
 
 
 def save_listlike(inList, listName):    
     listSavePath = get_object_savepath(listName)
-    with open(listSavePath + '.csv', 'wb') as listHandle:
+    with open(listSavePath, 'wb') as listHandle:
         writer = csv.writer(listHandle)
         writer.writerows(inList)        
 
 def save_directions(directions):
+    print("saving directions")
     objectName = "directions"
     cache_object(directions, objectName)
     save_listlike(directions, objectName)

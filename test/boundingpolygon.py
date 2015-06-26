@@ -6,12 +6,12 @@ import groupcoords
 import mergepolygons
 import cacher
 
-def bounding_polygon(origin,destination):    
+def bounding_polygon(start, end):    
     t0 = time.clock()
-    config.directionsCoords = directions.coordinate_list(origin,destination)  
+    config.directionsCoords = directions.get_directions(start, end)  
     t1 = time.clock()
-    startLatLng = coordinatesList[0]
-    endLatLng = coordinatesList[-1]
+    startLatLng = config.directionsCoords[0]
+    endLatLng = config.directionsCoords[-1]
     coordGroups = groupcoords.group_coords(config.directionsCoords,
                   config.groupSize)
     t2 = time.clock()

@@ -77,16 +77,19 @@ def decode_polylines(polylines):
 
 def coordinate_list(start, end):
     stringDirections = directions(start, end)
-    print("Obtained directions.")
-    polylineDirections = string_to_polylines(stringDirections)
-    print("Opened directions.")
+    util.smart_print("Obtained directions.")
+    polylineDirections = string_to_polylines(stringDirections)  
+    util.smart_print("Opened directions.")
     rawCoordinateList = decode_polylines(polylineDirections)
-    print("Decoded directions.")
+    util.smart_print("Decoded directions.")
     coordinateList = util.remove_duplicates(rawCoordinateList)
-    print("Removed duplicate Coordinates.")
+    util.smart_print("Removed duplicate Coordinates.")
     return util.round_points(coordinateList)
 
 def get_directions(start, end):
+    directions = cacher.get_object("directions", coordinate_list, [start, end], 
+                                  cacher.save_directions)
+    return directions
     
 
 

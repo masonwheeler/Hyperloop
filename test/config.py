@@ -6,8 +6,6 @@ verboseMode = False
 timingMode = False
 hasNlcd = False
 cwd = ""
-cacheDirectory = ""
-saveDirectory = ""
 
 """
 Physical Constants.
@@ -26,8 +24,16 @@ Comfort constraints.
 gTolerance = 0.2 * 9.8
 
 """
-Uninitialized, hence for storage.
+For Runtime storage.
 """
+
+cacheDirectory = ""
+saveDirectory = ""
+workingCacheName = ""
+workingSaveDirName = ""
+workingCacheDirectory = ""
+workingSaveDirectory = ""
+
 
 proj = 0
 angle = 0
