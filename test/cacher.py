@@ -6,6 +6,14 @@ import config
 import util
 
 
+def create_necessaryfolders():
+    cacheDirectory = config.cwd + "cache/"
+    saveDirectory = config.cwd + "save/"
+    if not os.path.exists(cacheDirectory):
+        os.makedirs(cacheDirectory)       
+    if not os.path.exists(saveDirectory):
+        os.makedirs(saveDirectory)
+
 def create_workingcachename(start,end):
     workingCacheName = "_".join([start,"to",end,"cache"])
     config.workingCacheName = workingCacheName
