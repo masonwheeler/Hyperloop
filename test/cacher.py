@@ -94,13 +94,13 @@ def load_transformedbounds():
     transformedBounds = load_object("transformedBounds")
     return transformedBounds
 
-def get_coordstype(point, coordsType):
+def get_pointcoords(point, coordsType):
     coords = eval(".".join(["point", coordsType]))
     return coords
 
 def save_latticelike(inLattice, latticeName, coordsType):
     flatLattice = util.fast_concat(inLattice)
-    latticeCoords = [get_coordstype(point,coordsType) for point in flatLattice]
+    latticeCoords = [get_pointcoords(point,coordsType) for point in flatLattice]
     latticeSavePath = get_object_savepath(latticeName)
     with open(latticeSavePath + '.csv', 'wb') as latticeHandle:
         writer = csv.writer(latticeHandle)
@@ -109,7 +109,7 @@ def save_latticelike(inLattice, latticeName, coordsType):
 def save_baselattice(baseLattice):
     objectName = "baselattice"
     cache_object(baseLattice, objectName)
-    save_latticelike(baseLattice, objectName, latticeCoords)
+    save_latticelike(baseLattice, objectName, "latticeCoords")
 
 def load_baselattice():
     baseLattice = load_object("baselattice")
@@ -126,16 +126,33 @@ def load_envelope():
 def save_lnglatlattice(lnglatLattice):
     objectName = "lnglatlattice"
     cache_object(lnglatLattice, objectName)
-    save_latticelike(lnglatLattice, objectName, lnglatCoords)
+    save_latticelike(lnglatLattice, objectName, "lnglatCoords")
+    save_latticelike(lnglatLattice, objectName, "xyCoords")
 
 def load_lnglatlattice():
     lnglatLattice = load_object("lnglatlattice")
     return lnglatLattice
 
-def save_xylattice(baseLattice):
-    objectName = "baselattice"
-    save_latticelike(baseLattice, objectName, xyCoords)
+def get_edgecoords(edge, coordsType):
+    coordsPair = eval(".".join(["edge", coordsType]))
+    coords = util.fast_concat(coordsPair)
+    return coords
 
-def save_edgessets(edgesSets)
-
+def save_edgeslike(inEdges, edgesName, coordsType):
+    flatEdges = util.fast_concat(inEdges)
+    edgesCoords = [get_edgecoords(edge,coordsType) for edge in flatEdges]
+    edgeSavePath = get_object_savepath(edgesName)
+    with open(edgeSavePath + '.csv', 'wb') as edgeHandle:
+        writer = csv.writer(edgeHandle)
+        writer.writerows(inEdges)
+    
+def save_edgessets(edgesSets):
+    objectName = "edgesSets"
+    cache_object(edgesSets, objectName)
+    save_edgeslike(edgesSets, objectName, "lnglatCoords")
+    save_edgeslike(edgesSets, objectName, "xyCoords")
+     
 def load_edgessets():
+    edgessets = load_object("edgessets")
+    return edgessets
+
