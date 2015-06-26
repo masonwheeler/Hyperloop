@@ -3,6 +3,7 @@ import csv
 import cPickle as pickle
 
 import config
+import util
 
 
 def create_workingcachename(start,end):
@@ -41,16 +42,16 @@ def load_object(objectName):
     loadedObject = pickle.load(fileHandle)
     return loadedObject
 
-def save_listlike(inObject, objectName):    
-    objectSavePath = get_object_savepath(objectName)
-    with open(objectPath + '.csv', 'wb') as objectHandle:
-        writer = csv.writer(objectHandle)
-        writer.writerows(inObject)        
+def save_listlike(inList, listName):    
+    listSavePath = get_object_savepath(listName)
+    with open(listSavePath + '.csv', 'wb') as listHandle:
+        writer = csv.writer(listHandle)
+        writer.writerows(inList)        
 
 def save_directions(directions):
     objectName = "directions"
     cache_object(directions, objectName)
-    save_listlike(objectName)
+    save_listlike(directions, objectName)
 
 def load_directions():
     directions = load_object("directions")
@@ -58,26 +59,42 @@ def load_directions():
 
 def save_bounds(bounds):
     objectName = "bounds"
-    cache_object(directions, objectName)
-    save_listlike(objectName)
+    cache_object(bounds, objectName)
+    save_listlike(bounds, objectName)
 
 def load_bounds():
     bounds = load_object("bounds")
     return bounds
 
 def save_boundsxy(boundsXY):
-    cache_object(boundsXY, "boundsXY")
+    objectName = "boundsxy"
+    cache_object(boundsXY, objectName)
+    save_listlike(boundsxy, objectName)
 
 def load_boundsxy():
-    boundsXY = load_object("boundsXY")
+    boundsXY = load_object("boundsxy")
     return boundsXY
 
 def save_transformedbounds(transformedBounds):
-    cache_object(transformedBounds, "transformedBounds")        
+    objectName = "transformedbounds"
+    cache_object(transformedBounds, objectName)        
+    save_listlike(transformedBounds, objectName)
 
 def load_transformedbounds():
     transformedBounds = load_object("transformedBounds")
     return transformedBounds
+
+def get_coordstype(point, coordsType):
+    coords = eval(".".join(["point", coordsType]))
+    return coords
+
+def save_latticelike(inLattice, latticeName, coordsType):
+    flatLattice = util.fast_concat(inLattice)
+    latticeCoords = [get_coordstype(point,coordsType) for point in flatLattice]
+    latticeSavePath = get_object_savepath(latticeName)
+    with open(latticeSavePath + '.csv', 'wb') as latticeHandle:
+        writer = csv.writer(latticeHandle)
+        writer.writerows(inLattice)        
 
 def save_baselattice(baseLattice):
 
