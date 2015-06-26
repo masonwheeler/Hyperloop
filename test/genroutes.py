@@ -80,6 +80,7 @@ def sample_routes(merged):
     return selected
 
 def merge_two_routessets(routesSetA, routesSetB):
+    print "Merging two adjacent slices of length-"+str(len(routesSetA[0].xyCoords))+"routes"
     merged = []
     for routeA in routesSetA:
         for routeB in routesSetB:
@@ -92,10 +93,14 @@ def merge_two_routessets(routesSetA, routesSetB):
         print(len(routesSetB))    
         for routeB in routesSetB:
           print(routeB.startYVal,routeB.startAngle)
-        raise ValueError('No compatible Routes')        
+        raise ValueError('No compatible routes')        
     return sample_routes(merged)
 
 def recursivemerge_routessets(routesSets):
+    print "Merging "+str(len(routesSets)) + "sets of routes."
+    print "the number of routes in each set is:"
+    for routeSet in routesSets:
+       print len(routeSet)
     layers = [routesSets]
     layersIndex = 0
     workingLayerIndex = 0
@@ -136,7 +141,7 @@ def recursivemerge_routessets(routesSets):
     filteredRoutes = layers[layersIndex][0]  
     print(len(filteredRoutes))
     filteredRoutes[0].display()
-    return 0 #filteredRoutes
+    return filteredRoutes
     
     
 

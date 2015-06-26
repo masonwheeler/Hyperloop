@@ -26,15 +26,17 @@ def build_lattice(start,end):
     return finishedLattice, envelope
 
 def get_routes(finishedLattice, envelope): 
-    edgessets = edges.build_edgessets(finishedLattice, envelope)    
-    #routessets = genroutes.edgessets_to_routessets(edgessets)
-    #filteredRoutes = genroutes.recursivemerge_routessets(routessets)
-    return 0 #filteredRoutes
+    edgesSets = edges.build_edgessets(finishedLattice, envelope)    
+    routesSets = genroutes.edgessets_to_routessets(edgesSets)
+    filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
+    return filteredRoutes
 
 def pair_analysis(start,end):
     t0 = time.time()
     finishedLattice, envelope = build_lattice(start,end)
     routes = get_routes(finishedLattice, envelope)
+    for i in range(10):
+       io.export(routes[i].xyCoords,'route'+str(i))
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     return 0

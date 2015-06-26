@@ -15,7 +15,7 @@ radiusOfEarth = 6.371*(10**6)
 Engineering constraints.
 """
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
-maxSpeed = 80 #maximum speed of the capsule (in ???)
+maxSpeed = 80 #maximum speed of the capsule (in m/s)
 
 """
 Comfort constraints.
