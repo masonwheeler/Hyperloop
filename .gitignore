@@ -12,4 +12,4 @@
 *.shx
 *.dbf
 *.csv
-throwaway.py
+*.p
