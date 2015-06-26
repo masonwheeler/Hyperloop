@@ -2,9 +2,12 @@
 Runtime Parameters
 """
 testingMode = True
-verboseMode = True
+verboseMode = False
+timingMode = False
 hasNlcd = False
 cwd = ""
+cacheDirectory = ""
+saveDirectory = ""
 
 """
 Physical Constants.

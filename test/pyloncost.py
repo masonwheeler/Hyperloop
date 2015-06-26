@@ -4,7 +4,6 @@ import random
 import time
 
 import config
-import heights
 import clothoid
 import util
 

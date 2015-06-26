@@ -6,9 +6,11 @@ import config
 import util
 
 
-def create_necessaryfolders():
-    cacheDirectory = config.cwd + "cache/"
-    saveDirectory = config.cwd + "save/"
+def create_basefolders():
+    cacheDirectory = config.cwd + "/cache/"
+    config.cacheDirectory = cacheDirectory
+    saveDirectory = config.cwd + "/save/"
+    config.saveDirectory = saveDirectory
     if not os.path.exists(cacheDirectory):
         os.makedirs(cacheDirectory)       
     if not os.path.exists(saveDirectory):
@@ -25,18 +27,26 @@ def create_workingsavedirname(start,end):
     return workingSaveDirName
 
 def create_workingcachedirectory(workingCacheName):
-    workingCacheDirectory = workingCacheName + "/"
+    workingCacheDirectory = config.cacheDirectory + workingCacheName + "/"
     if not os.path.exists(workingCacheDirectory):
         os.makedirs(workingCacheDirectory)
         config.workingCacheDirectory = workingCacheDirectory
     return workingCacheDirectory
 
 def create_workingsavedirectory(workingSaveDirName):
-    workingSaveDirectory = workingSaveDirName + "/"
+    workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
     if not os.path.exists(workingSaveDirectory):
         os.makedirs(workingSaveDirectory)
         config.workingSaveDirectory = workingSaveDirectory
     return workingSaveDirectory
+
+def create_necessaryfolders(start, end):
+    create_basefolders()
+    workingCacheName = create_workingcachename(start,end)
+    workingSaveDirName = create_workingsavedirname(start,end)
+    create_workingcachedirectory(workingCacheName)
+    create_workingsavedirectory(workingSaveDirName)
+
 
 def get_object_cachepath(objectName):
     objectFileBase = "_".join([config.workingCacheName, objectName])
@@ -60,6 +70,26 @@ def load_object(objectName):
     loadedObject = pickle.load(fileHandle)
     return loadedObject
 
+def object_cached(objectName):
+    objectCachePath = get_object_cachepath(objectName)
+    objectCached = os.path.isfile(objectCachePath)
+    return objectCached
+
+def object_saved(objectName):
+    objectSavePath = get_object_savepath(objectName)
+    objectSaved = os.path.isfile(objectSavePath)
+    return objectSaved
+
+def get_object(objectName, computeFunction, functionArgs, saveFunction):    
+    if (object_saved(objectName) and object_cached(objectName):
+        loadedObject = load_object(objectName)
+        return loadedObject
+    else:
+        computedObject = computeFunction(*functionArgs)
+        saveFunction(computedObject)
+        return computedObject
+
+
 def save_listlike(inList, listName):    
     listSavePath = get_object_savepath(listName)
     with open(listSavePath + '.csv', 'wb') as listHandle:
@@ -71,36 +101,22 @@ def save_directions(directions):
     cache_object(directions, objectName)
     save_listlike(directions, objectName)
 
-def load_directions():
-    directions = load_object("directions")
-    return directions
-
 def save_bounds(bounds):
     objectName = "bounds"
     cache_object(bounds, objectName)
     save_listlike(bounds, objectName)
-
-def load_bounds():
-    bounds = load_object("bounds")
-    return bounds
 
 def save_boundsxy(boundsXY):
     objectName = "boundsxy"
     cache_object(boundsXY, objectName)
     save_listlike(boundsxy, objectName)
 
-def load_boundsxy():
-    boundsXY = load_object("boundsxy")
-    return boundsXY
-
 def save_transformedbounds(transformedBounds):
     objectName = "transformedbounds"
     cache_object(transformedBounds, objectName)        
     save_listlike(transformedBounds, objectName)
 
-def load_transformedbounds():
-    transformedBounds = load_object("transformedBounds")
-    return transformedBounds
+
 
 def get_pointcoords(point, coordsType):
     coords = eval(".".join(["point", coordsType]))
@@ -119,17 +135,9 @@ def save_baselattice(baseLattice):
     cache_object(baseLattice, objectName)
     save_latticelike(baseLattice, objectName, "latticeCoords")
 
-def load_baselattice():
-    baseLattice = load_object("baselattice")
-    return baseLattice
-
 def save_envelope(envelope):
     objectName = "envelope"
     cache_object(envelope, objectName)
-
-def load_envelope():
-    envelope = load_object("envelope")
-    return envelope
 
 def save_lnglatlattice(lnglatLattice):
     objectName = "lnglatlattice"
@@ -137,9 +145,6 @@ def save_lnglatlattice(lnglatLattice):
     save_latticelike(lnglatLattice, objectName, "lnglatCoords")
     save_latticelike(lnglatLattice, objectName, "xyCoords")
 
-def load_lnglatlattice():
-    lnglatLattice = load_object("lnglatlattice")
-    return lnglatLattice
 
 def get_edgecoords(edge, coordsType):
     coordsPair = eval(".".join(["edge", coordsType]))
@@ -159,8 +164,4 @@ def save_edgessets(edgesSets):
     cache_object(edgesSets, objectName)
     save_edgeslike(edgesSets, objectName, "lnglatCoords")
     save_edgeslike(edgesSets, objectName, "xyCoords")
-     
-def load_edgessets():
-    edgessets = load_object("edgessets")
-    return edgessets
 

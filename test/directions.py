@@ -2,6 +2,7 @@ import urllib2
 import ast
 
 import util
+import cacher
 
 def HTTP_to_string(HTTPData):
     byteData = HTTPData.read()
@@ -84,5 +85,8 @@ def coordinate_list(start, end):
     coordinateList = util.remove_duplicates(rawCoordinateList)
     print("Removed duplicate Coordinates.")
     return util.round_points(coordinateList)
+
+def get_directions(start, end):
+    
 
 
