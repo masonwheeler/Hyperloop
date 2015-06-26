@@ -52,8 +52,6 @@ def get_object_cachepath(objectName):
     objectFileBase = "_".join([config.workingCacheName, objectName])
     objectFileName = objectFileBase + ".p"
     objectPath = config.workingCacheDirectory + objectFileName
-    print(config.workingCacheDirectory)
-    print(objectFileName)
     return objectPath
 
 def get_object_savepath(objectName):
@@ -65,12 +63,15 @@ def cache_object(inObject, objectName):
     objectCachePath = get_object_cachepath(objectName)
     fileHandle = open(objectCachePath, "wb")
     pickle.dump(inObject, fileHandle)
+    fileHandle.close()
 
 def load_object(objectName):
-    objectCachePath = get_object_cachepath(inObject, objectName)
-    fileHandle = open(objectCachePath, "wb")
+    objectCachePath = get_object_cachepath(objectName)
+    fileHandle = open(objectCachePath, "rb")
     loadedObject = pickle.load(fileHandle)
+    fileHandle.close()
     return loadedObject
+
 
 def object_cached(objectName):
     objectCachePath = get_object_cachepath(objectName)
@@ -90,6 +91,7 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction):
     else:
         print("computed object")
         computedObject = computeFunction(*computeArgs)
+        cache_object(computedObject,objectName)
         saveFunction(computedObject)
         return computedObject
 
@@ -101,26 +103,20 @@ def save_listlike(inList, listName):
         writer.writerows(inList)        
 
 def save_directions(directions):
-    print("saving directions")
     objectName = "directions"
-    cache_object(directions, objectName)
     save_listlike(directions, objectName)
 
 def save_bounds(bounds):
     objectName = "bounds"
-    cache_object(bounds, objectName)
     save_listlike(bounds, objectName)
 
 def save_boundsxy(boundsXY):
     objectName = "boundsxy"
-    cache_object(boundsXY, objectName)
     save_listlike(boundsxy, objectName)
 
 def save_transformedbounds(transformedBounds):
     objectName = "transformedbounds"
-    cache_object(transformedBounds, objectName)        
     save_listlike(transformedBounds, objectName)
-
 
 
 def get_pointcoords(point, coordsType):
@@ -137,16 +133,10 @@ def save_latticelike(inLattice, latticeName, coordsType):
 
 def save_baselattice(baseLattice):
     objectName = "baselattice"
-    cache_object(baseLattice, objectName)
     save_latticelike(baseLattice, objectName, "latticeCoords")
-
-def save_envelope(envelope):
-    objectName = "envelope"
-    cache_object(envelope, objectName)
 
 def save_lnglatlattice(lnglatLattice):
     objectName = "lnglatlattice"
-    cache_object(lnglatLattice, objectName)
     save_latticelike(lnglatLattice, objectName, "lnglatCoords")
     save_latticelike(lnglatLattice, objectName, "xyCoords")
 
@@ -166,7 +156,6 @@ def save_edgeslike(inEdges, edgesName, coordsType):
     
 def save_edgessets(edgesSets):
     objectName = "edgesSets"
-    cache_object(edgesSets, objectName)
     save_edgeslike(edgesSets, objectName, "lnglatCoords")
     save_edgeslike(edgesSets, objectName, "xyCoords")
 
