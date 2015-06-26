@@ -97,20 +97,34 @@ def save_latticelike(inLattice, latticeName, coordsType):
         writer.writerows(inLattice)        
 
 def save_baselattice(baseLattice):
+    objectName = "baselattice"
+    cache_object(baseLattice, objectName)
+    save_latticelike(baseLattice, objectName, latticeCoords)
 
 def load_baselattice():
+    baseLattice = load_object("baselattice")
+    return baseLattice
 
 def save_envelope(envelope):
+    objectName = "envelope"
+    cache_object(envelope, objectName)
 
 def load_envelope():
+    envelope = load_object("envelope")
+    return envelope
 
 def save_lnglatlattice(lnglatLattice):
+    objectName = "lnglatlattice"
+    cache_object(lnglatLattice, objectName)
+    save_latticelike(lnglatLattice, objectName, lnglatCoords)
 
 def load_lnglatlattice():
+    lnglatLattice = load_object("lnglatlattice")
+    return lnglatLattice
 
-def save_finishedlattice(finishedLattice):
-
-def load_finishedlattice():
+def save_xylattice(baseLattice):
+    objectName = "baselattice"
+    save_latticelike(baseLattice, objectName, xyCoords)
 
 def save_edgessets(edgesSets)
 
