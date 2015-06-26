@@ -5,20 +5,34 @@ import config
 
 
 def create_workingcachename(start,end):
-    cacheName = "_".join([start,"to",end])
-    config.cacheName = cacheName
-    return cacheName
+    workingCacheName = "_".join([start,"to",end])
+    config.workingCacheName = workingCacheName
+    return workingCacheName
 
-def create_cache(cacheName):
-    cacheDirectory = cacheName + "/"
-    if not os.path.exists(cacheDirectory):
-        os.makedirs(cacheDirectory)
-        config.cacheDirectory
-    return cacheDirectory
+def create_workingcachedirectory(workingCacheName):
+    workingCacheDirectory = workingCacheName + "/"
+    if not os.path.exists(workingCacheDirectory):
+        os.makedirs(workingCacheDirectory)
+        config.workingCacheDirectory = workingCacheDirectory
+    return workingCacheDirectory
+
+def get_object_path(inObject, objectName):
+    objectFileName = "_".join([config.workingCacheName, objectName])
+    objectPath = config.cwd + config.workingCacheDirectory + objectFileName
+    return objectPath
+
+def cache_object(inObject, objectName):
+    objectPath = get_object_path(inObject, objectName)
+    fileHandle = open(objectPath, "wb")
+    pickle.dump(inObject, fileHandle)
+
+def load_object(objectName):
+    objectPath = get_object_path(inObject, objectName)
+    fileHandle = open(objectPath, "wb")
+    loadedObject = pickle.load(fileHandle)
+    return loadedObject
 
 def cache_directions(directions):
-    cachePath = config.cwd + config
-    pickle.dump(    
 
 def cache_bounds(bounds):
 
