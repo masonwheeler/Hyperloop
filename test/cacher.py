@@ -23,6 +23,13 @@ def create_workingcachedirectory(workingCacheName):
         config.workingCacheDirectory = workingCacheDirectory
     return workingCacheDirectory
 
+def create_workingsavedirectory(workingSaveDirName):
+    workingSaveDirectory = workingSaveDirName + "/"
+    if not os.path.exists(workingSaveDirectory):
+        os.makedirs(workingSaveDirectory)
+        config.workingSaveDirectory = workingSaveDirectory
+    return workingSaveDirectory
+
 def get_object_cachepath(objectName):
     objectFileBase = "_".join([config.workingCacheName, objectName])
     objectFileName = objectFileBase + ".p"
@@ -30,6 +37,9 @@ def get_object_cachepath(objectName):
     return objectPath
 
 def get_object_savepath(objectName):
+    objectFileBase = "_".join([config.workingSaveDirName, objectName])
+    objectPath = config.cwd + config.workingSaveDirectory + objectFileBase
+    return objectPath
 
 def cache_object(inObject, objectName):
     objectCachePath = get_object_cachepath(objectName)
