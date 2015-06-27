@@ -6,24 +6,33 @@ import baselattice
 import proj
 import transform       
 import cost
+import cacher
 import import_export as io
 
-def project_bounds(bounds, startLatLng, endLatLng):
-    startLonLat = util.swap_pair(startLatLng)
-    endLonLat = util.swap_pair(endLatLng)
-    swappedBounds = util.swap_pairs(bounds)
-    #config.proj = proj.omerc_proj(startLonLat,endLonLat)
+def set_projection(startLatLng, endLatLng):
     config.proj = proj.albers_proj()
+
+def project_bounds(bounds):
+    swappedBounds = util.swap_pairs(bounds)
     boundsXY = proj.lonlats_to_xys(swappedBounds,config.proj)
-    startXY = proj.lonlat_to_xy(startLonLat,config.proj)
-    endXY = proj.lonlat_to_xy(endLonLat,config.proj)
     if config.verboseMode: 
         print("We are using the Oblique Mercator Projection.")
         print("In geospatial coordinates the start is: " + str(startXY) + ".")
         print("In geospatial coordinates the end is: " + str(endXY) + ".")
         print("The distance between the start and end in meters is: " +
         str(util.norm(util.subtract(startXY,endXY))) + ".")
-    return [boundsXY,startXY,endXY] 
+    return boundsXY
+
+def get_boundsxy(bounds):
+    boundsXY = cacher.get_object("boundsxy", project_bounds, [bounds], 
+                                 cacher.save_listlike)
+    return boundsXY
+    
+
+def project_startend(startLatLng, endLatLng):
+    startLonLat, endLonLat = util.swap_pairs([startLatLng, endLatLng])
+    startXY, endXY = proj.lonlats_to_xys([startLonLat, endLonLat], config.proj) 
+    return [startXY, endXY]    
 
 def set_params(startXY,endXY):
     config.angle, config.sizeFactor, config.startVector \
@@ -35,19 +44,15 @@ def set_params(startXY,endXY):
         print("The vector we translate by is: " + str(config.startVector) + ".")
     return [config.angle,config.sizeFactor,config.startVector]
 
-def transform_bounds(boundsXY,startXY,endXY):    
+def transform_bounds(boundsXY):    
     transformedBounds = transform.transform_object(
             config.angle, config.sizeFactor, config.startVector, boundsXY)
-    transformedStart = transform.transform_point(
-            config.angle, config.sizeFactor, config.startVector, startXY)
-    transformedEnd = transform.transform_point(
-            config.angle, config.sizeFactor, config.startVector, endXY)
-    if config.verboseMode:
-        print("The transformed start is: ")
-        print(transformedStart)
-        print("The transformed end is: ")
-        print(transformedEnd)    
     return transformedBounds
+
+def get_latticebounds(boundsXY):
+    latticeBounds = cacher.get_object("latticebounds", transform_bounds,
+                                     [boundsXY], cacher.save_listlike)
+    return latticeBounds
 
 def base_lattice(boundingPolygon):
     baseLattice, envelope = baselattice.base_lattice(boundingPolygon, 
@@ -63,6 +68,11 @@ def base_lattice(boundingPolygon):
         baseLattice[0][0].display()
     return [baseLattice, envelope]
 
+def get_baselattice(boundingPolygon):
+    baseLattice = cacher.get_object("baselattice", base_lattice,
+                                    [boundingPolygon], cacher.save_baselattice)
+    return baseLattice
+
 def attach_lnglats(lattice):
     for eachSlice in lattice:
         for eachPoint in eachSlice:
@@ -77,6 +87,11 @@ def attach_lnglats(lattice):
         print("Here is a sample Lattice point:")
         lattice[0][0].display()
     return lattice
+
+def get_lnglatlattice(lattice):
+    lnglatLattice = cacher.get_object("lnglatlattice", attach_lnglats,
+                                      [lattice], cacher.save_lnglatlattice)
+    return lnglatLattice
 
 def distance_from_rightofway(point, xyDirectionsCoords):
     distances = [proj.xy_distance(point.xyCoords, xyCoord) for xyCoord in 
@@ -97,10 +112,14 @@ def add_rightOfWay(lattice, directionsCoords):
         closestPoint = sortedSlice[0]
         closestPoint.inRightOfWay = True
         RightOfWay += [closestPoint]
-    RightOfWay.pop(0)
-    data = [point.xyCoords for point in RightOfWay]
-    print "exporting highway..."
-    io.export(data, 'highway')
+    #RightOfWay.pop(0)
+    #data = [point.xyCoords for point in RightOfWay]
+    #print "exporting highway..."
+    #io.export(data, 'highway')
     return lattice
 
+def get_rightofway(lattice, directionsCoords):
+    rightofwayLattice = cacher.get_object("rightofwaylattice", add_rightOfWay,
+                     [lattice, directionsCoords], cacher.save_rightofwaylattice)
+    return rightofwayLattice
 
