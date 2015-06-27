@@ -5,6 +5,7 @@ import config
 import proj
 import elevation
 import pyloncost
+import cacher
 
 class Edge:
     cost = 0
@@ -15,6 +16,7 @@ class Edge:
     length = 0
     latlngCoords = []
     xyCoords = []
+    latticeCoords = []
     vector = []
 
     def get_vector(self):
@@ -198,6 +200,11 @@ def build_edgessets(lattice, envelope):
     print("The number of filtered edges is: " + str(numFilteredEdges))
     #finishedEdgesSets = add_costs(baseEdgesSets)
     return baseEdgesSets #filteredEdgesSets
+
+def get_edgessets(lattice, envelope):
+    edgesSets = cacher.get_object("edgessets", build_edgessets,
+                                  [lattice, envelope], cacher.save_edgessets)
+    return edgesSets
 
 
 

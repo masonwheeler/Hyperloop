@@ -102,7 +102,7 @@ def distance_from_rightofway(point, xyDirectionsCoords):
 def add_rightOfWay(lattice, directionsCoords):
     lonlatDirectionsCoords = util.swap_pairs(directionsCoords)
     xyDirectionsCoords = proj.lonlats_to_xys(lonlatDirectionsCoords,config.proj)
-    RightOfWay = [[]]
+    rightOfWay = []
     for eachSlice in lattice:
         for eachPoint in eachSlice:
             eachPoint.distanceFromRightOfWay = distance_from_rightofway(
@@ -111,15 +111,15 @@ def add_rightOfWay(lattice, directionsCoords):
                       key = lambda point : point.distanceFromRightOfWay)
         closestPoint = sortedSlice[0]
         closestPoint.inRightOfWay = True
-        RightOfWay += [closestPoint]
+        rightOfWay.append(closestPoint.xyCoords)
     #RightOfWay.pop(0)
     #data = [point.xyCoords for point in RightOfWay]
     #print "exporting highway..."
     #io.export(data, 'highway')
-    return lattice
+    return lattice, rightOfWay
 
 def get_rightofway(lattice, directionsCoords):
-    rightofwayLattice = cacher.get_object("rightofwaylattice", add_rightOfWay,
-                     [lattice, directionsCoords], cacher.save_rightofwaylattice)
-    return rightofwayLattice
+    lattice, rightOfWay = cacher.get_object("rightofwaylattice",add_rightOfWay,
+                    [lattice, directionsCoords], cacher.save_rightofwaylattice)
+    return lattice, rightOfWay
 

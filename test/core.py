@@ -24,25 +24,25 @@ def build_lattice(start,end):
     #print(baseLattice)
     lnglatLattice = lattice.get_lnglatlattice(baseLattice)
     #print(lnglatLattice)
-    rightofwayLattice = lattice.get_rightofway(lnglatLattice, directionsCoords)
+    finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
+                                                      directionsCoords)
     #print "exporting lattice..."
     #flattenedLattice = itertools.chain(*finishedLattice)
     #latticeXY = [point.xyCoords for point in flattenedLattice]
     #io.export(latticeXY,'lattice')
-    return rightofwayLattice, envelope
-"""
+    return finishedLattice, envelope
+
 def get_routes(finishedLattice, envelope): 
-    edgesSets = edges.build_edgessets(finishedLattice, envelope)    
+    edgesSets = edges.get_edgessets(finishedLattice, envelope)    
     #routesSets = genroutes.edgessets_to_routessets(edgesSets)
     #filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
-    return filteredRoutes
-"""
+    return 0 #filteredRoutes
+
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
-    build_lattice(start, end)
-    #finishedLattice, envelope = build_lattice(start,end)
-    #routes = get_routes(finishedLattice, envelope)
+    lattice, envelope = build_lattice(start,end)
+    get_routes(lattice, envelope)
     #for i in range(10):
     #   io.export(routes[i].xyCoords,'route'+str(i))
     t1 = time.time()
