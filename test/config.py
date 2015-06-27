@@ -5,7 +5,9 @@ testingMode = True
 verboseMode = False
 timingMode = False
 hasNlcd = False
+useDropbox = True
 cwd = ""
+dropboxDirectory = "/home/ubuntu/Dropbox"
 
 """
 Physical Constants.
@@ -81,7 +83,6 @@ landPointSpacing = 30 #spacing between points for land cost sampling in meters
 For Google-Elevation
 """
 
-# Google Elevation API
 getElevationPieceSize = 512 #Constraint on number of simultaneous api calls.
 elevationBaseUrl = 'https://maps.googleapis.com/maps/api/elevation/json'
 

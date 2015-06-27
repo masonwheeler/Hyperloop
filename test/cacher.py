@@ -9,7 +9,10 @@ import util
 def create_basefolders():
     cacheDirectory = config.cwd + "/cache/"
     config.cacheDirectory = cacheDirectory
-    saveDirectory = config.cwd + "/save/"
+    if config.useDropbox:
+        saveDirectory = config.dropboxDirectory + "/save/"
+    else:
+        saveDirectory = config.cwd + "/save/"
     config.saveDirectory = saveDirectory
     if not os.path.exists(cacheDirectory):
         os.makedirs(cacheDirectory)       
