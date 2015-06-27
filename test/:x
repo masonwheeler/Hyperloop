@@ -1,0 +1,42 @@
+import time
+
+import config
+import database
+import directions
+import boundingpolygon
+import lattice
+import edges
+import genroutes
+import cacher
+
+def build_lattice(start,end):
+    directionsCoords = directions.get_directions(start, end)
+    startLatLng, endLatLng = directionsCoords[0], directionsCoords[-1]
+    lattice.set_projection(startLatLng, endLatLng)
+    startXY, endXY = lattice.project_startend(startLatLng, endLatLng)
+    boundingPolygon = boundingpolygon.get_boundingpolygon(directionsCoords)
+    boundsXY = lattice.get_boundsxy(boundingPolygon)
+    lattice.set_params(startXY,endXY)
+    latticeBounds = lattice.get_latticebounds(boundsXY)
+    baseLattice, envelope = lattice.get_baselattice(latticeBounds)
+    lnglatLattice = lattice.get_lnglatlattice(baseLattice)
+    finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
+                                                      directionsCoords)
+    return finishedLattice, envelope
+
+def get_routes(finishedLattice, envelope): 
+    edgesSets = edges.get_edgessets(finishedLattice, envelope)    
+    #routesSets = genroutes.edgessets_to_routessets(edgesSets)
+    #filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
+    return 0 #filteredRoutes
+
+def pair_analysis(start,end):
+    cacher.create_necessaryfolders(start, end)
+    t0 = time.time()
+    lattice, envelope = build_lattice(start,end)
+    get_routes(lattice, envelope)
+    #for i in range(10):
+    #   io.export(routes[i].xyCoords,'route'+str(i))
+    t1 = time.time()
+    print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
+    return 0

@@ -8,6 +8,7 @@ import lattice
 import edges
 import genroutes
 import cacher
+import visualize
 #import import_export as io
 
 def build_lattice(start,end):
@@ -16,14 +17,16 @@ def build_lattice(start,end):
     lattice.set_projection(startLatLng, endLatLng)
     startXY, endXY = lattice.project_startend(startLatLng, endLatLng)
     boundingPolygon = boundingpolygon.get_boundingpolygon(directionsCoords)
-    boundsXY = lattice.get_boundsxy(boundingPolygon)
-    lattice.set_params(startXY,endXY)
-    latticeBounds = lattice.get_latticebounds(boundsXY)
-    baseLattice, envelope = lattice.get_baselattice(latticeBounds)
-    lnglatLattice = lattice.get_lnglatlattice(baseLattice)
-    finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
-                                                      directionsCoords)
-    return finishedLattice, envelope
+    #boundsXY = lattice.get_boundsxy(boundingPolygon)
+    #lattice.set_params(startXY,endXY)
+    #latticeBounds = lattice.get_latticebounds(boundsXY)
+    #baseLattice, envelope = lattice.get_baselattice(latticeBounds)
+    #lnglatLattice = lattice.get_lnglatlattice(baseLattice)
+    #finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
+    #                                                  directionsCoords)
+    if config.visualMode:
+        visualize.plot_polygon(boundingPolygon)
+    return 0 #finishedLattice, envelope
 
 def get_routes(finishedLattice, envelope): 
     edgesSets = edges.get_edgessets(finishedLattice, envelope)    
@@ -34,8 +37,9 @@ def get_routes(finishedLattice, envelope):
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
-    lattice, envelope = build_lattice(start,end)
-    get_routes(lattice, envelope)
+    build_lattice(start, end)
+    #lattice, envelope = build_lattice(start,end)
+    #get_routes(lattice, envelope)
     """
     for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))

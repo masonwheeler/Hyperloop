@@ -2,10 +2,11 @@
 Runtime Parameters
 """
 testingMode = True
+visualMode = True
 verboseMode = False
 timingMode = False
 hasNlcd = False
-useDropbox = True
+useDropbox = False
 cwd = ""
 dropboxDirectory = "/home/ubuntu/Dropbox"
 
