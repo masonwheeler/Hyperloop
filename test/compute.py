@@ -73,7 +73,8 @@ def fetch_Interpolation_Data(p, edges):
    plot_times = sum(s,[])
    joined_v = sum(v,[])
    joined_a = sum(a,[])
-   pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t), h)
+   joined_h = sum(h,[])
+   pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t))
    vpts = [np.linalg.norm(vel_vector) for vel_vector in joined_v]
    apts = [np.linalg.norm(accel_vector) for accel_vector in joined_a]
    return [comfort_Ratings, triptime, plot_times, pts, vpts, apts]
