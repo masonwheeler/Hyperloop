@@ -86,8 +86,8 @@ def object_saved(objectName):
     objectSaved = os.path.isfile(objectSavePath)
     return objectSaved
 
-def get_object(objectName, computeFunction, computeArgs, saveFunction):    
-    if (object_cached(objectName)):
+def get_object(objectName, computeFunction, computeArgs, saveFunction, switch):    
+    if (object_cached(objectName) and switch):
         print(objectName + " exists.")
         loadedObject = load_object(objectName)
         return loadedObject

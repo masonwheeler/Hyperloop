@@ -88,7 +88,7 @@ def coordinate_list(start, end):
 
 def get_directions(start, end):
     directions = cacher.get_object("directions", coordinate_list, [start, end], 
-                                  cacher.save_listlike)
+                              cacher.save_listlike, config.overwriteDirections)
     return directions
     
 

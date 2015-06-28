@@ -1,5 +1,5 @@
 """
-Runtime Parameters
+Runtime Parameters.
 """
 testingMode = True
 visualMode = False
@@ -9,6 +9,43 @@ hasNlcd = False
 useDropbox = False
 cwd = ""
 dropboxDirectory = "/home/ubuntu/Dropbox"
+
+"""
+Cache Overwriting Switches.
+"""
+
+useCachedDirections = True
+useCachedBoundingPolygon = True
+useCachedBoundsXY = True
+useCachedLatticeBounds = True
+useCachedBaseLattice = True
+useCachedLngLatLattice = True
+useCachedRightOfWay = True
+
+"""
+Overwriting Bools.
+"""
+
+directionsBools = [useCachedDirections]
+boundingPolygonBools = directionsBools.append(useCachedBoundingPolygon)
+boundsXYBools = boundingPolygonBools.append(useCachedBoundsXY) 
+latticeBoundsBools = boundsXYBools.append(useCachedLatticeBounds)
+baseLatticeBools = latticeBoundsBools.append(useCachedBaseLattice)
+lnglatLatticeBools = baseLatticeBools.append(useCachedLngLatLattice)
+rightofwayBools = lnglatLatticeBools.append(useCachedRightOfWay)
+
+"""
+Overwriting Flags.
+"""
+
+directionsFlag = all(directionsBools)
+boundingPolygonFlag = all(boundingPolygonBools)
+boundsXYFlag = all(boundsXYBools)
+latticeBoundsFlag = all(latticeBoundsBools)
+baseLatticeFlag = all(baseLatticeBools)
+lnglatLatticeFlag = all(lnglatLatticeBools)
+rightofwayFlag = all(rightofwayBools)
+
 
 """
 Physical Constants.
@@ -103,9 +140,6 @@ costPerPylonLength = 10000
 pylonBaseCost = 2000
 
 costTable = {}
-
-
-
 
 
 
