@@ -36,8 +36,15 @@ def create_workingcachedirectory(workingCacheName):
         os.makedirs(workingCacheDirectory)
     return workingCacheDirectory
 
+def create_routesdirectory(workingSaveDirectory):
+    routesDirectory = workingSaveDirectory + "routes/"
+    if not os.path.exists(routesDirectory):
+        os.makedirs(routesDirectory)
+    return routesDirectory
+
 def create_workingsavedirectory(workingSaveDirName):
     workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
+    create_routesdirectory(workingSaveDirectory)
     config.workingSaveDirectory = workingSaveDirectory
     if not os.path.exists(workingSaveDirectory):
         os.makedirs(workingSaveDirectory)
@@ -148,4 +155,11 @@ def save_edgessets(edgesSets, objectName):
     save_edgeslike(edgesSets, objectName, "latlngCoords")
     save_edgeslike(edgesSets, objectName, "xyCoords")
     save_edgeslike(edgesSets, objectName, "latticeCoords")
+
+def save_routes(routes, objectName):
+    index = 1
+    for route in routes:
+        routeName = 'routes/route' + str(index)
+        save_listlike(route, routeName)
+        index += 1
 

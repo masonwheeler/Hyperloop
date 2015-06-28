@@ -22,6 +22,7 @@ useCachedBaseLattice = True
 useCachedLngLatLattice = True
 useCachedRightOfWay = True
 useCachedEdges = True
+useCachedRoutes = True
 
 """
 Overwriting Bools.
@@ -35,6 +36,7 @@ baseLatticeBools = latticeBoundsBools + [useCachedBaseLattice]
 lnglatLatticeBools = baseLatticeBools + [useCachedLngLatLattice]
 rightofwayBools = lnglatLatticeBools + [useCachedRightOfWay]
 edgesBools = rightofwayBools + [useCachedEdges]
+routesBools = edgesBools + [useCachedRoutes]
 
 """
 Overwriting Flags.
@@ -48,6 +50,7 @@ baseLatticeFlag = all(baseLatticeBools)
 lnglatLatticeFlag = all(lnglatLatticeBools)
 rightofwayFlag = all(rightofwayBools)
 edgesFlag = all(edgesBools)
+routesFlag = all(routesBools)
 
 """
 Physical Constants.
