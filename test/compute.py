@@ -18,8 +18,6 @@ def list_differentiate(List, dt):
 def Coeffs_to_VelAccel(a, s, t):
    da = [[j * quintic[j] for j in range(1,6)] for quintic in a]
    d2a = [[j * quartic[j] for j in range(1,5)] for quartic in da]
-   print s[0]
-   print intrp.Coeffs_to_Vals(da, s[0], t)
    v = [intrp.Coeffs_to_Vals(da, dosage_interval, t) for dosage_interval in s]
    A = [intrp.Coeffs_to_Vals(d2a, dosage_interval, t) for dosage_interval in s]
    return [v, A]
@@ -51,7 +49,7 @@ def fetch_Interpolation_Data(p, edges):
    # Form list "s" of sampling times:
    N = len(p) - 1
    Q = 2**8. # number of rectangles in the Riemann sum (for efficiency, keep this a power of two).
-   s = [[t[i] * (j/Q)*(t[i+1] - t[i]) + .05 for j in range(int(Q))] for i in range(N)]
+   s = [[t[i] + (j/Q)*(t[i+1] - t[i]) + .05 for j in range(int(Q))] for i in range(N)]
 
   # h = [edge.heights for edge in edges]
   # dt = [times[1]-times[0] for times in s]
@@ -62,9 +60,8 @@ def fetch_Interpolation_Data(p, edges):
    # Sample velocity and acceleration at "s":
    vx, Ax = Coeffs_to_VelAccel(ax, s, t)
    vy, Ay = Coeffs_to_VelAccel(ay, s, t)
-   v = [zip(vx[i], vy[i], h) for i in range(len(vx))]
-   a = [zip(Ax[i], Ay[i], h) for i in range(len(Ax))]   
-   
+   v = [zip(vx[i], vy[i], h[i]) for i in range(len(vx))]
+   a = [zip(Ax[i], Ay[i], h[i]) for i in range(len(Ax))]      
   # v = [zip(vx[i], vy[i], dh[i]) for i in range(len(vx))]
   # a = [zip(Ax[i], Ay[i], d2h[i]) for i in range(len(Ax))]
 
@@ -76,7 +73,7 @@ def fetch_Interpolation_Data(p, edges):
    plot_times = sum(s,[])
    joined_v = sum(v,[])
    joined_a = sum(a,[])
-   pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t), intrp.Coeffs_to_Vals(az, plot_times, t))
+   pts = zip(intrp.Coeffs_to_Vals(ax, plot_times, t), intrp.Coeffs_to_Vals(ay, plot_times, t), h)
    vpts = [np.linalg.norm(vel_vector) for vel_vector in joined_v]
    apts = [np.linalg.norm(accel_vector) for accel_vector in joined_a]
    return [comfort_Ratings, triptime, plot_times, pts, vpts, apts]
