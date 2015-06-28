@@ -31,9 +31,9 @@ def build_lattice(start,end):
 
 def get_routes(finishedLattice, envelope): 
     edgesSets = edges.get_edgessets(finishedLattice, envelope)    
-    routesSets = genroutes.edgessets_to_routessets(edgesSets)
-    filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
-    return filteredRoutes
+    #routesSets = genroutes.edgessets_to_routessets(edgesSets)
+    #filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
+    return 0 #filteredRoutes
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
@@ -41,7 +41,7 @@ def pair_analysis(start,end):
     build_lattice(start, end)
     lattice, envelope = build_lattice(start,end)
     routes = get_routes(lattice, envelope)
-    for i in range(10):
+    """for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))
     print "Computing comfort and triptime..."
     n = 0
@@ -56,7 +56,7 @@ def pair_analysis(start,end):
        print zip(routes[i].plotTimes,routes[i].vel_points)
        io.export(zip(routes[i].plotTimes,routes[i].accel_points),'route'+str(i)+'accel_points')
        print zip(routes[i].plotTimes,routes[i].accel_points)
-       io.export(zip([0]*len(routes[i].comfort),routes[i].comfort),'route'+str(i)+'comfort')
+       io.export(zip([0]*len(routes[i].comfort),routes[i].comfort),'route'+str(i)+'comfort')"""
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     return 0

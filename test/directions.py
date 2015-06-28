@@ -2,6 +2,7 @@ import urllib2
 import ast
 
 import util
+import config
 import cacher
 
 def HTTP_to_string(HTTPData):

@@ -21,18 +21,20 @@ useCachedLatticeBounds = True
 useCachedBaseLattice = True
 useCachedLngLatLattice = True
 useCachedRightOfWay = True
+useCachedEdges = True
 
 """
 Overwriting Bools.
 """
 
 directionsBools = [useCachedDirections]
-boundingPolygonBools = directionsBools.append(useCachedBoundingPolygon)
-boundsXYBools = boundingPolygonBools.append(useCachedBoundsXY) 
-latticeBoundsBools = boundsXYBools.append(useCachedLatticeBounds)
-baseLatticeBools = latticeBoundsBools.append(useCachedBaseLattice)
-lnglatLatticeBools = baseLatticeBools.append(useCachedLngLatLattice)
-rightofwayBools = lnglatLatticeBools.append(useCachedRightOfWay)
+boundingPolygonBools = directionsBools + [useCachedBoundingPolygon]
+boundsXYBools = boundingPolygonBools + [useCachedBoundsXY]
+latticeBoundsBools = boundsXYBools + [useCachedLatticeBounds]
+baseLatticeBools = latticeBoundsBools + [useCachedBaseLattice]
+lnglatLatticeBools = baseLatticeBools + [useCachedLngLatLattice]
+rightofwayBools = lnglatLatticeBools + [useCachedRightOfWay]
+edgesBools = rightofwayBools + [useCachedEdges]
 
 """
 Overwriting Flags.
@@ -45,7 +47,7 @@ latticeBoundsFlag = all(latticeBoundsBools)
 baseLatticeFlag = all(baseLatticeBools)
 lnglatLatticeFlag = all(lnglatLatticeBools)
 rightofwayFlag = all(rightofwayBools)
-
+edgesFlag = all(edgesBools)
 
 """
 Physical Constants.
