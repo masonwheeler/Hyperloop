@@ -2,7 +2,7 @@
 Runtime Parameters
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = False
 timingMode = False
 hasNlcd = False

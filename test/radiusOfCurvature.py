@@ -9,7 +9,7 @@ def radius(three_points):
 	a = np.linalg.norm(np.subtract(p1, p2))
 	b = np.linalg.norm(np.subtract(p2, p3))
 	c = np.linalg.norm(np.subtract(p1, p3))
-	p = (a + b + c) / 2
+	p = (a + b + c) / 1.999
 	A = math.sqrt(p * (p - a) * (p - b) * (p - c))
 	if A == 0:
 		return 1000000000000

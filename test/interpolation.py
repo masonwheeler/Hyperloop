@@ -7,15 +7,15 @@ import quintic as quint
 import feedBCs as bc
 
 def Points_to_Coeffs(p, n):
-	t, v = bc.parse(p)
-	Gx = bc.process(t, p, v, n, 0)
-	Gy = bc.process(t, p, v, n, 1)
-	ax = []
-	ay = []
-	for i in range(len(Gx)):
-		ax += quint.interp(Gx[i])
-		ay += quint.interp(Gy[i])
-	return [ax, ay, t]
+  t, v = bc.parse(p)
+  Gx = bc.process(t, p, v, n, 0)
+  Gy = bc.process(t, p, v, n, 1)
+  ax = []
+  ay = []
+  for i in range(len(Gx)):
+    ax += quint.interp(Gx[i])
+    ay += quint.interp(Gy[i])
+  return [ax, ay, t]
 
 def Coeffs_to_Vals(a, s, t_i):
 	condlist = [(t_i[j] < s)*(s < t_i[j+1]) for j in range(len(t_i)-2)]

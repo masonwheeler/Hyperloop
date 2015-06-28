@@ -9,7 +9,8 @@ import edges
 import genroutes
 import cacher
 import visualize
-#import import_export as io
+import import_export as io
+import compute
 
 def build_lattice(start,end):
     directionsCoords = directions.get_directions(start, end)
@@ -17,30 +18,29 @@ def build_lattice(start,end):
     lattice.set_projection(startLatLng, endLatLng)
     startXY, endXY = lattice.project_startend(startLatLng, endLatLng)
     boundingPolygon = boundingpolygon.get_boundingpolygon(directionsCoords)
-    #boundsXY = lattice.get_boundsxy(boundingPolygon)
-    #lattice.set_params(startXY,endXY)
-    #latticeBounds = lattice.get_latticebounds(boundsXY)
-    #baseLattice, envelope = lattice.get_baselattice(latticeBounds)
-    #lnglatLattice = lattice.get_lnglatlattice(baseLattice)
-    #finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
-    #                                                  directionsCoords)
+    boundsXY = lattice.get_boundsxy(boundingPolygon)
+    lattice.set_params(startXY,endXY)
+    latticeBounds = lattice.get_latticebounds(boundsXY)
+    baseLattice, envelope = lattice.get_baselattice(latticeBounds)
+    lnglatLattice = lattice.get_lnglatlattice(baseLattice)
+    finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
+                                                      directionsCoords)
     if config.visualMode:
         visualize.plot_polygon(boundingPolygon)
-    return 0 #finishedLattice, envelope
+    return finishedLattice, envelope
 
 def get_routes(finishedLattice, envelope): 
     edgesSets = edges.get_edgessets(finishedLattice, envelope)    
-    #routesSets = genroutes.edgessets_to_routessets(edgesSets)
-    #filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
-    return 0 #filteredRoutes
+    routesSets = genroutes.edgessets_to_routessets(edgesSets)
+    filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
+    return filteredRoutes
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
     build_lattice(start, end)
-    #lattice, envelope = build_lattice(start,end)
-    #get_routes(lattice, envelope)
-    """
+    lattice, envelope = build_lattice(start,end)
+    routes = get_routes(lattice, envelope)
     for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))
     print "Computing comfort and triptime..."
@@ -57,7 +57,6 @@ def pair_analysis(start,end):
        io.export(zip(routes[i].plotTimes,routes[i].accel_points),'route'+str(i)+'accel_points')
        print zip(routes[i].plotTimes,routes[i].accel_points)
        io.export(zip([0]*len(routes[i].comfort),routes[i].comfort),'route'+str(i)+'comfort')
-    """
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     return 0
