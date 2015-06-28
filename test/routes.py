@@ -2,6 +2,7 @@ import random
 
 import config
 import util
+import cacher
 
 class Route:
     cost = 0
@@ -138,13 +139,13 @@ def recursivemerge_routessets(routesSets):
             break
 
     filteredRoutes = layers[layersIndex][0]  
-#    print(len(filteredRoutes))
-    filteredRoutes[0].display()
+    #print(len(filteredRoutes))
+    #filteredRoutes[0].display()
     return filteredRoutes
 
 def build_routes(edgessets):
     routesSets = edgessets_to_routessets(edgessets)
-    fiteredRoutes = recursivemerge_routessets(routesSets)
+    filteredRoutes = recursivemerge_routessets(routesSets)
     return filteredRoutes
     
 def get_routes(edgessets):

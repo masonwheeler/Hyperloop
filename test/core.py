@@ -6,7 +6,7 @@ import directions
 import boundingpolygon
 import lattice
 import edges
-import genroutes
+import routes
 import cacher
 import visualize
 import import_export as io
@@ -29,18 +29,17 @@ def build_lattice(start,end):
         visualize.plot_polygon(boundingPolygon)
     return finishedLattice, envelope
 
-def get_routes(finishedLattice, envelope): 
+def build_routes(finishedLattice, envelope): 
     edgesSets = edges.get_edgessets(finishedLattice, envelope)    
-    #routesSets = genroutes.edgessets_to_routessets(edgesSets)
-    #filteredRoutes = genroutes.recursivemerge_routessets(routesSets)
-    return 0 #filteredRoutes
+    filteredRoutes = routes.get_routes(edgesSets)
+    return filteredRoutes
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
     build_lattice(start, end)
     lattice, envelope = build_lattice(start,end)
-    routes = get_routes(lattice, envelope)
+    filteredRoutes = build_routes(lattice, envelope)
     """for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))
     print "Computing comfort and triptime..."

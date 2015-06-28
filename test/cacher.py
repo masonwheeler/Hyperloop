@@ -44,7 +44,7 @@ def create_routesdirectory(workingSaveDirectory):
 
 def create_workingsavedirectory(workingSaveDirName):
     workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
-    create_routesdirectory(workingSaveDirectory)
+    create_routesdirectory(workingSaveDirectory + workingSaveDirName + "_")
     config.workingSaveDirectory = workingSaveDirectory
     if not os.path.exists(workingSaveDirectory):
         os.makedirs(workingSaveDirectory)

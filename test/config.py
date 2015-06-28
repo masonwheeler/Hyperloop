@@ -22,7 +22,7 @@ useCachedBaseLattice = True
 useCachedLngLatLattice = True
 useCachedRightOfWay = True
 useCachedEdges = True
-useCachedRoutes = True
+useCachedRoutes = False
 
 """
 Overwriting Bools.
