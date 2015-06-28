@@ -86,8 +86,8 @@ def object_saved(objectName):
     objectSaved = os.path.isfile(objectSavePath)
     return objectSaved
 
-def get_object(objectName, computeFunction, computeArgs, saveFunction, switch):    
-    if (object_cached(objectName) and switch):
+def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):    
+    if (object_cached(objectName) and flag):
         print(objectName + " exists.")
         loadedObject = load_object(objectName)
         return loadedObject
@@ -128,7 +128,7 @@ def save_lnglatlattice(lnglatLattice, objectName):
 def save_rightofwaylattice(rightofwayLattice, objectName):
     latticeSavePath = get_object_savepath(objectName)
     lattice, rightofway = rightofwayLattice
-    save_listlike(rightofway, objectName)    
+    save_listlike(rightofway, "rightofway")    
     
 
 def get_edgecoords(edge, coordsType):

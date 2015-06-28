@@ -25,7 +25,7 @@ def project_bounds(bounds):
 
 def get_boundsxy(bounds):
     boundsXY = cacher.get_object("boundsxy", project_bounds, [bounds], 
-                                 cacher.save_listlike)
+                                 cacher.save_listlike, config.boundsXYFlag)
     return boundsXY
     
 
@@ -51,7 +51,7 @@ def transform_bounds(boundsXY):
 
 def get_latticebounds(boundsXY):
     latticeBounds = cacher.get_object("latticebounds", transform_bounds,
-                                     [boundsXY], cacher.save_listlike)
+                    [boundsXY], cacher.save_listlike, config.latticeBoundsFlag)
     return latticeBounds
 
 def base_lattice(boundingPolygon):
@@ -70,7 +70,7 @@ def base_lattice(boundingPolygon):
 
 def get_baselattice(boundingPolygon):
     baseLattice = cacher.get_object("baselattice", base_lattice,
-                                    [boundingPolygon], cacher.save_baselattice)
+           [boundingPolygon], cacher.save_baselattice, config.baseLatticeFlag)
     return baseLattice
 
 def attach_lnglats(lattice):
@@ -90,7 +90,7 @@ def attach_lnglats(lattice):
 
 def get_lnglatlattice(lattice):
     lnglatLattice = cacher.get_object("lnglatlattice", attach_lnglats,
-                                      [lattice], cacher.save_lnglatlattice)
+              [lattice], cacher.save_lnglatlattice, config.lnglatLatticeFlag)
     return lnglatLattice
 
 def distance_from_rightofway(point, xyDirectionsCoords):
@@ -112,14 +112,11 @@ def add_rightOfWay(lattice, directionsCoords):
         closestPoint = sortedSlice[0]
         closestPoint.inRightOfWay = True
         rightOfWay.append(closestPoint.xyCoords)
-    #RightOfWay.pop(0)
-    #data = [point.xyCoords for point in RightOfWay]
-    #print "exporting highway..."
-    #io.export(data, 'highway')
     return lattice, rightOfWay
 
 def get_rightofway(lattice, directionsCoords):
     lattice, rightOfWay = cacher.get_object("rightofwaylattice",add_rightOfWay,
-                    [lattice, directionsCoords], cacher.save_rightofwaylattice)
+                    [lattice, directionsCoords], cacher.save_rightofwaylattice,
+                    config.rightofwayFlag)
     return lattice, rightOfWay
 

@@ -30,5 +30,5 @@ def bounding_polygon(directionsCoords):
 
 def get_boundingpolygon(directions):
     boundingPolygon = cacher.get_object("boundingpolygon", bounding_polygon,
-                      [directions], cacher.save_listlike)
+               [directions], cacher.save_listlike, config.boundingPolygonFlag)
     return boundingPolygon

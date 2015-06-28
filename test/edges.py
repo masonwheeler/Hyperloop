@@ -190,20 +190,21 @@ def add_costs(edgesSets):
     
 def build_edgessets(lattice, envelope):
     baseEdgesSets = base_edgessets(lattice)
-    print "The number of edges in each edgeSet is:"
-    for edgeSet in baseEdgesSets:
-       print len(edgeSet)
+    #print "The number of edges in each edgeSet is:"
+    #for edgeSet in baseEdgesSets:
+    #   print len(edgeSet)
     numEdges = sum(map(len,baseEdgesSets))
     filteredEdgesSets = filter_edgessets(baseEdgesSets, envelope)
     numFilteredEdges = sum(map(len,filteredEdgesSets))
-    print("The number of unfiltered edges is: " + str(numEdges))
-    print("The number of filtered edges is: " + str(numFilteredEdges))
+    if config.verboseMode:
+        print("The number of unfiltered edges is: " + str(numEdges))
+        print("The number of filtered edges is: " + str(numFilteredEdges))
     #finishedEdgesSets = add_costs(baseEdgesSets)
     return baseEdgesSets #filteredEdgesSets
 
 def get_edgessets(lattice, envelope):
     edgesSets = cacher.get_object("edgessets", build_edgessets,
-                                  [lattice, envelope], cacher.save_edgessets)
+                [lattice, envelope], cacher.save_edgessets, config.edgesFlag)
     return edgesSets
 
 
