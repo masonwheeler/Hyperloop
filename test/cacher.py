@@ -159,7 +159,7 @@ def save_edgessets(edgesSets, objectName):
 def save_routes(routes, objectName):
     index = 1
     for route in routes:
-        routeName = 'routes/route' + str(index)
+        routeName = 'routes/route' + str(index).zfill(4)
         save_listlike(route.xyCoords, routeName + 'XYCoords')
         save_listlike(route.latlngCoords, routeName + 'LatLngCoords')
         index += 1
