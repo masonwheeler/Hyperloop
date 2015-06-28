@@ -160,6 +160,7 @@ def save_routes(routes, objectName):
     index = 1
     for route in routes:
         routeName = 'routes/route' + str(index)
-        save_listlike(route, routeName)
+        save_listlike(route.xyCoords, routeName + 'XYCoords')
+        save_listlike(route.latlngCoords, routeName + 'LatLngCoords')
         index += 1
 

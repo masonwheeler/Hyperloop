@@ -6,16 +6,11 @@ import mergepolygons
 import cacher
 
 def bounding_polygon(directionsCoords):    
-    #t0 = time.clock()
-    #config.directionsCoords = directions.get_directions(start, end)  
-    #t1 = time.clock()
-    #startLatLng = config.directionsCoords[0]
-    #endLatLng = config.directionsCoords[-1]
     coordGroups = groupcoords.group_coords(directionsCoords, config.groupSize)
-    t2 = time.clock()
+    t0 = time.clock()
     polygon = mergepolygons.merge_coordgroups(coordGroups,
       config.polygonMergeChunkSize, config.tolerance, config.maxAttempts)
-    t3 = time.clock()
+    t1 = time.clock()
     if config.verboseMode:
         print("There are " + str(len(coordinatesList)) +
               " coordinates in the directions.")
@@ -24,8 +19,7 @@ def bounding_polygon(directionsCoords):
         print("Merging polygons...")
         print("The boundary polygon has " + str(len(polygon)) + " sides.")
     if config.timingMode:
-        print("Getting the coordinates took: " + str(t1-t0) + " seconds.")
-        print("Merging the polygons took: " + str(t3-t2) + " seconds.")
+        print("Merging the polygons took: " + str(t1-t0) + " seconds.")
     return polygon
 
 def get_boundingpolygon(directions):
