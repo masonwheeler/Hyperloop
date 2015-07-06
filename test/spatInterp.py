@@ -2,7 +2,7 @@ import math
 import numpy as np
 import quintic as quint
 import interpolation
-import genVelocity as gen
+#import genVelocity as gen
 #import matplotlib.pyplot as plt
 #import time
 
