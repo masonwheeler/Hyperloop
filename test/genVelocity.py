@@ -3,7 +3,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 #import matplotlib.pyplot as plt
 #import os
-
+import time
 #print os.getcwd()
 
 R =  6.371*(10**6)
@@ -22,6 +22,10 @@ def pointstoRadius(three_points):
     return 1000000000000
   else:
     return a * b * c / (4 * A)
+
+start = time.time()
+pointstoRadius([[1034334,34343],[343434,343435],[353535,555]])
+print time.time()-start
 
 def xPointstovPoints(xPoints):
   sPoints = [0 for i in range(0,len(xPoints))]
