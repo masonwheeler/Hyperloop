@@ -23,10 +23,6 @@ def pointstoRadius(three_points):
   else:
     return a * b * c / (4 * A)
 
-start = time.time()
-pointstoRadius([[1034334,34343],[343434,343435],[353535,555]])
-print time.time()-start
-
 def xPointstovPoints(xPoints):
   sPoints = [0 for i in range(0,len(xPoints))]
   for i in range(0, len(xPoints)-1):

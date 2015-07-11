@@ -1,8 +1,18 @@
 import random
-
+import genVelocity as gen
 import config
 import util
 import cacher
+import numpy as np
+
+def pointstoCurvature(threepoints):
+    if gen.pointstoRadius(threepoints) == 0:
+        return config.gTolerance/(config.maxSpeed**2)
+    else:
+        A, B, C = threepoints
+        BAperp = [-(B-A)[1],(B-A)[0]]
+        sign = np.dot(C-A, BAperp)
+        return (sign/np.absolute(sign))*(1./gen.pointstoRadius(threepoints))
 
 class Route:
     cost = 0
@@ -12,6 +22,8 @@ class Route:
     endAngle = 0
     latlngCoords = []
     xyCoords = []
+    curvatures = []
+    variation = 0.
     """
     tripTime = 0
     plotTimes = []
@@ -23,7 +35,7 @@ class Route:
     """
 
     def __init__(self, cost, startYVal, endYVal, startAngle, endAngle,
-                 latlngCoords, xyCoords):
+                 latlngCoords, xyCoords, curvatures):
         self.cost = cost
         self.startYVal = startYVal
         self.endYVal = endYVal
@@ -31,13 +43,16 @@ class Route:
         self.endAngle = endAngle
         self.latlngCoords = latlngCoords
         self.xyCoords = xyCoords
-    
+        self.curvatures = curvatures
+        self.variation = variation
+
     def display(self):     
         print("The route cost is: " + str(self.cost) + ".")
         print("The route start y-value is: " + str(self.startYVal) + ".")        
         print("The route end y-value is: " + str(self.endYVal) + ".")
         print("The route start angle is: " + str(self.startAngle) + ".")        
         print("The route end angle is: " + str(self.endAngle) + ".")
+        print("The route curvatures are: " + str(self.curvatures) + ".")
 
 
 def two_routes_compatible(routeA, routeB):
@@ -46,6 +61,10 @@ def two_routes_compatible(routeA, routeB):
 
 def merge_two_routes(routeA,routeB):
     cost = routeA.cost + routeB.cost
+    curvatures = routeA.curvatures \
+        + pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]]) \
+        + routeB.curvatures 
+    variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5])
     startYVal = routeA.startYVal
     startAngle = routeA.startAngle
     endYVal = routeB.endYVal    
@@ -53,7 +72,7 @@ def merge_two_routes(routeA,routeB):
     latlngCoords = util.smart_concat(routeA.latlngCoords, routeB.latlngCoords)
     xyCoords = util.smart_concat(routeA.xyCoords, routeB.xyCoords)
     newRoute = Route(cost, startYVal, endYVal, startAngle, endAngle,
-                     latlngCoords, xyCoords)
+                     latlngCoords, xyCoords, curvatures, variation)
     return newRoute
 
 def edge_to_route(edge):
@@ -63,8 +82,9 @@ def edge_to_route(edge):
     startAngle = endAngle = edge.angle
     latlngCoords = edge.latlngCoords
     xyCoords = edge.xyCoords
+    curvatures = []
     newRoute = Route(cost, startYVal, endYVal, startAngle, endAngle,
-                     latlngCoords, xyCoords)
+                     latlngCoords, xyCoords,curvatures, variation)
     return newRoute
 
 def edgesset_to_routesset(edgesSet):
@@ -74,9 +94,14 @@ def edgessets_to_routessets(edgesSets):
     return [edgesset_to_routesset(edgesSet) for edgesSet in edgesSets]
 
 def sample_routes(merged):
-    #merged.sort(key = lambda route: route.cost)    
-    #selected = merged[:config.numPaths]
-    selected = random.sample(merged,min(config.numPaths,len(merged)))
+    n = int(np.log2(len(merged[0].xyCoords)))
+    merged.sort(key = lambda route: route.cost)
+    if n < 3: 
+        selected = merged[:config.numPaths]
+    else:
+        merged = filter(merged, lambda route: route.cost < config.maxCost*(numSlices/len(merged[0].xyCoords)))
+        merged.sort(key = lambda route: route.variation)
+        selected = merged[:config.numPaths]
     return selected
 
 def merge_two_routessets(routesSetA, routesSetB):
