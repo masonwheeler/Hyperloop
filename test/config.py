@@ -63,6 +63,8 @@ Engineering constraints.
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
 maxSpeed = 330 #maximum speed of the capsule (in m/s)
 maxCost = 15000000000
+numHeights = 127
+
 """
 Comfort constraints.
 """

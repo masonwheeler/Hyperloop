@@ -24,18 +24,10 @@ class Route:
     xyCoords = []
     curvatures = []
     variation = 0.
-    """
-    tripTime = 0
-    plotTimes = []
-    points = []
-    vel_points = []
-    accel_points = []
-    pylon_data = ["Data about pylon placement and pylon cost."]
-    comfort = "not noticeable" 
-    """
+    edges = []
 
     def __init__(self, cost, startYVal, endYVal, startAngle, endAngle,
-                 latlngCoords, xyCoords, curvatures):
+                 latlngCoords, xyCoords, curvatures, edges):
         self.cost = cost
         self.startYVal = startYVal
         self.endYVal = endYVal
@@ -45,6 +37,7 @@ class Route:
         self.xyCoords = xyCoords
         self.curvatures = curvatures
         self.variation = variation
+        self.edges = edges
 
     def display(self):     
         print("The route cost is: " + str(self.cost) + ".")
@@ -61,6 +54,7 @@ def two_routes_compatible(routeA, routeB):
 
 def merge_two_routes(routeA,routeB):
     cost = routeA.cost + routeB.cost
+    Edges = routeA.edges + routeB.edges
     curvatures = routeA.curvatures \
         + pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]]) \
         + routeB.curvatures 
@@ -72,7 +66,7 @@ def merge_two_routes(routeA,routeB):
     latlngCoords = util.smart_concat(routeA.latlngCoords, routeB.latlngCoords)
     xyCoords = util.smart_concat(routeA.xyCoords, routeB.xyCoords)
     newRoute = Route(cost, startYVal, endYVal, startAngle, endAngle,
-                     latlngCoords, xyCoords, curvatures, variation)
+                     latlngCoords, xyCoords, curvatures, variation, Edges)
     return newRoute
 
 def edge_to_route(edge):
@@ -84,7 +78,7 @@ def edge_to_route(edge):
     xyCoords = edge.xyCoords
     curvatures = []
     newRoute = Route(cost, startYVal, endYVal, startAngle, endAngle,
-                     latlngCoords, xyCoords,curvatures, variation)
+                     latlngCoords, xyCoords,curvatures, variation, edge)
     return newRoute
 
 def edgesset_to_routesset(edgesSet):

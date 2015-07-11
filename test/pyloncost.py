@@ -54,18 +54,18 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     xVals = util.fast_concat(
         [[x0s[indices[i]] + 
         s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[0][0]
-        for s in np.linspace(0, Ls[i], 100)]
+        for s in np.linspace(0, Ls[i], config.numHeights)]
         for i in range(len(indices)-1)])
     yVals = util.fast_concat(
         [[fixedHeights[indices[i]] + 
         s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[1][0]
-        for s in np.linspace(0, Ls[i], 100)]
+        for s in np.linspace(0, Ls[i], config.numHeights)]
         for i in range(len(indices)-1)])
     yValsPlot = [0] * len(fixedHeights)
     for indexA in range(len(indices)-1):
         for indexB in range(indices[indexA],indices[indexA+1]):
-            yValsPlot[indexB] = yVals[100 * indexA
-                + int((indexB - indices[indexA]) * 100 / 
+            yValsPlot[indexB] = yVals[config.numHeights * indexA
+                + int((indexB - indices[indexA]) * config.numHeights / 
                     (indices[indexA + 1] - indices[indexA]))]
     pylonHeights = [math.fabs(pylonHeight) for pylonHeight in 
         util.subtract(yValsPlot,fixedHeights)]

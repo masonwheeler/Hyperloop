@@ -14,6 +14,7 @@ class Edge:
     endYVal = 0
     angle = 0
     length = 0
+    heights = []
     latlngCoords = []
     xyCoords = []
     latticeCoords = []
