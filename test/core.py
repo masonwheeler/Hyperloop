@@ -1,5 +1,5 @@
 import time
-
+import transform
 import config
 import database
 import directions
@@ -11,8 +11,8 @@ import cacher
 import visualize
 import import_export as io
 import computev2
-
-
+import util
+import math
 
 def build_lattice(start,end):
     directionsCoords = directions.get_directions(start, end)
@@ -27,6 +27,9 @@ def build_lattice(start,end):
     lnglatLattice = lattice.get_lnglatlattice(baseLattice)
     finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
                                                       directionsCoords)
+    angle, sizeFactor, startPoint = transform.get_params(startLatLng,endLatLng)
+    config.distanceBtwnSlices = util.norm(transform.transform_point(angle, sizeFactor, startPoint, [config.latticeXSpacing, 0]))
+    config.degreeConstraint = min(math.fabs(math.acos((config.distanceBtwnSlices*(config.gTolerance/config.maxSpeed**2))**2/2-1)),math.pi) #the angular constraint between subsequent edges
     if config.visualMode:
         visualize.plot_polygon(boundingPolygon)
     return finishedLattice, envelope

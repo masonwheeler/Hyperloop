@@ -108,7 +108,8 @@ Lattice Generation Parameters.
 baseScale = 10**3 #distance between the start and end in lattice coordinates
 latticeYSpacing = 1 #default spacing between lattice points vertically
 latticeXSpacing = 10 #constant spacing between lattice points horizontally
-degreeConstraint = min(math.fabs(math.acos((latticeXSpacing*(gTolerance/maxSpeed**2))**2/2-1)),math.pi) #the angular constraint between subsequent edges
+distanceBtwnSlices = 1.
+degreeConstraint = 180 #the angular constraint between subsequent edges
 numPaths = 1000 #the number of paths to output from the merge step
 ndigits = 6 #the number of digits used for rounding
 
