@@ -74,7 +74,7 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     print("The total number of pylons used is: " + str(numberOfPylons) + ".")
     print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
     pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength
-    return pylonCostTotal
+    return [pylonCostTotal, yValsPlot]
 
     
         

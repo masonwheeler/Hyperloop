@@ -11,17 +11,15 @@ class fullRoute:
     points = []
     v_points = []
     a_points = []
-    pylon_data = ["Data about pylon placement and pylon cost."]
     comfort = []
 
     def __init__(self, cost,
-                 latlngCoords, xyCoords, plotTimes, points, v_points, a_points, pylon_data, comfort):
+                 times, points, v_points, a_points, comfort):
         self.cost = cost
         self.times = times
         self.points = points,
         self.v_points = v_points
         self.a_points = a_points
-        self.pylon_data = pylon_data
         self.comfort = comfort
 
     def display(self):     
@@ -30,7 +28,6 @@ class fullRoute:
         print("The route points are: " + str(self.points) + ".")
         print("The route velocity points are: " + str(self.v_points) + ".")        
         print("The route acceleration points are: " + str(self.a_points) + ".")
-        print("The route pylon data is: " + str(self.pylon_data) + ".")
         print("The route comfort is: " + str(self.comfort) + ".")
 
 
@@ -84,5 +81,4 @@ def route_to_fullRoute(route):
    v_points = vVals
    cost = route.cost
    points = xVals
-   pylon_data = 
-   return [comfort_Ratings, triptime, tVals, xVals, vVals, apts]
+   return fullRoute(cost, times, points, v_points, a_points, comfort)

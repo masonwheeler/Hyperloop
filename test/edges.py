@@ -39,13 +39,13 @@ class Edge:
         landpointsLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
         return landpointsLonLatCoords
 
-    def pylon_cost(self):
+    def pylon_cost_and_Heights(self):
         pylonLatLngCoords = self.pylon_grid()
         pylonElevations = elevation.get_elevation(pylonLatLngCoords)
-        pylonCost = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
+        pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
           config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
           config.pylonBaseCost)              
-        return pylonCost
+        return [pylonCost, heights]
 
     def land_cost(self):
         if self.inRightOfWay:
@@ -54,9 +54,11 @@ class Edge:
             landpointsLonLatCoords = self.land_grid()  
             return land_cost(landPointsLonLatCoords)
 
-    def add_cost(self):
+    def add_costAndHeight(self):
         if config.hasNlcd:
-            self.cost = self.pylon_cost() + self.land_cost()
+            pylonCost, Heights = self.pylon_cost_and_Heights()
+            self.cost = pylonCost + self.land_cost()
+            self.heights = Heights
         else:
             self.cost = self.pylon_cost()
 
@@ -183,10 +185,10 @@ def base_edgessets(lattice):
         edgesSets[0][0].display()
     return edgesSets
 
-def add_costs(edgesSets):
+def add_costsAndHeights(edgesSets):
     for edgesSet in edgesSets:
         for edge in edgesSet:
-            edge.add_cost()
+            edge.add_costAndHeight()
     return edgesSets
     
 def build_edgessets(lattice, envelope):
@@ -200,7 +202,7 @@ def build_edgessets(lattice, envelope):
     if config.verboseMode:
         print("The number of unfiltered edges is: " + str(numEdges))
         print("The number of filtered edges is: " + str(numFilteredEdges))
-    #finishedEdgesSets = add_costs(baseEdgesSets)
+    finishedEdgesSets = add_costsAndHeights(baseEdgesSets)
     return baseEdgesSets #filteredEdgesSets
 
 def get_edgessets(lattice, envelope):
