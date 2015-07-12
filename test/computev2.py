@@ -61,7 +61,7 @@ def route_to_fullRoute(route):
    h = [edge.heights for edge in Edges]
    dt = [times[1]-times[0] for times in s]
    dh = [list_differentiate(heights, dt[i]) for i in range(len(h))]
-   d2h = [list_differentiate(dheights, dt[i]) for for i in range(len(h))]
+   d2h = [list_differentiate(dheights, dt[i]) for i in range(len(h))]
 
    # Sample velocity and acceleration at "s":
    
