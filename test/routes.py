@@ -58,7 +58,7 @@ def merge_two_routes(routeA,routeB):
     curvatures = routeA.curvatures \
         + pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]]) \
         + routeB.curvatures 
-    variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5])
+    variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5)])
     startYVal = routeA.startYVal
     startAngle = routeA.startAngle
     endYVal = routeB.endYVal    
