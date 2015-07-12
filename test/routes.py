@@ -27,7 +27,7 @@ class Route:
     edges = []
 
     def __init__(self, cost, startYVal, endYVal, startAngle, endAngle,
-                 latlngCoords, xyCoords, curvatures, edges):
+                 latlngCoords, xyCoords, curvatures,variation, edges):
         self.cost = cost
         self.startYVal = startYVal
         self.endYVal = endYVal
@@ -35,6 +35,7 @@ class Route:
         self.endAngle = endAngle
         self.latlngCoords = latlngCoords
         self.xyCoords = xyCoords
+        self.variation = variation
         self.curvatures = curvatures
         self.variation = variation
         self.edges = edges
@@ -56,9 +57,9 @@ def merge_two_routes(routeA,routeB):
     cost = routeA.cost + routeB.cost
     Edges = routeA.edges + routeB.edges
     curvatures = routeA.curvatures \
-        + pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]]) \
+        + [pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]])] \
         + routeB.curvatures 
-    variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5)])
+    variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5) for i in range(len(curvatures)-1)])
     startYVal = routeA.startYVal
     startAngle = routeA.startAngle
     endYVal = routeB.endYVal    
@@ -77,8 +78,9 @@ def edge_to_route(edge):
     latlngCoords = edge.latlngCoords
     xyCoords = edge.xyCoords
     curvatures = []
+    variation = 0.
     newRoute = Route(cost, startYVal, endYVal, startAngle, endAngle,
-                     latlngCoords, xyCoords,curvatures, variation, edge)
+                     latlngCoords, xyCoords,curvatures, variation, [edge])
     return newRoute
 
 def edgesset_to_routesset(edgesSet):
