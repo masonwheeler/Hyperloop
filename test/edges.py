@@ -203,7 +203,7 @@ def build_edgessets(lattice, envelope):
         print("The number of unfiltered edges is: " + str(numEdges))
         print("The number of filtered edges is: " + str(numFilteredEdges))
     finishedEdgesSets = add_costsAndHeights(baseEdgesSets)
-    return baseEdgesSets #filteredEdgesSets
+    return finishedEdgesSets
 
 def get_edgessets(lattice, envelope):
     edgesSets = cacher.get_object("edgessets", build_edgessets,
