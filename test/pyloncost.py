@@ -39,18 +39,21 @@ def interpolating_indices(inList, pylonSpacing, kTolerance):
 
 def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
                costPerPylonLength, pylonBaseCost):
+    t0 = time.time()
     kTolerance = gTolerance / math.pow(maxSpeed, 2)
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
-    #print(fixedHeights)
     indices = interpolating_indices(fixedHeights,pylonSpacing,kTolerance)
-    #print("c")
     indicesNum = len(indices)
+    t1 = time.time()
+    print ("completed collecting indices. process took "+str(t1-t0)+" seconds.")
     data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
         fixedHeights[indices[i]], 0, indices[i+1] * pylonSpacing, 
         fixedHeights[indices[i+1]], 0)
         for i in range(indicesNum - 1)]
     kappas, kappaPs, Ls = zip(*data)
     x0s = [n * pylonSpacing for n in range(len(fixedHeights))]
+    t2 = time.time()
+    print ("completed computing clothoid parameters. process took "+str(t2-t1)+" seconds.")
     xVals = util.fast_concat(
         [[x0s[indices[i]] + 
         s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[0][0]
@@ -61,6 +64,8 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
         s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[1][0]
         for s in np.linspace(0, Ls[i], config.numHeights)]
         for i in range(len(indices)-1)])
+    t3 = time.time()
+    print ("completed evalutating clothoids. process took "+str(t3-t2)+" seconds.")
     yValsPlot = [0] * len(fixedHeights)
     for indexA in range(len(indices)-1):
         for indexB in range(indices[indexA],indices[indexA+1]):
@@ -71,8 +76,10 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
         util.subtract(yValsPlot,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
-    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
-    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
+    t4 = time.time()
+    print ("completed catenating clothoid data, and summing results. process took "+str(t4-t3)+" seconds.")
+#    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
+#    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
     pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength
     return [pylonCostTotal, yValsPlot]
 

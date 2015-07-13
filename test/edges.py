@@ -6,6 +6,14 @@ import proj
 import elevation
 import pyloncost
 import cacher
+from progress.bar import Bar
+
+class SlowBar(Bar):
+    suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
+    @property
+    def minutes(self):
+        return self.eta // 60
+
 
 class Edge:
     cost = 0
@@ -41,7 +49,7 @@ class Edge:
 
     def pylon_cost_and_Heights(self):
         pylonLatLngCoords = self.pylon_grid()
-        pylonElevations = elevation.get_elevation(pylonLatLngCoords)
+        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
         pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
           config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
           config.pylonBaseCost)              
@@ -55,12 +63,12 @@ class Edge:
             return land_cost(landPointsLonLatCoords)
 
     def add_costAndHeight(self):
+        pylonCost, Heights = self.pylon_cost_and_Heights()
+        self.heights = Heights
         if config.hasNlcd:
-            pylonCost, Heights = self.pylon_cost_and_Heights()
             self.cost = pylonCost + self.land_cost()
-            self.heights = Heights
         else:
-            self.cost = self.pylon_cost()
+            self.cost = pylonCost
 
     def __init__(self,startPoint,endPoint):
         self.inRightOfWay = (startPoint.inRightOfWay and endPoint.inRightOfWay)
@@ -185,24 +193,24 @@ def base_edgessets(lattice):
         edgesSets[0][0].display()
     return edgesSets
 
-def add_costsAndHeights(edgesSets):
+def add_costsAndHeights(edgesSets,numEdges):
+    bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
     for edgesSet in edgesSets:
         for edge in edgesSet:
             edge.add_costAndHeight()
+            bar.next()
+    bar.finish()
     return edgesSets
     
 def build_edgessets(lattice, envelope):
     baseEdgesSets = base_edgessets(lattice)
-    #print "The number of edges in each edgeSet is:"
-    #for edgeSet in baseEdgesSets:
-    #   print len(edgeSet)
     numEdges = sum(map(len,baseEdgesSets))
     filteredEdgesSets = filter_edgessets(baseEdgesSets, envelope)
     numFilteredEdges = sum(map(len,filteredEdgesSets))
     if config.verboseMode:
         print("The number of unfiltered edges is: " + str(numEdges))
         print("The number of filtered edges is: " + str(numFilteredEdges))
-    finishedEdgesSets = add_costsAndHeights(baseEdgesSets)
+    finishedEdgesSets = add_costsAndHeights(baseEdgesSets, numFilteredEdges)
     return finishedEdgesSets
 
 def get_edgessets(lattice, envelope):

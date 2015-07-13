@@ -23,7 +23,7 @@ useCachedLatticeBounds = True
 useCachedBaseLattice = True
 useCachedLngLatLattice = True
 useCachedRightOfWay = True
-useCachedEdges = True
+useCachedEdges = False
 useCachedRoutes = False
 
 """
