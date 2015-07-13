@@ -8,7 +8,7 @@ from scipy.integrate import quad
 
 #Computes Fresnel integrals and related momenta:
 
-TOLERANCE = m.pow(10,-4)
+TOLERANCE = m.pow(10,-10)
 
 def CosF(t):
     return m.cos((m.pi/2) * m.pow(t,2))
