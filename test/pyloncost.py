@@ -33,10 +33,17 @@ def szPointstozVals(sPoints, zPoints, n, sVals):
   return [sVals, zVals]
 
 def szPointstoHeights(sPoints, zPoints, n):
+<<<<<<< HEAD
   N = len(sPoints) - 1
   m = int(math.ceil((N+0.0) / (n+0.0)))
   G = [0 for i in range(m)]
   if m == 1:
+=======
+  N = n-1
+  M = int(math.ceil((len(sPoints)-1.)/ N))
+  G = [0 for i in range(M)]
+  if M == 1:
+>>>>>>> a7f849a600c96e08fa68b65d27adc957d2f8b367
     G = [[sPoints, zPoints, 0, 0, 0, 0]]
   elif m == 2:
     G[0] = [sPoints[0:n+1],zPoints[0:n+1], 0, 0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]
@@ -48,6 +55,7 @@ def szPointstoHeights(sPoints, zPoints, n):
     G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
   zCoeffs = sum([quint.interp(g) for g in G],[])
   sSample = np.linspace(0,sPoints[-1],config.numHeights)
+  sPoints = np.array(sPoints)
   Heights = interpolation.Coeffs_to_Vals(zCoeffs, sSample, sPoints)
   return Heights
 
