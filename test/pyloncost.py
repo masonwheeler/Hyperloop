@@ -12,7 +12,7 @@ import numpy as np
 import quintic as quint
 import interpolation
 
-def szPointstozVals(sPoints, zPoints, n):
+def szPointstozVals(sPoints, zPoints, n, sVals):
   N = n-1
   M = int(math.ceil((len(sPoints)-1.)/ N))
   G = [0 for i in range(M)]
@@ -30,7 +30,7 @@ def szPointstozVals(sPoints, zPoints, n):
   zVals = interpolation.Coeffs_to_Vals(zCoeffs, sVals, sPoints)
   return [sVals, zVals]
 
-def szPointstoHeights(sPoints, zPoints, n):
+def szPointstoHeights(sPoints, zPoints, n, sVals):
   N = n-1
   M = int(math.ceil((len(sPoints)-1.)/ N))
   G = [0 for i in range(M)]
@@ -94,8 +94,8 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     sVals = [n * pylonSpacing for n in range(len(fixedHeights))]
     sPoints = [sVals[index] for index in indices]
     zPoints = [fixedHeights[index] for index in indices]
-    sVals, zVals = szPointstozVals(sPoints, zPoints, 5)
-    Heights = szPointstoHeights(sPoints, zPoints, 5)
+    sVals, zVals = szPointstozVals(sPoints, zPoints, 5, sVals)
+    Heights = szPointstoHeights(sPoints, zPoints, 5, sVals)
     pylonHeights = [math.fabs(pylonHeight) for pylonHeight in util.subtract(zVals,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
