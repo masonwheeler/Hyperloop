@@ -13,37 +13,39 @@ import quintic as quint
 import interpolation
 
 def szPointstozVals(sPoints, zPoints, n, sVals):
-  N = n-1
-  M = int(math.ceil((len(sPoints)-1.)/ N))
-  G = [0 for i in range(M)]
-  if M == 1:
+  N = len(sPoints) - 1
+  m = int(math.ceil((N+0.0) / (n+0.0)))
+  G = [0 for i in range(m)]
+  if m == 1:
     G = [[sPoints, zPoints, 0, 0, 0, 0]]
-  elif M == 2:
-    G[0] = [sPoints[0:N+1],zPoints[0:N+1], 0, 0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]
-    G[M-1] = [sPoints[0:N+1],zPoints[0:N+1], (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0,0,0]
+  elif m == 2:
+    G[0] = [sPoints[0:n+1],zPoints[0:n+1], 0, 0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]
+    G[1] = [sPoints[n:N+1],zPoints[n:N+1], (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0,0,0]
   else:
-    G[0] = [sPoints[0:N+1],zPoints[0:N+1],0,0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]  
-    for k in range(2,M):
-      G[k-1] = [sPoints[(k-1)*N:k*N+1],zPoints[(k-1)*N:k*N+1], (zPoints[(k-1)*N+1]-zPoints[(k-1)*N-1])/(sPoints[(k-1)*N+1]-sPoints[(k-1)*N-1]),0,(zPoints[k*N+1]-zPoints[k*N-1])/(sPoints[k*N+1]-sPoints[k*N-1]),0]
-    G[M-1] = [sPoints[(M-1)*N:len(sPoints)], zPoints[(M-1)*N:len(zPoints)],(zPoints[(M-1)*N+1]-zPoints[(M-1)*N-1])/(sPoints[(M-1)*N+1]-sPoints[(M-1)*N-1]) ,0,0,0]
+    G[0] = [sPoints[0:n+1],zPoints[0:n+1],0,0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]  
+    for j in range(1,m-1):
+      G[j] = [sPoints[j*n:(j+1)*n+1],zPoints[j*n:(j+1)*n+1], (zPoints[j*n+1]-zPoints[j*n])/(sPoints[j*n+1]-sPoints[j*n]),0,(zPoints[(j+1)*n+1]-zPoints[(j+1)*n])/(sPoints[(j+1)*n+1]-sPoints[(j+1)*n]),0]
+    G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
   zCoeffs = sum([quint.interp(g) for g in G],[])
+  sVals = np.array(sVals)
+  sPoints = np.array(sPoints)
   zVals = interpolation.Coeffs_to_Vals(zCoeffs, sVals, sPoints)
   return [sVals, zVals]
 
-def szPointstoHeights(sPoints, zPoints, n, sVals):
-  N = n-1
-  M = int(math.ceil((len(sPoints)-1.)/ N))
-  G = [0 for i in range(M)]
-  if M == 1:
+def szPointstoHeights(sPoints, zPoints, n):
+  N = len(sPoints) - 1
+  m = int(math.ceil((N+0.0) / (n+0.0)))
+  G = [0 for i in range(m)]
+  if m == 1:
     G = [[sPoints, zPoints, 0, 0, 0, 0]]
-  elif M == 2:
-    G[0] = [sPoints[0:N+1],zPoints[0:N+1], 0, 0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]
-    G[M-1] = [sPoints[0:N+1],zPoints[0:N+1], (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0,0,0]
+  elif m == 2:
+    G[0] = [sPoints[0:n+1],zPoints[0:n+1], 0, 0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]
+    G[1] = [sPoints[n:N+1],zPoints[n:N+1], (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0,0,0]
   else:
-    G[0] = [sPoints[0:N+1],zPoints[0:N+1],0,0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]  
-    for k in range(2,M):
-      G[k-1] = [sPoints[(k-1)*N:k*N+1],zPoints[(k-1)*N:k*N+1], (zPoints[(k-1)*N+1]-zPoints[(k-1)*N-1])/(sPoints[(k-1)*N+1]-sPoints[(k-1)*N-1]),0,(zPoints[k*N+1]-zPoints[k*N-1])/(sPoints[k*N+1]-sPoints[k*N-1]),0]
-    G[M-1] = [sPoints[(M-1)*N:len(sPoints)], zPoints[(M-1)*N:len(zPoints)],(zPoints[(M-1)*N+1]-zPoints[(M-1)*N-1])/(sPoints[(M-1)*N+1]-sPoints[(M-1)*N-1]) ,0,0,0]
+    G[0] = [sPoints[0:n+1],zPoints[0:n+1],0,0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]  
+    for j in range(1,m-1):
+      G[j] = [sPoints[j*n:(j+1)*n+1],zPoints[j*n:(j+1)*n+1], (zPoints[j*n+1]-zPoints[j*n])/(sPoints[j*n+1]-sPoints[j*n]),0,(zPoints[(j+1)*n+1]-zPoints[(j+1)*n])/(sPoints[(j+1)*n+1]-sPoints[(j+1)*n]),0]
+    G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
   zCoeffs = sum([quint.interp(g) for g in G],[])
   sSample = np.linspace(0,sPoints[-1],config.numHeights)
   Heights = interpolation.Coeffs_to_Vals(zCoeffs, sSample, sPoints)
@@ -95,7 +97,7 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     sPoints = [sVals[index] for index in indices]
     zPoints = [fixedHeights[index] for index in indices]
     sVals, zVals = szPointstozVals(sPoints, zPoints, 5, sVals)
-    Heights = szPointstoHeights(sPoints, zPoints, 5, sVals)
+    Heights = szPointstoHeights(sPoints, zPoints, 5)
     pylonHeights = [math.fabs(pylonHeight) for pylonHeight in util.subtract(zVals,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
