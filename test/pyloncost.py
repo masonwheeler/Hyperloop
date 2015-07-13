@@ -102,7 +102,7 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     pylonHeights = [math.fabs(pylonHeight) for pylonHeight in util.subtract(zVals,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
-    
+    pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength   
 #    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
 #    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
     return [pylonCostTotal, Heights]
