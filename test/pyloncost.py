@@ -25,7 +25,7 @@ def szPointstozVals(sPoints, zPoints, n, sVals):
     G[0] = [sPoints[0:n+1],zPoints[0:n+1],0,0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]  
     for j in range(1,m-1):
       G[j] = [sPoints[j*n:(j+1)*n+1],zPoints[j*n:(j+1)*n+1], (zPoints[j*n+1]-zPoints[j*n])/(sPoints[j*n+1]-sPoints[j*n]),0,(zPoints[(j+1)*n+1]-zPoints[(j+1)*n])/(sPoints[(j+1)*n+1]-sPoints[(j+1)*n]),0]
-    G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
+    G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-sPoints[(m-1)*n]) ,0,0,0]
   zCoeffs = sum([quint.interp(g) for g in G],[])
   sVals = np.array(sVals)
   sPoints = np.array(sPoints)
@@ -45,7 +45,7 @@ def szPointstoHeights(sPoints, zPoints, n):
     G[0] = [sPoints[0:n+1],zPoints[0:n+1],0,0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]  
     for j in range(1,m-1):
       G[j] = [sPoints[j*n:(j+1)*n+1],zPoints[j*n:(j+1)*n+1], (zPoints[j*n+1]-zPoints[j*n])/(sPoints[j*n+1]-sPoints[j*n]),0,(zPoints[(j+1)*n+1]-zPoints[(j+1)*n])/(sPoints[(j+1)*n+1]-sPoints[(j+1)*n]),0]
-    G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
+    G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-sPoints[(m-1)*n]) ,0,0,0]
   zCoeffs = sum([quint.interp(g) for g in G],[])
   sSample = np.linspace(0,sPoints[-1],config.numHeights)
   sPoints = np.array(sPoints)
@@ -105,9 +105,6 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     
 #    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
 #    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
-    pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength
-    t1 = time.time()
-    print ("completed pylon cost calculation. process took "+str(t1-t0)+" seconds.")
     return [pylonCostTotal, Heights]
 
     
