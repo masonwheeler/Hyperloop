@@ -7,6 +7,48 @@ import config
 import clothoid
 import util
 
+import math
+import numpy as np
+import quintic as quint
+import interpolation
+
+def szPointstozVals(sPoints, zPoints, n):
+  N = n-1
+  M = int(math.ceil((len(sPoints)-1.)/ N))
+  G = [0 for i in range(M)]
+  if M == 1:
+    G = [[sPoints, zPoints, 0, 0, 0, 0]]
+  elif M == 2:
+    G[0] = [sPoints[0:N+1],zPoints[0:N+1], 0, 0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]
+    G[M-1] = [sPoints[0:N+1],zPoints[0:N+1], (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0,0,0]
+  else:
+    G[0] = [sPoints[0:N+1],zPoints[0:N+1],0,0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]  
+    for k in range(2,M):
+      G[k-1] = [sPoints[(k-1)*N:k*N+1],zPoints[(k-1)*N:k*N+1], (zPoints[(k-1)*N+1]-zPoints[(k-1)*N-1])/(sPoints[(k-1)*N+1]-sPoints[(k-1)*N-1]),0,(zPoints[k*N+1]-zPoints[k*N-1])/(sPoints[k*N+1]-sPoints[k*N-1]),0]
+    G[M-1] = [sPoints[(M-1)*N:len(sPoints)], zPoints[(M-1)*N:len(zPoints)],(zPoints[(M-1)*N+1]-zPoints[(M-1)*N-1])/(sPoints[(M-1)*N+1]-sPoints[(M-1)*N-1]) ,0,0,0]
+  zCoeffs = sum([quint.interp(g) for g in G],[])
+  zVals = interpolation.Coeffs_to_Vals(zCoeffs, sVals, sPoints)
+  return [sVals, zVals]
+
+def szPointstoHeights(sPoints, zPoints, n):
+  N = n-1
+  M = int(math.ceil((len(sPoints)-1.)/ N))
+  G = [0 for i in range(M)]
+  if M == 1:
+    G = [[sPoints, zPoints, 0, 0, 0, 0]]
+  elif M == 2:
+    G[0] = [sPoints[0:N+1],zPoints[0:N+1], 0, 0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]
+    G[M-1] = [sPoints[0:N+1],zPoints[0:N+1], (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0,0,0]
+  else:
+    G[0] = [sPoints[0:N+1],zPoints[0:N+1],0,0, (zPoints[N+1]-zPoints[N-1])/(sPoints[N+1]-sPoints[N-1]),0]  
+    for k in range(2,M):
+      G[k-1] = [sPoints[(k-1)*N:k*N+1],zPoints[(k-1)*N:k*N+1], (zPoints[(k-1)*N+1]-zPoints[(k-1)*N-1])/(sPoints[(k-1)*N+1]-sPoints[(k-1)*N-1]),0,(zPoints[k*N+1]-zPoints[k*N-1])/(sPoints[k*N+1]-sPoints[k*N-1]),0]
+    G[M-1] = [sPoints[(M-1)*N:len(sPoints)], zPoints[(M-1)*N:len(zPoints)],(zPoints[(M-1)*N+1]-zPoints[(M-1)*N-1])/(sPoints[(M-1)*N+1]-sPoints[(M-1)*N-1]) ,0,0,0]
+  zCoeffs = sum([quint.interp(g) for g in G],[])
+  sSample = np.linspace(0,sPoints[-1],config.numHeights)
+  Heights = interpolation.Coeffs_to_Vals(zCoeffs, sSample, sPoints)
+  return Heights
+
 def curvature(location1, location2, inList, pylonSpacing):
     #print("Called curvature with variables:")
     #print(location1, location2, inList, pylonSpacing)
@@ -44,44 +86,26 @@ def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
     fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
     indices = interpolating_indices(fixedHeights,pylonSpacing,kTolerance)
     indicesNum = len(indices)
-    t1 = time.time()
-    print ("completed collecting indices. process took "+str(t1-t0)+" seconds.")
     data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
         fixedHeights[indices[i]], 0, indices[i+1] * pylonSpacing, 
         fixedHeights[indices[i+1]], 0)
         for i in range(indicesNum - 1)]
     kappas, kappaPs, Ls = zip(*data)
-    x0s = [n * pylonSpacing for n in range(len(fixedHeights))]
-    t2 = time.time()
-    print ("completed computing clothoid parameters. process took "+str(t2-t1)+" seconds.")
-    xVals = util.fast_concat(
-        [[x0s[indices[i]] + 
-        s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[0][0]
-        for s in np.linspace(0, Ls[i], config.numHeights)]
-        for i in range(len(indices)-1)])
-    yVals = util.fast_concat(
-        [[fixedHeights[indices[i]] + 
-        s * clothoid.evalXY(kappaPs[i] * math.pow(s,2), kappas[i] * s, 0, 1)[1][0]
-        for s in np.linspace(0, Ls[i], config.numHeights)]
-        for i in range(len(indices)-1)])
-    t3 = time.time()
-    print ("completed evalutating clothoids. process took "+str(t3-t2)+" seconds.")
-    yValsPlot = [0] * len(fixedHeights)
-    for indexA in range(len(indices)-1):
-        for indexB in range(indices[indexA],indices[indexA+1]):
-            yValsPlot[indexB] = yVals[config.numHeights * indexA
-                + int((indexB - indices[indexA]) * config.numHeights / 
-                    (indices[indexA + 1] - indices[indexA]))]
-    pylonHeights = [math.fabs(pylonHeight) for pylonHeight in 
-        util.subtract(yValsPlot,fixedHeights)]
+    sVals = [n * pylonSpacing for n in range(len(fixedHeights))]
+    sPoints = [sVals[index] for index in indices]
+    zPoints = [fixedHeights[index] for index in indices]
+    sVals, zVals = szPointstozVals(sPoints, zPoints, 5)
+    Heights = szPointstoHeights(sPoints, zPoints, 5)
+    pylonHeights = [math.fabs(pylonHeight) for pylonHeight in util.subtract(zVals,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
-    t4 = time.time()
-    print ("completed catenating clothoid data, and summing results. process took "+str(t4-t3)+" seconds.")
+    
 #    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
 #    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
     pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength
-    return [pylonCostTotal, yValsPlot]
+    t1 = time.time()
+    print ("completed pylon cost calculation. process took "+str(t1-t0)+" seconds.")
+    return [pylonCostTotal, Heights]
 
     
         
