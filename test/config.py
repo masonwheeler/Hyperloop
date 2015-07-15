@@ -1,3 +1,5 @@
+import math
+
 """
 Runtime Parameters.
 """
@@ -55,12 +57,14 @@ degreeConstraint = 30 #the angular constraint between subsequent edges
 Engineering constraints.
 """
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
-maxSpeed = 80 #maximum speed of the capsule (in m/s)
+maxSpeed = 330 #maximum speed of the capsule (in m/s)
+maxCost = 15000000000
+numHeights = 127
 
 """
 Comfort constraints.
 """
-gTolerance = 0.2 * 9.8
+gTolerance = 0.5 * 9.8
 
 """
 For Runtime storage.

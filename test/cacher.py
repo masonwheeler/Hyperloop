@@ -99,7 +99,7 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):
         print("loaded " + objectName)
         return loadedObject
     else:
-        print("Computing " + objectName + ".")
+        print("Computing " + objectName + "...")
         computedObject = computeFunction(*computeArgs)
         print(objectName + " computed.")
         cache_object(computedObject, objectName)

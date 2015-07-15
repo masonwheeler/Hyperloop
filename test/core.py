@@ -1,5 +1,5 @@
 import time
-
+import transform
 import config
 import database
 import directions
@@ -8,7 +8,9 @@ import routes
 import cacher
 import visualize
 import import_export as io
-import compute
+import computev2
+import util
+import math
 
 import util
 import proj
@@ -45,6 +47,12 @@ def build_lattice(directionsPoints):
     #    [geospatialLattice.plottableSlices, 'b-', 1, 2]
     #    ])
     return geospatialLattice
+
+#    angle, sizeFactor, startPoint = transform.get_params(startLatLng,endLatLng)
+#    config.distanceBtwnSlices = util.norm(transform.transform_point(angle, sizeFactor, startPoint, [config.latticeXSpacing, 0]))
+#    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
+#    if config.visualMode:
+#        visualize.plot_polygon(boundingPolygon)
 
 def build_routes(geospatialLattice): 
     edgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)  
@@ -87,6 +95,7 @@ def pair_analysis(start,end):
        io.export(zip(routes[i].plotTimes,routes[i].accel_points),'route'+str(i)+'accel_points')
        print zip(routes[i].plotTimes,routes[i].accel_points)
        io.export(zip([0]*len(routes[i].comfort),routes[i].comfort),'route'+str(i)+'comfort')"""
+    #fullRoutes = [computev2.route_to_fullRoute(route) for route in filteredRoutes] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     return 0
