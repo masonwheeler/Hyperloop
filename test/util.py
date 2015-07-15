@@ -9,6 +9,8 @@ import config
 
 ndigits = config.ndigits
 
+def get_firstlast(inList):
+    return [inList[0], inList[-1]]
 
 def round_num(num):
     return round(num,ndigits)
@@ -30,7 +32,11 @@ def get_maxmin(inList):
     return [max(inList), min(inList)]
 
 def fast_concat(listOfLists):
-    return list(itertools.chain.from_iterable(listOfLists))
+    concatenated = itertools.chain.from_iterable(listOfLists)
+    return list(concatenated)
+
+def list_of_lists_len(listOfLists):
+    return sum(map(len,listOfLists))
 
 def remove_duplicates(inList):
     return list(OrderedDict.fromkeys(list(itertools.chain(*inList))))
@@ -72,6 +78,13 @@ def entry_multiply(vectorA,vectorB):
     return safe_operation(operator.mul,vectorA,vectorB)
 
 
+def to_pairs(points):
+    pairs = []
+    for index in range(len(points) - 1):
+        pair = [points[index], points[index+1]]
+        pairs.append(pair)
+    return pairs
+
 def get_indices(inList):
     return sorted(range(len(inList)), key = lambda k: inList[k], reverse=True)
 
@@ -79,19 +92,41 @@ def fix_inputString(inputString):
     titleString = inputString.title()
     return titleString.replace(" ","_")
 
-def get_vectors(vector, spacing):
-    effectiveScale = norm(vector) / spacing
-    unitVector = scale(1.0 / effectiveScale, vector)
-    numPoints = int(effectiveScale)
-    pointIndices = range(1, numPoints + 1)
-    pointVectors = [scale(index, unitVector) for index in pointIndices]
-    return pointVectors
+def edge_to_vector(edge):
+    edgeStart, edgeEnd = edge
+    edgeVector = subtract(edgeEnd, edgeStart)
+    return edgeVector
+
+def distance_to_point(edge, distance):    
+    edgeStart, edgeEnd = edge               
+    edgeVector = subtract(edgeEnd, edgeStart)
+    edgeLength = norm(edgeVector)
+    scaleFactor = distance / edgeLength
+    scaledVector = scale(scaleFactor, edgeVector)
+    point = add(scaledVector, edgeStart)
+    return point
+
+def sample_vectorinterior(vector, spacing):
+    if norm(vector) < spacing:
+        return None
+    else:
+        effectiveScale = norm(vector) / spacing
+        unitVector = scale(1.0 / effectiveScale, vector)
+        numPoints = int(effectiveScale)
+        pointIndices = range(0, numPoints)
+        pointVectors = [scale(index, unitVector) for index in pointIndices]
+        return pointVectors
 
 def build_grid(vector, spacing, startVector):
-    vectors = get_vectors(vector, spacing)
-    grid = [add(vector, startVector) for vector in vectors]
-    return grid
+    untranslatedGrid = sample_vectorinterior(vector, spacing)
+    if untranslatedGrid == None:
+        return None
+    else:
+        grid = [add(point, startVector) for point in untranslatedGrid]
+        return grid
 
 def smart_print(string):
     if config.verboseMode:
         print(string)     
+
+

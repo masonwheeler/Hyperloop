@@ -82,7 +82,6 @@ def load_object(objectName):
     fileHandle.close()
     return loadedObject
 
-
 def object_cached(objectName):
     objectCachePath = get_object_cachepath(objectName)
     objectCached = os.path.isfile(objectCachePath)
@@ -97,46 +96,32 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):
     if (object_cached(objectName) and flag):
         print(objectName + " exists.")
         loadedObject = load_object(objectName)
+        print("loaded " + objectName)
         return loadedObject
     else:
-        print(objectName + " computed.")
+        print("Computing " + objectName + ".")
         computedObject = computeFunction(*computeArgs)
+        print(objectName + " computed.")
         cache_object(computedObject, objectName)
-        saveFunction(computedObject, objectName)
+        #saveFunction(computedObject, objectName)
         return computedObject
 
 
-def save_listlike(inList, listName):    
+def save_listlike(listObject, listName):    
     listSavePath = get_object_savepath(listName)
     with open(listSavePath + ".csv", 'wb') as listHandle:
         writer = csv.writer(listHandle)
-        writer.writerows(inList)        
+        writer.writerows(listObject)       
 
-def get_pointcoords(point, coordsType):
-    coords = eval(".".join(["point", coordsType]))
-    return coords
+def save_directions(directionsObject, directionsName):
+    directions, totalDistance = directionsObject
+    save_listlike(directions, directionsName) 
 
-def save_latticelike(inLattice, latticeName, coordsType):
-    flatLattice = util.fast_concat(inLattice)
-    latticeCoords = [get_pointcoords(point,coordsType) for point in flatLattice]
-    latticeSavePath = "_".join([get_object_savepath(latticeName),coordsType])
-    with open(latticeSavePath + '.csv', 'wb') as latticeHandle:
-        writer = csv.writer(latticeHandle)
-        writer.writerows(latticeCoords)        
+def save_spline(splineObject, splineName):
+    pass
 
-def save_baselattice(baseLattice, objectName):
-    lattice, envelope = baseLattice
-    save_latticelike(lattice, objectName, "latticeCoords")
-
-def save_lnglatlattice(lnglatLattice, objectName):
-    save_latticelike(lnglatLattice, objectName, "latlngCoords")
-    save_latticelike(lnglatLattice, objectName, "xyCoords")
-
-def save_rightofwaylattice(rightofwayLattice, objectName):
-    latticeSavePath = get_object_savepath(objectName)
-    lattice, rightofway = rightofwayLattice
-    save_listlike(rightofway, "rightofway")    
-    
+def save_lattice(latticeObject, slicesName):
+    pass
 
 def get_edgecoords(edge, coordsType):
     coordsPair = eval(".".join(["edge", coordsType]))
@@ -153,8 +138,7 @@ def save_edgeslike(inEdges, edgesName, coordsType):
     
 def save_edgessets(edgesSets, objectName):
     save_edgeslike(edgesSets, objectName, "latlngCoords")
-    save_edgeslike(edgesSets, objectName, "xyCoords")
-    save_edgeslike(edgesSets, objectName, "latticeCoords")
+    save_edgeslike(edgesSets, objectName, "geospatialCoords")
 
 def save_routes(routes, objectName):
     index = 1
@@ -163,4 +147,17 @@ def save_routes(routes, objectName):
         save_listlike(route.xyCoords, routeName + 'XYCoords')
         save_listlike(route.latlngCoords, routeName + 'LatLngCoords')
         index += 1
+"""
+def get_pointcoords(point, coordsType):
+    coords = eval(".".join(["point", coordsType]))
+    return coords
 
+def save_latticelike(inLattice, latticeName, coordsType):
+    flatLattice = util.fast_concat(inLattice)
+    latticeCoords = [get_pointcoords(point,coordsType) for point in flatLattice]
+    latticeSavePath = "_".join([get_object_savepath(latticeName),coordsType])
+    with open(latticeSavePath + '.csv', 'wb') as latticeHandle:
+        writer = csv.writer(latticeHandle)
+        writer.writerows(latticeCoords)        
+    
+"""

@@ -3,8 +3,6 @@ import time
 import config
 import database
 import directions
-import boundingpolygon
-import lattice
 import edges
 import routes
 import cacher
@@ -12,34 +10,67 @@ import visualize
 import import_export as io
 import compute
 
-def build_lattice(start,end):
-    directionsCoords = directions.get_directions(start, end)
-    startLatLng, endLatLng = directionsCoords[0], directionsCoords[-1]
-    lattice.set_projection(startLatLng, endLatLng)
-    startXY, endXY = lattice.project_startend(startLatLng, endLatLng)
-    boundingPolygon = boundingpolygon.get_boundingpolygon(directionsCoords)
-    boundsXY = lattice.get_boundsxy(boundingPolygon)
-    lattice.set_params(startXY,endXY)
-    latticeBounds = lattice.get_latticebounds(boundsXY)
-    baseLattice, envelope = lattice.get_baselattice(latticeBounds)
-    lnglatLattice = lattice.get_lnglatlattice(baseLattice)
-    finishedLattice,rightOfWay = lattice.get_rightofway(lnglatLattice,
-                                                      directionsCoords)
-    if config.visualMode:
-        visualize.plot_polygon(boundingPolygon)
-    return finishedLattice, envelope
+import util
+import proj
+import newlattice
 
-def build_routes(finishedLattice, envelope): 
-    edgesSets = edges.get_edgessets(finishedLattice, envelope)    
-    filteredRoutes = routes.get_routes(edgesSets)
-    return filteredRoutes
+def build_directions(start, end):
+    directionsLatLng = directions.get_directions(start, end)
+    startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
+    proj.set_projection(startLatLng, endLatLng)
+    directionsPoints = proj.latlngs_to_geospatials(directionsLatLng, config.proj)
+    return directionsPoints
+
+def build_lattice(directionsPoints):
+    t0 = time.time()
+    directionsEdges = util.to_pairs(directionsPoints)   
+    sampledPoints = newlattice.sample_edges(directionsEdges,
+                             config.directionsSampleSpacing)
+    xSpline, ySpline = newlattice.get_spline(sampledPoints)    
+    splineTValues = newlattice.get_tvalues(len(sampledPoints))
+    splineValues = newlattice.get_splinevalues(xSpline, ySpline, splineTValues)
+    curvature = newlattice.get_curvature(xSpline, ySpline, splineTValues)
+    sliceTValues = newlattice.get_slicetvalues(splineTValues,
+                                  config.splineSampleSpacing)
+    geospatialLattice = newlattice.get_lattice(sliceTValues, sampledPoints,
+                                               xSpline, ySpline)    
+    t1 = time.time()
+    print("Building the Lattice took " + str(t1-t0) + " seconds.")
+    #if config.visualMode:
+    #    visualize.plot_objects([
+    #    [zip(*sampledPoints), 'go', 1,1],
+    #    [splineValues, 'r-', 1, 1],
+    #    [curvature, '-', 2, 1],
+    #    [geospatialLattice.plottableSlices, 'bo', 1, 2],
+    #    [geospatialLattice.plottableSlices, 'b-', 1, 2]
+    #    ])
+    return geospatialLattice
+
+def build_routes(geospatialLattice): 
+    edgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)  
+    filteredEdges = edgesSets.filteredEdgesSets[-1]
+    filteredRoutes = routes.get_routes(filteredEdges)
+    if config.visualMode:
+        #colorsList = ['r-', 'b-', 'm-', 'g-', 'k-', 'c-']
+        #objectsList = [[edgesSets.plottableBaseEdges, 'y-', 1, 2]]
+        #filterIterations = len(edgesSets.plottableFilteredEdges)
+        #for index in range(filterIterations):
+        #    objectsList.append([edgesSets.plottableFilteredEdges[index],
+        #                        colorsList[index], 1, 2])
+        #visualize.plot_objects(objectsList[-2:-1])
+        visualize.plot_objects([
+        [edgesSets.plottableFilteredEdges[-1],'k-', 1, 2],
+        [filteredRoutes[0].to_plottable(), 'r-', 1, 1]
+        ])        
+    
+    return 0 #filteredRoutes
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
-    build_lattice(start, end)
-    lattice, envelope = build_lattice(start,end)
-    filteredRoutes = build_routes(lattice, envelope)
+    directionsPoints = build_directions(start, end)
+    latticeSlices = build_lattice(directionsPoints)
+    filteredRoutes = build_routes(latticeSlices)
     """for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))
     print "Computing comfort and triptime..."

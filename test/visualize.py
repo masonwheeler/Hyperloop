@@ -9,25 +9,53 @@ def lists_to_tuples(lists):
     tuples = [tuple(eachList) for eachList in lists]
     return tuples
 
-def get_boundingbox(polygon):
-    xValues, yValues = zip(*polygon)
-    xRange, yRange = util.get_maxmin(xValues), util.get_maxmin(yValues)
-    return [xRange, yRange]
+def plot_object(objectData, style):    
+    xValues, yValues = objectData
+    plt.plot(xValues, yValues, style)   
 
-def plot_polygon(latlngPolygon):
-    lnglatPolygon = util.swap_pairs(latlngPolygon)
-    polygonVerts = lists_to_tuples(lnglatPolygon)
-    plottablePolygon = patches.Polygon(polygonVerts, closed=True, fill=True)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.add_patch(plottablePolygon)
-    lngRange, latRange = get_boundingbox(lnglatPolygon)
-    latMax, latMin = latRange
-    lngMax, lngMin = lngRange
-    ax.set_xlim(lngMin,lngMax)
-    ax.set_ylim(latMin,latMax)
+def plot_objectslist(objectData, style):
+    for eachObjectData in objectData:       
+        #print(objectData) 
+        plot_object(eachObjectData, style)
+ 
+def plot_objects(objects):
+    plotDictionary = {1: 211,
+                      2: 212}
+    functionDictionary = {1: plot_object,
+                          2: plot_objectslist}
+    for eachObject in objects:              
+        #print(len(eachObject)) 
+        objectData, style, plotNumber, functionNumber = eachObject               
+        #print(len(objectData))
+        #plt.subplot(plotDictionary[plotNumber])
+        plotFunction = functionDictionary[functionNumber]
+        plotFunction(objectData, style)
+    #plt.subplot(plotDictionary[1])
+    plt.axis('equal')
+    #plt.subplot(plotDictionary[2])
+    #x1, x2, y1, y2 = plt.axis()
+    #plt.axis((x1,x2, -10**(-4), 10**(-4)))
     plt.show()
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

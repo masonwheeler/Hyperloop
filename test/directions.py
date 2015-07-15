@@ -15,9 +15,10 @@ def directions(origin, destination):
     stringDirections = HTTP_to_string(rawDirections)
     return stringDirections
 
-def string_to_polylines( stringData ):
+def string_to_polylines(stringData):
     dictResponse = ast.literal_eval(stringData) # converts string to dict
     steps = dictResponse['routes'][0]['legs'][0]['steps']
+    #totalDistance = dictResponse['routes'][0]['legs'][0]['distance']['value']
     polylines = []
     for step in steps :
             polylines.append(step["polyline"]["points"])
@@ -79,7 +80,7 @@ def decode_polylines(polylines):
 def coordinate_list(start, end):
     stringDirections = directions(start, end)
     util.smart_print("Obtained directions.")
-    polylineDirections = string_to_polylines(stringDirections)  
+    polylineDirections = string_to_polylines(stringDirections)
     util.smart_print("Opened directions.")
     rawCoordinateList = decode_polylines(polylineDirections)
     util.smart_print("Decoded directions.")
@@ -88,8 +89,8 @@ def coordinate_list(start, end):
     return util.round_points(coordinateList)
 
 def get_directions(start, end):
-    directions = cacher.get_object("directions", coordinate_list, [start, end], 
-                              cacher.save_listlike, config.directionsFlag)
+    directions = cacher.get_object("directions", coordinate_list,
+                   [start, end], cacher.save_directions, config.directionsFlag)
     return directions
     
 

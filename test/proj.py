@@ -26,23 +26,22 @@ def usgs_proj():
     usgsProj = pyproj.Proj(init='epsg:3857')
     return usgsProj
     
-def lonlat_to_xy(lonlat,proj):
-    return proj(lonlat[0], lonlat[1])
+def latlng_to_geospatial(latlng, proj):    
+    return proj(latlng[1], latlng[0])
 
-def xy_to_lonlat(xy, proj):
-    return proj(xy[0], xy[1], inverse=True)
+def geospatial_to_latlng(geospatial, proj):
+    lonlat =  proj(geospatial[0], geospatial[1], inverse=True)
+    return util.swap_pair(lonlat)
 
-def lonlats_to_xys(lonlats,proj):
-    return [lonlat_to_xy(lonlat,proj) for lonlat in lonlats]
+def latlngs_to_geospatials(latlngs, proj):
+    return [latlng_to_geospatial(latlng, proj) for latlng in latlngs]
 
-def xys_to_lonlats(xys, proj):
-    return [xy_to_lonlat(xy,proj) for xy in xys]
+def geospatials_to_latlngs(geospatials, proj):
+    latlngs = [geospatial_to_latlngs(geospatial, proj)
+               for geospatial in geospatials]
+    return latlngs
 
-def xy_distance(xyA, xyB):
-    distanceAB = util.norm(util.subtract(xyA,xyB))
-    return distanceAB
+def set_projection(startLatLng, endLatLng):
+    startLonLat, endLonLat = util.swap_pairs([startLatLng, endLatLng])
+    config.proj = omerc_proj(startLonLat, endLonLat)
 
-#albersProj = albers_proj()
-#lonlats = [(i]
-#xys = lonlats_to_xys(lonlats, proj)
-#print(xys)

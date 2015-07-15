@@ -2,7 +2,7 @@
 Runtime Parameters.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = False
 timingMode = False
 hasNlcd = False
@@ -15,13 +15,9 @@ Cache Overwriting Switches.
 """
 
 useCachedDirections = True
-useCachedBoundingPolygon = True
-useCachedBoundsXY = True
-useCachedLatticeBounds = True
-useCachedBaseLattice = True
-useCachedLngLatLattice = True
-useCachedRightOfWay = True
-useCachedEdges = True
+useCachedSpline = True
+useCachedLattice = False
+useCachedEdges = False
 useCachedRoutes = False
 
 """
@@ -29,13 +25,9 @@ Overwriting Bools.
 """
 
 directionsBools = [useCachedDirections]
-boundingPolygonBools = directionsBools + [useCachedBoundingPolygon]
-boundsXYBools = boundingPolygonBools + [useCachedBoundsXY]
-latticeBoundsBools = boundsXYBools + [useCachedLatticeBounds]
-baseLatticeBools = latticeBoundsBools + [useCachedBaseLattice]
-lnglatLatticeBools = baseLatticeBools + [useCachedLngLatLattice]
-rightofwayBools = lnglatLatticeBools + [useCachedRightOfWay]
-edgesBools = rightofwayBools + [useCachedEdges]
+splineBools = directionsBools + [useCachedSpline]
+latticeBools = splineBools + [useCachedLattice]
+edgesBools = latticeBools + [useCachedEdges]
 routesBools = edgesBools + [useCachedRoutes]
 
 """
@@ -43,19 +35,21 @@ Overwriting Flags.
 """
 
 directionsFlag = all(directionsBools)
-boundingPolygonFlag = all(boundingPolygonBools)
-boundsXYFlag = all(boundsXYBools)
-latticeBoundsFlag = all(latticeBoundsBools)
-baseLatticeFlag = all(baseLatticeBools)
-lnglatLatticeFlag = all(lnglatLatticeBools)
-rightofwayFlag = all(rightofwayBools)
+splineFlag = all(splineBools)
+latticeFlag = all(latticeBools)
 edgesFlag = all(edgesBools)
 routesFlag = all(routesBools)
 
 """
-Physical Constants.
+New Lattice Generation parameters
 """
-radiusOfEarth = 6.371*(10**6)
+
+pointSpacing = 2000
+directionsSampleSpacing = 10 # in meters
+splineSampleSpacing = 1000 # spacing between spline points in meters is given by
+                           #directionsSampleSpacing * splineSampleSpacing
+
+degreeConstraint = 30 #the angular constraint between subsequent edges
 
 """
 Engineering constraints.
@@ -81,31 +75,13 @@ workingSaveDirectory = ""
 
 
 proj = 0
-angle = 0
-sizeFactor = 0
-startVector = 0
 directionsCoords = 0
-
-"""
-Polygon Generation Parameters.
-"""
-
-groupSize = 100 #The number of points in a polygon
-polygonMergeChunkSize = 100 #the number of polygons to attempt to merge at once
-tolerance = 10**-6 #the merge tolerance
-maxAttempts = 10 #Maximum number of times to attempt to merge a polygon
-Nth = 5 #Sample every Nth point in the polygon
-finalBuffer = 10**-6 #The final buffer to apply to the polygon
 
 """
 Lattice Generation Parameters.
 """
 
-baseScale = 10**3 #distance between the start and end in lattice coordinates
-latticeYSpacing = 1 #default spacing between lattice points vertically
-latticeXSpacing = 10 #constant spacing between lattice points horizontally
-degreeConstraint = 30 #the angular constraint between subsequent edges
-numPaths = 1000 #the number of paths to output from the merge step
+numPaths = 100 #the number of paths to output from the merge step
 ndigits = 6 #the number of digits used for rounding
 
 """
