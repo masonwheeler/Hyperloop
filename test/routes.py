@@ -23,8 +23,8 @@ class Route:
     geospatialCoords = []
 
 
-    def __init__(self, cost, startYVal, endYVal, startAngle, endAngle,
-                 latlngCoords, xyCoords, curvatures,variation, edges):
+    def __init__(self, cost, startId, endId, startAngle, endAngle,
+                 latlngCoords, geospatialCoords): #, curvatures,variation, edges):
         self.cost = cost
         self.startId = startId
         self.endId = endId
@@ -35,12 +35,6 @@ class Route:
 
     def to_plottable(self):
         return zip(*self.geospatialCoords)
-    
-        self.xyCoords = xyCoords
-        self.variation = variation
-        self.curvatures = curvatures
-        self.variation = variation
-        self.edges = edges
 
     def display(self):     
         print("The route cost is: " + str(self.cost) + ".")
@@ -50,9 +44,7 @@ class Route:
 
 
 def is_route_pair_compatible(routeA, routeB):
-    #print(routeA.endId, routeB.startId)
     if (routeA.endId == routeB.startId):
-#        return True
         if abs(routeA.endAngle - routeB.startAngle) < config.degreeConstraint:
             return True
     return False
@@ -60,12 +52,12 @@ def is_route_pair_compatible(routeA, routeB):
 def merge_two_routes(routeA,routeB):
     cost = routeA.cost + routeB.cost
     startId = routeA.startId
-    Edges = routeA.edges + routeB.edges
-    curvatures = routeA.curvatures \
-        + [pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]])] \
-        + routeB.curvatures 
-    variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5) for i in range(len(curvatures)-1)])
-    startYVal = routeA.startYVal
+    #Edges = routeA.edges + routeB.edges
+    #curvatures = routeA.curvatures \
+    #    + [pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]])] \
+    #    + routeB.curvatures 
+    #variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5) for i in range(len(curvatures)-1)])
+    startId = routeA.startId
     startAngle = routeA.startAngle
     endId = routeB.endId
     endAngle = routeB.endAngle
@@ -94,14 +86,14 @@ def edgessets_to_routessets(edgesSets):
     return [edgesset_to_routesset(edgesSet) for edgesSet in edgesSets]
 
 def sample_routes(merged):
-    n = int(np.log2(len(merged[0].xyCoords)))
+    #n = int(np.log2(len(merged[0].xyCoords)))
     merged.sort(key = lambda route: route.cost)
-    if n < 3: 
-        selected = merged[:config.numPaths]
-    else:
-        merged = filter(merged, lambda route: route.cost < config.maxCost*(numSlices/len(merged[0].xyCoords)))
-        merged.sort(key = lambda route: route.variation)
-        selected = merged[:config.numPaths]
+    # if n < 3: 
+    #    selected = merged[:config.numPaths]
+    #else:
+    #    merged = filter(merged, lambda route: route.cost < config.maxCost*(numSlices/len(merged[0].xyCoords)))
+    #    merged.sort(key = lambda route: route.variation)
+    selected = merged[:config.numPaths]
     return selected
 
 def merge_two_routessets(routesSetA, routesSetB):

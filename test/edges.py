@@ -6,13 +6,13 @@ import proj
 import elevation
 import pyloncost
 import cacher
-from progress.bar import Bar
+#from progress.bar import Bar
 
-class SlowBar(Bar):
-    suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
-    @property
-    def minutes(self):
-        return self.eta // 60
+#class SlowBar(Bar):
+#    suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
+#    @property
+#    def minutes(self):
+#        return self.eta // 60
 
 
 
@@ -78,7 +78,6 @@ class Edge:
         endXVal, endYVal = endGeospatialCoords
         self.startId = startPoint["pointId"]
         self.endId = endPoint["pointId"]
-        #print(self.startId, self.endId)
         self.angle = math.degrees(math.atan2(endYVal - startYVal,
                                              endXVal - startXVal))
     def as_plottable(self):
@@ -188,8 +187,6 @@ class EdgesSets:
             flattenedFilteredEdges = util.fast_concat(
                                   self.filteredEdgesSets[filteredEdgesIndex])
             oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
-#            self.plottableFilteredEdges.append([edge.as_plottable()
-#                                          for edge in flattenedFilteredEdges])
             
 
     def __init__(self, lattice):
@@ -211,20 +208,9 @@ def add_costsAndHeights(edgesSets,numEdges):
             bar.next()
     bar.finish()
     return edgesSets
-    
-def build_edgessets(lattice, envelope):
-    baseEdgesSets = base_edgessets(lattice)
-    numEdges = sum(map(len,baseEdgesSets))
-    filteredEdgesSets = filter_edgessets(baseEdgesSets, envelope)
-    numFilteredEdges = sum(map(len,filteredEdgesSets))
-    if config.verboseMode:
-        print("The number of unfiltered edges is: " + str(numEdges))
-        print("The number of filtered edges is: " + str(numFilteredEdges))
-    finishedEdgesSets = add_costsAndHeights(baseEdgesSets, numFilteredEdges)
-    return finishedEdgesSets
 
-def get_edgessets(lattice, envelope):
-    edgesSets = cacher.get_object("edgessets", build_edgessets,
-                [lattice], cacher.save_edgessets, config.edgesFlag)
-    return edgesSets
+#def get_edgessets(lattice):
+#    edgesSets = cacher.get_object("edgessets", build_edgessets,
+#                [lattice], cacher.save_edgessets, config.edgesFlag)
+#    return edgesSets
 

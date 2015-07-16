@@ -54,8 +54,8 @@ def build_lattice(directionsPoints):
 #    if config.visualMode:
 #        visualize.plot_polygon(boundingPolygon)
 
-def build_routes(geospatialLattice): 
-    edgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)  
+def build_routes(geospatialLattice):
+    edgesSets = edges.build_edgessets(geospatialLattice.latticeSlices)  
     filteredEdges = edgesSets.filteredEdgesSets[-1]
     filteredRoutes = routes.get_routes(filteredEdges)
     if config.visualMode:
@@ -65,7 +65,6 @@ def build_routes(geospatialLattice):
         #for index in range(filterIterations):
         #    objectsList.append([edgesSets.plottableFilteredEdges[index],
         #                        colorsList[index], 1, 2])
-        #visualize.plot_objects(objectsList[-2:-1])
         visualize.plot_objects([
         [edgesSets.plottableFilteredEdges[-1],'k-', 1, 2],
         [filteredRoutes[0].to_plottable(), 'r-', 1, 1]
