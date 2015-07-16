@@ -15,7 +15,6 @@ def plot_object(objectData, style):
 
 def plot_objectslist(objectData, style):
     for eachObjectData in objectData:       
-        #print(objectData) 
         plot_object(eachObjectData, style)
  
 def plot_objects(objects):

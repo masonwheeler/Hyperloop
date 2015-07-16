@@ -22,7 +22,6 @@ class Route:
     endId = 0
     geospatialCoords = []
 
-
     def __init__(self, cost, startId, endId, startAngle, endAngle,
                  latlngCoords, geospatialCoords): #, curvatures,variation, edges):
         self.cost = cost

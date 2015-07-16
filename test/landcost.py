@@ -12,14 +12,14 @@ def normalize_cost(cost):
 
 def land_cost(landPointsLonLatCoords):
     geotiffFilePath = config.cwd + config.geotiffPath
-    ds = gdal.Open()
-    gt = ds.GetGeoTransform()
-    rb = ds.GetRasterBand(1)
-    srs = osr.SpatialReference()
-    srs.ImportFromWkt(ds.GetProjection())
-    srsLatLon = srs.CloneGeogCS()
-    ct = osr.CoordinateTransformation(srsLatLon,srs)
-    
+    fileHandle = gdal.Open()
+    geoTransform = fileHandle.GetGeoTransform()
+    rasterBand = fileHandle.GetRasterBand(1)
+    spatialReference = osr.SpatialReference()
+    spatialReference.ImportFromWkt(fileHandle.GetProjection())
+    spatialReferenceLatLon = spatialReference.CloneGeogCS()
+    coordTrans = osr.CoordinateTransformation(spatialReferenceLatLon,
+                                              spatialReference)    
     landCost = 0
     for lonlatCoord in landPointsLonLatCoords:
         pointPixelVal = geotiff.pixel_val(ct, gt, rb, lonlatCoord)

@@ -1,5 +1,4 @@
 import time
-import transform
 import config
 import database
 import directions
@@ -51,8 +50,6 @@ def build_lattice(directionsPoints):
 #    angle, sizeFactor, startPoint = transform.get_params(startLatLng,endLatLng)
 #    config.distanceBtwnSlices = util.norm(transform.transform_point(angle, sizeFactor, startPoint, [config.latticeXSpacing, 0]))
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
-#    if config.visualMode:
-#        visualize.plot_polygon(boundingPolygon)
 
 def build_routes(geospatialLattice):
     edgesSets = edges.build_edgessets(geospatialLattice.latticeSlices)  
