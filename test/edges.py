@@ -18,14 +18,14 @@ import cacher
 
 class Edge:
     cost = 0
-    inRightOfWay = False
     angle = 0
     length = 0
-    heights = []
-    latlngCoords = []
-    geospatialCoords = []
     startId = 0
     endId = 0
+    latlngCoords = []
+    geospatialCoords = []
+    heights = []
+    inRightOfWay = False
     isUseful = True
 
     def pylon_grid(self):
@@ -43,7 +43,7 @@ class Edge:
         landpointsLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
         return landpointsLonLatCoords
 
-    def pylon_cost_and_Heights(self):
+    def pylon_cost_and_heights(self):
         pylonLatLngCoords = self.pylon_grid()
         pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
         pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,

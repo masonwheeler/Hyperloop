@@ -1,3 +1,11 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To generate routes from the lattice edges.
+Last Modified: 7/16/16
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To connect the curvature information.
+"""
+
 import random
 import genVelocity as gen
 import config

@@ -1,3 +1,8 @@
+"""
+Original Developer: David Roberts
+Purpose of Module: To combine
+"""
+
 import comfort as cmft
 import interpolation as intrp
 import numpy as np

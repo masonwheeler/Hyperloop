@@ -1,28 +1,24 @@
+"""
+Original Developer: Jonathan Ward
+Purpose Of Module: To determine the land acquisition cost for an edge.
+Last Modified: 7/16/16
+Last Modified By: Jonathan Ward
+Last Modification Purpose: The right of way flag is now stored in each Edge and
+                           is thus not needed here.                        
+"""
+
 from osgeo import gdal
 from osgeo import osr
 import struct
 
 import config
 import util
-import directions
 import proj
-import transform
 import util
-import pyloncost
-
-
-def xyCoord_in_rightofway(xyCoord,projectedDirections):
-    for directionCoord in projectedDirections:
-        if xy_distance(xyCoord,directionCoord) < config.rightOfWayDistance:
-            return True
-    return False
 
 
 def land_cost(ct, gt, rb, xyCoord, lonlatCoord, directionsCoords):
-    if xyCoord_in_rightofway(xyCoord, directionsCoords):
-	      return 0
-    else:
-	      return pixel_val(ct,gt,rb,lonlatCoord)
+	  return pixel_val(ct,gt,rb,lonlatCoord)
 """
 def attach_cost(geotiff,lattice,directionsCoords,primVec):
     ds = gdal.Open(geotiff)

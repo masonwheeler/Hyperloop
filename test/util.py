@@ -1,3 +1,11 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To provide a suite of utility function for the algorithm.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: Namespace adjustments
+"""
+
 import math
 import itertools
 import operator
@@ -7,13 +15,11 @@ import sys
 import config
 
 
-ndigits = config.ndigits
-
 def get_firstlast(inList):
     return [inList[0], inList[-1]]
 
 def round_num(num):
-    return round(num,ndigits)
+    return round(num, config.ndigits)
 
 def round_nums(nums):
     return [round_num(num) for num in nums]

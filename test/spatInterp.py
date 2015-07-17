@@ -1,3 +1,11 @@
+"""
+Original Developer: David Roberts
+Purpose of Module: To provide a spatial interpolation for waypoints.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and remove unnecessary lines.
+"""
+
 import math
 import numpy as np
 import quintic as quint
@@ -5,8 +13,6 @@ import interpolation
 #import genVelocity as gen
 #import matplotlib.pyplot as plt
 #import time
-
-R =  6.371*(10**6)
 
 def txPointstoxVals(tPoints, xPoints, n , mu):
   xPoints = [point[mu] for point in xPoints]

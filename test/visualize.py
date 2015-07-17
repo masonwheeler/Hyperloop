@@ -1,13 +1,17 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To visualize the output from the algorithm.
+
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To remove unnecessary functions and lines.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from matplotlib.path import Path
 
 import util
 
-def lists_to_tuples(lists):
-    tuples = [tuple(eachList) for eachList in lists]
-    return tuples
 
 def plot_object(objectData, style):    
     xValues, yValues = objectData
@@ -23,9 +27,7 @@ def plot_objects(objects):
     functionDictionary = {1: plot_object,
                           2: plot_objectslist}
     for eachObject in objects:              
-        #print(len(eachObject)) 
         objectData, style, plotNumber, functionNumber = eachObject               
-        #print(len(objectData))
         #plt.subplot(plotDictionary[plotNumber])
         plotFunction = functionDictionary[functionNumber]
         plotFunction(objectData, style)

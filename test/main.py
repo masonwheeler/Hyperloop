@@ -1,6 +1,17 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: Main entry point for the route optimization code.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify Module usage.
+"""
+
+
+#Standard Modules:
 import sys
 import os
 
+#Our Modules:
 import core
 import util
 import config

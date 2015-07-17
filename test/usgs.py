@@ -1,3 +1,11 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To download, cache, and access usgs elevation data.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To remove unnecessary lines.
+"""
+
 from osgeo import gdal
 from osgeo import osr
 import urllib
@@ -89,7 +97,6 @@ def get_elevation(latlngCoord):
     geotiffFilePath = unzipDirectory + coordstring + ".tif"
     if file_exists(geotiffFilePath):
         pass
-        #print("Already converted to geotiff.")
     else:
         img_to_geotiff(imgFileName, unzipDirectory, coordstring)
 

@@ -1,4 +1,16 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To perform the core computations for each city pair.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To remove unnecessary imports.
+"""
+
+#Standard Modules:
 import time
+import math
+
+#Our Modules:
 import config
 import database
 import directions
@@ -8,9 +20,6 @@ import cacher
 import visualize
 import import_export as io
 import computev2
-import util
-import math
-
 import util
 import proj
 import newlattice
@@ -47,8 +56,6 @@ def build_lattice(directionsPoints):
     #    ])
     return geospatialLattice
 
-#    angle, sizeFactor, startPoint = transform.get_params(startLatLng,endLatLng)
-#    config.distanceBtwnSlices = util.norm(transform.transform_point(angle, sizeFactor, startPoint, [config.latticeXSpacing, 0]))
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
 
 def build_routes(geospatialLattice):

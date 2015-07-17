@@ -1,6 +1,15 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To obtain the elevation of each coordinate in
+                   a list of latitude longitude coords.
+"""
+
+
+#Standard Modules
 import urllib
 import simplejson
 
+#Our Modules
 import config
 import usgs
 
