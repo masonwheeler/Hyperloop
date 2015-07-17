@@ -76,6 +76,13 @@ def minimum_jerk_interpolation(data):
     listOfCoefficients = alist.tolist()
     return listOfCoefficients
 
+def Coeffs_to_Vals(a, s, t_i):
+    condlist = [(t_i[j] < s)*(s < t_i[j+1]) for j in range(len(t_i)-2)]
+    def f(k):
+        return lambda x: sum([a[k][j] * (x)**j for j in range(len(a[k]))])
+    funclist = [f(k) for k in range(len(a))]
+    return np.piecewise(s, condlist, funclist)
+
 
 
 

@@ -9,7 +9,6 @@ Last Modification Purpose: To clarify naming and remove unnecessary lines.
 import math
 import numpy as np
 import quintic as quint
-import interpolation
 #import genVelocity as gen
 #import matplotlib.pyplot as plt
 #import time
@@ -31,7 +30,7 @@ def txPointstoxVals(tPoints, xPoints, n , mu):
     G[-1] = [tPoints[(m-1)*n:N+1], xPoints[(m-1)*n:N+1],(xPoints[(m-1)*n+1]-xPoints[(m-1)*n])/(tPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
   xCoeffs = sum([quint.interp(g) for g in G],[])
   tVals = sum([[tPoints[j]+(i/128.)*(tPoints[j+1]-tPoints[j]) for i in range(2,128)] for j in range(len(tPoints)-1)],[])
-  xVals = interpolation.Coeffs_to_Vals(xCoeffs, tVals, tPoints)
+  xVals = quint.Coeffs_to_Vals(xCoeffs, tVals, tPoints)
   return [tVals, xVals]
 
 def txPointstoxyVals(tPoints, xPoints, n):
