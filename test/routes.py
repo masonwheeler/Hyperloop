@@ -7,11 +7,12 @@ Last Modification Purpose: To connect the curvature information.
 """
 
 import random
+import numpy as np
+
 import genVelocity as gen
 import config
 import util
 import cacher
-import numpy as np
 
 def pointstoCurvature(threepoints):
     if gen.pointstoRadius(threepoints) == 0:

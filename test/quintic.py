@@ -15,9 +15,6 @@ Citations:
 import math
 import numpy as np
 
-#Our Modules:
-import radiusOfCurvature as rad
-
 """
 For an exposition of the following see (Polyakov page 79).
 """
@@ -38,14 +35,13 @@ def gamma_matrix_end(t):
     return gammaMatrixEnd 
 
 def gamma_matrix_start(t):
-	  gammaMatrixStart =  np.array([[0, 0, 0, 0, 0, 0], 
-                              		[0, -1, -2*t, -3*t**2, -4*t**3, -5*t**4],
-                              		[0, 0, -2, -6*t, -12*t**2, -20*t**3],
-                               		[0, 0, 0, -6, -24*t, -60*t**2],
-                               		[0, 0, 0, 0, -24, -120*t],
-                              		[1, t, t**2, t**3, t**4, t**5]])
+    gammaMatrixStart = np.array([[0, 0, 0, 0, 0, 0], 
+                                 [0, -1, -2*t, -3*t**2, -4*t**3, -5*t**4],
+                                 [0, 0, -2, -6*t, -12*t**2, -20*t**3],
+                                 [0, 0, 0, -6, -24*t, -60*t**2],
+                                 [0, 0, 0, 0, -24, -120*t],
+                                 [1, t, t**2, t**3, t**4, t**5]])
     return gammaMatrixStart
-
 
 def minimum_jerk_interpolation(data):
     t, x, dx0, d2x0, dxN, d2xN = data
@@ -75,13 +71,6 @@ def minimum_jerk_interpolation(data):
         alist[i] = a[6*i:6*(i+1)]
     listOfCoefficients = alist.tolist()
     return listOfCoefficients
-
-def Coeffs_to_Vals(a, s, t_i):
-    condlist = [(t_i[j] < s)*(s < t_i[j+1]) for j in range(len(t_i)-2)]
-    def f(k):
-        return lambda x: sum([a[k][j] * (x)**j for j in range(len(a[k]))])
-    funclist = [f(k) for k in range(len(a))]
-    return np.piecewise(s, condlist, funclist)
 
 
 

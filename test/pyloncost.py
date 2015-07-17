@@ -10,7 +10,6 @@ import util
 import math
 import numpy as np
 import quintic as quint
-import interpolation
 
 def szPointstozVals(sPoints, zPoints, n, sVals):
   N = len(sPoints) - 1

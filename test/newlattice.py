@@ -1,11 +1,11 @@
 import scipy.interpolate 
 import numpy as np
+import time
 
 import config
 import util
 import cacher
 import proj
-import time
 
 class SlicePoint:
     pointId = 0
