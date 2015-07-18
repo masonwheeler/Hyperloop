@@ -4,7 +4,7 @@ Purpose of Module: To build edges with associated cost and elevation data
                    from pairs of lattice points.
 Last Modified: 7/17/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To add vector support.
+Last Modification Purpose: To fix grid naming issues.
 """
 
 #Standard Modules:
