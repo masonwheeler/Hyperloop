@@ -52,7 +52,7 @@ numHeights = 127
 """
 Land Cost parameters
 """
-landPointSpacing = 30 #spacing between points for land cost sampling in meters
+landCostSpacing = 30 #spacing between points for land cost sampling in meters
 
 """
 Comfort parameters.
@@ -69,27 +69,27 @@ landPadding = 30
 Financial Parameters, all costs in dollars.
 """
 
-rightOfWayCost = 0
+rightOfWayLandcost = 0
 costPerPylonLength = 10000
 pylonBaseCost = 2000
 
 #See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 #Note the omission of Alaska only values
-costTable = {11: None #Open Water
-             12: None #Perennial Ice/Snow
-             21: 1    #Developed, Open Space
-             22: 2    #Developed, Low Intensity
-             23: 3    #Developed, Medium Intensity
-             24: 4    #Developed, High Intensity
-             31: 1    #Barren Land
-             41: 1    #Deciduous Forest
-             42: 1    #Evergreen Forest
-             43: 1    #Mixed Forest
-             52: 1    #Shrub/Scrub
-             71: 1    #Grassland/Herbaceous
-             81: 1    #Pasture/Hay
-             82: 1    #Cultivated Crops
-             90: 1    #Woody Wetlands
+costTable = {11: None, #Open Water
+             12: None, #Perennial Ice/Snow
+             21: 1,    #Developed, Open Space
+             22: 2,    #Developed, Low Intensity
+             23: 3,    #Developed, Medium Intensity
+             24: 4,    #Developed, High Intensity
+             31: 1,    #Barren Land
+             41: 1,    #Deciduous Forest
+             42: 1,    #Evergreen Forest
+             43: 1,    #Mixed Forest
+             52: 1,    #Shrub/Scrub
+             71: 1,    #Grassland/Herbaceous
+             81: 1,    #Pasture/Hay
+             82: 1,    #Cultivated Crops
+             90: 1,    #Woody Wetlands
              95: 1}   #Emergent Herbaceous Wetlands
                                      
 

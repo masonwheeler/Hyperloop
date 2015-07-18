@@ -17,6 +17,7 @@ import config
 import proj
 import elevation
 import pyloncost
+import landcost
 import cacher
 
 
@@ -28,9 +29,9 @@ class SlowBar(Bar):
 
 
 class Edge:
-    inRightOfWay = False
+    isInRightOfWay = False
     isUseful = True
-    cost = 0
+    landCost = 0
     pylonCost = 0
     angle = 0
     length = 0
@@ -39,23 +40,32 @@ class Edge:
     latlngCoords = []
     geospatialCoords = []
     geospatialVector = []
+    pylonGrid = []
+    landcostGrid = []
     heights = []
 
-    def pylon_grid(self):
+    def build_pylon_grid(self):
         startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
         pylonGeospatialCoords = util.build_grid(self.geospatialVector,
                                 config.pylonSpacing, startGeospatialCoords)
-        pylonLatLngCoords = proj.geospatials_to_latlngs(pylonGeospatialCoords,
+        pylonGrid = proj.geospatials_to_latlngs(pylonGeospatialCoords,
                                                         config.proj)
-        return pylonLatLngCoords
+        self.pylonGrid = pylonGrid
 
-    def landcost_grid(self):
+    def build_landcost_grid(self):
         startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
         landGeospatialCoords = util.build_grid(self.geospatialVector,
                                 config.landCostSpacing, startGeospatialCoords)
-        landcostLatLngCoords = proj.geospatials_to_latlngs(
+        landcostGrid = proj.geospatials_to_latlngs(
                                landGeospatialCoords, config.proj)
-        return landcostLatLngCoords
+        self.landcostGrid = landcostGrid
+
+    def compute_landcost(self):
+        if self.isInRightOfWay:
+            self.landCost = 0          
+        else:
+            self.landCost = landcost.edge_land_cost(self.landcostGrid)
+        print(self.landCost)
 
     def pylon_cost_and_heights(self):
         pylonLatLngCoords = self.pylon_grid()
@@ -76,8 +86,7 @@ class Edge:
         self.pylonCost, self.Heights = self.pylon_cost_and_heights()
         self.cost = self.pylonCost
 #        if config.hasNlcd:
-#            self.cost = self.pylonCost + self.land_cost()
-
+#            self.cost = self.pylonCost + self.land_cost()        
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -108,9 +117,12 @@ class Edge:
 
 class EdgesSets:
     baseEdgesSets = []
-    filteredEdgesSets = []
+    filteredEdgesSetsList = []
+    finishedEdgesSets = []
     plottableBaseEdges = []
     plottableFilteredEdges = []
+    plottableFinishedEdges = []
+   
     
     def base_edgessets(self,lattice):
         edgesSets = []
@@ -157,12 +169,6 @@ class EdgesSets:
             filteredEdgesSets.append(filteredEdgesSet)
         return filteredEdgesSets
 
-#    def add_costs(self):
-#        for edgesSet in self.baseEdgesSets:
-#            for edge in edgesSet:
-#                edge.add_cost()
-#        return edgesSets
-
     def check_empty(self, edgesSets):
         for edgesSet in edgesSets:
             if len(edgesSet) == 0:
@@ -181,9 +187,9 @@ class EdgesSets:
         filteredEdges = self.filter_edges(self.baseEdgesSets)
         if self.check_empty(filteredEdges):
             raise ValueError("encountered empty edge")
-        self.filteredEdgesSets.append(filteredEdges)
+        self.filteredEdgesSetsList.append(filteredEdges)
         flattenedFilteredEdges = util.fast_concat(
-                                 self.filteredEdgesSets[filteredEdgesIndex])
+                                self.filteredEdgesSetsList[filteredEdgesIndex])
         newNumEdges = len(flattenedFilteredEdges)
 
         while newNumEdges != oldNumEdges:          
@@ -191,27 +197,48 @@ class EdgesSets:
                                           for edge in flattenedFilteredEdges])        
             util.smart_print("The number of edges is now: " + str(newNumEdges))
             self.determine_useful_edges(
-                                  self.filteredEdgesSets[filteredEdgesIndex])
+                            self.filteredEdgesSetsList[filteredEdgesIndex])
             filteredEdges = self.filter_edges(
-                                  self.filteredEdgesSets[filteredEdgesIndex])
+                            self.filteredEdgesSetsList[filteredEdgesIndex])
             if self.check_empty(filteredEdges):
                 raise ValueError("encountered empty edge")
-            self.filteredEdgesSets.append(filteredEdges)
+            self.filteredEdgesSetsList.append(filteredEdges)
             filteredEdgesIndex += 1
             flattenedFilteredEdges = util.fast_concat(
-                                  self.filteredEdgesSets[filteredEdgesIndex])
+                                self.filteredEdgesSetsList[filteredEdgesIndex])
             oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
         
-        def add_costsAndHeights(self):
-            edgesSets = self.baseEdgesSets
-            numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
-            bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
-            for edgesSet in edgesSets:
-                for edge in edgesSet:
-                    edge.add_cost_and_heights()
-                    bar.next()
-            bar.finish()
-            return edgesSets
+    def add_costs(self):
+        for edgesSet in self.baseEdgesSets:
+            for edge in edgesSet:
+                edge.add_cost()
+        return edgesSets
+
+    def add_costsAndHeights(self):
+        edgesSets = self.baseEdgesSets
+        numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
+        bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.add_cost_and_heights()
+                bar.next()
+        bar.finish()
+        return edgesSets
+
+    def build_landcost_grids(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.build_landcost_grid()        
+
+    def build_pyloncost_grids(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.build_pyloncost_grid()        
+
+    def compute_edge_landcosts(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.compute_landcost()        
 
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
@@ -219,25 +246,26 @@ class EdgesSets:
         self.plottableBaseEdges = [edge.as_plottable()
                                    for edge in flattenedBaseEdges]
         self.iterative_filter()
-        edgesSets = self.filteredEdgesSets[-1]
-        numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
-        bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
-        for edgesSet in edgesSets:
-           for edge in edgesSet:
-              edge.add_costAndHeight()
-              bar.next()
-        bar.finish()
-        self.filteredEdgesSets = edgesSets
+        self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
+        self.build_landcost_grids(self.finishedEdgesSets)
+        self.compute_edge_landcosts(self.finishedEdgesSets)
+        #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
+        #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
+        #for edgesSet in edgesSets:
+        #   for edge in edgesSet:
+        #      edge.add_costAndHeight()
+        #      bar.next()
+        #bar.finish()
+        #self.filteredEdgesSets = edgesSets
 
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
+    finishedEdgesSets = edgesSets.finishedEdgesSets
+    return finishedEdgesSets
+
+def get_edgessets(lattice):
+    edgesSets = cacher.get_object("edgessets", build_edgessets,
+                [lattice], cacher.save_edgessets, config.edgesFlag)
     return edgesSets
-
-
-
-#def get_edgessets(lattice):
-#    edgesSets = cacher.get_object("edgessets", build_edgessets,
-#                [lattice], cacher.save_edgessets, config.edgesFlag)
-#    return edgesSets
 

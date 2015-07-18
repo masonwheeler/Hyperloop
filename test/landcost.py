@@ -2,7 +2,7 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To determine the land acquisition cost associated with
                    building the Hyperloop route along a given edge.
-Last Modified: 7/16/15
+Last Modified: 7/17/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: To clarify module usage
 """
@@ -21,7 +21,7 @@ def normalize_cost(cost):
     normalizedCost = cost * (area / 100.0)
     return normalizedCost
 
-def land_cost(landPointsLonLatCoords):
+def edge_land_cost(landcostGrid):
     geotiffFilePath = config.cwd + config.geotiffPath
     fileHandle = gdal.Open()
     geoTransform = fileHandle.GetGeoTransform()
@@ -31,12 +31,12 @@ def land_cost(landPointsLonLatCoords):
     spatialReferenceLatLon = spatialReference.CloneGeogCS()
     coordTrans = osr.CoordinateTransformation(spatialReferenceLatLon,
                                               spatialReference)    
-    landCost = 0
-    for lonlatCoord in landPointsLonLatCoords:
-        pointPixelVal = geotiff.pixel_val(ct, gt, rb, lonlatCoord)
-        pointCost = config.costTable[str(pointPixelVal)]
-        landCost += normalize_cost(pointCost)
-    return landCost
+    edgeLandCost = 0
+    for landcostLonLat in landcostGridLonlats:
+        lonlatPixelVal = geotiff.pixel_val(ct, gt, rb, landcostLonLat)
+        lonlatLandCost = config.costTable[pointPixelVal]
+        edgeLandCost += lonlatLandCost #normalize_cost(pointCost)
+    return edgeLandCost
     
     
         
