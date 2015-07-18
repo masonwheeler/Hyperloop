@@ -1,7 +1,17 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To build a lattice using smoothing spline.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify module usage.
+"""
+
+#Standard Modules:
 import scipy.interpolate 
 import numpy as np
 import time
 
+#Our Modules:
 import config
 import util
 import cacher
@@ -14,7 +24,6 @@ class SlicePoint:
     isInRightOfWay = False
     
     def __init__(self, pointId, geospatialCoords, isInRightOfWay):
-        #print(pointId)
         self.pointId = pointId
         self.geospatialCoords = geospatialCoords
         self.isInRightOfWay = isInRightOfWay

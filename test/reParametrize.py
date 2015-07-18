@@ -1,8 +1,9 @@
+"""
+Original Developer: David Roberts
+"""
+
 import math
 import numpy as np
-#import genVelocity as gen
-#import spatInterp as spat
-#import time
 
 def vValstotVals(sVals, vVals):
   tVals = [0]*len(vVals)

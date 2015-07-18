@@ -1,5 +1,15 @@
+"""
+Original Developer: David Roberts
+Purpose of Module: To provide projection functionality
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify module usage.
+"""
+
+#Standard Modules:
 import pyproj
 
+#Our Modules:
 import util
 import config
 

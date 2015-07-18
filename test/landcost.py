@@ -1,6 +1,17 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To determine the land acquisition cost associated with
+                   building the Hyperloop route along a given edge.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify module usage
+"""
+
+#Standard Modules:
 from osgeo import gdal
 from osgeo import osr
 
+#Our Modules:
 import config
 import util
 import geotiff

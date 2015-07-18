@@ -2,8 +2,10 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To obtain the elevation of each coordinate in
                    a list of latitude longitude coords.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify module usage.
 """
-
 
 #Standard Modules
 import urllib

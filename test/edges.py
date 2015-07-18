@@ -6,18 +6,19 @@ import proj
 import elevation
 import pyloncost
 import cacher
-#from progress.bar import Bar
+from progress.bar import Bar
 
-#class SlowBar(Bar):
-#    suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
-#    @property
-#    def minutes(self):
-#        return self.eta // 60
+class SlowBar(Bar):
+    suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
+    @property
+    def minutes(self):
+        return self.eta // 60
 
 
 
 class Edge:
     cost = 0
+    pylonCost = 0
     angle = 0
     length = 0
     startId = 0
@@ -29,7 +30,7 @@ class Edge:
     isUseful = True
 
     def pylon_grid(self):
-        startXYCoords, endXYCoords = self.xyCoords
+        startXYCoords, endXYCoords = self.geospatialCoords
         pylonXYCoords = util.build_grid(self.vector, config.pylonSpacing, 
                                         startXYCoords)
         pylonLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
@@ -37,7 +38,7 @@ class Edge:
         return pylonLatLngCoords
 
     def land_grid(self):
-        startXYCoords, endXYCoords = self.xyCoords
+        startXYCoords, endXYCoords = self.geospatialCoords
         landXYCoords = util.build_grid(self.vector, config.landGridSpacing, 
                                        startXYCoords)
         landpointsLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
@@ -59,12 +60,9 @@ class Edge:
             return land_cost(landPointsLonLatCoords)
 
     def add_costAndHeight(self):
-        pylonCost, Heights = self.pylon_cost_and_Heights()
-        self.heights = Heights
+        self.pylonCost, self.Heights = self.pylon_cost_and_heights()
         if config.hasNlcd:
-            self.cost = pylonCost + self.land_cost()
-        else:
-            self.cost = pylonCost
+            self.cost = self.pylonCost + self.land_cost()
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -88,7 +86,7 @@ class Edge:
         print("The edge's cost is: " + str(self.cost) + ".")
         print("The edge's length is: " + str(self.length) + ".")
         print("The edge's lat-lng coords are: " + str(self.latlngCoords) + ".")        
-        print("The edge's xy coords are: " + str(self.xyCoords) + ".")
+        print("The edge's xy coords are: " + str(self.geospatialCoords) + ".")
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
 
@@ -143,11 +141,11 @@ class EdgesSets:
             filteredEdgesSets.append(filteredEdgesSet)
         return filteredEdgesSets
 
-    def add_costs(self):
-        for edgesSet in self.baseEdgesSets:
-            for edge in edgesSet:
-                edge.add_cost()
-        return edgesSets        
+#    def add_costs(self):
+#        for edgesSet in self.baseEdgesSets:
+#            for edge in edgesSet:
+#                edge.add_cost()
+#        return edgesSets
 
     def check_empty(self, edgesSets):
         for edgesSet in edgesSets:
@@ -194,7 +192,7 @@ class EdgesSets:
             bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
             for edgesSet in edgesSets:
                 for edge in edgesSet:
-                    edge.add_costAndHeight()
+                    edge.add_cost_and_heights()
                     bar.next()
             bar.finish()
             return edgesSets
@@ -205,6 +203,16 @@ class EdgesSets:
         self.plottableBaseEdges = [edge.as_plottable()
                                    for edge in flattenedBaseEdges]
         self.iterative_filter()
+        edgesSets = self.filteredEdgesSets[-1]
+        numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
+        bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
+        for edgesSet in edgesSets:
+           for edge in edgesSet:
+              edge.add_costAndHeight()
+              bar.next()
+        bar.finish()
+        self.filteredEdgesSets = edgesSets
+
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
