@@ -72,9 +72,11 @@ Financial Parameters, all costs in dollars.
 rightOfWayLandcost = 0
 costPerPylonLength = 10000
 pylonBaseCost = 2000
+padding = 20   #padding (in meters)
+
 
 #See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
-#Note the omission of Alaska only values
+#Note the omission of Alaska only values (please enter values in USD/ meter^2.)
 costTable = {11: None, #Open Water
              12: None, #Perennial Ice/Snow
              21: 1,    #Developed, Open Space
@@ -102,6 +104,7 @@ directionsBools = [useCachedDirections]
 splineBools = directionsBools + [useCachedSpline]
 latticeBools = splineBools + [useCachedLattice]
 edgesBools = latticeBools + [useCachedEdges]
+
 routesBools = edgesBools + [useCachedRoutes]
 
 """

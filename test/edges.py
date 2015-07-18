@@ -65,7 +65,6 @@ class Edge:
             self.landCost = 0          
         else:
             self.landCost = landcost.edge_land_cost(self.landcostGrid)
-        print(self.landCost)
 
     def pylon_cost_and_heights(self):
         pylonLatLngCoords = self.pylon_grid()

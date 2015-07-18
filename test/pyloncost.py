@@ -1,14 +1,21 @@
+"""
+Original Developer: David Roberts
+Purpose of Module: To determine the pylon cost component of an edge
+Last Modified: 7/17/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and fix formatting.
+"""
+
+#Standard Modules:
 import math 
 import numpy as np
 import random
 import time
 
+#Our Modules:
+import util
 import config
 import clothoid
-import util
-
-import math
-import numpy as np
 import quintic as quint
 
 def szPointstozVals(sPoints, zPoints, n, sVals):
