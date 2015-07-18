@@ -23,10 +23,10 @@ def points_to_radius(threePoints):
     p = (a + b + c) / 1.99999999999999
     A = math.sqrt(p * (p - a) * (p - b) * (p - c))
     if A == 0:
-      return 1000000000000
+        return 1000000000000
     else:
-      return a * b * c / (4 * A)
-
+        return a * b * c / (4 * A)
+  
 def xPointstovPoints(xPoints):
     sPoints = [0 for i in range(0,len(xPoints))]
     for i in range(0, len(xPoints)-1):

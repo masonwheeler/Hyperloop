@@ -6,12 +6,12 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To clarify naming and remove unnecessary lines.
 """
 
+#Standard Modules:
 import math
 import numpy as np
+
+#Our Modules:
 import quintic as quint
-#import genVelocity as gen
-#import matplotlib.pyplot as plt
-#import time
 
 def txPointstoxVals(tPoints, xPoints, n , mu):
   xPoints = [point[mu] for point in xPoints]

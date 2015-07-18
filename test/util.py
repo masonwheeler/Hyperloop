@@ -1,23 +1,26 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide a suite of utility function for the algorithm.
-Last Modified: 7/16/15
+Last Modified: 7/17/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Namespace adjustments
+Last Modification Purpose: Clarify function usage.
 """
 
+#Standard Modules
+import sys
 import math
 import itertools
 import operator
 from collections import OrderedDict
-import sys
 
+#Our Modules
 import config
 
-
+#Used by: core.py
 def get_firstlast(inList):
     return [inList[0], inList[-1]]
 
+#Used by: directions.py
 def round_num(num):
     return round(num, config.ndigits)
 
@@ -27,16 +30,14 @@ def round_nums(nums):
 def round_points(points):
     return [round_nums(point) for point in points]
 
-
+#Used by: proj.py
 def swap_pair(pair):
     return [pair[1], pair[0]]
 
 def swap_pairs(pairs):
     return [swap_pair(pair) for pair in pairs]
 
-def get_maxmin(inList):
-    return [max(inList), min(inList)]
-
+#Used by: edges.py
 def fast_concat(listOfLists):
     concatenated = itertools.chain.from_iterable(listOfLists)
     return list(concatenated)
@@ -44,19 +45,20 @@ def fast_concat(listOfLists):
 def list_of_lists_len(listOfLists):
     return sum(map(len,listOfLists))
 
+#Used by: directions.py
 def remove_duplicates(inList):
     return list(OrderedDict.fromkeys(list(itertools.chain(*inList))))
 
+#Used by: routes.py
 def smart_concat(listA,listB):
     newList = listA + listB[1:]
     return newList
 
-def operation_on_pieces(operation,pieceSize,inList):
-    pieces=[inList[index:index+pieceSize] for index in xrange(0,len(inList),pieceSize)]
-    resultPieces = map(operation,pieces)
-    result = fast_concat(resultPieces)
-    return result
-
+#def operation_on_pieces(operation,pieceSize,inList):
+#    pieces=[inList[index:index+pieceSize] for index in xrange(0,len(inList),pieceSize)]
+#    resultPieces = map(operation,pieces)
+#    result = fast_concat(resultPieces)
+#    return result
 
 def safe_operation(operation,vectorA,vectorB):
     if len(vectorA) == len(vectorB):

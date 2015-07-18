@@ -1,19 +1,30 @@
-import math
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To build edges with associated cost and elevation data
+                   from pairs of lattice points.
+Last Modified: 7/17/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify module usage.
+"""
 
+#Standard Modules:
+import math
+from progress.bar import Bar
+
+#Our Modules
 import util
 import config
 import proj
 import elevation
 import pyloncost
 import cacher
-from progress.bar import Bar
+
 
 class SlowBar(Bar):
     suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
     @property
     def minutes(self):
         return self.eta // 60
-
 
 
 class Edge:
@@ -25,13 +36,14 @@ class Edge:
     endId = 0
     latlngCoords = []
     geospatialCoords = []
+    geospatialVector = []
     heights = []
     inRightOfWay = False
     isUseful = True
 
     def pylon_grid(self):
         startXYCoords, endXYCoords = self.geospatialCoords
-        pylonXYCoords = util.build_grid(self.vector, config.pylonSpacing, 
+        pylonXYCoords = util.build_grid(self.geospatialVector, config.pylonSpacing, 
                                         startXYCoords)
         pylonLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
         pylonLatLngCoords = util.swap_pairs(pylonLonLatCoords)
@@ -39,7 +51,7 @@ class Edge:
 
     def land_grid(self):
         startXYCoords, endXYCoords = self.geospatialCoords
-        landXYCoords = util.build_grid(self.vector, config.landGridSpacing, 
+        landXYCoords = util.build_grid(self.geospatialVector, config.landGridSpacing, 
                                        startXYCoords)
         landpointsLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
         return landpointsLonLatCoords
@@ -71,6 +83,7 @@ class Edge:
                              endPoint["latlngCoords"]]
         self.geospatialCoords = [startPoint["geospatialCoords"],
                                  endPoint["geospatialCoords"]]
+        self.geospatialVector = util.edge_to_vector(self.geospatialCoords)
         startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
         startXVal, startYVal = startGeospatialCoords
         endXVal, endYVal = endGeospatialCoords
