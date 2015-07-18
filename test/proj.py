@@ -47,7 +47,7 @@ def latlngs_to_geospatials(latlngs, proj):
     return [latlng_to_geospatial(latlng, proj) for latlng in latlngs]
 
 def geospatials_to_latlngs(geospatials, proj):
-    latlngs = [geospatial_to_latlngs(geospatial, proj)
+    latlngs = [geospatial_to_latlng(geospatial, proj)
                for geospatial in geospatials]
     return latlngs
 

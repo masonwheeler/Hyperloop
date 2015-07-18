@@ -47,7 +47,7 @@ def minimum_jerk_interpolation(data):
     N = len(x)-1 #number of viapoints
     b0 = np.array([x[0], dx0, d2x0]) #initial position and derivatives
     bN = np.array([x[N], dxN, d2xN]) #final position and derivatives
-    def bVectorj(j):
+    def bj(j): 
         return np.array([x[j], 0, 0, 0, 0, x[j]]) 
 
     C = np.zeros((6*N, 6*N))
@@ -71,6 +71,9 @@ def minimum_jerk_interpolation(data):
     listOfCoefficients = alist.tolist()
     return listOfCoefficients
 
-
-
-
+def coeffs_to_vals(a, s, t_i):
+    condlist = [(t_i[j] < s)*(s < t_i[j+1]) for j in range(len(t_i)-2)]
+    def f(k):
+        return lambda x: sum([a[k][j] * (x)**j for j in range(len(a[k]))])
+    funclist = [f(k) for k in range(len(a))]
+    return np.piecewise(s, condlist, funclist)
