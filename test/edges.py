@@ -187,7 +187,17 @@ class EdgesSets:
             flattenedFilteredEdges = util.fast_concat(
                                   self.filteredEdgesSets[filteredEdgesIndex])
             oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
-            
+        
+        def add_costsAndHeights(self):
+            edgesSets = self.baseEdgesSets
+            numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
+            bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
+            for edgesSet in edgesSets:
+                for edge in edgesSet:
+                    edge.add_costAndHeight()
+                    bar.next()
+            bar.finish()
+            return edgesSets
 
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
@@ -200,14 +210,7 @@ def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
     return edgesSets
 
-def add_costsAndHeights(edgesSets,numEdges):
-    bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
-    for edgesSet in edgesSets:
-        for edge in edgesSet:
-            edge.add_costAndHeight()
-            bar.next()
-    bar.finish()
-    return edgesSets
+
 
 #def get_edgessets(lattice):
 #    edgesSets = cacher.get_object("edgessets", build_edgessets,
