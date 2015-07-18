@@ -11,7 +11,6 @@ Citations:
     - Polyakov
 """
 
-#Standard Modules:
 import math
 import numpy as np
 
