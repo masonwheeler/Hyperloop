@@ -4,7 +4,7 @@ Purpose of Module: To build edges with associated cost and elevation data
                    from pairs of lattice points.
 Last Modified: 7/17/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To clarify module usage.
+Last Modification Purpose: To add vector support.
 """
 
 #Standard Modules:
@@ -28,6 +28,8 @@ class SlowBar(Bar):
 
 
 class Edge:
+    inRightOfWay = False
+    isUseful = True
     cost = 0
     pylonCost = 0
     angle = 0
@@ -38,23 +40,22 @@ class Edge:
     geospatialCoords = []
     geospatialVector = []
     heights = []
-    inRightOfWay = False
-    isUseful = True
 
     def pylon_grid(self):
-        startXYCoords, endXYCoords = self.geospatialCoords
-        pylonXYCoords = util.build_grid(self.geospatialVector, config.pylonSpacing, 
-                                        startXYCoords)
-        pylonLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
-        pylonLatLngCoords = util.swap_pairs(pylonLonLatCoords)
+        startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
+        pylonGeospatialCoords = util.build_grid(self.geospatialVector,
+                                config.pylonSpacing, startGeospatialCoords)
+        pylonLatLngCoords = proj.geospatials_to_latlngs(pylonGeospatialCoords,
+                                                        config.proj)
         return pylonLatLngCoords
 
-    def land_grid(self):
-        startXYCoords, endXYCoords = self.geospatialCoords
-        landXYCoords = util.build_grid(self.geospatialVector, config.landGridSpacing, 
-                                       startXYCoords)
-        landpointsLonLatCoords = proj.xys_to_lonlats(pylonXYCoords,config.proj)
-        return landpointsLonLatCoords
+    def landcost_grid(self):
+        startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
+        landGeospatialCoords = util.build_grid(self.geospatialVector,
+                                config.landCostSpacing, startGeospatialCoords)
+        landcostLatLngCoords = proj.geospatials_to_latlngs(
+                               landcostGeospatialCoords, config.proj)
+        return landcostLatLngCoords
 
     def pylon_cost_and_heights(self):
         pylonLatLngCoords = self.pylon_grid()
