@@ -45,10 +45,10 @@ def szPointstoHeights(sPoints, zPoints, n):
     for j in range(1,m-1):
       G[j] = [sPoints[j*n:(j+1)*n+1],zPoints[j*n:(j+1)*n+1], (zPoints[j*n+1]-zPoints[j*n])/(sPoints[j*n+1]-sPoints[j*n]),0,(zPoints[(j+1)*n+1]-zPoints[(j+1)*n])/(sPoints[(j+1)*n+1]-sPoints[(j+1)*n]),0]
     G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-sPoints[(m-1)*n]) ,0,0,0]
-  zCoeffs = sum([quint.interp(g) for g in G],[])
+  zCoeffs = sum([quint.minimum_jerk_interpolation(g) for g in G],[])
   sSample = np.linspace(0,sPoints[-1],config.numHeights)
   sPoints = np.array(sPoints)
-  Heights = interpolation.Coeffs_to_Vals(zCoeffs, sSample, sPoints)
+  Heights = quint.coeffs_to_vals(zCoeffs, sSample, sPoints)
   return Heights
 
 def curvature(location1, location2, inList, pylonSpacing):

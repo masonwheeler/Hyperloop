@@ -54,7 +54,7 @@ class Edge:
         landGeospatialCoords = util.build_grid(self.geospatialVector,
                                 config.landCostSpacing, startGeospatialCoords)
         landcostLatLngCoords = proj.geospatials_to_latlngs(
-                               landcostGeospatialCoords, config.proj)
+                               landGeospatialCoords, config.proj)
         return landcostLatLngCoords
 
     def pylon_cost_and_heights(self):
@@ -65,17 +65,19 @@ class Edge:
           config.pylonBaseCost)              
         return [pylonCost, heights]
 
-    def land_cost(self):
-        if self.inRightOfWay:
-            return config.rightOfWayCost
-        else:
-            landpointsLonLatCoords = self.land_grid()  
-            return land_cost(landPointsLonLatCoords)
+#    def land_cost(self):
+#        if self.inRightOfWay:
+#            return config.rightOfWayCost
+#        else:
+#            landpointsLonLatCoords = self.landcost_grid()  
+#            return landcost.land_cost(landPointsLonLatCoords)
 
     def add_costAndHeight(self):
         self.pylonCost, self.Heights = self.pylon_cost_and_heights()
-        if config.hasNlcd:
-            self.cost = self.pylonCost + self.land_cost()
+        self.cost = self.pylonCost
+#        if config.hasNlcd:
+#            self.cost = self.pylonCost + self.land_cost()
+
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
