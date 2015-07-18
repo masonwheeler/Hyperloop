@@ -22,8 +22,8 @@ def normalize_cost(cost):
     return normalizedCost
 
 def edge_land_cost(landcostGrid):
-    geotiffFilePath = config.cwd + config.geotiffPath
-    fileHandle = gdal.Open()
+    geotiffFilePath = config.cwd + config.geotiffFilePath
+    fileHandle = gdal.Open(geotiffFilePath)
     geoTransform = fileHandle.GetGeoTransform()
     rasterBand = fileHandle.GetRasterBand(1)
     spatialReference = osr.SpatialReference()
@@ -32,10 +32,11 @@ def edge_land_cost(landcostGrid):
     coordTrans = osr.CoordinateTransformation(spatialReferenceLatLon,
                                               spatialReference)    
     edgeLandCost = 0
-    for landcostLonLat in landcostGridLonlats:
-        lonlatPixelVal = geotiff.pixel_val(ct, gt, rb, landcostLonLat)
-        lonlatLandCost = config.costTable[pointPixelVal]
-        edgeLandCost += lonlatLandCost #normalize_cost(pointCost)
+    for landcostLatLng in landcostGrid:
+        latlngPixelVal = geotiff.pixel_val(coordTrans, geoTransform,
+                         rasterBand, util.swap_pair(landcostLatLng))
+        latlngLandCost = config.costTable[latlngPixelVal]
+        edgeLandCost += latlngLandCost #normalize_cost(pointCost)
     return edgeLandCost
     
     
