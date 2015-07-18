@@ -1,5 +1,13 @@
 """
-citation: http://arxiv.org/abs/1209.0910
+Original Developer: David Roberts
+Purpose of Module: To provide an implementation of the clothoid
+                   interpolation as described by (Bertolazzi, Frego).
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To remove unnecessary comments.
+Citations:
+  "Fast and accurate clothoid fitting" (http://arxiv.org/abs/1209.0910)
+    - Bertolazzi and Frego
 """
 
 import math as m
@@ -86,29 +94,19 @@ def evalXYaSmall(a, b, k, p):
 def evalXY(a, b, c, k):
     X, Y = [0]*(k+1), [0]*(k+1)
     if m.fabs(a) < TOLERANCE:
-        #print("a is small")
         X0, Y0 = evalXYaSmall(a, b, k, 2)
     else:
-        #print("a is large")
         X0, Y0 = evalXYaLarge(a, b, k)
-        #print(X0, Y0)
     for j in range(k+1):
         X[j] = X0[j] * m.cos(c) - Y0[j] * m.sin(c)
         Y[j] = X0[j] * m.sin(c) + Y0[j] * m.cos(c)
-    #print(Y[0])
     return [X, Y]
 
 #Computes minimum-length clothoid:
 def findA(AGuess, DeltaTheta, DeltaPhi, tolerance):
     A = AGuess
     I = evalXY(2 * A, DeltaTheta - A, DeltaPhi, 2)
-    #i = 0
     while m.fabs(I[1][0]) > tolerance:
-        #print("finding A...")
-        #print(i)
-        #print(m.fabs(I[1][0]))
-        #print(A)
-        #i += 1
         A -= I[1][0] / (I[0][2] - I[0][1])
         I = evalXY(2 * A, DeltaTheta - A, DeltaPhi, 2)
     return A
@@ -121,16 +119,12 @@ def normalizeAngle(phi):
     return phi
 
 def buildClothoid(x0, y0, theta0, x1, y1, theta1):
-    #print("called buildClothoid with variables: ")
-    #print(x0, y0, theta0, x1, y1, theta1)
     Dx = x1 - x0
     Dy = y1 - y0
     r = m.sqrt(m.pow(Dx,2) + m.pow(Dy,2))
     phi = m.atan2(Dy,Dx)
     Dphi = normalizeAngle(theta0 - phi)
     Dtheta = normalizeAngle(theta1 - theta0)
-    #print("then tried to find A with variables: ")
-    #print(2.4674 * Dtheta + 5.2478 * Dphi, Dtheta, Dphi, TOLERANCE)
     A = findA(2.4674 * Dtheta + 5.2478 * Dphi, Dtheta, Dphi, TOLERANCE)
     I = evalXY(2 * A, Dtheta - A, Dphi, 1)
     L = r / I[0][0]

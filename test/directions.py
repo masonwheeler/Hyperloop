@@ -1,6 +1,19 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To pull directions data from the Google Maps API.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and add citations.
+Citations:
+  (http://seewah.blogspot.com/2009/11/gpolyline-decoding-in-python.html)
+    - See Wah Chang
+"""
+
+#Standard Modules:
 import urllib2
 import ast
 
+#Our Modules:
 import util
 import config
 import cacher
@@ -11,26 +24,24 @@ def HTTP_to_string(HTTPData):
     return stringData
 
 def directions(origin, destination):
-    rawDirections = urllib2.urlopen('https://maps.googleapis.com/maps/api/directions/json?origin=' + origin + '&destination=' + destination + '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
+    rawDirections = urllib2.urlopen(
+    'https://maps.googleapis.com/maps/api/directions/json?origin=' + origin +
+    '&destination=' + destination +
+    '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
     stringDirections = HTTP_to_string(rawDirections)
     return stringDirections
 
 def string_to_polylines(stringData):
     dictResponse = ast.literal_eval(stringData) # converts string to dict
     steps = dictResponse['routes'][0]['legs'][0]['steps']
-    #totalDistance = dictResponse['routes'][0]['legs'][0]['distance']['value']
     polylines = []
     for step in steps :
             polylines.append(step["polyline"]["points"])
     return polylines
 
 """
-Decodes a polyline that was encoded using the Google Maps method.
-
-See http://code.google.com/apis/maps/documentation/polylinealgorithm.html
-
-Source: See Wah Chang
-(http://seewah.blogspot.com/2009/11/gpolyline-decoding-in-python.html)
+See (http://code.google.com/apis/maps/documentation/polylinealgorithm.html)
+and (See Wah Chang) for exposition of polyline decoding method.
 """
 
 def decode_polyline(encoded):

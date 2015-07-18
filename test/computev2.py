@@ -1,3 +1,12 @@
+"""
+Original Developer: David Roberts
+Purpose of Module: To generate continuous data from a discrete route.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming.
+"""
+
+
 import math
 import numpy as np
 import genVelocity as gen

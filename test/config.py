@@ -1,10 +1,18 @@
-import math
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To provide a namespace for global configuration variables.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: Moved unitialized directories.
+"""
+
+
 
 """
 Runtime Parameters.
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = False
 timingMode = False
 hasNlcd = False
@@ -43,6 +51,17 @@ edgesFlag = all(edgesBools)
 routesFlag = all(routesBools)
 
 """
+Uninitialized Directory Paths.
+"""
+
+cacheDirectory = ""
+saveDirectory = ""
+workingCacheName = ""
+workingSaveDirName = ""
+workingCacheDirectory = ""
+workingSaveDirectory = ""
+
+"""
 New Lattice Generation parameters
 """
 
@@ -69,14 +88,6 @@ gTolerance = 0.5 * 9.8
 """
 For Runtime storage.
 """
-
-cacheDirectory = ""
-saveDirectory = ""
-workingCacheName = ""
-workingSaveDirName = ""
-workingCacheDirectory = ""
-workingSaveDirectory = ""
-
 
 proj = 0
 directionsCoords = 0

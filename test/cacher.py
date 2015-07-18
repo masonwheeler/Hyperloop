@@ -1,7 +1,16 @@
+"""
+Original Developer: Jonathan Ward
+Purpose of Module: To provide data caching functionality for testing purposes.
+Last Modified: 7/16/15
+Last Modification Purpose: To clarify naming.
+"""
+
+#Standard Modules:
 import os
 import csv
 import cPickle as pickle
 
+#Our Modules:
 import config
 import util
 
