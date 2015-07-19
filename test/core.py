@@ -57,17 +57,15 @@ def build_lattice(directionsPoints):
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
 
 def build_routes(geospatialLattice):
-    finishedEdgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)  
+    finishedEdgesSets, plottableFinishedEdges = edges.get_edgessets(
+                                               geospatialLattice.latticeSlices)
     #filteredRoutes = routes.get_routes(finishedEdgesSets)
     if config.visualMode:
         #colorsList = ['r-', 'b-', 'm-', 'g-', 'k-', 'c-']
-        #objectsList = [[edgesSets.plottableBaseEdges, 'y-', 1, 2]]
         #filterIterations = len(edgesSets.plottableFilteredEdges)
         #for index in range(filterIterations):
-        #    objectsList.append([edgesSets.plottableFilteredEdges[index],
-        #                        colorsList[index], 1, 2])
         visualize.plot_objects([
-        [edgesSets.plottableFilteredEdges[-1],'k-', 1, 2],
+        [plottableFinishedEdges,'k-', 1, 2],
         #[filteredRoutes[0].to_plottable(), 'r-', 1, 1]
         ])        
     

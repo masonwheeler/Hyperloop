@@ -25,7 +25,7 @@ Cache Overwriting Switches.
 useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
-useCachedEdges = False
+useCachedEdges = True
 useCachedRoutes = False
 
 """
