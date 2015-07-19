@@ -24,16 +24,19 @@ def pointstoCurvature(threepoints):
         return (sign/np.absolute(sign))*(1./gen.pointstoRadius(threepoints))
 
 class Route:
-    cost = 0
+    pylonCost = 0
+    routeCost = 0
     startAngle = 0
     endAngle = 0
     startId = 0
     endId = 0
     geospatialCoords = []
 
-    def __init__(self, cost, startId, endId, startAngle, endAngle,
-                 latlngCoords, geospatialCoords): #, curvatures,variation, edges):
-        self.cost = cost
+    def __init__(self, pylonCost, routeCost, startId, endId, startAngle,
+                 endAngle, latlngCoords, geospatialCoords):
+                   #, curvatures,variation, edges):
+        self.pylonCost = pylonCost
+        self.routeCost = routeCost
         self.startId = startId
         self.endId = endId
         self.startAngle = startAngle
@@ -58,7 +61,8 @@ def is_route_pair_compatible(routeA, routeB):
     return False
 
 def merge_two_routes(routeA,routeB):
-    cost = routeA.cost + routeB.cost
+    pylonCost = routeA.pylonCost + routeB.pylonCost
+    landCost = routeA.landCost + routeB.landCost
     startId = routeA.startId
     #Edges = routeA.edges + routeB.edges
     #curvatures = routeA.curvatures \
@@ -72,12 +76,13 @@ def merge_two_routes(routeA,routeB):
     latlngCoords = util.smart_concat(routeA.latlngCoords, routeB.latlngCoords)
     geospatialCoords = util.smart_concat(routeA.geospatialCoords,
                                          routeB.geospatialCoords)
-    newRoute = Route(cost, startId, endId, startAngle, endAngle,
+    newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
                      latlngCoords, geospatialCoords)
     return newRoute
 
 def edge_to_route(edge):
-    cost = edge.cost
+    pylonCost = edge.pylonCost
+    landCost = edge.landCost
     startId = edge.startId
     endId = edge.endId
     startAngle = endAngle = edge.angle

@@ -42,8 +42,8 @@ def gamma_matrix_start(t):
                                  [1, t, t**2, t**3, t**4, t**5]])
     return gammaMatrixStart
 
-def minimum_jerk_interpolation(data):
-    t, x, dx0, d2x0, dxN, d2xN = data
+def minimum_jerk_interpolation(waypointsAndBCs):
+    t, x, dx0, d2x0, dxN, d2xN = waypointsAndBCs
     N = len(x)-1 #number of viapoints
     b0 = np.array([x[0], dx0, d2x0]) #initial position and derivatives
     bN = np.array([x[N], dxN, d2xN]) #final position and derivatives
