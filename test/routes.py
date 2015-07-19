@@ -32,11 +32,11 @@ class Route:
     endId = 0
     geospatialCoords = []
 
-    def __init__(self, pylonCost, routeCost, startId, endId, startAngle,
+    def __init__(self, pylonCost, landCost, startId, endId, startAngle,
                  endAngle, latlngCoords, geospatialCoords):
                    #, curvatures,variation, edges):
         self.pylonCost = pylonCost
-        self.routeCost = routeCost
+        self.landCost = landCost
         self.startId = startId
         self.endId = endId
         self.startAngle = startAngle
@@ -88,7 +88,7 @@ def edge_to_route(edge):
     startAngle = endAngle = edge.angle
     latlngCoords = edge.latlngCoords
     geospatialCoords = edge.geospatialCoords
-    newRoute = Route(cost, startId, endId, startAngle, endAngle,
+    newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
                      latlngCoords, geospatialCoords)
     return newRoute
 
@@ -100,7 +100,7 @@ def edgessets_to_routessets(edgesSets):
 
 def sample_routes(merged):
     #n = int(np.log2(len(merged[0].xyCoords)))
-    merged.sort(key = lambda route: route.cost)
+    merged.sort(key = lambda route: route.landCost)
     # if n < 3: 
     #    selected = merged[:config.numPaths]
     #else:

@@ -58,7 +58,7 @@ def build_lattice(directionsPoints):
 
 def build_routes(geospatialLattice):
     finishedEdgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)  
-    filteredRoutes = routes.get_routes(finishedEdgesSets)
+    #filteredRoutes = routes.get_routes(finishedEdgesSets)
     #if config.visualMode:
         #colorsList = ['r-', 'b-', 'm-', 'g-', 'k-', 'c-']
         #objectsList = [[edgesSets.plottableBaseEdges, 'y-', 1, 2]]
