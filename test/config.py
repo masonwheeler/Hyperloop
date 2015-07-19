@@ -77,8 +77,8 @@ padding = 20   #padding (in meters)
 
 #See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 #Note the omission of Alaska only values (please enter values in USD/ meter^2.)
-costTable = {11: None, #Open Water
-             12: None, #Perennial Ice/Snow
+costTable = {11: 100, #Open Water
+             12: 100, #Perennial Ice/Snow
              21: 1,    #Developed, Open Space
              22: 2,    #Developed, Low Intensity
              23: 3,    #Developed, Medium Intensity
