@@ -25,8 +25,8 @@ Cache Overwriting Switches.
 useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
-useCachedEdges = True
-useCachedRoutes = True
+useCachedEdges = False
+useCachedRoutes = False
 
 """
 Lattice Generation parameters
@@ -52,7 +52,7 @@ numHeights = 127
 """
 Land Cost parameters
 """
-landCostSpacing = 30.0 #spacing between points for land cost sampling in meters
+landPointSpacing = 30.0 #spacing between points for land cost sampling in meters
 
 """
 Comfort parameters.

@@ -55,7 +55,7 @@ class Edge:
     def build_landcost_grid(self):
         startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
         landGeospatialCoords = util.build_grid(self.geospatialVector,
-                                config.landCostSpacing, startGeospatialCoords)
+                                config.landPointSpacing, startGeospatialCoords)
         landcostGrid = proj.geospatials_to_latlngs(
                                landGeospatialCoords, config.proj)
         self.landcostGrid = landcostGrid
@@ -67,25 +67,21 @@ class Edge:
             self.landCost = landcost.edge_land_cost(self.landcostGrid)
 
     def pylon_cost_and_heights(self):
-        pylonLatLngCoords = self.pylon_grid()
+        self.build_pylon_grid()
+        pylonLatLngCoords = self.pylonGrid
         pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
         pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
           config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
           config.pylonBaseCost)              
         return [pylonCost, heights]
 
-#    def land_cost(self):
-#        if self.inRightOfWay:
-#            return config.rightOfWayCost
-#        else:
-#            landpointsLonLatCoords = self.landcost_grid()  
-#            return landcost.land_cost(landPointsLonLatCoords)
-
-    def add_costAndHeight(self):
+    def compute_cost_and_height(self):
         self.pylonCost, self.Heights = self.pylon_cost_and_heights()
-        self.cost = self.pylonCost
-#        if config.hasNlcd:
-#            self.cost = self.pylonCost + self.land_cost()        
+        self.compute_landcost()
+        if config.hasNlcd:
+           self.cost = self.pylonCost + self.landCost     
+        else: 
+           self.cost = self.pylonCost 
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -207,37 +203,36 @@ class EdgesSets:
                                 self.filteredEdgesSetsList[filteredEdgesIndex])
             oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
         
-    def add_costs(self):
-        for edgesSet in self.baseEdgesSets:
-            for edge in edgesSet:
-                edge.add_cost()
-        return edgesSets
+#    def add_costs(self):
+#        for edgesSet in self.baseEdgesSets:
+#            for edge in edgesSet:
+#                edge.add_cost()
+#        return edgesSets
 
-    def add_costsAndHeights(self):
-        edgesSets = self.baseEdgesSets
+    def compute_costs_and_heights(self, edgesSets):
         numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
         for edgesSet in edgesSets:
             for edge in edgesSet:
-                edge.add_cost_and_heights()
+                edge.compute_cost_and_height()
                 bar.next()
         bar.finish()
         return edgesSets
 
-    def build_landcost_grids(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.build_landcost_grid()        
-
-    def build_pyloncost_grids(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.build_pyloncost_grid()        
-
-    def compute_edge_landcosts(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.compute_landcost()        
+#    def build_landcost_grids(self, edgesSets):
+#        for edgesSet in edgesSets:
+#            for edge in edgesSet:
+#                edge.build_landcost_grid()        
+#
+#    def build_pyloncost_grids(self, edgesSets):
+#        for edgesSet in edgesSets:
+#            for edge in edgesSet:
+#               edge.build_pyloncost_grid()        
+#
+#    def compute_edge_landcosts(self, edgesSets):
+#        for edgesSet in edgesSets:
+#            for edge in edgesSet:
+#                edge.compute_landcost()        
 
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
@@ -246,8 +241,7 @@ class EdgesSets:
                                    for edge in flattenedBaseEdges]
         self.iterative_filter()
         self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
-        self.build_landcost_grids(self.finishedEdgesSets)
-        self.compute_edge_landcosts(self.finishedEdgesSets)
+        self.finishedEdgesSets = self.compute_costs_and_heights(self.finishedEdgesSets)
         #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
         #for edgesSet in edgesSets:
