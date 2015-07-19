@@ -61,13 +61,12 @@ def build_routes(geospatialLattice):
                                                geospatialLattice.latticeSlices)
     #filteredRoutes = routes.get_routes(finishedEdgesSets)
     if config.visualMode:
-        #colorsList = ['r-', 'b-', 'm-', 'g-', 'k-', 'c-']
-        #filterIterations = len(edgesSets.plottableFilteredEdges)
-        #for index in range(filterIterations):
-        visualize.plot_objects([
-        [plottableFinishedEdges,'k-', 1, 2],
-        #[filteredRoutes[0].to_plottable(), 'r-', 1, 1]
-        ])        
+        edgeCostToColor = {1: 'r', #most expensive
+                           2: 'm',
+                           3, 'y',
+                           4, 'g',
+                           5, 'b',
+                           6, 'k'} #least expensive
     
     return 0 #filteredRoutes
 

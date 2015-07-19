@@ -76,7 +76,8 @@ class Edge:
         return [pylonCost, heights]
 
     def add_costs_and_heights(self):
-        self.pylonCost, self.Heights = self.pylon_cost_and_heights()
+        self.pylonCost, self.heights = self.pylon_cost_and_heights()
+        print("Pylon cost for edge: " + str(self.pylonCost))
         self.compute_landcost()
 
     def __init__(self,startPoint,endPoint):        

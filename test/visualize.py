@@ -17,6 +17,11 @@ def plot_object(objectData, style):
     xValues, yValues = objectData
     plt.plot(xValues, yValues, style)   
 
+def plot_colorful_objects(objectsAndStyles):
+    for eachObjectAndStyle in objectsAndStyles:
+        eachObject, eachStyle = eachObjectAndStyle
+        plot_object(eachObject, eachStyle)
+
 def plot_objectslist(objectData, style):
     for eachObjectData in objectData:       
         plot_object(eachObjectData, style)
