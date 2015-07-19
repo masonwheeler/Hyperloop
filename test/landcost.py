@@ -16,10 +16,11 @@ import config
 import util
 import geotiff
 
-def normalize_cost(cost):
-    area = config.landPointSpacing * (2.0 * config.landPadding)
-    normalizedCost = cost * (area / 100.0)
-    return normalizedCost
+def cost(costDensity):
+    length = config.landPointSpacing 
+    width = 2.0 * config.landPadding
+    area = length * width
+    return costDensity * area
 
 def edge_land_cost(landcostGrid):
     geotiffFilePath = config.cwd + config.geotiffFilePath
@@ -35,8 +36,8 @@ def edge_land_cost(landcostGrid):
     for landcostLatLng in landcostGrid:
         latlngPixelVal = geotiff.pixel_val(coordTrans, geoTransform,
                          rasterBand, util.swap_pair(landcostLatLng))
-        latlngLandCost = config.costTable[latlngPixelVal]
-        edgeLandCost += latlngLandCost #normalize_cost(pointCost)
+        latlng_costDensity = config.costTable[latlngPixelVal]
+        edgeLandCost += cost(latlng_costDensity)
     return edgeLandCost
     
     

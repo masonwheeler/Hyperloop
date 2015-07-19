@@ -13,7 +13,7 @@ Last Modification Purpose: Added Cost Table
 Modes and settings.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = False
 timingMode = False
 hasNlcd = True
@@ -22,11 +22,11 @@ useDropbox = False
 """
 Cache Overwriting Switches.
 """
-useCachedDirections = False
+useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
-useCachedRoutes = False
+useCachedRoutes = True
 
 """
 Lattice Generation parameters
@@ -41,8 +41,8 @@ splineSampleSpacing = 1000 # (in units of directionsSampleSpacing) i.e.
 Engineering constraints.
 """
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
-maxSpeed = 330 #maximum speed of the capsule (in m/s)
-maxCost = 15000000000
+maxSpeed = 330.0 #maximum speed of the capsule (in m/s)
+#maxCost = 15000000000
 
 """
 Pylon Cost parameters
@@ -52,7 +52,7 @@ numHeights = 127
 """
 Land Cost parameters
 """
-landCostSpacing = 30 #spacing between points for land cost sampling in meters
+landCostSpacing = 30.0 #spacing between points for land cost sampling in meters
 
 """
 Comfort parameters.
@@ -77,22 +77,22 @@ padding = 20   #padding (in meters)
 
 #See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 #Note the omission of Alaska only values (please enter values in USD/ meter^2.)
-costTable = {11: 100, #Open Water
-             12: 100, #Perennial Ice/Snow
-             21: 1,    #Developed, Open Space
-             22: 2,    #Developed, Low Intensity
-             23: 3,    #Developed, Medium Intensity
-             24: 4,    #Developed, High Intensity
-             31: 1,    #Barren Land
-             41: 1,    #Deciduous Forest
-             42: 1,    #Evergreen Forest
-             43: 1,    #Mixed Forest
-             52: 1,    #Shrub/Scrub
-             71: 1,    #Grassland/Herbaceous
-             81: 1,    #Pasture/Hay
-             82: 1,    #Cultivated Crops
-             90: 1,    #Woody Wetlands
-             95: 1}   #Emergent Herbaceous Wetlands
+costTable = {11: 300, #Open Water (Source: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf)
+             12: 4, #Perennial Ice/Snow
+             21: 20,    #Developed, Open Space
+             22: 20,    #Developed, Low Intensity
+             23: 20,    #Developed, Medium Intensity
+             24: 20,    #Developed, High Intensity
+             31: 4,    #Barren Land
+             41: 4,    #Deciduous Forest
+             42: 4,    #Evergreen Forest
+             43: 4,    #Mixed Forest
+             52: 4,    #Shrub/Scrub
+             71: 4,    #Grassland/Herbaceous
+             81: 2,    #Pasture/Hay
+             82: 2,    #Cultivated Crops
+             90: 4,    #Woody Wetlands
+             95: 4}   #Emergent Herbaceous Wetlands
                                      
 
 ########## For Internal Use ##########
