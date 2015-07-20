@@ -60,13 +60,13 @@ class Edge:
                                landGeospatialCoords, config.proj)
         self.landcostGrid = landcostGrid
 
-    def compute_landcost(self):
+    def add_landcost(self):
         if self.isInRightOfWay:
             self.landCost = 0          
         else:
             self.landCost = landcost.edge_land_cost(self.landcostGrid)
 
-    def pylon_cost_and_heights(self):
+    def pyloncost_and_heights(self):
         self.build_pylon_grid()
         pylonLatLngCoords = self.pylonGrid
         pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
@@ -75,13 +75,10 @@ class Edge:
           config.pylonBaseCost)              
         return [pylonCost, heights]
 
-    def compute_cost_and_height(self):
-        self.pylonCost, self.Heights = self.pylon_cost_and_heights()
+    def add_costs_and_heights(self):
+        self.pylonCost, self.heights = self.pylon_cost_and_heights()
+        print("Pylon cost for edge: " + str(self.pylonCost))
         self.compute_landcost()
-        if config.hasNlcd:
-           self.cost = self.pylonCost + self.landCost     
-        else: 
-           self.cost = self.pylonCost 
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -241,6 +238,9 @@ class EdgesSets:
                                    for edge in flattenedBaseEdges]
         self.iterative_filter()
         self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
+        flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
+        self.plottableFinishedEdges = [edge.as_plottable() for edge
+                                       in flattenedFinishedEdges]
         self.finishedEdgesSets = self.compute_costs_and_heights(self.finishedEdgesSets)
         #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
@@ -255,10 +255,11 @@ class EdgesSets:
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
     finishedEdgesSets = edgesSets.finishedEdgesSets
-    return finishedEdgesSets
+    plottableFinishedEdges = edgesSets.plottableFinishedEdges
+    return [finishedEdgesSets, plottableFinishedEdges]
 
 def get_edgessets(lattice):
-    edgesSets = cacher.get_object("edgessets", build_edgessets,
-                [lattice], cacher.save_edgessets, config.edgesFlag)
-    return edgesSets
+    finishedEdgesSets, plottableFinishedEdges = cacher.get_object("edgessets",
+          build_edgessets, [lattice], cacher.save_edgessets, config.edgesFlag)
+    return [finishedEdgesSets, plottableFinishedEdges]
 

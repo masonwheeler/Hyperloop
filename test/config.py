@@ -13,7 +13,7 @@ Last Modification Purpose: Added Cost Table
 Modes and settings.
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = False
 timingMode = False
 hasNlcd = True
