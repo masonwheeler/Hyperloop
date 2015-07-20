@@ -59,7 +59,7 @@ def build_lattice(directionsPoints):
 def build_routes(geospatialLattice):
     finishedEdgesSets, plottableFinishedEdges = edges.get_edgessets(
                                                geospatialLattice.latticeSlices)
-    filteredRoutes = routes.get_routes(finishedEdgesSets)
+    #filteredRoutes = routes.get_routes(finishedEdgesSets)
     if config.visualMode:
         edgeCostToColor = {1: 'r', #most expensive
                            2: 'm',
