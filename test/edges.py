@@ -75,10 +75,9 @@ class Edge:
           config.pylonBaseCost)              
         return [pylonCost, heights]
 
-    def add_costs_and_heights(self):
-        self.pylonCost, self.heights = self.pylon_cost_and_heights()
+    def add_pyloncost_and_heights(self):
+        self.pylonCost, self.heights = self.pyloncost_and_heights()
         print("Pylon cost for edge: " + str(self.pylonCost))
-        self.compute_landcost()
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -206,12 +205,12 @@ class EdgesSets:
 #                edge.add_cost()
 #        return edgesSets
 
-    def compute_costs_and_heights(self, edgesSets):
+    def add_pyloncosts_and_heights(self, edgesSets):
         numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
         for edgesSet in edgesSets:
             for edge in edgesSet:
-                edge.compute_cost_and_height()
+                edge.add_pyloncost_and_heights()
                 bar.next()
         bar.finish()
         return edgesSets
@@ -241,7 +240,7 @@ class EdgesSets:
         flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
         self.plottableFinishedEdges = [edge.as_plottable() for edge
                                        in flattenedFinishedEdges]
-        self.finishedEdgesSets = self.compute_costs_and_heights(self.finishedEdgesSets)
+        self.finishedEdgesSets = self.add_pyloncosts_and_heights(self.finishedEdgesSets)
         #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
         #for edgesSet in edgesSets:

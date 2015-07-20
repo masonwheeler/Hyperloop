@@ -16,6 +16,7 @@ def mean(List):
     return sum(List)/len(List)
 
 def points_to_radius(threePoints):
+    print threePoints
     p1, p2, p3 = threePoints
     a = np.linalg.norm(np.subtract(p1, p2))
     b = np.linalg.norm(np.subtract(p2, p3))
