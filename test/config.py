@@ -137,7 +137,7 @@ directionsCoords = 0
 Lattice Generation Parameters.
 """
 
-numPaths = 100 #the number of paths to output from the merge step
+numPaths = [300,250,200,150,100,50,25] #the number of paths to output from the merge step
 ndigits = 6 #the number of digits used for rounding
 
 ########## API-Specific and System-Specific Settings ##########

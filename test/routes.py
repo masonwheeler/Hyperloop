@@ -14,14 +14,40 @@ import config
 import util
 import cacher
 
-def pointstoCurvature(threepoints):
-    if gen.pointstoRadius(threepoints) == 0:
-        return config.gTolerance/(config.maxSpeed**2)
-    else:
-        A, B, C = threepoints
-        BAperp = [-(B-A)[1],(B-A)[0]]
-        sign = np.dot(C-A, BAperp)
-        return (sign/np.absolute(sign))*(1./gen.pointstoRadius(threepoints))
+# xPointstovPoints(): 
+# Outputs a discrete velocity profile {v_i} given a discrete route {x_i}.
+# The velocity profile v is a rolling average of the maximum speed allowed by a .3g radial acceleration constraint:
+#       v_i = (1/2k) * sum_{i-k <j< i+k} √(.3g * r_j).
+# where r_j is the radius of the circle through {x_{j-1},x_j, x_{j+1}}.
+
+def xPointstovPoints(x):
+    v = [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[1:4])),330)]
+      + [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[1:4])),330)]
+      + [gen.mean([min(np.sqrt(9.81*.3*gen.pointstoRadius(x[j-1:j+2])),330) for j in range(2-1,2+2)])] \
+      + [gen.mean([min(np.sqrt(9.81*.3*gen.pointstoRadius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-3)] \
+      + [gen.mean([min(np.sqrt(9.81*.3*gen.pointstoRadius(x[j-1:j+2])),330) for j in range(-3-1,-3+2)])] \
+      + [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[-3:len(x)])),330)] \
+      + [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[-3:len(x)])),330)]
+    return v
+
+# vPointsto_triptime(): 
+# Outputs triptime T of a discrete route {x_i} given its discrete velocity profile {v_i}.
+# The triptime is computed assuming a piecewise linear interpolation of the {x_i} (into a set of line-segments),
+# and assuming that the velocity in the segment connecting x_i to x_{i+1} is v_i:
+#      T = sum_i s_i/v_i
+# where s_i is the distance between x_i and x_{i+1}.
+
+def vPointsto_triptime(v, x):
+    s = [np.linalg.norm(x[i+1]-x[i]) for i in range(-1)]
+    return sum([s[i]/v[i] for i in range(len(s))])
+
+
+
+def variation(route):
+    
+    route
+
+
 
 class Route:
     pylonCost = 0
@@ -31,10 +57,10 @@ class Route:
     startId = 0
     endId = 0
     geospatialCoords = []
+    heights = [[]]
 
     def __init__(self, pylonCost, landCost, startId, endId, startAngle,
-                 endAngle, latlngCoords, geospatialCoords):
-                   #, curvatures,variation, edges):
+                 endAngle, latlngCoords, geospatialCoords, heights):
         self.pylonCost = pylonCost
         self.landCost = landCost
         self.startId = startId
@@ -43,6 +69,7 @@ class Route:
         self.endAngle = endAngle
         self.latlngCoords = latlngCoords
         self.geospatialCoords = geospatialCoords
+        self.heights = heights
 
     def to_plottable(self):
         return zip(*self.geospatialCoords)
@@ -51,7 +78,6 @@ class Route:
         print("The route cost is: " + str(self.cost) + ".")
         print("The route start angle is: " + str(self.startAngle) + ".")        
         print("The route end angle is: " + str(self.endAngle) + ".")
-        print("The route curvatures are: " + str(self.curvatures) + ".")
 
 
 def is_route_pair_compatible(routeA, routeB):
@@ -64,11 +90,7 @@ def merge_two_routes(routeA,routeB):
     pylonCost = routeA.pylonCost + routeB.pylonCost
     landCost = routeA.landCost + routeB.landCost
     startId = routeA.startId
-    #Edges = routeA.edges + routeB.edges
-    #curvatures = routeA.curvatures \
-    #    + [pointstoCurvature([(routeA.xyCoords)[-2],(routeA.xyCoords)[-1],(routeB.xyCoords)[0]])] \
-    #    + routeB.curvatures 
-    #variation = sum([np.absolute((curvatures[i+1]-curvatures[i])/curvatures[i]**1.5) for i in range(len(curvatures)-1)])
+    heights = routeA.heights + routeB.heights
     startId = routeA.startId
     startAngle = routeA.startAngle
     endId = routeB.endId
@@ -77,7 +99,7 @@ def merge_two_routes(routeA,routeB):
     geospatialCoords = util.smart_concat(routeA.geospatialCoords,
                                          routeB.geospatialCoords)
     newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
-                     latlngCoords, geospatialCoords)
+                     latlngCoords, geospatialCoords, heights)
     return newRoute
 
 def edge_to_route(edge):
@@ -88,8 +110,9 @@ def edge_to_route(edge):
     startAngle = endAngle = edge.angle
     latlngCoords = edge.latlngCoords
     geospatialCoords = edge.geospatialCoords
+    heights = [edge.heights]
     newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
-                     latlngCoords, geospatialCoords)
+                     latlngCoords, geospatialCoords, heights)
     return newRoute
 
 def edgesset_to_routesset(edgesSet):
@@ -98,15 +121,17 @@ def edgesset_to_routesset(edgesSet):
 def edgessets_to_routessets(edgesSets):
     return [edgesset_to_routesset(edgesSet) for edgesSet in edgesSets]
 
+# Filters routes 
+
 def sample_routes(merged):
-    #n = int(np.log2(len(merged[0].xyCoords)))
-    merged.sort(key = lambda route: route.landCost)
-    # if n < 3: 
-    #    selected = merged[:config.numPaths]
-    #else:
-    #    merged = filter(merged, lambda route: route.cost < config.maxCost*(numSlices/len(merged[0].xyCoords)))
-    #    merged.sort(key = lambda route: route.variation)
-    selected = merged[:config.numPaths]
+    n = int(np.log2(len(merged[0].xyCoords)))
+    velocityProfiles = [xPointstovPoints(route.points) for route in merged]
+    variations = [sum([np.absolute(v[i+1]-v[i]) for i in range(-1)]) for v in velocityProfiles]
+    triptimes = [vPointsto_triptime(velocityProfiles[i], merged[i].points) for i in range(len(merged))]
+    costs = [route.cost for route in merged]
+    merged = filter(merged, lambda route: variations[merged.index(route)] < 9.81 * .1 * 2**n)
+    merged.sort(key = lambda route: route.landCost * triptimes[merged.index(route)])
+    selected = merged[:config.numPaths[n])
     return selected
 
 def merge_two_routessets(routesSetA, routesSetB):
