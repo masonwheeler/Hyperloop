@@ -98,7 +98,7 @@ class Edge:
                                              endXVal - startXVal))
     def as_plottable(self):
         plottableEdge = zip(*self.geospatialCoords)
-        return plottableEdge
+        return [plottableEdge, self.landCostColorCode]
 
     def display(self):
         print("The edge's cost is: " + str(self.cost) + ".")
@@ -109,7 +109,7 @@ class Edge:
 
 
     def add_landcost_colorcode(self):
-        landcostColorCodes = [[1000000, 1],
+        landcostColorCodes = [[1000000, 'r'],
                               [2000000, 2],
                               [3000000, 3],
                               [5000000, 4],

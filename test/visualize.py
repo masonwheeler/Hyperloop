@@ -21,19 +21,15 @@ def plot_colorful_objects(objectsAndStyles):
     for eachObjectAndStyle in objectsAndStyles:
         eachObject, eachStyle = eachObjectAndStyle
         plot_object(eachObject, eachStyle)
+    plt.show()
 
 def plot_objectslist(objectData, style):
     for eachObjectData in objectData:       
         plot_object(eachObjectData, style)
  
-def plot_objects(objects):
-    plotDictionary = {1: 211,
-                      2: 212}
-    functionDictionary = {1: plot_object,
-                          2: plot_objectslist}
-    for eachObject in objects:              
-        objectData, style, plotNumber, functionNumber = eachObject               
-        #plt.subplot(plotDictionary[plotNumber])
+def display_inputs(inputs):
+    for eachInput in inputs:              
+        
         plotFunction = functionDictionary[functionNumber]
         plotFunction(objectData, style)
     #plt.subplot(plotDictionary[1])
