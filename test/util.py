@@ -37,6 +37,9 @@ def swap_pair(pair):
 def swap_pairs(pairs):
     return [swap_pair(pair) for pair in pairs]
 
+def get_maxmin(inList):
+    return [max(inList), min(inList)]
+
 #Used by: edges.py
 def fast_concat(listOfLists):
     concatenated = itertools.chain.from_iterable(listOfLists)
@@ -137,4 +140,9 @@ def smart_print(string):
     if config.verboseMode:
         print(string)     
 
-
+def interval_to_value(inputVal, upperboundOutputValPairs, elseVal):
+    for upperboundOutputValPair in upperboundOutputValPairs:
+        upperbound, outputVal = upperboundOutputValPair
+        if inputVal < upperbound:
+            return outputVal
+    return elseVal

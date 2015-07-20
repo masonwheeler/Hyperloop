@@ -21,17 +21,7 @@ import cacher
 # where r_j is the radius of the circle through {x_{j-1},x_j, x_{j+1}}.
 
 def xPointstovPoints(x):
-    print x
-    print x[0]
-    print x[0:2]
-    print x[0:3]
-    print x[0:4]
-    print np.sqrt(9.81*.3*gen.points_to_radius(x[0:3]))
-    print min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)
-    print [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)]
-    print [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(2-1,2+2)])]
-    print [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-3)]
-    v = [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(2-1,2+2)])] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-3)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(-3-1,-3+2)])] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)]
+    v = [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(2-1,2+2)])] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-4)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(-3-1,-3+2)])] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)]
     return v
 
 # vPointsto_triptime(): 

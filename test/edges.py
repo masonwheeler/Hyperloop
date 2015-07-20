@@ -32,6 +32,7 @@ class Edge:
     isInRightOfWay = False
     isUseful = True
     landCost = 0
+    landCostColorCode = 0
     pylonCost = 0
     angle = 0
     length = 0
@@ -65,7 +66,7 @@ class Edge:
             self.landCost = 0          
         else:
             self.landCost = landcost.edge_land_cost(self.landcostGrid)
-        print(self.landCost)
+        #print(self.landCost)
 
     def pyloncost_and_heights(self):
         self.build_pylon_grid()
@@ -106,8 +107,18 @@ class Edge:
         print("The edge's xy coords are: " + str(self.geospatialCoords) + ".")
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
-    #def cost_color_code(self):
-    #    if 
+
+    def add_landcost_colorcode(self):
+        landcostColorCodes = [[1000000, 1],
+                              [2000000, 2],
+                              [3000000, 3],
+                              [5000000, 4],
+                              [10000000, 5]]                              
+        overflowCode = 6
+        colorCode = util.interval_to_value(self.landCost,
+                             landcostColorCodes, overflowCode)
+        print(colorCode)
+        self.landCostColorCode = colorCode
 
 
 class EdgesSets:
@@ -234,6 +245,11 @@ class EdgesSets:
             for edge in edgesSet:
                 edge.add_landcost()        
 
+    def add_landcost_colorcodes(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.add_landcost_colorcode()
+
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
         flattenedBaseEdges = util.fast_concat(self.baseEdgesSets)
@@ -244,7 +260,13 @@ class EdgesSets:
         flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
         self.plottableFinishedEdges = [edge.as_plottable() for edge
                                        in flattenedFinishedEdges]
+        self.build_landcost_grids(self.finishedEdgesSets)
         self.add_edge_landcosts(self.finishedEdgesSets)
+        self.add_landcost_colorcodes(self.finishedEdgesSets)
+        flattened = util.fast_concat(self.finishedEdgesSets)
+        landCosts = [edge.landCostColorCode for edge in flattened]
+        #print(sorted(landCosts))
+        #print(util.get_maxmin(landCosts))      
         #self.finishedEdgesSets = self.add_pyloncosts_and_heights(self.finishedEdgesSets)
         #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
