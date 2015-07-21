@@ -15,6 +15,7 @@ import util
 
 def plot_object(objectData, style):    
     xValues, yValues = objectData
+    print(xValues, yValues, style)
     plt.plot(xValues, yValues, style)   
 
 def plot_colorful_objects(objectsAndStyles):

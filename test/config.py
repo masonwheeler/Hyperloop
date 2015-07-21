@@ -13,7 +13,7 @@ Last Modification Purpose: Added Cost Table
 Modes and settings.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = False
 timingMode = False
 hasNlcd = True
@@ -25,7 +25,7 @@ Cache Overwriting Switches.
 useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
-useCachedEdges = False
+useCachedEdges = True
 useCachedRoutes = False
 
 """

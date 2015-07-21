@@ -109,15 +109,15 @@ class Edge:
 
 
     def add_landcost_colorcode(self):
-        landcostColorCodes = [[1000000, 'r'],
-                              [2000000, 2],
-                              [3000000, 3],
-                              [5000000, 4],
-                              [10000000, 5]]                              
-        overflowCode = 6
+        landcostColorCodes = [[1000000, 'r-'], #least expensive
+                              [2000000, 'm-'],
+                              [3000000, 'y-'],
+                              [5000000, 'g-'],
+                              [10000000, 'b-']]                              
+        overflowCode = 'k-'                    #most expensive
         colorCode = util.interval_to_value(self.landCost,
                              landcostColorCodes, overflowCode)
-        print(colorCode)
+        #print(colorCode)
         self.landCostColorCode = colorCode
 
 
@@ -257,16 +257,12 @@ class EdgesSets:
                                    for edge in flattenedBaseEdges]
         self.iterative_filter()
         self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
-        flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
-        self.plottableFinishedEdges = [edge.as_plottable() for edge
-                                       in flattenedFinishedEdges]
         self.build_landcost_grids(self.finishedEdgesSets)
         self.add_edge_landcosts(self.finishedEdgesSets)
         self.add_landcost_colorcodes(self.finishedEdgesSets)
-        flattened = util.fast_concat(self.finishedEdgesSets)
-        landCosts = [edge.landCostColorCode for edge in flattened]
-        #print(sorted(landCosts))
-        #print(util.get_maxmin(landCosts))      
+        flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
+        self.plottableFinishedEdges = [edge.as_plottable() for edge
+                                       in flattenedFinishedEdges]
         #self.finishedEdgesSets = self.add_pyloncosts_and_heights(self.finishedEdgesSets)
         #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
