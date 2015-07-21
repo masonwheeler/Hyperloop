@@ -145,7 +145,6 @@ def save_edgessets(edgesSets, edgesName):
                        [edge.landCost] +
                        [edge.pylonCost]
                        for edge in flattenedEdges]
-    print(edgesAttributes)
     edgeSavePath = get_object_savepath(edgesName)
     with open(edgeSavePath + ".csv", 'wb') as edgeHandle:
         writer = csv.writer(edgeHandle)

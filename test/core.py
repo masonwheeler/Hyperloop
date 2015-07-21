@@ -71,8 +71,8 @@ def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
     directionsPoints = build_directions(start, end)
-    #latticeSlices = build_lattice(directionsPoints)
-    #filteredRoutes = build_routes(latticeSlices)
+    latticeSlices = build_lattice(directionsPoints)
+    filteredRoutes = build_routes(latticeSlices)
     """for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))
     print "Computing comfort and triptime..."
