@@ -53,5 +53,6 @@ def geospatials_to_latlngs(geospatials, proj):
 
 def set_projection(startLatLng, endLatLng):
     startLonLat, endLonLat = util.swap_pairs([startLatLng, endLatLng])
-    config.proj = omerc_proj(startLonLat, endLonLat)
+    #config.proj = omerc_proj(startLonLat, endLonLat)
+    config.proj = albers_proj()
 

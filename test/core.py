@@ -26,7 +26,9 @@ def build_directions(start, end):
     directionsLatLng = directions.get_directions(start, end)
     startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
     proj.set_projection(startLatLng, endLatLng)
-    directionsPoints = proj.latlngs_to_geospatials(directionsLatLng, config.proj)
+    directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
+                                                   config.proj)
+    print(util.get_firstlast(directionsPoints))
     return directionsPoints
 
 def build_lattice(directionsPoints):
@@ -69,8 +71,8 @@ def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
     directionsPoints = build_directions(start, end)
-    latticeSlices = build_lattice(directionsPoints)
-    filteredRoutes = build_routes(latticeSlices)
+    #latticeSlices = build_lattice(directionsPoints)
+    #filteredRoutes = build_routes(latticeSlices)
     """for i in range(10):
        io.export(routes[i].xyCoords,'route'+str(i))
     print "Computing comfort and triptime..."

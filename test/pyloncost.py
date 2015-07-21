@@ -19,14 +19,35 @@ import clothoid
 import quintic as quint
 
 def szPointstozVals(sPoints, zPoints, n, sVals):
-    N = len(sPoints) - 1
-    m = int(math.ceil((N+0.0) / (n+0.0)))
-    G = [0 for i in range(m)]
-    if m == 1:
-        G = [[sPoints, zPoints, 0, 0, 0, 0]]
-    elif m == 2:
-        G[0] = [sPoints[0:n+1],zPoints[0:n+1], 0, 0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]
-        G[1] = [sPoints[n:N+1],zPoints[n:N+1], (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0,0,0]
+    numSIntervals = len(sPoints) - 1
+    numWaypointsBCsSets = int(math.ceil(float(N) / float(n)))
+    waypointsBCsSets = [0 for i in range(m)]
+
+    #Each set of waypoints and boundary conditions contains the following:
+    # Take N to be the number of waypoints.
+    # [list of independent variable values e.g. "t_i",
+    #  list of dependent variable values e.g. "x_i = x(t_i)",
+    #  initial first derivative of dependent variable e.g. "dx/dt|(t_0)"
+    #  initial second derivative of dependent variable e.g. "dx^2/dt^2|(t_0)"     
+    #  final first derivative of dependent variable e.g. "dx/dt|(t_N)"
+    #  final second derivative of dependent variable e.g. "dx^2/dt^2|(t_N)"]
+     
+    if numWaypointsBCsSets== 1:
+        waypointsBCsSets = [[sPoints, zPoints, 0, 0, 0, 0]]
+    elif numWaypointsBCsSets == 2:
+        waypointsBCsSets[0] = [sPoints[0 : n+1],
+                               zPoints[0 : n+1],
+                               0,               
+                               0,               
+        (zPoints[n+1] - zPoints[n]) / (sPoints[n+1] - sPoints[n]),
+                               0]                       
+
+        waypointsBCsSets[1] = [sPoints[n : numWaypointsBCsSets+1],
+                               zPoints[n : numWaypointsBCsSets+1],
+          (zPoints[n+1] - zPoints[n])/(sPoints[n+1] - sPoints[n]),
+                               0,
+                               0,
+                               0]
     else:
         G[0] = [sPoints[0:n+1],zPoints[0:n+1],0,0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]  
         for j in range(1,m-1):
