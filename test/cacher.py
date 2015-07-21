@@ -105,14 +105,14 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):
     if (object_cached(objectName) and flag):
         print(objectName + " exists.")
         loadedObject = load_object(objectName)
-        print("loaded " + objectName)
+        print("Loaded " + objectName)
         return loadedObject
     else:
         print("Computing " + objectName + "...")
         computedObject = computeFunction(*computeArgs)
         print(objectName + " computed.")
         cache_object(computedObject, objectName)
-        #saveFunction(computedObject, objectName)
+        saveFunction(computedObject, objectName)
         return computedObject
 
 
@@ -123,8 +123,9 @@ def save_listlike(listObject, listName):
         writer.writerows(listObject)       
 
 def save_directions(directionsObject, directionsName):
-    directions, totalDistance = directionsObject
-    save_listlike(directions, directionsName) 
+    pass
+    #directions, totalDistance = directionsObject
+    #save_listlike(directions, directionsName) 
 
 def save_spline(splineObject, splineName):
     pass
@@ -132,30 +133,35 @@ def save_spline(splineObject, splineName):
 def save_lattice(latticeObject, slicesName):
     pass
 
-def get_edgecoords(edge, coordsType):
-    coordsPair = eval(".".join(["edge", coordsType]))
-    coords = util.fast_concat(coordsPair)
-    return coords
+#def get_edgecoords(edge, coordsType):
+#    coordsPair = eval(".".join(["edge", coordsType]))
+#    coords = util.fast_concat(coordsPair)
+#    return coords
 
-def save_edgeslike(inEdges, edgesName, coordsType):
-    flatEdges = util.fast_concat(inEdges)
-    edgesCoords = [get_edgecoords(edge,coordsType) for edge in flatEdges]
-    edgeSavePath = "_".join([get_object_savepath(edgesName), coordsType])
+def save_edgessets(edgesSets, edgesName):
+    finishedEdges, plottableEdges = edgesSets
+    flattenedEdges = util.fast_concat(finishedEdges)
+    edgesAttributes = [util.fast_concat(edge.geospatialCoords) +
+                       [edge.landCost] +
+                       [edge.pylonCost]
+                       for edge in flattenedEdges]
+    print(edgesAttributes)
+    edgeSavePath = get_object_savepath(edgesName)
     with open(edgeSavePath + ".csv", 'wb') as edgeHandle:
         writer = csv.writer(edgeHandle)
-        writer.writerows(inEdges)
+        writer.writerows(edgesAttributes)
     
-def save_edgessets(edgesSets, objectName):
-    save_edgeslike(edgesSets, objectName, "latlngCoords")
-    save_edgeslike(edgesSets, objectName, "geospatialCoords")
+#def save_edgessets(edgesSets, objectName):
+#    save_edgeslike(edgesSets, objectName, "latlngCoords")
+#    save_edgeslike(edgesSets, objectName, "geospatialCoords")
 
-def save_routes(routes, objectName):
-    index = 1
-    for route in routes:
-        routeName = 'routes/route' + str(index).zfill(4)
-        save_listlike(route.xyCoords, routeName + 'XYCoords')
-        save_listlike(route.latlngCoords, routeName + 'LatLngCoords')
-        index += 1
+#def save_routes(routes, objectName):
+#    index = 1
+#    for route in routes:
+#        routeName = 'routes/route' + str(index).zfill(4)
+#        save_listlike(route.xyCoords, routeName + 'XYCoords')
+#        save_listlike(route.latlngCoords, routeName + 'LatLngCoords')
+#        index += 1
 """
 def get_pointcoords(point, coordsType):
     coords = eval(".".join(["point", coordsType]))

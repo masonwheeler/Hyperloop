@@ -17,17 +17,11 @@ import cacher
 # xPointstovPoints(): 
 # Outputs a discrete velocity profile {v_i} given a discrete route {x_i}.
 # The velocity profile v is a rolling average of the maximum speed allowed by a .3g radial acceleration constraint:
-#       v_i = (1/2k) * sum_{i-k <j< i+k} √(.3g * r_j).
+#       v_i = (1/2k) * sum_{i-k <j< i+k} sqrt(.3g * r_j).
 # where r_j is the radius of the circle through {x_{j-1},x_j, x_{j+1}}.
 
 def xPointstovPoints(x):
-    v = [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[1:4])),330)]
-      + [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[1:4])),330)]
-      + [gen.mean([min(np.sqrt(9.81*.3*gen.pointstoRadius(x[j-1:j+2])),330) for j in range(2-1,2+2)])] \
-      + [gen.mean([min(np.sqrt(9.81*.3*gen.pointstoRadius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-3)] \
-      + [gen.mean([min(np.sqrt(9.81*.3*gen.pointstoRadius(x[j-1:j+2])),330) for j in range(-3-1,-3+2)])] \
-      + [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[-3:len(x)])),330)] \
-      + [min(np.sqrt(9.81*.3*gen.pointstoRadius(x[-3:len(x)])),330)]
+    v = [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(2-1,2+2)])] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-4)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(-3-1,-3+2)])] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)]
     return v
 
 # vPointsto_triptime(): 
@@ -51,7 +45,7 @@ def variation(route):
 
 class Route:
     pylonCost = 0
-    routeCost = 0
+    landCost = 0
     startAngle = 0
     endAngle = 0
     startId = 0
@@ -124,14 +118,20 @@ def edgessets_to_routessets(edgesSets):
 # Filters routes 
 
 def sample_routes(merged):
-    n = int(np.log2(len(merged[0].xyCoords)))
-    velocityProfiles = [xPointstovPoints(route.points) for route in merged]
-    variations = [sum([np.absolute(v[i+1]-v[i]) for i in range(-1)]) for v in velocityProfiles]
-    triptimes = [vPointsto_triptime(velocityProfiles[i], merged[i].points) for i in range(len(merged))]
-    costs = [route.cost for route in merged]
-    merged = filter(merged, lambda route: variations[merged.index(route)] < 9.81 * .1 * 2**n)
-    merged.sort(key = lambda route: route.landCost * triptimes[merged.index(route)])
-    selected = merged[:config.numPaths[n])
+    n = int(np.log2(len(merged[0].geospatialCoords)))
+    print len(merged[0].geospatialCoords)
+    print n
+    if n > 3:
+       velocityProfiles = [xPointstovPoints(route.geospatialCoords) for route in merged]
+       variations = [sum([np.absolute(v[i+1]-v[i]) for i in range(-1)]) for v in velocityProfiles]
+       triptimes = [vPointsto_triptime(velocityProfiles[i], merged[i].geospatialCoords) for i in range(len(merged))]
+       costs = [route.landCost+route.pylonCost for route in merged]
+       merged = filter(merged, lambda route: variations[merged.index(route)] < 9.81 * .1 * 2**n)
+       merged.sort(key = lambda route: (route.landCost+route.pylonCost) * triptimes[merged.index(route)])
+       selected = merged[:config.numPaths[n-1]]
+    else:
+       merged.sort(key = lambda route: route.landCost+route.pylonCost)
+       selected = merged[:config.numPaths[n-1]]
     return selected
 
 def merge_two_routessets(routesSetA, routesSetB):

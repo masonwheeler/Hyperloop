@@ -9,7 +9,7 @@ Last Modification Purpose: To fix grid naming issues.
 
 #Standard Modules:
 import math
-from progress.bar import Bar
+#from progress.bar import Bar
 
 #Our Modules
 import util
@@ -20,18 +20,19 @@ import pyloncost
 import landcost
 import cacher
 
-
+"""
 class SlowBar(Bar):
     suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
     @property
     def minutes(self):
         return self.eta // 60
-
+"""
 
 class Edge:
     isInRightOfWay = False
     isUseful = True
     landCost = 0
+    landCostColorCode = 0
     pylonCost = 0
     angle = 0
     length = 0
@@ -65,6 +66,7 @@ class Edge:
             self.landCost = 0          
         else:
             self.landCost = landcost.edge_land_cost(self.landcostGrid)
+        #print(self.landCost)
 
     def pyloncost_and_heights(self):
         self.build_pylon_grid()
@@ -75,10 +77,9 @@ class Edge:
           config.pylonBaseCost)              
         return [pylonCost, heights]
 
-    def add_costs_and_heights(self):
-        self.pylonCost, self.heights = self.pylon_cost_and_heights()
+    def add_pyloncost_and_heights(self):
+        self.pylonCost, self.heights = self.pyloncost_and_heights()
         print("Pylon cost for edge: " + str(self.pylonCost))
-        self.compute_landcost()
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -97,7 +98,7 @@ class Edge:
                                              endXVal - startXVal))
     def as_plottable(self):
         plottableEdge = zip(*self.geospatialCoords)
-        return plottableEdge
+        return [plottableEdge, self.landCostColorCode]
 
     def display(self):
         print("The edge's cost is: " + str(self.cost) + ".")
@@ -105,6 +106,19 @@ class Edge:
         print("The edge's lat-lng coords are: " + str(self.latlngCoords) + ".")        
         print("The edge's xy coords are: " + str(self.geospatialCoords) + ".")
         print("The edge's angle is: " + str(self.angle) + " degrees.")
+
+
+    def add_landcost_colorcode(self):
+        landcostColorCodes = [[1000000, 'r-'], #least expensive
+                              [2000000, 'm-'],
+                              [3000000, 'y-'],
+                              [5000000, 'g-'],
+                              [10000000, 'b-']]                              
+        overflowCode = 'k-'                    #most expensive
+        colorCode = util.interval_to_value(self.landCost,
+                             landcostColorCodes, overflowCode)
+        #print(colorCode)
+        self.landCostColorCode = colorCode
 
 
 class EdgesSets:
@@ -206,30 +220,35 @@ class EdgesSets:
 #                edge.add_cost()
 #        return edgesSets
 
-    def compute_costs_and_heights(self, edgesSets):
+    def add_pyloncosts_and_heights(self, edgesSets):
         numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
         for edgesSet in edgesSets:
             for edge in edgesSet:
-                edge.compute_cost_and_height()
+                edge.add_pyloncost_and_heights()
                 bar.next()
         bar.finish()
         return edgesSets
 
-#    def build_landcost_grids(self, edgesSets):
-#        for edgesSet in edgesSets:
-#            for edge in edgesSet:
-#                edge.build_landcost_grid()        
-#
-#    def build_pyloncost_grids(self, edgesSets):
-#        for edgesSet in edgesSets:
-#            for edge in edgesSet:
-#               edge.build_pyloncost_grid()        
-#
-#    def compute_edge_landcosts(self, edgesSets):
-#        for edgesSet in edgesSets:
-#            for edge in edgesSet:
-#                edge.compute_landcost()        
+    def build_landcost_grids(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.build_landcost_grid()        
+
+    def build_pyloncost_grids(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+               edge.build_pyloncost_grid()        
+
+    def add_edge_landcosts(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.add_landcost()        
+
+    def add_landcost_colorcodes(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.add_landcost_colorcode()
 
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
@@ -238,10 +257,13 @@ class EdgesSets:
                                    for edge in flattenedBaseEdges]
         self.iterative_filter()
         self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
+        self.build_landcost_grids(self.finishedEdgesSets)
+        self.add_edge_landcosts(self.finishedEdgesSets)
+        self.add_landcost_colorcodes(self.finishedEdgesSets)
         flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
         self.plottableFinishedEdges = [edge.as_plottable() for edge
                                        in flattenedFinishedEdges]
-        self.finishedEdgesSets = self.compute_costs_and_heights(self.finishedEdgesSets)
+        #self.finishedEdgesSets = self.add_pyloncosts_and_heights(self.finishedEdgesSets)
         #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
         #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
         #for edgesSet in edgesSets:
@@ -249,7 +271,6 @@ class EdgesSets:
         #      edge.add_costAndHeight()
         #      bar.next()
         #bar.finish()
-        #self.filteredEdgesSets = edgesSets
 
 
 def build_edgessets(lattice):

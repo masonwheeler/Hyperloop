@@ -17,7 +17,7 @@ visualMode = False
 verboseMode = False
 timingMode = False
 hasNlcd = True
-useDropbox = False
+useDropbox = True
 
 """
 Cache Overwriting Switches.
@@ -37,6 +37,8 @@ degreeConstraint = 30 #the angular constraint between subsequent edges
 splineSampleSpacing = 1000 # (in units of directionsSampleSpacing) i.e.
                            # spacing between spline points in meters is given
                            # by directionsSampleSpacing * splineSampleSpacing
+numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
+ndigits = 6 #the number of digits used for rounding
 """
 Engineering constraints.
 """
@@ -133,12 +135,6 @@ Unitialized Global variables.
 proj = 0
 directionsCoords = 0
 
-"""
-Lattice Generation Parameters.
-"""
-
-numPaths = [300,250,200,150,100,50,25] #the number of paths to output from the merge step
-ndigits = 6 #the number of digits used for rounding
 
 ########## API-Specific and System-Specific Settings ##########
 
