@@ -2,9 +2,10 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To build edges with associated cost and elevation data
                    from pairs of lattice points.
-Last Modified: 7/17/15
+Last Modified: 7/21/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To fix grid naming issues.
+Last Modification Purpose: To add a richer datastructure to store pylon and
+                           landcover data.
 """
 
 #Standard Modules:
@@ -40,24 +41,28 @@ class Edge:
     latlngCoords = []
     geospatialCoords = []
     geospatialVector = []
-    pylonLocations = []
-    landcoverLocations = []
+    pylons = []
+    landcostSamples = []
 
-    def build_pylon_locations(self):
+    def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatialCoords
         pylonGeospatials = util.build_grid(self.geospatialVector,
                                 config.pylonSpacing, startGeospatialCoords)
         pylonLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
                                                         config.proj)
-        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
+        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)       
         attributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
         self.pylonLocations = [{"geospatial" : attributes[0],
                                 "latlng" : attributes[1],
                                 "elevation" : attributes[2],
-                                "pylonHeight" : 0}
+                                "pylonHeight" : 0,
+                                "pylonCost" : 0}
                                for attribute in attributes]         
+        pylons.build_pylons(self.pylonLocations)
+        pylons.get_pyloncosts(self.pylonLocations)
+        self.pylonCost = pylons.edge_pyloncost(self.pylonLocations)
 
-    def build_landcover_locations(self):
+    def build_landcost_samples(self):
         startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
         landcoverGeospatials = util.build_grid(self.geospatialVector,
                                 config.landPointSpacing, startGeospatialCoords)
@@ -67,22 +72,22 @@ class Edge:
                                               landcoverLatLngs)
         attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
                            landcoverPixelValues])
-        self.landcoverLocations = [{"geospatial" : attributes[0],
-                                    "latlng" : attributes[1],
-                                    "pixelValues" : attributes[2]}
-                                   for attribute in attributes]                 
-
-    def add_landcost(self):
+        self.landcostSamples = [{"geospatial" : attributes[0],
+                                 "latlng" : attributes[1],
+                                 "pixelValues" : attributes[2]}
+                                for attribute in attributes]                 
         if self.isInRightOfWay:
             self.landCost = config.rightOfWayLandCost          
         else:
-            self.landCost = landcost.edge_land_cost(self.landcostGrid)
+            self.landCost = \
+               landcover.pixelvalues_to_landcost(landcoverPixelValues)
 
-    def pyloncost_and_heights(self):
-        pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
-          config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
-          config.pylonBaseCost)              
-        return [pylonCost, heights]
+
+#    def pyloncost_and_heights(self):
+#        pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
+#          config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
+#          config.pylonBaseCost)              
+#        return [pylonCost, heights]
    
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
@@ -111,17 +116,17 @@ class Edge:
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
 
-    def add_landcost_colorcode(self):
-        landcostColorCodes = [[1000000, 'r-'], #least expensive
-                              [2000000, 'm-'],
-                              [3000000, 'y-'],
-                              [5000000, 'g-'],
-                              [10000000, 'b-']]                              
-        overflowCode = 'k-'                    #most expensive
-        colorCode = util.interval_to_value(self.landCost,
-                             landcostColorCodes, overflowCode)
-        #print(colorCode)
-        self.landCostColorCode = colorCode
+#    def add_landcost_colorcode(self):
+#        landcostColorCodes = [[1000000, 'r-'], #least expensive
+#                              [2000000, 'm-'],
+#                              [3000000, 'y-'],
+#                              [5000000, 'g-'],
+#                              [10000000, 'b-']]                              
+#        overflowCode = 'k-'                    #most expensive
+#        colorCode = util.interval_to_value(self.landCost,
+#                             landcostColorCodes, overflowCode)
+#        print(colorCode)
+#        self.landCostColorCode = colorCode
 
 
 class EdgesSets:
@@ -143,9 +148,6 @@ class EdgesSets:
                 for endPoint in sliceB:
                     edgesSet.append(Edge(startPoint,endPoint))
             edgesSets.append(edgesSet)
-        if config.verboseMode:
-            print("Here is a sample Edge object: ")
-            edgesSets[0][0].display()
         return edgesSets    
     
     def edge_pair_compatible(self, edgeA, edgeB):
@@ -155,18 +157,31 @@ class EdgesSets:
         return False
 
     def determine_useful_edges(self, edgesSets):
+        "An edge is useful if it has compatible edges in the adjacent
+         edge sets."
+
+        "For edges in the first edge set."
         for edgeA in edgesSets[0]:
+            "Check that each edge in the first edge set has an edge
+             which is compatible with it in the second edge set."
             compatibles = [self.edge_pair_compatible(edgeA,edgeB)
                            for edgeB in edgesSets[1]]
             edgeA.isUseful = any(compatibles)
+        "For edges in the second through second to last edge set."
         for edgeSetIndex in range(1,len(edgesSets)-1):
             for edgeB in edgesSets[edgeSetIndex]:
+                "Check that each edge in the ith edge set has an edge
+                 which is compatible with it in the (i-1)th edge set
+                 and in the (i+1)th edge set."
                 compatiblesA = [self.edge_pair_compatible(edgeA, edgeB)
                               for edgeA in edgesSets[edgeSetIndex-1]]
                 compatiblesC = [self.edge_pair_compatible(edgeB, edgeC)
                               for edgeC in edgesSets[edgeSetIndex+1]]
                 edgeB.isUseful = any(compatiblesA) and any(compatiblesC)
+        "For edges in the last edge set."
         for edgeB in edgesSets[-1]:
+            "Check that each edge in the last edge set has an edge which 
+             is compatible with it in the second to last edge set."
             compatibles = [self.edge_pair_compatible(edgeA, edgeB)
                            for edgeA in edgesSets[-2]]
             edgeB.isUseful = any(compatibles)                    
@@ -181,8 +196,6 @@ class EdgesSets:
     def check_empty(self, edgesSets):
         for edgesSet in edgesSets:
             if len(edgesSet) == 0:
-                print(edgesSet)
-                print("empty edge")
                 return True
         return False
     
@@ -223,35 +236,25 @@ class EdgesSets:
 #                edge.add_cost()
 #        return edgesSets
 
-    def add_pyloncosts_and_heights(self, edgesSets):
-        numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
-        bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.add_pyloncost_and_heights()
-                bar.next()
-        bar.finish()
-        return edgesSets
+#    def add_pyloncosts_and_heights(self, edgesSets):
+#        numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
+#        bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
+#        for edgesSet in edgesSets:
+#            for edge in edgesSet:
+#                edge.add_pyloncost_and_heights()
+#                bar.next()
+#        bar.finish()
+#        return edgesSets
 
-    def build_landcost_grids(self, edgesSets):
+    def build_landcost_samples(self, edgesSets):
         for edgesSet in edgesSets:
             for edge in edgesSet:
-                edge.build_landcost_grid()        
+                edge.build_landcost_samples()        
 
-    def build_pyloncost_grids(self, edgesSets):
+    def build_pylons(self, edgesSets):
         for edgesSet in edgesSets:
             for edge in edgesSet:
-               edge.build_pyloncost_grid()        
-
-    def add_edge_landcosts(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.add_landcost()        
-
-    def add_landcost_colorcodes(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.add_landcost_colorcode()
+               edge.build_pylons()        
 
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)

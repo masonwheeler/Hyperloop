@@ -18,7 +18,7 @@ import config
 import clothoid
 import quintic as quint
 
-
+"""
 def build_waypoints_bcs_sets(sPoints, zPoints, n):    
     numSIntervals = len(sPoints) - 1
     numSets = int(math.ceil(float(numSIntervals) / float(n)))
@@ -166,6 +166,7 @@ def pylon_cost(elevations, pylonSpacing, maxSpeed, gTolerance,
     numberOfPylons = len(fixedHeights)
     pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength   
     return [pylonCostTotal, Heights]
+"""
 
 def build_pylons(pylonLocations):
     pylonLocationsByElevation = sorted(pylonLocations,
@@ -177,17 +178,14 @@ def build_pylons(pylonLocations):
           highestElevation - pylonLocation["elevation"]
     return pylonLocations
         
+def get_pyloncosts(pylonLocations):
+    for pylonLocation in pylonLocations:
+        pylonLocation["pylonCost"] = (config.pylonbaseCost + 
+            pylonLocation["pylonHeight"] * config.pylonCostPerMeter)
+    return pylonLocations
 
-
-
-
-
-
-
-
-
-
-
-
-
+def edge_pyloncost(pylonLocations):
+    edgePylonCost = sum([pylonLocation["pylonCost"] for pylonLocation
+                         in pylonLocations])
+    return edgePylonCost
 

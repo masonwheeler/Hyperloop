@@ -4,7 +4,7 @@ Purpose of Module: To determine the land acquisition cost associated with
                    building the Hyperloop route along a given edge.
 Last Modified: 7/21/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To return pixel values directly
+Last Modification Purpose: To return pixel values directly.
 """
 
 #Standard Modules:
@@ -16,12 +16,13 @@ import config
 import util
 import geotiff
 
-def cost(costDensity):
+def costdensity_to_cost(costDensity):
     length = config.landPointSpacing 
     width = 2.0 * config.landPadding
     area = length * width
     return costDensity * area
 
+"""
 def land_cost(landcostGrid):
     geotiffFilePath = config.cwd + config.geotiffFilePath
     fileHandle = gdal.Open(geotiffFilePath)
@@ -39,6 +40,7 @@ def land_cost(landcostGrid):
         latlng_costDensity = config.costTable[latlngPixelVal]
         edgeLandCost += cost(latlng_costDensity)
     return edgeLandCost
+"""
     
 def landcover_pixelvalues(landcoverLatLngs):
     geotiffFilePath = config.cwd + config.geotiffFilePath
@@ -55,5 +57,11 @@ def landcover_pixelvalues(landcoverLatLngs):
                             for landcoverLatLng in landcoverLatLngs]
     return landcoverPixelValues
         
-        
+def pixelvalues_to_landcost(landcoverPixelValues):
+    landcoverCostDensities = [config.costTable[pixelVal] for pixelVal
+                            in landcoverPixelValues]
+    landcoverCosts = map(costdensity_to_cost, landcoverCostDensities)
+    edgeLandCost = sum(landcoverCost)
+    return edgeLandCost
+    
                 
