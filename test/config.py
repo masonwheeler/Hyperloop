@@ -16,8 +16,8 @@ testingMode = True
 visualMode = False
 verboseMode = False
 timingMode = False
-#hasNlcd = True
-useDropbox = False
+hasNlcd = True
+useDropbox = True
 
 """
 Cache Overwriting Switches.

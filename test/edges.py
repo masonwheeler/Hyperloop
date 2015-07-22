@@ -50,23 +50,23 @@ class Edge:
                                 config.pylonSpacing, startGeospatial)
         pylonLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
                                                         config.proj)
-        #pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)       
-        #attributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
-        attributes = zip(*[pylonGeospatials, pylonLatLngs])
-        #self.pylons = [{"geospatial" : attributes[0],
-        #                        "latlng" : attributes[1],
-        #                        "elevation" : attributes[2],
-        #                        "pylonHeight" : 0,
-        #                        "pylonCost" : 0}
-        #                       for attribute in attributes]         
+        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)       
+        attributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
+        #attributes = zip(*[pylonGeospatials, pylonLatLngs])
         self.pylons = [{"geospatial" : attributes[0],
-                        "latlng" : attributes[1],
-                        "pylonHeight" : 0,
-                        "pylonCost" : 0}
-                       for attribute in attributes]         
-        #pylons.build_pylons(self.pylonLocations)
-        #pylons.get_pyloncosts(self.pylonLocations)
-        #self.pylonCost = pylons.edge_pyloncost(self.pylonLocations)
+                                "latlng" : attributes[1],
+                                "elevation" : attributes[2],
+                                "pylonHeight" : 0,
+                                "pylonCost" : 0}
+                               for attribute in attributes]         
+        #self.pylons = [{"geospatial" : attributes[0],
+        #                "latlng" : attributes[1],
+        #                "pylonHeight" : 0,
+        #                "pylonCost" : 0}
+        #               for attribute in attributes]         
+        pylons.build_pylons(self.pylonLocations)
+        pylons.get_pyloncosts(self.pylonLocations)
+        self.pylonCost = pylons.edge_pyloncost(self.pylonLocations)
 
     def build_landcost_samples(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -74,23 +74,23 @@ class Edge:
                                 config.landPointSpacing, startGeospatial)
         landcoverLatLngs = proj.geospatials_to_latlngs(
                                landcoverGeospatials, config.proj)
-        #landcoverPixelValues = landcover.landcover_pixelvalues(
-        #                                      landcoverLatLngs)
-        #attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
-        #                   landcoverPixelValues])        
-        attributes = zip(*[landcoverGeospatials, landcoverLatLngs])
-        self.landCostSamples = [{"geospatial" : attributes[0],
-                                 "latlng" : attributes[1]}
-                                for attribute in attributes]                 
-        #self.landcostSamples = [{"geospatial" : attributes[0],
-        #                         "latlng" : attributes[1],
-        #                         "pixelValues" : attributes[2]}
+        landcoverPixelValues = landcover.landcover_pixelvalues(
+                                              landcoverLatLngs)
+        attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
+                           landcoverPixelValues])        
+        #attributes = zip(*[landcoverGeospatials, landcoverLatLngs])
+        #self.landCostSamples = [{"geospatial" : attributes[0],
+        #                         "latlng" : attributes[1]}
         #                        for attribute in attributes]                 
-        #if self.isInRightOfWay:
-        #    self.landCost = config.rightOfWayLandCost          
-        #else:
-        #    self.landCost = \
-        #       landcover.pixelvalues_to_landcost(landcoverPixelValues)
+        self.landcostSamples = [{"geospatial" : attributes[0],
+                                 "latlng" : attributes[1],
+                                 "pixelValues" : attributes[2]}
+                                for attribute in attributes]                 
+        if self.isInRightOfWay:
+            self.landCost = config.rightOfWayLandCost          
+        else:
+            self.landCost = \
+               landcover.pixelvalues_to_landcost(landcoverPixelValues)
 
 
 #    def pyloncost_and_heights(self):
@@ -284,7 +284,7 @@ class EdgesSets:
         self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
         self.build_landcost_samples(self.finishedEdgesSets)
         self.build_pylons(self.finishedEdgesSets)
-        flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
+        #flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
         #self.plottableFinishedEdges = [edge.as_plottable() for edge
         #                               in flattenedFinishedEdges]
         #self.finishedEdgesSets = self.add_pyloncosts_and_heights(self.finishedEdgesSets)
