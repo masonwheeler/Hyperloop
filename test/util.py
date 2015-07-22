@@ -96,9 +96,6 @@ def to_pairs(points):
         pairs.append(pair)
     return pairs
 
-def get_indices(inList):
-    return sorted(range(len(inList)), key = lambda k: inList[k], reverse=True)
-
 def fix_inputString(inputString):
     titleString = inputString.title()
     return titleString.replace(" ","_")

@@ -20,7 +20,7 @@ import visualize
 import computev2
 import util
 import proj
-import newlattice
+import lattice
 
 def build_directions(start, end):
     directionsLatLng = directions.get_directions(start, end)
@@ -34,15 +34,15 @@ def build_directions(start, end):
 def build_lattice(directionsPoints):
     t0 = time.time()
     directionsEdges = util.to_pairs(directionsPoints)   
-    sampledPoints = newlattice.sample_edges(directionsEdges,
+    sampledPoints = lattice.sample_edges(directionsEdges,
                              config.directionsSampleSpacing)
-    xSpline, ySpline = newlattice.get_spline(sampledPoints)    
-    splineTValues = newlattice.get_tvalues(len(sampledPoints))
-    splineValues = newlattice.get_splinevalues(xSpline, ySpline, splineTValues)
-    curvature = newlattice.get_curvature(xSpline, ySpline, splineTValues)
-    sliceTValues = newlattice.get_slicetvalues(splineTValues,
+    xSpline, ySpline = lattice.get_spline(sampledPoints)    
+    splineTValues = lattice.get_tvalues(len(sampledPoints))
+    splineValues = lattice.get_splinevalues(xSpline, ySpline, splineTValues)
+    curvature = lattice.get_curvature(xSpline, ySpline, splineTValues)
+    sliceTValues = lattice.get_slicetvalues(splineTValues,
                                   config.splineSampleSpacing)
-    geospatialLattice = newlattice.get_lattice(sliceTValues, sampledPoints,
+    geospatialLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline)    
     t1 = time.time()
     print("Building the Lattice took " + str(t1-t0) + " seconds.")

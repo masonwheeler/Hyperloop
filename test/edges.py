@@ -16,8 +16,8 @@ import util
 import config
 import proj
 import elevation
-import pyloncost
-import landcost
+import pylons
+import landcover
 import cacher
 
 """
@@ -32,7 +32,6 @@ class Edge:
     isInRightOfWay = False
     isUseful = True
     landCost = 0
-    landCostColorCode = 0
     pylonCost = 0
     angle = 0
     length = 0
@@ -41,46 +40,50 @@ class Edge:
     latlngCoords = []
     geospatialCoords = []
     geospatialVector = []
-    pylonGrid = []
-    landcostGrid = []
-    heights = []
+    pylonLocations = []
+    landcoverLocations = []
 
-    def build_pylon_grid(self):
-        startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
-        pylonGeospatialCoords = util.build_grid(self.geospatialVector,
+    def build_pylon_locations(self):
+        startGeospatial, endGeospatial = self.geospatialCoords
+        pylonGeospatials = util.build_grid(self.geospatialVector,
                                 config.pylonSpacing, startGeospatialCoords)
-        pylonGrid = proj.geospatials_to_latlngs(pylonGeospatialCoords,
+        pylonLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
                                                         config.proj)
-        self.pylonGrid = pylonGrid
+        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
+        attributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
+        self.pylonLocations = [{"geospatial" : attributes[0],
+                                "latlng" : attributes[1],
+                                "elevation" : attributes[2],
+                                "pylonHeight" : 0}
+                               for attribute in attributes]         
 
-    def build_landcost_grid(self):
+    def build_landcover_locations(self):
         startGeospatialCoords, endGeospatialCoords = self.geospatialCoords
-        landGeospatialCoords = util.build_grid(self.geospatialVector,
+        landcoverGeospatials = util.build_grid(self.geospatialVector,
                                 config.landPointSpacing, startGeospatialCoords)
-        landcostGrid = proj.geospatials_to_latlngs(
-                               landGeospatialCoords, config.proj)
-        self.landcostGrid = landcostGrid
+        landcoverLatLngs = proj.geospatials_to_latlngs(
+                               landcoverGeospatials, config.proj)
+        landcoverPixelValues = landcover.landcover_pixelvalues(
+                                              landcoverLatLngs)
+        attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
+                           landcoverPixelValues])
+        self.landcoverLocations = [{"geospatial" : attributes[0],
+                                    "latlng" : attributes[1],
+                                    "pixelValues" : attributes[2]}
+                                   for attribute in attributes]                 
 
     def add_landcost(self):
         if self.isInRightOfWay:
-            self.landCost = 0          
+            self.landCost = config.rightOfWayLandCost          
         else:
             self.landCost = landcost.edge_land_cost(self.landcostGrid)
-        #print(self.landCost)
 
     def pyloncost_and_heights(self):
-        self.build_pylon_grid()
-        pylonLatLngCoords = self.pylonGrid
-        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)
         pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
           config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
           config.pylonBaseCost)              
         return [pylonCost, heights]
-
-    def add_pyloncost_and_heights(self):
-        self.pylonCost, self.heights = self.pyloncost_and_heights()
-        print("Pylon cost for edge: " + str(self.pylonCost))
-
+   
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
                                and endPoint["isInRightOfWay"])

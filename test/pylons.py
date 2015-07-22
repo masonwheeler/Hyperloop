@@ -1,7 +1,7 @@
 """
 Original Developer: David Roberts
 Purpose of Module: To determine the pylon cost component of an edge
-Last Modified: 7/18/15
+Last Modified: 7/21/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: To clarify naming and fix formatting.
 """
@@ -17,6 +17,7 @@ import util
 import config
 import clothoid
 import quintic as quint
+
 
 def build_waypoints_bcs_sets(sPoints, zPoints, n):    
     numSIntervals = len(sPoints) - 1
@@ -78,100 +79,115 @@ def build_waypoints_bcs_sets(sPoints, zPoints, n):
     return waypointsBCsSets
 
 def szPointstozVals(sPoints, zPoints, n, sVals):
-    waypointsBCSSets
-
-    zCoeffs = sum([quint.minimum_jerk_interpolation(waypointsBCs) for
-                   waypointsBCs in waypointsBCsSets],[])
+    waypointsBCSSets = build_waypoints_bcs_sets(sPoints, zPoints, n)
+    zCoeffs = [quint.minimum_jerk_interpolation(waypointsBCs) for
+               waypointsBCs in waypointsBCsSets]
     sVals = np.array(sVals)
     sPoints = np.array(sPoints)
     zVals = quint.coeffs_to_vals(zCoeffs, sVals, sPoints)
     return [sVals, zVals]
 
 def szPointstoHeights(sPoints, zPoints, n):
-    numSIntervals = len(sPoints) - 1
-    numSets = int(math.ceil(float(numSIntervals) / float(n)))
-    waypointsBCsSets = [0 for i in range(numSets)]
-    if numWaypointsBCsSets == 1:
-        waypointsBCsSets = [[sPoints, zPoints, 0, 0, 0, 0]]
-    elif numWaypointsBCsSets == 2:
-        waypointsBCsSets[0] = [sPoints[0:n+1],
-                               zPoints[0:n+1],
-                               0,
-                               0,
-                               ((zPoints[n+1] - zPoints[n])/
-                                (sPoints[n+1] - sPoints[n])),
-                               0]
-
-        waypointsBCsSets[1] = [sPoints[n:N+1],
-                               zPoints[n:N+1], 
-                               ((zPoints[n+1]-zPoints[n])/
-                                (sPoints[n+1]-sPoints[n])),
-                               0,
-                               0,
-                               0]
-    else:
-        G[0] = [sPoints[0:n+1],zPoints[0:n+1],0,0, (zPoints[n+1]-zPoints[n])/(sPoints[n+1]-sPoints[n]),0]  
-        for j in range(1,m-1):
-            G[j] = [sPoints[j*n:(j+1)*n+1],zPoints[j*n:(j+1)*n+1], (zPoints[j*n+1]-zPoints[j*n])/(sPoints[j*n+1]-sPoints[j*n]),0,(zPoints[(j+1)*n+1]-zPoints[(j+1)*n])/(sPoints[(j+1)*n+1]-sPoints[(j+1)*n]),0]
-        G[-1] = [sPoints[(m-1)*n:N+1], zPoints[(m-1)*n:N+1],(zPoints[(m-1)*n+1]-zPoints[(m-1)*n])/(sPoints[(m-1)*n+1]-sPoints[(m-1)*n]) ,0,0,0]
-
-    zCoeffs = sum([quint.minimum_jerk_interpolation(g) for g in G],[])
+    waypointsBCSSets = build_waypoints_bcs_sets(sPoints, zPoints, n)
+    zCoeffs = [quint.minimum_jerk_interpolation(waypointsBCs) for
+               waypointsBCs in waypointsBCsSets]
     sSample = np.linspace(0,sPoints[-1],config.numHeights)
     sPoints = np.array(sPoints)
     Heights = quint.coeffs_to_vals(zCoeffs, sSample, sPoints)
     return Heights
 
-def curvature(location1, location2, inList, pylonSpacing):
-    #print("Called curvature with variables:")
-    #print(location1, location2, inList, pylonSpacing)
-    data = clothoid.buildClothoid(location1 * pylonSpacing, 
-      inList[location1], 0, location2 * pylonSpacing, inList[location2], 0)
-    if data[0] < 0:
-        return data[1]
+def curvature(location1, location2, paddedElevations, pylonSpacing):
+    "Computes the curvature of the clothoid"
+    x0 = location1 * pylonSpacing
+    x1 = location2 * pylonSpacing
+    theta0 = 0
+    theta1 = 0
+    y0 = inList[location1]
+    y1 = inList[location2]
+    kappa, kappaPrime, L = clothoid.buildClothoid(x0, y0, theta0,
+                                                  x1, y1, theta1)
+    if kappa < 0:
+        return kappaPrime
     else:
-        return data[0] + data[2] * data[1]
+        return kappa + L * kappaPrime
 
+def reversesort_elevationindices(elevations):
+    elevationsIndices = range(len(elevations))
+    sortedIndices = sorted(elevationsIndices,
+                            key = lambda i: elevations[i], reverse=True)
+    return sortedIndices
 
-def interpolating_indices(inList, pylonSpacing, kTolerance):
-    truncatedList = inList[1 : len(inList) - 1]
-    truncatedSortedIndices = util.get_indices(truncatedList)
-    indices = [0, truncatedSortedIndices[0] + 1, len(inList) - 1]
+def get_relevant_indices(paddedElevations, pylonSpacing, curvatureTolerance):
+    elevations = paddedElevations[1:-1]
+    sortedIndices = reversesort_elevationindices(elevations)    
+    relevantIndices = [0, sortedIndices[1] , len(paddedElevations) - 1]
     i = 1
-    while (curvature(indices[i-1],indices[i],inList,pylonSpacing) < kTolerance
-      and curvature(indices[i],indices[i+1],inList,pylonSpacing) < kTolerance
-      and indices != range(len(inList))):
+    j = 1
+    curvatureA = curvature(relevantIndices[i-1], relevantIndices[i],
+                                paddedElevations, pylonSpacing)
+    curvatureB = curvature(relevantIndices[i], relevantIndices[i+1],
+                               paddedElevations, pylonSpacing)    
+    while (curvatureA < curvatureTolerance
+           and curvatureB < curvatureTolerance
+           and len(relevantIndices) < len(paddedElevations) ):
         k = 0
-        while (truncatedSortedIndices[1] + 1 > indices[k]):
+        while (sortedIndices[j] + 1 > relevantIndices[k]):
             k += 1
+        relevantIndices.insert(k, sortedIndices[j] + 1)
+        j += 1
         i = k
-        indices.insert(k, truncatedSortedIndices[1] + 1)
-        del truncatedSortedIndices[0]
-    return indices
+        backwardCurvature = curvature(relevantIndices[i-1], relevantIndices[i],
+                                      paddedElevations, pylonSpacing)
+        forwardCurvature = curvature(relevantIndices[i], relevantIndices[i+1],
+                                     paddedElevations, pylonSpacing)
+    return relevantIndices
 
-def pylon_cost(rawHeights, pylonSpacing, maxSpeed, gTolerance,
-               costPerPylonLength, pylonBaseCost):
-    t0 = time.time()
-    kTolerance = gTolerance / math.pow(maxSpeed, 2)
-    fixedHeights = [max(rawHeights)] + rawHeights + [max(rawHeights)]
-    indices = interpolating_indices(fixedHeights,pylonSpacing,kTolerance)
-    indicesNum = len(indices)
-    data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
-        fixedHeights[indices[i]], 0, indices[i+1] * pylonSpacing, 
-        fixedHeights[indices[i+1]], 0)
-        for i in range(indicesNum - 1)]
-    kappas, kappaPs, Ls = zip(*data)
-    sVals = [n * pylonSpacing for n in range(len(fixedHeights))]
-    sPoints = [sVals[index] for index in indices]
-    zPoints = [fixedHeights[index] for index in indices]
+def pylon_cost(elevations, pylonSpacing, maxSpeed, gTolerance,
+                costPerPylonLength, pylonBaseCost):
+    curvatureTolerance = accelTolerance / math.pow(maxSpeed, 2)
+    paddedElevations = [max(elevations)] + elevations + [max(elevations)]
+    relevantIndices = get_relevant_indices(paddedElevations, pylonSpacing,
+                                           curvatureTolerance)
+    #numIndices = len(indices)
+    #data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
+    #    fixedHeights[indices[i]], 0, indices[i+1] * pylonSpacing, 
+    #    fixedHeights[indices[i+1]], 0)
+    #    for i in range(numIndices - 1)]
+    #kappas, kappaPs, Ls = zip(*data)
+
+    sVals = [n * pylonSpacing for n in range(len(paddedElevations))]
+    sPoints = [sVals[relevantIndex] for relevantIndex in relevantIndices]
+    zPoints = [paddedElevations[relevantIndex] for relevantIndex
+                                               in relevantIndices]
     sVals, zVals = szPointstozVals(sPoints, zPoints, 5, sVals)
     Heights = szPointstoHeights(sPoints, zPoints, 5)
     pylonHeights = [math.fabs(pylonHeight) for pylonHeight in util.subtract(zVals,fixedHeights)]
     totalLength = sum(pylonHeights)
     numberOfPylons = len(fixedHeights)
     pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength   
-#    print("The total number of pylons used is: " + str(numberOfPylons) + ".")
-#    print("The sum of the lengths of the pylons is: " + str(totalLength) + ".")
     return [pylonCostTotal, Heights]
 
-    
+def build_pylons(pylonLocations):
+    pylonLocationsByElevation = sorted(pylonLocations,
+                             lambda pylonLocation : pylonLocation["elevation"])
+    highestPylonLocation = pylonLocationsByElevation[-1]
+    highestElevation = highestPylonLocation["elevation"]
+    for pylonLocation in pylonLocations:
+        pylonLocation["pylonHeight"] = \
+          highestElevation - pylonLocation["elevation"]
+    return pylonLocations
         
+
+
+
+
+
+
+
+
+
+
+
+
+
+

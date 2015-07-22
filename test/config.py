@@ -71,7 +71,7 @@ landPadding = 30
 Financial Parameters, all costs in dollars.
 """
 
-rightOfWayLandcost = 0
+rightOfWayLandCost = 0
 costPerPylonLength = 10000
 pylonBaseCost = 2000
 padding = 20   #padding (in meters)

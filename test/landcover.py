@@ -2,9 +2,9 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To determine the land acquisition cost associated with
                    building the Hyperloop route along a given edge.
-Last Modified: 7/17/15
+Last Modified: 7/21/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To clarify module usage
+Last Modification Purpose: To return pixel values directly
 """
 
 #Standard Modules:
@@ -22,7 +22,7 @@ def cost(costDensity):
     area = length * width
     return costDensity * area
 
-def edge_land_cost(landcostGrid):
+def land_cost(landcostGrid):
     geotiffFilePath = config.cwd + config.geotiffFilePath
     fileHandle = gdal.Open(geotiffFilePath)
     geoTransform = fileHandle.GetGeoTransform()
@@ -40,8 +40,20 @@ def edge_land_cost(landcostGrid):
         edgeLandCost += cost(latlng_costDensity)
     return edgeLandCost
     
-    
-        
+def landcover_pixelvalues(landcoverLatLngs):
+    geotiffFilePath = config.cwd + config.geotiffFilePath
+    fileHandle = gdal.Open(geotiffFilePath)
+    geoTransform = fileHandle.GetGeoTransform()
+    rasterBand = fileHandle.GetRasterBand(1)
+    spatialReference = osr.SpatialReference()
+    spatialReference.ImportFromWkt(fileHandle.GetProjection())
+    spatialReferenceLatLon = spatialReference.CloneGeogCS()
+    coordTrans = osr.CoordinateTransformation(spatialReferenceLatLon,
+                                              spatialReference)    
+    landcoverPixelValues = [geotiff.pixel_val(coordTrans, geoTransform,
+                            rasterBand, util.swap_pair(landcoverLatLng))
+                            for landcoverLatLng in landcoverLatLngs]
+    return landcoverPixelValues
         
         
                 

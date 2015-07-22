@@ -2,9 +2,9 @@
 Original Developer: David Roberts
 Purpose of Module: To provide an implementation of the clothoid
                    interpolation as described by (Bertolazzi, Frego).
-Last Modified: 7/16/15
+Last Modified: 7/21/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To remove unnecessary comments.
+Last Modification Purpose: To clarify function purposes.
 Citations:
   "Fast and accurate clothoid fitting" (http://arxiv.org/abs/1209.0910)
     - Bertolazzi and Frego
@@ -14,9 +14,10 @@ import math as m
 import numpy as np
 from scipy.integrate import quad
 
-#Computes Fresnel integrals and related momenta:
 
 TOLERANCE = m.pow(10,-10)
+
+#Computes Fresnel integrals and related momenta:
 
 def CosF(t):
     return m.cos((m.pi/2) * m.pow(t,2))
@@ -103,6 +104,7 @@ def evalXY(a, b, c, k):
     return [X, Y]
 
 #Computes minimum-length clothoid:
+
 def findA(AGuess, DeltaTheta, DeltaPhi, tolerance):
     A = AGuess
     I = evalXY(2 * A, DeltaTheta - A, DeltaPhi, 2)
@@ -119,6 +121,10 @@ def normalizeAngle(phi):
     return phi
 
 def buildClothoid(x0, y0, theta0, x1, y1, theta1):
+    """
+    The general parametric form of a clothoid spiral is the following: 
+    
+    """
     Dx = x1 - x0
     Dy = y1 - y0
     r = m.sqrt(m.pow(Dx,2) + m.pow(Dy,2))
