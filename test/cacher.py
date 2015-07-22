@@ -8,6 +8,7 @@ Last Modification Purpose: To clarify naming.
 #Standard Modules:
 import os
 import csv
+import json
 import cPickle as pickle
 
 #Our Modules:
@@ -139,17 +140,21 @@ def save_lattice(latticeObject, slicesName):
 #    return coords
 
 def save_edgessets(edgesSets, edgesName):
-    finishedEdges, plottableEdges = edgesSets
-    flattenedEdges = util.fast_concat(finishedEdges)
-    edgesAttributes = [util.fast_concat(edge.geospatialCoords) +
-                       [edge.landCost] +
-                       [edge.pylonCost]
-                       for edge in flattenedEdges]
-    edgeSavePath = get_object_savepath(edgesName)
-    with open(edgeSavePath + ".csv", 'wb') as edgeHandle:
-        writer = csv.writer(edgeHandle)
-        writer.writerows(edgesAttributes)
-    
+    #finishedEdges, plottableEdges = edgesSets
+    #flattenedEdges = util.fast_concat(finishedEdges)
+    flattenedEdges = util.fast_concat(edgesSets)
+    edgeDicts = [edge.as_dict() for edge in flattenedEdges]
+    #edgesAttributes = [util.fast_concat(edge.geospatialCoords) +
+    #                   [edge.landCost] +
+    #                   [edge.pylonCost]
+    #                   for edge in flattenedEdges]
+    edgesSavePath = get_object_savepath(edgesName)
+    #with open(edgesSavePath + ".csv", 'wb') as edgeHandle:
+    #    writer = csv.writer(edgeHandle)
+    #    writer.writerows(edgesAttributes)
+    with open(edgesSavePath + ".json", 'w') as edgeHandle:
+        json.dump(edgeDicts, edgeHandle)
+
 #def save_edgessets(edgesSets, objectName):
 #    save_edgeslike(edgesSets, objectName, "latlngCoords")
 #    save_edgeslike(edgesSets, objectName, "geospatialCoords")

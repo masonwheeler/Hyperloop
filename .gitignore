@@ -12,4 +12,5 @@
 *.shx
 *.dbf
 *.csv
+*.json
 *.p
