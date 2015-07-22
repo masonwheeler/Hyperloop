@@ -28,7 +28,7 @@ def build_directions(start, end):
     proj.set_projection(startLatLng, endLatLng)
     directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
                                                    config.proj)
-    print(util.get_firstlast(directionsPoints))
+    #print(util.get_firstlast(directionsPoints))
     return directionsPoints
 
 def build_lattice(directionsPoints):

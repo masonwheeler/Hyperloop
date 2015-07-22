@@ -61,7 +61,7 @@ def pixelvalues_to_landcost(landcoverPixelValues):
     landcoverCostDensities = [config.costTable[pixelVal] for pixelVal
                             in landcoverPixelValues]
     landcoverCosts = map(costdensity_to_cost, landcoverCostDensities)
-    edgeLandCost = sum(landcoverCost)
+    edgeLandCost = sum(landcoverCosts)
     return edgeLandCost
     
                 

@@ -170,7 +170,7 @@ def pylon_cost(elevations, pylonSpacing, maxSpeed, gTolerance,
 
 def build_pylons(pylonLocations):
     pylonLocationsByElevation = sorted(pylonLocations,
-                             lambda pylonLocation : pylonLocation["elevation"])
+        key=lambda pylonLocation : pylonLocation["elevation"])
     highestPylonLocation = pylonLocationsByElevation[-1]
     highestElevation = highestPylonLocation["elevation"]
     for pylonLocation in pylonLocations:
@@ -180,7 +180,7 @@ def build_pylons(pylonLocations):
         
 def get_pyloncosts(pylonLocations):
     for pylonLocation in pylonLocations:
-        pylonLocation["pylonCost"] = (config.pylonbaseCost + 
+        pylonLocation["pylonCost"] = (config.pylonBaseCost + 
             pylonLocation["pylonHeight"] * config.pylonCostPerMeter)
     return pylonLocations
 

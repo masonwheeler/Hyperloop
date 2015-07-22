@@ -12,6 +12,7 @@ Citations:
 #Standard Modules:
 import urllib2
 import ast
+import json
 
 #Our Modules:
 import util
@@ -32,7 +33,9 @@ def directions(origin, destination):
     return stringDirections
 
 def string_to_polylines(stringData):
-    dictResponse = ast.literal_eval(stringData) # converts string to dict
+    #print(stringData)
+    #dictResponse = ast.literal_eval(stringData) # converts string to dict
+    dictResponse = json.loads(stringData)
     steps = dictResponse['routes'][0]['legs'][0]['steps']
     polylines = []
     for step in steps :

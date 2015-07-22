@@ -50,12 +50,12 @@ class Edge:
                                 config.pylonSpacing, startGeospatial)
         pylonLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
                                                         config.proj)
-        pylonElevations = elevation.usgs_elevation(pylonLatLngCoords)       
+        pylonElevations = elevation.usgs_elevation(pylonLatLngs)       
         attributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
         #attributes = zip(*[pylonGeospatials, pylonLatLngs])
-        self.pylons = [{"geospatial" : attributes[0],
-                                "latlng" : attributes[1],
-                                "elevation" : attributes[2],
+        self.pylons = [{"geospatial" : attribute[0],
+                                "latlng" : attribute[1],
+                                "elevation" : attribute[2],
                                 "pylonHeight" : 0,
                                 "pylonCost" : 0}
                                for attribute in attributes]         
@@ -64,9 +64,9 @@ class Edge:
         #                "pylonHeight" : 0,
         #                "pylonCost" : 0}
         #               for attribute in attributes]         
-        pylons.build_pylons(self.pylonLocations)
-        pylons.get_pyloncosts(self.pylonLocations)
-        self.pylonCost = pylons.edge_pyloncost(self.pylonLocations)
+        pylons.build_pylons(self.pylons)
+        pylons.get_pyloncosts(self.pylons)
+        self.pylonCost = pylons.edge_pyloncost(self.pylons)        
 
     def build_landcost_samples(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -82,9 +82,9 @@ class Edge:
         #self.landCostSamples = [{"geospatial" : attributes[0],
         #                         "latlng" : attributes[1]}
         #                        for attribute in attributes]                 
-        self.landcostSamples = [{"geospatial" : attributes[0],
-                                 "latlng" : attributes[1],
-                                 "pixelValues" : attributes[2]}
+        self.landcostSamples = [{"geospatial" : attribute[0],
+                                 "latlng" : attribute[1],
+                                 "pixelValues" : attribute[2]}
                                 for attribute in attributes]                 
         if self.isInRightOfWay:
             self.landCost = config.rightOfWayLandCost          
