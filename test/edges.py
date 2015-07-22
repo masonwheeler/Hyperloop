@@ -66,7 +66,8 @@ class Edge:
         #               for attribute in attributes]         
         pylons.build_pylons(self.pylons)
         pylons.get_pyloncosts(self.pylons)
-        self.pylonCost = pylons.edge_pyloncost(self.pylons)        
+        self.pylonCost = pylons.edge_pyloncost(self.pylons)       
+        print(self.pylonCost) 
 
     def build_landcost_samples(self):
         startGeospatial, endGeospatial = self.geospatials

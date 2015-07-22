@@ -19,8 +19,8 @@ import config
 if __name__ == "__main__":   
     config.cwd = os.getcwd()
     if config.testingMode:                
-        core.pair_analysis("Los_Angeles","San_Francisco")
-    #    core.pair_analysis("Dallas","Austin")
+    #    core.pair_analysis("Los_Angeles","San_Francisco")
+        core.pair_analysis("Dallas","Austin")
     #    core.pair_analysis("Portland","San_Francisco")
     else:
         if (len(sys.argv) == 1):
