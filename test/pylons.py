@@ -18,7 +18,7 @@ import config
 import clothoid
 import quintic as quint
 
-"""
+
 def build_waypoints_bcs_sets(sPoints, zPoints, n):    
     numSIntervals = len(sPoints) - 1
     numSets = int(math.ceil(float(numSIntervals) / float(n)))
@@ -142,31 +142,28 @@ def get_relevant_indices(paddedElevations, pylonSpacing, curvatureTolerance):
                                      paddedElevations, pylonSpacing)
     return relevantIndices
 
-def pylon_cost(elevations, pylonSpacing, maxSpeed, gTolerance,
-                costPerPylonLength, pylonBaseCost):
-    curvatureTolerance = accelTolerance / math.pow(maxSpeed, 2)
-    paddedElevations = [max(elevations)] + elevations + [max(elevations)]
-    relevantIndices = get_relevant_indices(paddedElevations, pylonSpacing,
+def build_pylons(pylonLocations):
+    pylonLocationElevations = [pylonLocation["elevation"] for pylonLocation in pylonLocations]
+    curvatureTolerance = config.gTolerance * math.pow(config.maxSpeed, 2)
+    paddedElevations = [max(pylonLocationElevations)] + pylonLocationElevations + [max(pylonLocationElevations)]
+    relevantIndices = get_relevant_indices(paddedElevations, config.pylonSpacing,
                                            curvatureTolerance)
-    #numIndices = len(indices)
-    #data = [clothoid.buildClothoid(indices[i] * pylonSpacing, 
-    #    fixedHeights[indices[i]], 0, indices[i+1] * pylonSpacing, 
-    #    fixedHeights[indices[i+1]], 0)
-    #    for i in range(numIndices - 1)]
-    #kappas, kappaPs, Ls = zip(*data)
 
-    sVals = [n * pylonSpacing for n in range(len(paddedElevations))]
+    sVals = [n * config.pylonSpacing for n in range(len(pylonLocations))]
     sPoints = [sVals[relevantIndex] for relevantIndex in relevantIndices]
     zPoints = [paddedElevations[relevantIndex] for relevantIndex
                                                in relevantIndices]
     sVals, zVals = szPointstozVals(sPoints, zPoints, 5, sVals)
     Heights = szPointstoHeights(sPoints, zPoints, 5)
     pylonHeights = [math.fabs(pylonHeight) for pylonHeight in util.subtract(zVals,fixedHeights)]
-    totalLength = sum(pylonHeights)
-    numberOfPylons = len(fixedHeights)
+    for pylonLocation in pylonLocations:
+        pylonLocation["pylonHeight"] = \
+          highestElevation - pylonLocation["elevation"]
+    return pylonLocations
+
     pylonCostTotal = pylonBaseCost * numberOfPylons + costPerPylonLength * totalLength   
-    return [pylonCostTotal, Heights]
-"""
+    return pylonCostTotal
+
 
 def build_pylons(pylonLocations):
     pylonLocationsByElevation = sorted(pylonLocations,
