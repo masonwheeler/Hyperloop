@@ -143,3 +143,11 @@ def interval_to_value(inputVal, upperboundOutputValPairs, elseVal):
         if inputVal < upperbound:
             return outputVal
     return elseVal
+
+
+def placeIndexinList(index, orderedList_of_integers):
+    k = 0
+    while (index > orderedList_of_integers[k]):   
+         k += 1
+    orderedList_of_integers.insert(k, index) 
+    return k
