@@ -12,15 +12,16 @@ import math
 
 #Our Modules:
 import config
-import directions
-import edges
-import routes
-import cacher
-import visualize
-import computev2
 import util
+import visualize
+import cacher
+
+import directions
 import proj
 import lattice
+import edges
+import graphs
+#import computev2
 
 def build_directions(start, end):
     directionsLatLng = directions.get_directions(start, end)
@@ -28,7 +29,6 @@ def build_directions(start, end):
     proj.set_projection(startLatLng, endLatLng)
     directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
                                                    config.proj)
-    #print(util.get_firstlast(directionsPoints))
     return directionsPoints
 
 def build_lattice(directionsPoints):
@@ -42,27 +42,18 @@ def build_lattice(directionsPoints):
     curvature = lattice.get_curvature(xSpline, ySpline, splineTValues)
     sliceTValues = lattice.get_slicetvalues(splineTValues,
                                   config.splineSampleSpacing)
-    geospatialLattice = lattice.get_lattice(sliceTValues, sampledPoints,
+    newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline)    
+    latticeSlices = newLattice.latticeSlices
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
-    #if config.visualMode:
-    #    visualize.plot_objects([
-    #    [zip(*sampledPoints), 'go', 1,1],
-    #    [splineValues, 'r-', 1, 1],
-    #    [curvature, '-', 2, 1],
-    #    [geospatialLattice.plottableSlices, 'bo', 1, 2],
-    #    [geospatialLattice.plottableSlices, 'b-', 1, 2]
-    #    ])
-    return geospatialLattice
+    return latticeSlices
 
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
 
-def build_routes(geospatialLattice):
-    #finishedEdgesSets, plottableFinishedEdges = edges.get_edgessets(
-    #                                           geospatialLattice.latticeSlices)
-    finishedEdgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)
-    filteredRoutes = routes.get_routes(finishedEdgesSets)
+def build_graphs(latticeSlices):
+    finishedEdgesSets = edges.get_edgessets(latticeSlices)
+    filteredRoutes = graphs.get_graphs(finishedEdgesSets)
     if config.visualMode:
         visualize.plot_colorful_objects(plottableFinishedEdges)    
     
@@ -73,7 +64,7 @@ def pair_analysis(start,end):
     t0 = time.time()
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
-    filteredRoutes = build_routes(latticeSlices)
+    completeGraphs = build_graphs(latticeSlices)
     #fullRoutes = [computev2.route_to_fullRoute(route) for route in filteredRoutes] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")

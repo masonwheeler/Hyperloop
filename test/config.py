@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide a namespace for global configuration variables.
-Last Modified: 7/16/15
+Last Modified: 7/23/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Added Cost Table
+Last Modification Purpose: Changed from routes to graphs
 """
 
 
@@ -24,8 +24,8 @@ Cache Overwriting Switches.
 useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
-useCachedEdges = False
-useCachedRoutes = False
+useCachedEdges = True
+useCachedGraphs = False
 
 """
 Lattice Generation parameters
@@ -38,6 +38,7 @@ splineSampleSpacing = 1000 # (in units of directionsSampleSpacing) i.e.
                            # by directionsSampleSpacing * splineSampleSpacing
 numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
 ndigits = 6 #the number of digits used for rounding
+
 """
 Engineering constraints.
 """
@@ -107,7 +108,7 @@ splineBools = directionsBools + [useCachedSpline]
 latticeBools = splineBools + [useCachedLattice]
 edgesBools = latticeBools + [useCachedEdges]
 
-routesBools = edgesBools + [useCachedRoutes]
+graphsBools = edgesBools + [useCachedGraphs]
 
 """
 Overwriting Flags.
@@ -116,7 +117,7 @@ directionsFlag = all(directionsBools)
 splineFlag = all(splineBools)
 latticeFlag = all(latticeBools)
 edgesFlag = all(edgesBools)
-routesFlag = all(routesBools)
+graphsFlag = all(graphsBools)
 
 """
 Uninitialized Directory Paths.

@@ -2,10 +2,9 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To build edges with associated cost and elevation data
                    from pairs of lattice points.
-Last Modified: 7/21/15
+Last Modified: 7/23/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To add a richer datastructure to store pylon and
-                           landcover data.
+Last Modification Purpose: To remove unnecessary
 """
 
 #Standard Modules:
@@ -42,7 +41,7 @@ class Edge:
     geospatialVector = []
     pylons = []
     landCostSamples = []
-    tubeSamples = []
+    #tubeSamples = []
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -53,19 +52,19 @@ class Edge:
         pylonElevations = elevation.usgs_elevation(pylonLatLngs)       
         pylonAttributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
         self.pylons = [{"geospatial" : pylonAttribute[0],
-                        "latlng" : pylonAttribute[1],
+                       "latlng" : pylonAttribute[1],
                         "elevation" : pylonAttribute[2],
                         "pylonHeight" : 0,
                         "pylonCost" : 0}
                        for pylonAttribute in pylonAttributes]      
 
-        tubeSamplesGeospatials = util.build_grid(self.geospatialVector,
-                                  config.tubeHeightSpacing, startGeospatial)
-        tubeSamplesLatLngs = proj.geospatials_to_latlngs(
-                              tubeSamplesGeospatials, config.proj)
-        tubeSamplesAttributes = [{"geospatial": tubeSampleAttribute[0],
-
-        pylons.build_pylons(self.pylons, self.tubeSamples)
+        #tubeSamplesGeospatials = util.build_grid(self.geospatialVector,
+        #                          config.tubeHeightSpacing, startGeospatial)
+        #tubeSamplesLatLngs = proj.geospatials_to_latlngs(
+        #                      tubeSamplesGeospatials, config.proj)
+        #tubeSamplesAttributes = [{"geospatial": tubeSampleAttribute[0],
+  
+        pylons.build_pylons(self.pylons) #, self.tubeSamples)
         pylons.get_pyloncosts(self.pylons)        
         self.pylonCost = pylons.edge_pyloncost(self.pylons)       
 

@@ -9,7 +9,7 @@ Last Modification Purpose: To clarify naming.
 
 import math
 import numpy as np
-import genVelocity as gen
+import velocityprofile 
 import spatInterp as spat
 import reParametrize as param
 import config
@@ -56,7 +56,7 @@ def chunks(l, n):
 
 def route_to_fullRoute(route):
    xPoints = route.xyCoords
-   sPoints, vPoints = gen.xPointstovPoints(xPoints)
+   sPoints, vPoints = velocityprofile.xPointstovPoints(xPoints)
    vFunc = gen.vPointstovFunc(sPoints, vPoints)
    tPoints = np.arange(10,200.000001,(200-10.)/(len(xPoints)-1))
    xVals = np.transpose(spat.txPointstoxyVals(tPoints, xPoints, 7))
