@@ -45,7 +45,7 @@ def build_lattice(directionsPoints):
     geospatialLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline)    
     t1 = time.time()
-    print("Building the Lattice took " + str(t1-t0) + " seconds.")
+    print("Building the lattice took " + str(t1-t0) + " seconds.")
     #if config.visualMode:
     #    visualize.plot_objects([
     #    [zip(*sampledPoints), 'go', 1,1],
@@ -62,7 +62,7 @@ def build_routes(geospatialLattice):
     #finishedEdgesSets, plottableFinishedEdges = edges.get_edgessets(
     #                                           geospatialLattice.latticeSlices)
     finishedEdgesSets = edges.get_edgessets(geospatialLattice.latticeSlices)
-    #filteredRoutes = routes.get_routes(finishedEdgesSets)
+    filteredRoutes = routes.get_routes(finishedEdgesSets)
     if config.visualMode:
         visualize.plot_colorful_objects(plottableFinishedEdges)    
     
@@ -74,22 +74,6 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     filteredRoutes = build_routes(latticeSlices)
-    """for i in range(10):
-       io.export(routes[i].xyCoords,'route'+str(i))
-    print "Computing comfort and triptime..."
-    n = 0
-    for i in range(10):
-       n += 1
-       print "Attaching comfort and triptime to "+ str(n) + "th route..."
-       routes[i].comfort, routes[i].tripTime, routes[i].plotTimes, routes[i].points, routes[i].vel_points, routes[i].accel_points = compute.fetch_Interpolation_Data(routes[i].xyCoords, 5)
-    for i in range(10):
-       io.export(routes[i].points,'route'+str(i)+'points')
-       print routes[i].points
-       io.export(zip(routes[i].plotTimes,routes[i].vel_points),'route'+str(i)+'vel_points')
-       print zip(routes[i].plotTimes,routes[i].vel_points)
-       io.export(zip(routes[i].plotTimes,routes[i].accel_points),'route'+str(i)+'accel_points')
-       print zip(routes[i].plotTimes,routes[i].accel_points)
-       io.export(zip([0]*len(routes[i].comfort),routes[i].comfort),'route'+str(i)+'comfort')"""
     #fullRoutes = [computev2.route_to_fullRoute(route) for route in filteredRoutes] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")

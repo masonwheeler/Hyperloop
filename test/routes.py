@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To generate routes from the lattice edges.
-Last Modified: 7/16/16
+Last Modified: 7/22/16
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To connect the curvature information.
+Last Modification Purpose: To make compatible with edge changes
 """
 
 import random
@@ -16,12 +16,22 @@ import cacher
 
 # xPointstovPoints(): 
 # Outputs a discrete velocity profile {v_i} given a discrete route {x_i}.
-# The velocity profile v is a rolling average of the maximum speed allowed by a .3g radial acceleration constraint:
+# The velocity profile v is a rolling average of the maximum speed allowed
+# by a .3g radial acceleration constraint:
 #       v_i = (1/2k) * sum_{i-k <j< i+k} sqrt(.3g * r_j).
 # where r_j is the radius of the circle through {x_{j-1},x_j, x_{j+1}}.
 
 def xPointstovPoints(x):
-    v = [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(2-1,2+2)])] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(i-2,i+3)]) for i in range(3,-4)] + [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330) for j in range(-3-1,-3+2)])] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)] + [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)]
+    v = [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + \
+        [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] +
+        [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330)
+         for j in range(2-1,2+2)])] + \
+        [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330)
+         for j in range(i-2,i+3)]) for i in range(3,-4)] + \
+        [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330)
+         for j in range(-3-1,-3+2)])] +
+        [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)] + \
+        [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)]
     return v
 
 # vPointsto_triptime(): 
@@ -50,28 +60,30 @@ class Route:
     endAngle = 0
     startId = 0
     endId = 0
-    geospatialCoords = []
+    geospatials = []
+    latlngs = []
+    pylons = []
     heights = [[]]
 
     def __init__(self, pylonCost, landCost, startId, endId, startAngle,
-                 endAngle, latlngCoords, geospatialCoords, heights):
+                 endAngle, latlngs, geospatials, heights):
         self.pylonCost = pylonCost
         self.landCost = landCost
         self.startId = startId
         self.endId = endId
         self.startAngle = startAngle
         self.endAngle = endAngle
-        self.latlngCoords = latlngCoords
-        self.geospatialCoords = geospatialCoords
+        self.latlngs = latlngs
+        self.geospatials = geospatials
         self.heights = heights
 
     def to_plottable(self):
-        return zip(*self.geospatialCoords)
+        return zip(*self.geospatials)
 
     def display(self):     
-        print("The route cost is: " + str(self.cost) + ".")
-        print("The route start angle is: " + str(self.startAngle) + ".")        
-        print("The route end angle is: " + str(self.endAngle) + ".")
+        print("This routes's land cost is: " + str(self.landcost) + ".")
+        print("This route's start angle is: " + str(self.startAngle) + ".")        
+        print("This route's end angle is: " + str(self.endAngle) + ".")
 
 
 def is_route_pair_compatible(routeA, routeB):
@@ -89,12 +101,12 @@ def merge_two_routes(routeA,routeB):
     startAngle = routeA.startAngle
     endId = routeB.endId
     endAngle = routeB.endAngle
-    latlngCoords = util.smart_concat(routeA.latlngCoords, routeB.latlngCoords)
-    geospatialCoords = util.smart_concat(routeA.geospatialCoords,
-                                         routeB.geospatialCoords)
-    newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
-                     latlngCoords, geospatialCoords, heights)
-    return newRoute
+    latlngs = util.smart_concat(routeA.latlngs, routeB.latlngs)
+    geospatials = util.smart_concat(routeA.geospatials,
+                                    routeB.geospatials)
+    mergedRoute = Route(pylonCost, landCost, startId, endId, startAngle,
+                        endAngle, latlngs, geospatials, heights)
+    return mergedRoute
 
 def edge_to_route(edge):
     pylonCost = edge.pylonCost
@@ -102,8 +114,8 @@ def edge_to_route(edge):
     startId = edge.startId
     endId = edge.endId
     startAngle = endAngle = edge.angle
-    latlngCoords = edge.latlngCoords
-    geospatialCoords = edge.geospatialCoords
+    latlngs = edge.latlngs
+    geospatials = edge.geospatials
     heights = [edge.heights]
     newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
                      latlngCoords, geospatialCoords, heights)
