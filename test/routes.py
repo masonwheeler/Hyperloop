@@ -45,14 +45,6 @@ def vPointsto_triptime(v, x):
     s = [np.linalg.norm(x[i+1]-x[i]) for i in range(-1)]
     return sum([s[i]/v[i] for i in range(len(s))])
 
-
-
-def variation(route):
-    
-    route
-
-
-
 class Route:
     pylonCost = 0
     landCost = 0
