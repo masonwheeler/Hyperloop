@@ -23,13 +23,13 @@ import cacher
 
 def xPointstovPoints(x):
     v = [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + \
-        [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] +
+        [min(np.sqrt(9.81*.3*gen.points_to_radius(x[0:3])),330)] + \
         [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330)
          for j in range(2-1,2+2)])] + \
         [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330)
          for j in range(i-2,i+3)]) for i in range(3,-4)] + \
         [gen.mean([min(np.sqrt(9.81*.3*gen.points_to_radius(x[j-1:j+2])),330)
-         for j in range(-3-1,-3+2)])] +
+         for j in range(-3-1,-3+2)])] + \
         [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)] + \
         [min(np.sqrt(9.81*.3*gen.points_to_radius(x[-3:len(x)])),330)]
     return v
