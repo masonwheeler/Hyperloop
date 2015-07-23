@@ -42,6 +42,7 @@ class Edge:
     geospatialVector = []
     pylons = []
     landCostSamples = []
+    tubeSamples = []
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -50,23 +51,23 @@ class Edge:
         pylonLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
                                                         config.proj)
         pylonElevations = elevation.usgs_elevation(pylonLatLngs)       
-        attributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
-        #attributes = zip(*[pylonGeospatials, pylonLatLngs])
-        self.pylons = [{"geospatial" : attribute[0],
-                                "latlng" : attribute[1],
-                                "elevation" : attribute[2],
-                                "pylonHeight" : 0,
-                                "pylonCost" : 0}
-                               for attribute in attributes]         
-        #self.pylons = [{"geospatial" : attributes[0],
-        #                "latlng" : attributes[1],
-        #                "pylonHeight" : 0,
-        #                "pylonCost" : 0}
-        #               for attribute in attributes]         
-        pylons.build_pylons(self.pylons)
-        pylons.get_pyloncosts(self.pylons)
+        pylonAttributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
+        self.pylons = [{"geospatial" : pylonAttribute[0],
+                        "latlng" : pylonAttribute[1],
+                        "elevation" : pylonAttribute[2],
+                        "pylonHeight" : 0,
+                        "pylonCost" : 0}
+                       for pylonAttribute in pylonAttributes]      
+
+        tubeSamplesGeospatials = util.build_grid(self.geospatialVector,
+                                  config.tubeHeightSpacing, startGeospatial)
+        tubeSamplesLatLngs = proj.geospatials_to_latlngs(
+                              tubeSamplesGeospatials, config.proj)
+        tubeSamplesAttributes = [{"geospatial": tubeSampleAttribute[0],
+
+        pylons.build_pylons(self.pylons, self.tubeSamples)
+        pylons.get_pyloncosts(self.pylons)        
         self.pylonCost = pylons.edge_pyloncost(self.pylons)       
-        print(self.pylonCost) 
 
     def build_landcost_samples(self):
         startGeospatial, endGeospatial = self.geospatials

@@ -48,17 +48,17 @@ def vPointsto_triptime(v, x):
 class Route:
     pylonCost = 0
     landCost = 0
-    startAngle = 0
-    endAngle = 0
     startId = 0
     endId = 0
-    geospatials = []
+    startAngle = 0
+    endAngle = 0
     latlngs = []
+    geospatials = []
     pylons = []
-    heights = [[]]
+    tubeHeights = []
 
     def __init__(self, pylonCost, landCost, startId, endId, startAngle,
-                 endAngle, latlngs, geospatials, heights):
+                 endAngle, latlngs, geospatials, pylons, tubeHeights):
         self.pylonCost = pylonCost
         self.landCost = landCost
         self.startId = startId
@@ -67,7 +67,8 @@ class Route:
         self.endAngle = endAngle
         self.latlngs = latlngs
         self.geospatials = geospatials
-        self.heights = heights
+        self.pylons = pylons
+        self.tubeHeights = tubeHeights
 
     def to_plottable(self):
         return zip(*self.geospatials)
@@ -88,16 +89,15 @@ def merge_two_routes(routeA,routeB):
     pylonCost = routeA.pylonCost + routeB.pylonCost
     landCost = routeA.landCost + routeB.landCost
     startId = routeA.startId
-    heights = routeA.heights + routeB.heights
-    startId = routeA.startId
+    endId = routeA.endId
     startAngle = routeA.startAngle
-    endId = routeB.endId
     endAngle = routeB.endAngle
     latlngs = util.smart_concat(routeA.latlngs, routeB.latlngs)
-    geospatials = util.smart_concat(routeA.geospatials,
-                                    routeB.geospatials)
+    geospatials = util.smart_concat(routeA.geospatials, routeB.geospatials)
+    pylons = util.smart_concat(routeA.pylons, routeB.pylons)
+    tubeHeights = util.smart_concat(routeA.tubeHeights, routeB.tubeHeights)
     mergedRoute = Route(pylonCost, landCost, startId, endId, startAngle,
-                        endAngle, latlngs, geospatials, heights)
+                        endAngle, latlngs, geospatials, pylons, tubeHeights)
     return mergedRoute
 
 def edge_to_route(edge):
@@ -108,9 +108,10 @@ def edge_to_route(edge):
     startAngle = endAngle = edge.angle
     latlngs = edge.latlngs
     geospatials = edge.geospatials
-    heights = [edge.heights]
+    pylons = edge.pylons
+    tubeHeights = edge.tubeHeights
     newRoute = Route(pylonCost, landCost, startId, endId, startAngle, endAngle,
-                     latlngCoords, geospatialCoords, heights)
+                     latlngCoords, geospatialCoords, pylons, tubeHeights)
     return newRoute
 
 def edgesset_to_routesset(edgesSet):
@@ -126,15 +127,20 @@ def sample_routes(merged):
     print len(merged[0].geospatialCoords)
     print n
     if n > 3:
-       velocityProfiles = [xPointstovPoints(route.geospatialCoords) for route in merged]
-       variations = [sum([np.absolute(v[i+1]-v[i]) for i in range(-1)]) for v in velocityProfiles]
-       triptimes = [vPointsto_triptime(velocityProfiles[i], merged[i].geospatialCoords) for i in range(len(merged))]
+       velocityProfiles = [xPointstovPoints(route.geospatials)
+                           for route in merged]
+       variations = [sum([np.absolute(v[i+1] - v[i]) for i in range(len(v)-1)])
+                     for v in velocityProfiles]
+       triptimes = [vPointsto_triptime(velocityProfiles[i],
+                    merged[i].geospatialCoords) for i in range(len(merged))]
        costs = [route.landCost+route.pylonCost for route in merged]
-       merged = filter(merged, lambda route: variations[merged.index(route)] < 9.81 * .1 * 2**n)
-       merged.sort(key = lambda route: (route.landCost+route.pylonCost) * triptimes[merged.index(route)])
+       merged = filter(merged, lambda route:
+                       variations[merged.index(route)] < 9.81 * .1 * 2**n)
+       merged.sort(key = lambda route:
+         (route.landCost + route.pylonCost) * triptimes[merged.index(route)])
        selected = merged[:config.numPaths[n-1]]
     else:
-       merged.sort(key = lambda route: route.landCost+route.pylonCost)
+       merged.sort(key = lambda route: route.landCost + route.pylonCost)
        selected = merged[:config.numPaths[n-1]]
     return selected
 
