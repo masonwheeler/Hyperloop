@@ -97,12 +97,12 @@ def merge_two_graphssets(graphsSetA, graphsSetB):
 
 
 def recursivemerge_graphssets(graphsSets):
-    layers = [routesSets]
+    layers = [graphsSets]
     layersIndex = 0
     workingLayerIndex = 0
 
     numLayers = 1
-    workingLayerSize = len(routesSets)
+    workingLayerSize = len(graphsSets)
     breakFlag = False
     
     while (numLayers != 1 or workingLayerSize != 1):

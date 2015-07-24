@@ -125,58 +125,20 @@ def save_listlike(listObject, listName):
 
 def save_directions(directionsObject, directionsName):
     pass
-    #directions, totalDistance = directionsObject
-    #save_listlike(directions, directionsName) 
 
 def save_spline(splineObject, splineName):
     pass
 
-def save_lattice(latticeObject, slicesName):
+def save_lattice(latticeObject, latticeName):
     pass
 
-#def get_edgecoords(edge, coordsType):
-#    coordsPair = eval(".".join(["edge", coordsType]))
-#    coords = util.fast_concat(coordsPair)
-#    return coords
+def save_graphs(graphsObject, graphsName):
+    pass
 
 def save_edgessets(edgesSets, edgesName):
-    #finishedEdges, plottableEdges = edgesSets
-    #flattenedEdges = util.fast_concat(finishedEdges)
     flattenedEdges = util.fast_concat(edgesSets)
     edgeDicts = [edge.as_dict() for edge in flattenedEdges]
-    #edgesAttributes = [util.fast_concat(edge.geospatialCoords) +
-    #                   [edge.landCost] +
-    #                   [edge.pylonCost]
-    #                   for edge in flattenedEdges]
     edgesSavePath = get_object_savepath(edgesName)
-    #with open(edgesSavePath + ".csv", 'wb') as edgeHandle:
-    #    writer = csv.writer(edgeHandle)
-    #    writer.writerows(edgesAttributes)
     with open(edgesSavePath + ".json", 'w') as edgeHandle:
         json.dump(edgeDicts, edgeHandle)
 
-#def save_edgessets(edgesSets, objectName):
-#    save_edgeslike(edgesSets, objectName, "latlngCoords")
-#    save_edgeslike(edgesSets, objectName, "geospatialCoords")
-
-#def save_routes(routes, objectName):
-#    index = 1
-#    for route in routes:
-#        routeName = 'routes/route' + str(index).zfill(4)
-#        save_listlike(route.xyCoords, routeName + 'XYCoords')
-#        save_listlike(route.latlngCoords, routeName + 'LatLngCoords')
-#        index += 1
-"""
-def get_pointcoords(point, coordsType):
-    coords = eval(".".join(["point", coordsType]))
-    return coords
-
-def save_latticelike(inLattice, latticeName, coordsType):
-    flatLattice = util.fast_concat(inLattice)
-    latticeCoords = [get_pointcoords(point,coordsType) for point in flatLattice]
-    latticeSavePath = "_".join([get_object_savepath(latticeName),coordsType])
-    with open(latticeSavePath + '.csv', 'wb') as latticeHandle:
-        writer = csv.writer(latticeHandle)
-        writer.writerows(latticeCoords)        
-    
-"""
