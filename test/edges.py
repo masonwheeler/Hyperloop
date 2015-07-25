@@ -41,7 +41,6 @@ class Edge:
     geospatialVector = []
     pylons = []
     landCostSamples = []
-    #tubeSamples = []
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -58,13 +57,7 @@ class Edge:
                         "pylonCost" : 0}
                        for pylonAttribute in pylonAttributes]      
 
-        #tubeSamplesGeospatials = util.build_grid(self.geospatialVector,
-        #                          config.tubeHeightSpacing, startGeospatial)
-        #tubeSamplesLatLngs = proj.geospatials_to_latlngs(
-        #                      tubeSamplesGeospatials, config.proj)
-        #tubeSamplesAttributes = [{"geospatial": tubeSampleAttribute[0],
-  
-        pylons.build_pylons(self.pylons) #, self.tubeSamples)
+        pylons.build_pylons(self.pylons)
         pylons.get_pyloncosts(self.pylons)        
         self.pylonCost = pylons.edge_pyloncost(self.pylons)       
 
@@ -78,10 +71,6 @@ class Edge:
                                               landcoverLatLngs)
         attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
                            landcoverPixelValues])        
-        #attributes = zip(*[landcoverGeospatials, landcoverLatLngs])
-        #self.landCostSamples = [{"geospatial" : attributes[0],
-        #                         "latlng" : attributes[1]}
-        #                        for attribute in attributes]                 
         self.landcostSamples = [{"geospatial" : attribute[0],
                                  "latlng" : attribute[1],
                                  "pixelValues" : attribute[2]}
@@ -92,13 +81,6 @@ class Edge:
             self.landCost = \
                landcover.pixelvalues_to_landcost(landcoverPixelValues)
 
-
-#    def pyloncost_and_heights(self):
-#        pylonCost, heights = pyloncost.pylon_cost(pylonElevations, config.pylonSpacing,
-#          config.maxSpeed, config.gTolerance, config.costPerPylonLength, 
-#          config.pylonBaseCost)              
-#        return [pylonCost, heights]
-   
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
                                and endPoint["isInRightOfWay"])
@@ -114,10 +96,6 @@ class Edge:
         self.endId = endPoint["pointId"]
         self.angle = math.degrees(math.atan2(endYVal - startYVal,
                                              endXVal - startXVal))
-#    def as_plottable(self):
-#        plottableEdge = zip(*self.geospatialCoords)
-#        return [plottableEdge, self.landCostColorCode]
-
     def as_dict(self):
         edgeDict = {"geospatials" : self.geospatials,
                     "latlngs" : self.latlngs,
@@ -134,28 +112,10 @@ class Edge:
         print("The edge's xy coords are: " + str(self.geospatialCoords) + ".")
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
-
-#    def add_landcost_colorcode(self):
-#        landcostColorCodes = [[1000000, 'r-'], #least expensive
-#                              [2000000, 'm-'],
-#                              [3000000, 'y-'],
-#                              [5000000, 'g-'],
-#                              [10000000, 'b-']]                              
-#        overflowCode = 'k-'                    #most expensive
-#        colorCode = util.interval_to_value(self.landCost,
-#                             landcostColorCodes, overflowCode)
-#        print(colorCode)
-#        self.landCostColorCode = colorCode
-
-
 class EdgesSets:
     baseEdgesSets = []
     filteredEdgesSetsList = []
     finishedEdgesSets = []
-    #plottableBaseEdges = []
-    #plottableFilteredEdges = []
-    #plottableFinishedEdges = []
-   
     
     def base_edgessets(self,lattice):
         edgesSets = []
@@ -234,8 +194,6 @@ class EdgesSets:
         newNumEdges = len(flattenedFilteredEdges)
 
         while newNumEdges != oldNumEdges:          
-            #self.plottableFilteredEdges.append([edge.as_plottable()
-            #                              for edge in flattenedFilteredEdges])        
             util.smart_print("The number of edges is now: " + str(newNumEdges))
             self.determine_useful_edges(
                             self.filteredEdgesSetsList[filteredEdgesIndex])
@@ -248,23 +206,7 @@ class EdgesSets:
             flattenedFilteredEdges = util.fast_concat(
                                 self.filteredEdgesSetsList[filteredEdgesIndex])
             oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
-        
-#    def add_costs(self):
-#        for edgesSet in self.baseEdgesSets:
-#            for edge in edgesSet:
-#                edge.add_cost()
-#        return edgesSets
-
-#    def add_pyloncosts_and_heights(self, edgesSets):
-#        numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
-#        bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
-#        for edgesSet in edgesSets:
-#            for edge in edgesSet:
-#                edge.add_pyloncost_and_heights()
-#                bar.next()
-#        bar.finish()
-#        return edgesSets
-
+    
     def build_landcost_samples(self, edgesSets):
         for edgesSet in edgesSets:
             for edge in edgesSet:
@@ -278,34 +220,19 @@ class EdgesSets:
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
         flattenedBaseEdges = util.fast_concat(self.baseEdgesSets)
-        #self.plottableBaseEdges = [edge.as_plottable()
-        #                           for edge in flattenedBaseEdges]
         self.iterative_filter()
         self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
         self.build_landcost_samples(self.finishedEdgesSets)
         self.build_pylons(self.finishedEdgesSets)
-        #flattenedFinishedEdges = util.fast_concat(self.finishedEdgesSets)
-        #self.plottableFinishedEdges = [edge.as_plottable() for edge
-        #                               in flattenedFinishedEdges]
-        #self.finishedEdgesSets = self.add_pyloncosts_and_heights(self.finishedEdgesSets)
-        #numEdges = sum([len(edgeSet) for edgeSet in edgesSets])
-        #bar = SlowBar('computing construction cost of edge-set...', max=numEdges, width = 50)
-        #for edgesSet in edgesSets:
-        #   for edge in edgesSet:
-        #      edge.add_costAndHeight()
-        #      bar.next()
-        #bar.finish()
 
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
     finishedEdgesSets = edgesSets.finishedEdgesSets
-    #plottableFinishedEdges = edgesSets.plottableFinishedEdges
-    return finishedEdgesSets #[finishedEdgesSets, plottableFinishedEdges]
+    return finishedEdgesSets
 
 def get_edgessets(lattice):    
-    #finishedEdgesSets, plottableFinishedEdges = cacher.get_object("edgessets",
     finishedEdgesSets = cacher.get_object("edgessets", build_edgessets,
                         [lattice], cacher.save_edgessets, config.edgesFlag)
-    return finishedEdgesSets #[finishedEdgesSets, plottableFinishedEdges]
+    return finishedEdgesSets
 

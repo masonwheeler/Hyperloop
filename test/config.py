@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = False
 timingMode = False
 useDropbox = False
@@ -25,7 +25,7 @@ useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
-useCachedGraphs = False
+useCachedGraphs = True
 
 """
 Lattice Generation parameters
@@ -36,8 +36,13 @@ degreeConstraint = 30 #the angular constraint between subsequent edges
 splineSampleSpacing = 1000 # (in units of directionsSampleSpacing) i.e.
                            # spacing between spline points in meters is given
                            # by directionsSampleSpacing * splineSampleSpacing
-numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
 ndigits = 6 #the number of digits used for rounding
+
+"""
+Graph Generation parameters
+"""
+numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
+graphSampleSize = 10
 
 """
 Engineering constraints.
@@ -59,7 +64,8 @@ landPointSpacing = 30.0 #spacing between points for land cost sampling in meters
 """
 Comfort parameters.
 """
-gTolerance = 0.5 * 9.8
+gTolerance = 0.5 * 9.81
+lateralAccel = 0.3 * 9.81
 
 """
 Legal Parameters
@@ -135,6 +141,7 @@ Unitialized Global variables.
 
 proj = 0
 directionsCoords = 0
+plotQueue = []
 
 
 ########## API-Specific and System-Specific Settings ##########

@@ -16,7 +16,7 @@ def mean(List):
     return sum(List)/len(List)
 
 def points_to_radius(threePoints):
-    print threePoints
+    #print("three points: " + str(threePoints))
     p1, p2, p3 = threePoints
     a = np.linalg.norm(np.subtract(p1, p2))
     b = np.linalg.norm(np.subtract(p2, p3))
@@ -33,21 +33,12 @@ def xPointstovPoints(xPoints):
     for i in range(0, len(xPoints)-1):
         sPoints[i+1] = sPoints[i] + np.linalg.norm(xPoints[i+1] - xPoints[i])
 
-    vPoints = [0, 200, 300] + [mean([min(math.sqrt(9.81*.3*pointstoRadius(xPoints[j:j+3])),330) for j in range(i-2,i+3)]) for i in range(3,len(xPoints)-4)] +  [320, 300, 200, 0]
+    vPoints = [0, 200, 300] + \
+              [mean([min(math.sqrt(9.81*.3*pointstoRadius(xPoints[j:j+3])),330)
+               for j in range(i-2,i+3)]) for i in range(3,len(xPoints)-4)] + \
+              [320, 300, 200, 0]
     return [sPoints, vPoints]
 
 def vPointstovFunc(sPoints,vPoints):
   return interp1d(sPoints, vPoints, kind='cubic')
-
-#xPoints = np.genfromtxt('/Users/Droberts/Dropbox/The Hyperloop/keys/route0.csv', delimiter=",")
-#sPoints, vPoints = xPointstovPoints(xPoints)
-#vFunc = vPointstovFunc(sPoints, vPoints)
-
-#sVals = np.arange(0, sPoints[-1], 10)
-#vVals = vFunc(sVals)
-#plt.plot(sPoints, vPoints, 'o', sVals, vVals, '-')
-#plt.show()
-
-
-
 

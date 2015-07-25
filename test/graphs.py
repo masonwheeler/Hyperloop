@@ -9,7 +9,8 @@ Last Modification Purpose: Rolled back edge modifications
 import config
 import util
 import cacher
-import sample_graphs as sample
+import sample_graphs
+import visualize
 
 class Graph:
     pylonCost = 0
@@ -32,13 +33,13 @@ class Graph:
         self.latlngs = latlngs
         self.geospatials = geospatials
 
-    def to_plottable(self):
-        return zip(*self.geospatials)
+    def to_plottable(self, style):
+        plottableGraph = [zip(*self.geospatials), style]
+        return plottableGraph
 
     def display(self):     
         print("This graph's land cost is: " + str(self.landcost) + ".")
-        print("This graph's start angle is: " + str(self.startAngle) + ".")        
-        print("This graph's end angle is: " + str(self.endAngle) + ".")
+        print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
 
 
 def is_graph_pair_compatible(graphA, graphB):
@@ -51,7 +52,7 @@ def merge_two_graphs(graphA, graphB):
     pylonCost = graphA.pylonCost + graphB.pylonCost
     landCost = graphA.landCost + graphB.landCost
     startId = graphA.startId
-    endId = graphA.endId
+    endId = graphB.endId
     startAngle = graphA.startAngle
     endAngle = graphB.endAngle
     latlngs = util.smart_concat(graphA.latlngs, graphB.latlngs)
@@ -85,14 +86,18 @@ def merge_two_graphssets(graphsSetA, graphsSetB):
             if is_graph_pair_compatible(graphA, graphB):            
                 merged.append(merge_two_graphs(graphA, graphB))
     if (merged == []):
-        print(len(graphsSetA))
+        print("Graphs Set A Length:" + str(len(graphsSetA)))
+        print("Graphs Set B Length:" + str(len(graphsSetB)))
+        print("Potential Angle Pairs:")
         for graphA in graphsSetA:
-          print(graphA.endId, graphA.geospatials)
-        print(len(graphsSetB))    
-        for graphB in graphsSetB:
-          print(graphB.startId, graphB.geospatialCoords)
+            for graphB in graphsSetB:
+                print(graphA.endId, graphB.startId)
+        plottableA = [graphA.to_plottable('k-') for graphA in graphsSetA]            
+        plottableB = [graphB.to_plottable('r-') for graphB in graphsSetB]
+        failedMergeResults = plottableA + plottableB        
+        visualize.plot_objects(failedMergeResults)
         raise ValueError('No compatible graphs in graphsets pair.')        
-    sampledGraphs = sample.sample_graphs(merged)
+    sampledGraphs = sample_graphs.variation_constrained(merged)
     return sampledGraphs
 
 
@@ -126,16 +131,16 @@ def recursivemerge_graphssets(graphsSets):
             if (numLayers - layersIndex == 1):
                 layers.append([])
                 numLayers += 1
-            routesSetA = layers[layersIndex][workingLayerIndex]
-            routesSetB = layers[layersIndex][workingLayerIndex + 1]
-            merged = merge_two_routessets(routesSetA,routesSetB)
+            graphsSetA = layers[layersIndex][workingLayerIndex]
+            graphsSetB = layers[layersIndex][workingLayerIndex + 1]
+            merged = merge_two_graphssets(graphsSetA, graphsSetB)
             layers[layersIndex+1].append(merged)                
             workingLayerIndex += 2
         if breakFlag:
             break
 
-    filteredRoutes = layers[layersIndex][0]  
-    return filteredRoutes
+    completeGraphs = layers[layersIndex][0]  
+    return completeGraphs
 
 def build_graphs(edgessets):
     graphsSets = edgessets_to_graphssets(edgessets)
