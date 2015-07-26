@@ -25,7 +25,7 @@ useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
-useCachedGraphs = True
+useCachedGraphs = False
 
 """
 Lattice Generation parameters

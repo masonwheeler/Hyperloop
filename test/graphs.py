@@ -21,9 +21,10 @@ class Graph:
     endAngle = 0
     latlngs = []
     geospatials = []
+    angleDifferences = []
 
     def __init__(self, pylonCost, landCost, startId, endId, startAngle,
-                 endAngle, latlngs, geospatials):
+                 endAngle, latlngs, geospatials, angleDifferences):
         self.pylonCost = pylonCost
         self.landCost = landCost
         self.startId = startId
@@ -32,11 +33,12 @@ class Graph:
         self.endAngle = endAngle
         self.latlngs = latlngs
         self.geospatials = geospatials
+        self.angleDifferences = angleDifferences
 
     def to_plottable(self, style):
         plottableGraph = [zip(*self.geospatials), style]
         return plottableGraph
-
+        
     def display(self):     
         print("This graph's land cost is: " + str(self.landcost) + ".")
         print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
@@ -55,10 +57,13 @@ def merge_two_graphs(graphA, graphB):
     endId = graphB.endId
     startAngle = graphA.startAngle
     endAngle = graphB.endAngle
+    newAngleDifference = abs(startAngle - endAngle)
+    angleDifferences = graphA.angleDifferences + [newAngleDifference] + \
+                       graphB.angleDifferences
     latlngs = util.smart_concat(graphA.latlngs, graphB.latlngs)
     geospatials = util.smart_concat(graphA.geospatials, graphB.geospatials)
     mergedGraph = Graph(pylonCost, landCost, startId, endId, startAngle,
-                        endAngle, latlngs, geospatials)
+                        endAngle, latlngs, geospatials, angleDifferences)
     return mergedGraph
 
 def edge_to_graph(edge):
@@ -69,8 +74,9 @@ def edge_to_graph(edge):
     startAngle = endAngle = edge.angle
     latlngs = edge.latlngs
     geospatials = edge.geospatials
+    angleDifferences = []
     newGraph = Graph(pylonCost, landCost, startId, endId, startAngle, endAngle,
-                     latlngs, geospatials)
+                     latlngs, geospatials, angleDifferences)
     return newGraph
 
 def edgesset_to_graphsset(edgesSet):
@@ -92,10 +98,10 @@ def merge_two_graphssets(graphsSetA, graphsSetB):
         for graphA in graphsSetA:
             for graphB in graphsSetB:
                 print(graphA.endId, graphB.startId)
-        plottableA = [graphA.to_plottable('k-') for graphA in graphsSetA]            
-        plottableB = [graphB.to_plottable('r-') for graphB in graphsSetB]
-        failedMergeResults = plottableA + plottableB        
-        visualize.plot_objects(failedMergeResults)
+        #plottableA = [graphA.to_plottable('k-') for graphA in graphsSetA]            
+        #plottableB = [graphB.to_plottable('r-') for graphB in graphsSetB]
+        #failedMergeResults = plottableA + plottableB        
+        #visualize.plot_objects(failedMergeResults)
         raise ValueError('No compatible graphs in graphsets pair.')        
     sampledGraphs = sample_graphs.variation_constrained(merged)
     return sampledGraphs

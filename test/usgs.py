@@ -1,11 +1,12 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To download, cache, and access usgs elevation data.
-Last Modified: 7/16/15
+Last Modified: 7/25/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To remove unnecessary lines.
+Last Modification Purpose: Redesigned logic flow to save memory.
 """
 
+#Standard Modules:
 from osgeo import gdal
 from osgeo import osr
 import urllib
@@ -14,6 +15,7 @@ import os.path
 import math
 from subprocess import call
 
+#Our Modules
 import config
 import util
 import geotiff
@@ -78,27 +80,31 @@ def get_elevation(latlngCoord):
     coordZipfile = coordstring + ".zip"
     coordFolderName = coordstring + "/" 
 
+    
+
     url = config.usgsFtpPath + coordZipfile
     downloadDirectory = config.cwd + config.usgsFolder
     zipFilePath = downloadDirectory + coordZipfile
-
-    if file_exists(zipFilePath):
-        pass
-    else:
-        if config.verboseMode:
-            print("Not yet downloaded.")
-            print("Now downloading " + coordZipfile + "...")
-        urllib.urlretrieve(url, zipFilePath)
-        
     unzipDirectory = downloadDirectory + coordFolderName
     imgFileName = img_filename(coordstring)
-    unzip_zipfile(zipFilePath, unzipDirectory, imgFileName)
-    
+    imgFilePath = downloadDirectory + imgFileName
     geotiffFilePath = unzipDirectory + coordstring + ".tif"
+
     if file_exists(geotiffFilePath):
         pass
     else:
+        if file_exists(imgFilePath):
+            pass
+        else:
+            if file_exists(zipFilePath):
+                pass
+            else:
+                util.smart_print("Not yet downloaded.")
+                util.smart_print("Now downloading " + coordZipfile + "...")
+                urllib.urlretrieve(url, zipFilePath)        
+            unzip_zipfile(zipFilePath, unzipDirectory, imgFileName)   
         img_to_geotiff(imgFileName, unzipDirectory, coordstring)
+        
 
     lonlatCoord = util.swap_pair(latlngCoord)
     pixelVal = geotiff_pixelVal(geotiffFilePath, lonlatCoord)

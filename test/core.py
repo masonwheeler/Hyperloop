@@ -61,8 +61,13 @@ def build_graphs(latticeSlices):
     #print(util.list_of_lists_len(finishedEdgesSets))
     #print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
-    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]
-    config.plotQueue.append(random.choice(plottableGraphs))
+    randomGraph = random.choice(completeGraphs) 
+    #print(len(randomGraph.geospatials))
+    #print(len(randomGraph.angleDifferences))
+    #print(randomGraph.angleDifferences) 
+    print(randomGraph.geospatials)
+    plottableGraph = randomGraph.to_plottable('b-') 
+    config.plotQueue.append(plottableGraph)
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
     return completeGraphs
