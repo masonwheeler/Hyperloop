@@ -39,8 +39,8 @@ class Edge:
     latlngs = []
     geospatials = []
     geospatialVector = []
-    pylons = []
-    landCostSamples = []
+    #pylons = []
+    #landCostSamples = []
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -50,16 +50,16 @@ class Edge:
                                                         config.proj)
         pylonElevations = elevation.usgs_elevation(pylonLatLngs)       
         pylonAttributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
-        self.pylons = [{"geospatial" : pylonAttribute[0],
+        newPylons = [{"geospatial" : pylonAttribute[0],
                        "latlng" : pylonAttribute[1],
                         "elevation" : pylonAttribute[2],
                         "pylonHeight" : 0,
                         "pylonCost" : 0}
                        for pylonAttribute in pylonAttributes]      
 
-        pylons.build_pylons(self.pylons)
-        pylons.get_pyloncosts(self.pylons)        
-        self.pylonCost = pylons.edge_pyloncost(self.pylons)       
+        pylons.build_pylons(newPylons)
+        pylons.get_pyloncosts(newPylons)        
+        self.pylonCost = pylons.edge_pyloncost(newPylons)               
 
     def build_landcost_samples(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -69,17 +69,18 @@ class Edge:
                                landcoverGeospatials, config.proj)
         landcoverPixelValues = landcover.landcover_pixelvalues(
                                               landcoverLatLngs)
-        attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
-                           landcoverPixelValues])        
-        self.landcostSamples = [{"geospatial" : attribute[0],
-                                 "latlng" : attribute[1],
-                                 "pixelValues" : attribute[2]}
-                                for attribute in attributes]                 
+        #attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
+        #                   landcoverPixelValues])        
+        #self.landcostSamples = [{"geospatial" : attribute[0],
+        #                         "latlng" : attribute[1],
+        #                         "pixelValues" : attribute[2]}
+        #                        for attribute in attributes]                         
+
         if self.isInRightOfWay:
             self.landCost = config.rightOfWayLandCost          
         else:
             self.landCost = \
-               landcover.pixelvalues_to_landcost(landcoverPixelValues)
+               landcover.pixelvalues_to_landcost(landcoverPixelValues)        
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]

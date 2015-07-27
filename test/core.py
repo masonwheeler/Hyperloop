@@ -29,7 +29,7 @@ def build_directions(start, end):
     proj.set_projection(startLatLng, endLatLng)
     directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
                                                    config.proj)
-    plottableDirections = [zip(*directionsPoints), 'k-'] 
+    plottableDirections = [zip(*directionsPoints), 'y-'] 
     config.plotQueue.append(plottableDirections)
     return directionsPoints
 
@@ -58,16 +58,12 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
-    #print(util.list_of_lists_len(finishedEdgesSets))
-    #print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
-    randomGraph = random.choice(completeGraphs) 
-    #print(len(randomGraph.geospatials))
-    #print(len(randomGraph.angleDifferences))
-    #print(randomGraph.angleDifferences) 
-    print(randomGraph.geospatials)
-    plottableGraph = randomGraph.to_plottable('b-') 
-    config.plotQueue.append(plottableGraph)
+    #randomGraph = random.choice(completeGraphs) 
+    #plottableGraph = randomGraph.to_plottable('b-') 
+    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]
+    #config.plotQueue.append(plottableGraph)
+    config.plotQueue += plottableGraphs
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
     return completeGraphs
@@ -78,7 +74,7 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
-    #fullRoutes = [computev2.route_to_fullRoute(route) for route in filteredRoutes] 
+    fullRoutes = [computev2.route_to_fullRoute(route) for route in completeGraphs] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     if config.visualMode:

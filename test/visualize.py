@@ -22,6 +22,7 @@ def plot_objects(objects):
     for eachObject in objects:
         objectData, objectStyle = eachObject
         plot_object(objectData, objectStyle)
+    plt.axis('equal')
     plt.show()
 
 def plot_colorful_objects(objectsAndStyles):
@@ -40,8 +41,8 @@ def display_inputs(inputs):
         plotFunction = functionDictionary[functionNumber]
         plotFunction(objectData, style)
     #plt.subplot(plotDictionary[1])
-    plt.axis('equal')
     #plt.subplot(plotDictionary[2])
+    plt.axis('equal')
     #x1, x2, y1, y2 = plt.axis()
     #plt.axis((x1,x2, -10**(-4), 10**(-4)))
     plt.show()

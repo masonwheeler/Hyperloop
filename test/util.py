@@ -48,6 +48,10 @@ def fast_concat(listOfLists):
 def list_of_lists_len(listOfLists):
     return sum(map(len,listOfLists))
 
+def list_mean(inList):
+    mean = sum(inList)/float(len(inList))
+    return mean
+
 #Used by: directions.py
 def remove_duplicates(inList):
     return list(OrderedDict.fromkeys(list(itertools.chain(*inList))))
@@ -104,6 +108,11 @@ def edge_to_vector(edge):
     edgeStart, edgeEnd = edge
     edgeVector = subtract(edgeEnd, edgeStart)
     return edgeVector
+
+def vector_to_angle(vector):
+    xVal, yVal = vector
+    angle = math.degrees(math.atan2(yVal, xVal))
+    return angle    
 
 def distance_to_point(edge, distance):    
     edgeStart, edgeEnd = edge               

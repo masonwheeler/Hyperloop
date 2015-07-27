@@ -11,7 +11,7 @@ from osgeo import gdal
 from osgeo import osr
 import urllib
 import zipfile
-import os.path
+import os
 import math
 from subprocess import call
 
@@ -75,19 +75,21 @@ def geotiff_pixelVal(geotiffFilePath, lonlatCoord):
     pixelVal = geotiff.pixel_val(ct, gt, rb, lonlatCoord)
     return pixelVal
 
+def remove_file(filePath):
+    os.remove(filePath)
+    
+
 def get_elevation(latlngCoord):
     coordstring = get_coordstring(latlngCoord)
     coordZipfile = coordstring + ".zip"
-    coordFolderName = coordstring + "/" 
-
-    
+    coordFolderName = coordstring + "/"     
 
     url = config.usgsFtpPath + coordZipfile
     downloadDirectory = config.cwd + config.usgsFolder
     zipFilePath = downloadDirectory + coordZipfile
     unzipDirectory = downloadDirectory + coordFolderName
     imgFileName = img_filename(coordstring)
-    imgFilePath = downloadDirectory + imgFileName
+    imgFilePath = unzipDirectory + imgFileName
     geotiffFilePath = unzipDirectory + coordstring + ".tif"
 
     if file_exists(geotiffFilePath):
@@ -103,7 +105,9 @@ def get_elevation(latlngCoord):
                 util.smart_print("Now downloading " + coordZipfile + "...")
                 urllib.urlretrieve(url, zipFilePath)        
             unzip_zipfile(zipFilePath, unzipDirectory, imgFileName)   
+            remove_file(zipFilePath)
         img_to_geotiff(imgFileName, unzipDirectory, coordstring)
+        remove_file(imgFilePath)
         
 
     lonlatCoord = util.swap_pair(latlngCoord)

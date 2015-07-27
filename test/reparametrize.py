@@ -12,14 +12,15 @@ import math
 import numpy as np
 
 #Our Modules:
-import genVelocity as gen
+import util
+
 
 def vValstotVals(sVals, vVals):
     tVals = [0] * len(vVals)
     tVals[1] = (sVals[1] - sVals[0]) / gen.mean(vVals[0:2])
     for i in range(2, len(vVals)):
         tVals[i] = tVals[i-1] + (sVals[i] - sVals[i-1]) / vVals[i-1]
-    tVals[-1] = (sVals[-1] - sVals[-2]) / gen.mean(vVals[-2:len(vVals)])
+    tVals[-1] = (sVals[-1] - sVals[-2]) / util.mean(vVals[-2:len(vVals)])
     return tVals
 
 def xValstosVals(xVals):

@@ -136,9 +136,10 @@ def save_graphs(graphsObject, graphsName):
     pass
 
 def save_edgessets(edgesSets, edgesName):
-    flattenedEdges = util.fast_concat(edgesSets)
-    edgeDicts = [edge.as_dict() for edge in flattenedEdges]
-    edgesSavePath = get_object_savepath(edgesName)
-    with open(edgesSavePath + ".json", 'w') as edgeHandle:
-        json.dump(edgeDicts, edgeHandle)
+    pass
+    #flattenedEdges = util.fast_concat(edgesSets)
+    #edgeDicts = [edge.as_dict() for edge in flattenedEdges]
+    #edgesSavePath = get_object_savepath(edgesName)
+    #with open(edgesSavePath + ".json", 'w') as edgeHandle:
+    #    json.dump(edgeDicts, edgeHandle)
 
