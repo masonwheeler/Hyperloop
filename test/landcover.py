@@ -42,7 +42,7 @@ def land_cost(landcostGrid):
     return edgeLandCost
 """
     
-def landcover_pixelvalues(landcoverLatLngs):
+def landcover_costDensities(landcoverLatLngs):
     geotiffFilePath = config.cwd + config.geotiffFilePath
     fileHandle = gdal.Open(geotiffFilePath)
     geoTransform = fileHandle.GetGeoTransform()
@@ -55,11 +55,11 @@ def landcover_pixelvalues(landcoverLatLngs):
     landcoverPixelValues = [geotiff.pixel_val(coordTrans, geoTransform,
                             rasterBand, util.swap_pair(landcoverLatLng))
                             for landcoverLatLng in landcoverLatLngs]
-    return landcoverPixelValues
-        
-def pixelvalues_to_landcost(landcoverPixelValues):
     landcoverCostDensities = [config.costTable[pixelVal] for pixelVal
                             in landcoverPixelValues]
+    return landcoverCostDensities
+        
+def costDensities_to_landcost(landcoverCostDensities):
     landcoverCosts = map(costdensity_to_cost, landcoverCostDensities)
     edgeLandCost = sum(landcoverCosts)
     return edgeLandCost
