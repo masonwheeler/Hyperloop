@@ -39,8 +39,6 @@ class Edge:
     latlngs = []
     geospatials = []
     geospatialVector = []
-    #pylons = []
-    #landCostSamples = []
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
@@ -69,13 +67,6 @@ class Edge:
                                landcoverGeospatials, config.proj)
         landcoverPixelValues = landcover.landcover_costDensities(
                                               landcoverLatLngs)
-        #attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
-        #                   landcoverPixelValues])        
-        #self.landcostSamples = [{"geospatial" : attribute[0],
-        #                         "latlng" : attribute[1],
-        #                         "pixelValues" : attribute[2]}
-        #                        for attribute in attributes]                         
-
         if self.isInRightOfWay:
             self.landCost = config.rightOfWayLandCost          
         else:

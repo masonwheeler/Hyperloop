@@ -6,14 +6,14 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Removed unecessary lines and fixed formatting
 """
 
+#Standard Modules
 import math
 import numpy as np
 from scipy.interpolate import interp1d
-import time
 
+#Our Modules
+import util
 
-def mean(List):
-    return sum(List)/len(List)
 
 def points_to_radius(threePoints):
     #print("three points: " + str(threePoints))
@@ -34,7 +34,7 @@ def xPointstovPoints(xPoints):
         sPoints[i+1] = sPoints[i] + np.linalg.norm(xPoints[i+1] - xPoints[i])
 
     vPoints = [0, 200, 300] + \
-              [mean([min(math.sqrt(9.81*.3*pointstoRadius(xPoints[j:j+3])),330)
+              [util.list_mean([min(math.sqrt(9.81*.3*pointstoRadius(xPoints[j:j+3])),330)
                for j in range(i-2,i+3)]) for i in range(3,len(xPoints)-4)] + \
               [320, 300, 200, 0]
     return [sPoints, vPoints]

@@ -20,11 +20,13 @@ import config
 import cacher
 
 def HTTP_to_string(HTTPData):
+    """Reads HTTP bytecode response and converts it to a string"""
     byteData = HTTPData.read()
     stringData = byteData.decode("utf-8")
     return stringData
 
 def directions(origin, destination):
+    """Pulls directions from Google API"""
     rawDirections = urllib2.urlopen(
     'https://maps.googleapis.com/maps/api/directions/json?origin=' + origin +
     '&destination=' + destination +
@@ -33,8 +35,7 @@ def directions(origin, destination):
     return stringDirections
 
 def string_to_polylines(stringData):
-    #print(stringData)
-    #dictResponse = ast.literal_eval(stringData) # converts string to dict
+    """Converts Directions string to JSON and extracts the polylines."""
     dictResponse = json.loads(stringData)
     steps = dictResponse['routes'][0]['legs'][0]['steps']
     polylines = []
@@ -42,13 +43,12 @@ def string_to_polylines(stringData):
             polylines.append(step["polyline"]["points"])
     return polylines
 
-"""
-See (http://code.google.com/apis/maps/documentation/polylinealgorithm.html)
-and (See Wah Chang) for exposition of polyline decoding method.
-"""
 
 def decode_polyline(encoded):
-
+    """
+    See (http://code.google.com/apis/maps/documentation/polylinealgorithm.html)
+    and (See Wah Chang) for exposition of polyline decoding method.
+    """
     encoded_len = len(encoded)
     index = 0
     array = []
@@ -92,6 +92,7 @@ def decode_polylines(polylines):
     return [decode_polyline(polyline) for polyline in polylines]
 
 def coordinate_list(start, end):
+    """Applies decoding functions to Google API response"""
     stringDirections = directions(start, end)
     util.smart_print("Obtained directions.")
     polylineDirections = string_to_polylines(stringDirections)
