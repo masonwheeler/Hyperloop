@@ -7,9 +7,7 @@ Last Modification Purpose: Moved some functions to util.py and interpolate.py
 """
 
 #Standard Modules:
-import scipy.interpolate 
 import numpy as np
-import time
 
 #Our Modules:
 import config
@@ -18,10 +16,11 @@ import cacher
 import proj
 
 class SlicePoint:
-    pointId = 0
+    """Builds a point from geospatial coordinates, id, and a rightofway flag"""
+    pointId = 0 #Unique identifier used in merging process.
     geospatialCoords = []
     latlngCoords = []
-    isInRightOfWay = False
+    isInRightOfWay = False #Denotes whether the point is on state property.
     
     def __init__(self, pointId, geospatialCoords, isInRightOfWay):
         self.pointId = pointId
@@ -39,6 +38,7 @@ class SlicePoint:
 
 
 class Slice:
+    """Builds Lattice SLice from a directions point and a spline point."""
     idIndex = 0
     directionsPoint = []
     splinePoint = []
@@ -86,33 +86,29 @@ class Slice:
 
 
 class Lattice:
+    """Builds Lattice from the directions, the splines and the arc-parameter"""
     latticeSlices = []
     plottableSlices = []
 
-    def __init__(self, slices):
-        self.latticeSlices = [eachSlice.as_list() for eachSlice in slices]
-        self.plottableSlices = [eachSlice.plottable_slice()
-                                for eachSlice in slices]
+    def get_sliceendpoints(self, sliceTValue, sampledDirections, xSpline,
+                                                                 ySpline):
+        rawDirectionsPoint = sampledDirections[int(sliceTValue.tolist())]    
+        rawSplinePoint = [xSpline(sliceTValue), ySpline(sliceTValue)]
+        fixedDirectionsPoint = list(rawDirectionsPoint)
+        fixedSplinePoint = [point.tolist() for point in rawSplinePoint]
+        return [fixedDirectionsPoint, fixedSplinePoint]
 
+    def __init__(self, sliceTValues, directionsPoints, xSpline, ySpline):
+        slices = []
+        idIndex = 1
+        for sliceTValue in np.nditer(sliceTValues):
+            directionsPoint, splinePoint = self.get_sliceendpoints(sliceTValue,
+                                           directionsPoints, xSpline, ySpline)
+            newSlice = Slice(idIndex, directionsPoint, splinePoint)
+            idIndex = newSlice.idIndex
+            self.latticeSlices.append(newSlice.as_list())
+            self.plottableSlices.append(newSlice.to_plottable())
 
-def get_sliceendpoints(sliceTValue, sampledDirections, xSpline, ySpline):
-    rawDirectionsPoint = sampledDirections[int(sliceTValue.tolist())]    
-    rawSplinePoint = [xSpline(sliceTValue), ySpline(sliceTValue)]
-    fixedDirectionsPoint = list(rawDirectionsPoint)
-    fixedSplinePoint = [point.tolist() for point in rawSplinePoint]
-    return [fixedDirectionsPoint, fixedSplinePoint]
-
-def build_lattice(sliceTValues, directionsPoints, xSpline, ySpline):
-    slices = []
-    idIndex = 1
-    for sliceTValue in np.nditer(sliceTValues):
-        directionsPoint, splinePoint = get_sliceendpoints(sliceTValue,
-                                       directionsPoints, xSpline, ySpline)
-        newSlice = Slice(idIndex, directionsPoint, splinePoint)
-        idIndex = newSlice.idIndex
-        slices.append(newSlice)
-    lattice = Lattice(slices)
-    return lattice
 
 def build_directionsspline(directionsPoints):
     xCoordsList, yCoordsList = zip(*directionsPoints)

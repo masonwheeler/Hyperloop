@@ -7,6 +7,7 @@ Last Modification Purpose: Created Module
 """
 
 #Standard Modules:
+import scipy.interpolate
 
 #Our Modules:
 import util

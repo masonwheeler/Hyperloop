@@ -21,6 +21,7 @@ import proj
 import lattice
 import edges
 import graphs
+import interpolate
 
 def build_directions(start, end):    
     directionsLatLng = directions.get_directions(start, end)
@@ -36,13 +37,12 @@ def build_directions(start, end):
 def build_lattice(directionsPoints):
     t0 = time.time()
     directionsEdges = util.to_pairs(directionsPoints)   
-    sampledPoints = util.sample_edges(directionsEdges,
+    sampledPoints = interpolate.sample_edges(directionsEdges,
                              config.directionsSampleSpacing)
     xSpline, ySpline = lattice.get_spline(sampledPoints)    
-    splineTValues = lattice.get_tvalues(len(sampledPoints))
-    splineValues = lattice.get_splinevalues(xSpline, ySpline, splineTValues)
-    #curvature = lattice.get_curvature(xSpline, ySpline, splineTValues)
-    sliceTValues = lattice.get_slicetvalues(splineTValues,
+    splineTValues = interpolate.get_tvalues(len(sampledPoints))
+    splineValues = interpolate.get_splinevalues(xSpline, ySpline, splineTValues)
+    sliceTValues = interpolate.get_slicetvalues(splineTValues,
                                   config.splineSampleSpacing)
     newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline)    
