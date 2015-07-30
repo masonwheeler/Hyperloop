@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide data structure used for merging discrete elements
-Last Modified: 7/28/15
+Last Modified: 7/30/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Added recursive structure to merging process.
+Last Modification Purpose: Added functions and classes for testing purposes
 """
 
 import collections
@@ -24,8 +24,8 @@ class MergeTree:
     children_merger = None #Function combines children's data into node data
     data_updater = None #Function expands the data exposed by the node
     childToUpdate = "left" #State variable storing which child to update next
-    rightExhausted = False #State varible storing whether right child exhausted
-    leftExhausted = False #State variable storing whether left child exhausted
+    isRightExhausted = False #State varible storing whether right child exhausted
+    isLeftExhausted = False #State variable storing whether left child exhausted
 
     def update_children(self):
         """
@@ -35,16 +35,16 @@ class MergeTree:
         returns True, otherwise the function returns False.
         """
         if self.childToUpdate == "left":
-            leftUpdated = self.left.update_data()
-            if leftUpdated:
-                if not self.rightExhausted:                          
+            isLeftUpdated = self.left.update_data()
+            if isLeftUpdated:
+                if not self.isRightExhausted:                          
                     #If the right child is not exahusted, update it next
                     self.childToUpdate = "right"
                 return True
             else:
                 #Since the left child could not be updated, label it exhausted
-                self.leftExhausted = True
-                if self.rightExhausted:
+                self.isLeftExhausted = True
+                if self.isRightExhausted:
                     #If the right is also exhausted, then record failure
                     return False
                 else:
@@ -53,16 +53,16 @@ class MergeTree:
                     return self.update_children()
 
         if self.childToUpdate == "right":
-            rightUpdated = self.right.update_data()
-            if rightUpdated:
-                if not self.leftExhausted:
+            isRightUpdated = self.right.update_data()
+            if isRightUpdated:
+                if not self.isLeftExhausted:
                     #If the left child is not exhausted, update it next
                     self.childToUpdate = "left"
                 return True
             else:
                 #Since the left child could not be updated, label it exhausted
-                self.rightExhausted = True
-                if self.leftExhausted:
+                self.isRightExhausted = True
+                if self.isLeftExhausted:
                     #If the left is also exhausted, then record failure
                     return False
                 else:
@@ -80,15 +80,15 @@ class MergeTree:
         then merge the updated children to get new data for the node.
         If the node's children cannot be updated, record failure.        
         """
-        if self.data = None:
+        if self.data == None:
             return False  
         else:
-            dataUpdated = self.data_updater(self.data)
-            if dataUpdated:
+            isDataUpdated = self.data_updater(self.data)
+            if isDataUpdated:
                 return True
             else:
-                updatedChildren = self.update_children()
-                if updatedChildren:
+                anyChildrenUpdated = self.update_children()
+                if anyChildrenUpdated:
                     self.data = self.merge_children()
                     return True
                 else:
@@ -104,8 +104,8 @@ class MergeTree:
         """
         mergeResult = self.children_merger(self.left.data, self.right.data)
         while mergeResult == None:
-            childrenUpdated = self.update_children()
-            if childrenUpdated:
+            anyChildrenUpdated = self.update_children()
+            if anyChildrenUpdated:
                 mergeResult = self.children_merger(self.left.data,
                                                    self.right.data)
             else:
@@ -133,8 +133,8 @@ class MergeTree:
 
 def objects_to_leaves(objects):   
     """Takes list of objects and initializes a list of MergeTrees.""" 
-    leavesList = [MergeTree(left=None, right=None, eachObject,
-       children_merger=None, data_updater=None) for eachObject in objects]
+    leavesList = [MergeTree(None, None, eachObject, None, None)
+                  for eachObject in objects]
     leaves = collections.deque(leavesList)
     return leaves
 
@@ -160,11 +160,39 @@ def merge_branchlayer(branchLayer, children_merger, data_updater):
         nextBranchLayer.append(mergedBranch)
     return nextBranchLayer
        
-def merge_objects(objects, mergeFunction):
+def merge_objects(objects, children_merger, data_updater):
     """Recursively merges objects until list is completely merged."""
     branchLayer = objects_to_leaves(objects) 
     while len(branchLayer) > 1:
-        branchLayer = merge_branchlayer(branchLayer, mergeFunction)
+        branchLayer = merge_branchlayer(branchLayer, children_merger,
+                                                     data_updater)
     mergedObjects = branchLayer[0]
     return mergedObjects
 
+
+#Testing Purposes
+
+class Number:
+    value = None
+    timesUpdated = 0
+    
+    def __init__(self, value):
+        self.value = value
+
+    def update_value(self):
+        self.value -= self.value
+        timesUpdated += 1
+
+
+def number_merger(numberA, numberB):
+    mergedNumbers = numberA + numberB
+    if mergedNumbers < 10:
+        return mergedNumbers
+    else:
+        return None
+
+def number_updater(number):
+    isNumberUpdated = number.update_value()
+    return isNumberUpdated
+
+print(Number(1).value)
