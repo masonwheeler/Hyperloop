@@ -10,6 +10,12 @@ from scipy.spatial import ConvexHull
 import numpy as np
 
 class ParetoFront:
+    """
+    Computes nested Pareto Frontiers of points in 2d.
+
+    Calculates the Convex Hull of the set of points using qhull,
+    then computes the Pareto Front of those points.
+    """
     pointsArray = [] #Numpy array containing original points.
     prunedPointsIndices = [] #Contains the indices of the pruned points.
     frontsIndices = [] #Contains the indices of the points in each fronts.
@@ -17,6 +23,12 @@ class ParetoFront:
     yReverse = False #If set to true, the front minimizes y-values.
 
     def vertices_to_frontindices(self, vertices, xReverse, yReverse):
+        """
+        Computes the Pareto front given the vertices of the convex hull.
+
+        If xReverse is set to True then the Pareto front minimizes x-values.
+        If yReverse is set to True then the Pareto front minimizes y-values.
+        """
         xMax, yMax = np.amax(vertices, axis = 0)
         xMin, yMin = np.amin(vertices, axis = 0)
          
@@ -97,6 +109,7 @@ class ParetoFront:
             return frontIndices      
 
     def remove_frontindices(self, frontIndicesRelPoints):
+        """Give the indices of the points without the indices of the front."""
         self.prunedPointsIndices = np.setdiff1d(self.prunedPointsIndices,
                                                 frontIndicesRelPoints)
  
@@ -130,6 +143,7 @@ class ParetoFront:
             self.remove_frontindices(frontIndicesRelPoints)
 
     def build_nextfront(self):
+        """Build the Pareto front of the points with the last front removed."""
         numPointsLeft = self.prunedPointsIndices.shape[0]
         if numPointsLeft < 3:
             if numPointsLeft == 0:
@@ -153,9 +167,3 @@ class ParetoFront:
             self.remove_frontindices(frontIndicesRelOriginalPoints)            
             return True          
 
-#points = [[1.0,1.0], [-1.0,1.0], [1.0,-1.0], [-1.0,-1.0], [0.0,0.0]]
-#points = [[1.0,0.0], [0.0,1.0], [-1.0,0.0], [0.0,-1.0], [0.0,0.0]]
-#front = ParetoFront(points, xReverse=False, yReverse=False)
-#print(front.prunedPointsIndices)
-#while front.build_nextfront():
-#    print(front.prunedPointsIndices)
