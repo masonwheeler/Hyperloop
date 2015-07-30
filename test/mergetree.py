@@ -31,9 +31,15 @@ class MergeTree:
         """
         Updates child nodes by alternating between right and left nodes.
         
+        If the child nodes do not exist or do not have data, return False.
         If one of the child nodes is sucessfully updated, the function 
-        returns True, otherwise the function returns False.
+        returns True, otherwise the function returns False.        
         """
+        if (self.left == None or self.right == None):
+            return False
+        if (self.left.data == None or self.right.data == None):
+            return False
+
         if self.childToUpdate == "left":
             isLeftUpdated = self.left.update_data()
             if isLeftUpdated:
@@ -113,7 +119,6 @@ class MergeTree:
         return mergeResult
 
     def get_data(self, data):
-        """ Initializes the Node's data."""
         if data == None:
             if (self.left == None or self.right == None):
                 raise ValueError("Unitialized node lacks children.")
@@ -131,9 +136,9 @@ class MergeTree:
         self.get_data(data)
 
 
-def objects_to_leaves(objects):   
+def objects_to_leaves(objects, data_updater):   
     """Takes list of objects and initializes a list of MergeTrees.""" 
-    leavesList = [MergeTree(None, None, eachObject, None, None)
+    leavesList = [MergeTree(None, None, eachObject, None, data_updater)
                   for eachObject in objects]
     leaves = collections.deque(leavesList)
     return leaves
@@ -162,7 +167,7 @@ def merge_branchlayer(branchLayer, children_merger, data_updater):
        
 def merge_objects(objects, children_merger, data_updater):
     """Recursively merges objects until list is completely merged."""
-    branchLayer = objects_to_leaves(objects) 
+    branchLayer = objects_to_leaves(objects, data_updater) 
     while len(branchLayer) > 1:
         branchLayer = merge_branchlayer(branchLayer, children_merger,
                                                      data_updater)
@@ -171,28 +176,44 @@ def merge_objects(objects, children_merger, data_updater):
 
 
 #Testing Purposes
-
+"""
 class Number:
     value = None
     timesUpdated = 0
+    maxUpdates = 0
     
-    def __init__(self, value):
+    def __init__(self, value, maxUpdates):
         self.value = value
+        self.maxUpdates = maxUpdates
 
     def update_value(self):
-        self.value -= self.value
-        timesUpdated += 1
+        if self.timesUpdated < self.maxUpdates:
+            print("updating value")
+            print("original value: " + str(self.value))
+            self.value -= 1
+            print("new value: " + str(self.value))
+            self.timesUpdated += 1
+            print("times updated: " + str(self.timesUpdated))
+            return True
+        else:
+            print("max updates reached")
+            return False
 
 
 def number_merger(numberA, numberB):
-    mergedNumbers = numberA + numberB
-    if mergedNumbers < 10:
-        return mergedNumbers
+    mergedValue = numberA.value + numberB.value
+    if mergedValue < 10:
+        mergedNumber = Number(mergedValue, numberA.maxUpdates)
+        return mergedNumber
     else:
         return None
 
-def number_updater(number):
+def number_updater(number):   
     isNumberUpdated = number.update_value()
     return isNumberUpdated
 
-print(Number(1).value)
+maxUpdates = 3
+numbers = [Number(value, maxUpdates) for value in range(7)]
+merged = merge_objects(numbers, number_merger, number_updater)
+print("root value is: " + str(merged.data.value))
+"""
