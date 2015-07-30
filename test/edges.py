@@ -67,7 +67,7 @@ class Edge:
                                 config.landPointSpacing, startGeospatial)
         landcoverLatLngs = proj.geospatials_to_latlngs(
                                landcoverGeospatials, config.proj)
-        landcoverPixelValues = landcover.landcover_pixelvalues(
+        landcoverPixelValues = landcover.landcover_costDensities(
                                               landcoverLatLngs)
         #attributes = zip(*[landcoverGeospatials, landcoverLatLngs,
         #                   landcoverPixelValues])        
@@ -80,7 +80,7 @@ class Edge:
             self.landCost = config.rightOfWayLandCost          
         else:
             self.landCost = \
-               landcover.pixelvalues_to_landcost(landcoverPixelValues)        
+               landcover.costDensities_to_landcost(landcoverPixelValues)        
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
