@@ -145,7 +145,7 @@ def objects_to_leaves(objects, data_updater):
 
 def merge_branchlayer(branchLayer, children_merger, data_updater):
     """Creates next layer of MergeTrees."""
-    #Use Deque for performance, has O(1) pops and appends on both sides.
+    #Use Deque for performance, it has O(1) pops and appends on both sides.
     nextBranchLayer = collections.deque()
     while len(branchLayer) > 1:
         #Take first two branches and merge them
@@ -165,7 +165,7 @@ def merge_branchlayer(branchLayer, children_merger, data_updater):
         nextBranchLayer.append(mergedBranch)
     return nextBranchLayer
        
-def merge_objects(objects, children_merger, data_updater):
+def merge_allobjects(objects, children_merger, data_updater):
     """Recursively merges objects until list is completely merged."""
     branchLayer = objects_to_leaves(objects, data_updater) 
     while len(branchLayer) > 1:
@@ -200,7 +200,7 @@ class Number:
             return False
 
 
-def number_merger(numberA, numberB):
+def numbers_merger(numberA, numberB):
     mergedValue = numberA.value + numberB.value
     if mergedValue < 10:
         mergedNumber = Number(mergedValue, numberA.maxUpdates)
@@ -214,6 +214,6 @@ def number_updater(number):
 
 maxUpdates = 3
 numbers = [Number(value, maxUpdates) for value in range(7)]
-merged = merge_objects(numbers, number_merger, number_updater)
+merged = merge_objects(numbers, numbers_merger, number_updater)
 print("root value is: " + str(merged.data.value))
 """

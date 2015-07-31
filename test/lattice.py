@@ -127,7 +127,7 @@ def get_directionsspline(directionsPoints):
     return directionsSpline
 
 def get_lattice(sliceTValues, directionsPoints, xSpline, ySpline):
-    lattice = cacher.get_object("lattice", build_lattice,
+    lattice = cacher.get_object("lattice", Lattice,
               [sliceTValues, directionsPoints, xSpline, ySpline],
               cacher.save_lattice, config.latticeFlag)
     return lattice
