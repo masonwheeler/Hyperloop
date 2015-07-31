@@ -15,7 +15,7 @@ import paretofront
 import interpolate
 
 class Graph:
-    length = 0
+    numEdges = 0
     pylonCost = 0
     landCost = 0
     startId = 0
@@ -26,14 +26,14 @@ class Graph:
     latlngs = []
     geospatials = []
 
-    def compute_rmscuvature(self):        
-        if self.length > config.graphCurvatureMinLength:
+    def compute_curvature(self):        
+        if self.numEdges > config.graphCurvatureMinNumEdges:
             self.curvatureMetric = interpolate.graph_curvature(
                             self.geospatials, config.graphSampleSpacing)
 
-    def __init__(self, length, pylonCost, landCost, startId, endId, startAngle,
-                 endAngle, latlngs, geospatials):
-        self.length = length
+    def __init__(self, numEdges, pylonCost, landCost, startId, endId,
+                 startAngle, endAngle, latlngs, geospatials):
+        self.numEdges = numEdges
         self.pylonCost = pylonCost
         self.landCost = landCost
         self.startId = startId
@@ -42,10 +42,10 @@ class Graph:
         self.endAngle = endAngle
         self.latlngs = latlngs
         self.geospatials = geospatials    
-        self.compute_rmscurvature()
+        self.compute_curvature()
 
     def to_costcurvature_point(self):
-        if self.length > config.graphCurvatureMinLength:
+        if self.numEdges > config.graphCurvatureMinNumEdges:
             cost = self.pylonCost + self.landCost
             curvature = self.curvatureMetric
             return [cost, curvature]
@@ -63,14 +63,14 @@ class Graph:
 class GraphsSet:
     minimizeCost = True
     minimizeCurvature = True
-    graphsLength = None #The number of edges each constituent graph has.
+    graphsNumEdges = None #The number of edges each constituent graph has.
     unfilteredGraphs = None
     costCurvaturePoints = None
     paretoFront = None
     selectedGraphs = None      
 
     def graphs_to_costcurvaturepoints(self):
-        if self.graphsLength > config.graphCurvatureMinLength:
+        if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
             self.costCurvaturePoints = [graph.to_costcurvature_point()
                                         for graph in self.unfilteredGraphs]
 
@@ -86,7 +86,7 @@ class GraphsSet:
 
     def __init__(self, graphs):              
         self.unfilteredGraphs = graphs
-        self.graphsLength = self.unfilteredGraphs[0].length
+        self.graphsNumEdges = self.unfilteredGraphs[0].numEdges
         self.graphs_to_costcurvaturepoints()
         self.select_graphs()
 
@@ -108,6 +108,7 @@ def graphset_updater(graphset):
     return isGraphSetUpdated
 
 def edge_to_graph(edge):
+    numEdges = 1
     pylonCost = edge.pylonCost
     landCost = edge.landCost
     startId = edge.startId
@@ -115,17 +116,17 @@ def edge_to_graph(edge):
     startAngle = endAngle = edge.angle
     latlngs = edge.latlngs
     geospatials = edge.geospatials
-    newGraph = Graph(pylonCost, landCost, startId, endId,
+    newGraph = Graph(numEdges, pylonCost, landCost, startId, endId,
                    startAngle, endAngle, latlngs, geospatials)
     return newGraph
 
-def edgesset_to_graphset(edgeset):
-    graphs = map(edge_to_graph, edgesset)
+def edges_set_to_graphs_set(edgesSet):
+    graphs = map(edge_to_graph, edgesSet)
     graphsSet = GraphsSet(graphs) 
     return graphsSet
 
 def edgessets_to_basegraphssets(edgessets):
-    baseGraphSets = map(edgeset_to_graphset, edgessets)
+    baseGraphSets = map(edges_set_to_graphs_set, edgessets)
     return baseGraphSets
     
 def is_graph_pair_compatible(graphA, graphB):
@@ -136,6 +137,7 @@ def is_graph_pair_compatible(graphA, graphB):
     return False
 
 def merge_two_graphs(graphA, graphB):
+    numEdges = graphA.numEdges + graphB.numEdges
     pylonCost = graphA.pylonCost + graphB.pylonCost
     landCost = graphA.landCost + graphB.landCost
     startId = graphA.startId
@@ -144,11 +146,11 @@ def merge_two_graphs(graphA, graphB):
     endAngle = graphB.endAngle
     latlngs = util.smart_concat(graphA.latlngs, graphB.latlngs)
     geospatials = util.smart_concat(graphA.geospatials, graphB.geospatials)
-    mergedGraph = Graph(pylonCost, landCost, startId, endId, startAngle,
-                        endAngle, latlngs, geospatials)
+    mergedGraph = Graph(numEdges, pylonCost, landCost, startId, endId,
+                        startAngle, endAngle, latlngs, geospatials)
     return mergedGraph
 
-def graphssets_merger(graphsSetA, graphsSetB):
+def graphs_sets_merger(graphsSetA, graphsSetB):
     merged = []
     for graphA in graphsSetA:
         for graphB in graphsSetB:
@@ -159,11 +161,23 @@ def graphssets_merger(graphsSetA, graphsSetB):
     else:
         return merged
 
-def merge_basegraphssets(baseGraphSets, graphsets_merger, graphsets_updater):
-    rootGraphSet = mergeTree.merge_allobjects(baseGraphSets, graphsets_merger,
-                                              graphsets_updater)
+def merge_basegraphssets(baseGraphSets):
+    rootGraphSet = mergetree.merge_allobjects(baseGraphSets, graphs_sets_merger,
+                                              graphset_updater)
     return rootGraphSet
     
+def build_graphs(edgessets):
+    baseGraphsSets = edgessets_to_basegraphssets(edgessets)
+    completeGraphs = merge_basegraphssets(baseGraphsSets)
+    #completeGraphs = recursivemerge_graphssets(baseGraphsSets)
+    return completeGraphs
+    
+def get_graphs(edgessets):
+    graphs = cacher.get_object("graphs", build_graphs, [edgessets],
+                                cacher.save_graphs, config.graphsFlag)
+    return graphs
+
+        
 
 """
 def merge_two_graphssets(graphsSetA, graphsSetB):
@@ -228,16 +242,3 @@ def recursivemerge_graphssets(graphsSets):
     completeGraphs = layers[layersIndex][0]  
     return completeGraphs
 """
-
-def build_graphs(edgessets):
-    baseGraphsSets = edgessets_to_basegraphssets(edgessets)
-    completeGraphs = merge_baseegraphsets(baseGraphSets)
-    #completeGraphs = recursivemerge_graphssets(baseGraphsSets)
-    return completeGraphs
-    
-def get_graphs(edgessets):
-    graphs = cacher.get_object("graphs", build_graphs, [edgessets],
-                                cacher.save_graphs, config.graphsFlag)
-    return graphs
-
-        

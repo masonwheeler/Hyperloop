@@ -106,6 +106,16 @@ def interpolating_splines(xArray, yArray, tValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     return [xSpline, ySpline]
 
+def curvature_metric(graphCurvatureArray):
+    curvatureSize = graphCurvatureArray.size
+    curvatureThreshhold = np.empty(curvatureSize)
+    curvatureThreshhold.fill(config.curvatureThreshhold)
+    absoluteCurvature = np.absolute(graphCurvatureArray)
+    relativeCurvature = np.subtract(absoluteCurvature, curvatureThreshhold)
+    excessCurvature = relativeCurvature.clip(min=0)
+    curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
+    return curvatureMetric
+
 def graph_curvature(graphPoints, graphSampleSpacing):
     graphEdges = points_to_edges(graphPoints)
     numPoints = len(graphPoints)
@@ -113,15 +123,7 @@ def graph_curvature(graphPoints, graphSampleSpacing):
     tValues = get_tvalues(numPoints)
     xValsArray, yValsArray = points_to_arrays(sampledGraphPoints)
     xSpline, ySpline = interpolating_splines(xValsArray, yValsArray, tValues)
-    graphCurvature = splines_curvature(xSpline, ySpline, tValues)
-   
-def curvature_metric(graphCurvature):
-    curvatureSize = graphCurvature.size
-    curvatureThreshhold = np.empty(curvatureSize)
-    curvatureThreshhold.fill(config.curvatureThreshhold)
-    absoluteCurvature = np.absolute(graphCurvature)
-    relativeCurvature = np.subtract(absoluteCurvature, curvatureThreshhold)
-    excessCurvature = relativeCurvature.clip(min=0)
-    curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
-    return curvatureMetric
+    graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
+    graphCurvature = curvature_metric(graphCurvatureArray)
+    return graphCurvature
      

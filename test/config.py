@@ -25,7 +25,7 @@ useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
-useCachedGraphs = True
+useCachedGraphs = False
 
 """
 Lattice Generation parameters
@@ -41,8 +41,9 @@ ndigits = 6 #the number of digits used for rounding
 """
 Graph Generation parameters
 """
-numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
-graphSampleSize = 10
+#numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
+#graphSampleSize = 10
+graphCurvatureMinNumEdges = 3
 
 """
 Engineering constraints.
