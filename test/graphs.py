@@ -22,16 +22,16 @@ class Graph:
     endId = 0
     startAngle = 0
     endAngle = 0
-    rmsCurvature = None
+    curvatureMetric = None
     latlngs = []
     geospatials = []
 
     def compute_rmscuvature(self):        
         if self.length > config.graphCurvatureMinLength:
-            self.rmsCurvature = interpolate.points_to_curvature(
+            self.curvatureMetric = interpolate.graph_curvature(
                             self.geospatials, config.graphSampleSpacing)
 
-    def __init__(self, length pylonCost, landCost, startId, endId, startAngle,
+    def __init__(self, length, pylonCost, landCost, startId, endId, startAngle,
                  endAngle, latlngs, geospatials):
         self.length = length
         self.pylonCost = pylonCost
@@ -47,7 +47,7 @@ class Graph:
     def to_costcurvature_point(self):
         if self.length > config.graphCurvatureMinLength:
             cost = self.pylonCost + self.landCost
-            curvature = self.rmsCurvature
+            curvature = self.curvatureMetric
             return [cost, curvature]
 
     def to_plottable(self, style):
@@ -91,8 +91,8 @@ class GraphsSet:
         self.select_graphs()
 
     def update_graphs(self):
-        if self.paretoFront == None
-            return False:
+        if self.paretoFront == None:
+            return False
         else:
             areGraphsUpdated = self.paretoFront.build_nextfront()
             if areGraphsUpdated:

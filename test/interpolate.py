@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide interpolation functions for use across program.
-Last Modified: 7/30/15
+Last Modified: 7/31/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Created Module
+Last Modification Purpose: Added function to compute curvature metric for graph
 """
 
 #Standard Modules:
@@ -105,3 +105,13 @@ def interpolating_splines(xArray, yArray, tValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     return [xSpline, ySpline]
+
+def graph_curvature(graphPoints, graphSampleSpacing):
+    graphEdges = points_to_edges(graphPoints)
+    numPoints = len(graphPoints)
+    sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
+    tValues = get_tvalues(numPoints)
+    xValsArray, yValsArray = points_to_arrays(sampledGraphPoints)
+    xSpline, ySpline = interpolating_splines(xValsArray, yValsArray, tValues)
+    graphCurvature = splines_curvature(xSpline, ySpline, tValues)
+    

@@ -108,7 +108,7 @@ class Lattice:
             newSlice = Slice(idIndex, directionsPoint, splinePoint)
             idIndex = newSlice.idIndex
             self.latticeSlices.append(newSlice.as_list())
-            self.plottableSlices.append(newSlice.to_plottable())
+            self.plottableSlices.append(newSlice.plottable_slice())
 
 
 def build_directionsspline(directionsPoints):
