@@ -21,36 +21,37 @@ import proj
 import lattice
 import edges
 import graphs
-#import computev2
+import interpolate
 
-def build_directions(start, end):
+def build_directions(start, end):    
     directionsLatLng = directions.get_directions(start, end)
     startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
     proj.set_projection(startLatLng, endLatLng)
     directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
                                                    config.proj)
-    plottableDirections = [zip(*directionsPoints), 'y-'] 
-    config.plotQueue.append(plottableDirections)
+    if config.visualMode:
+        plottableDirections = [zip(*directionsPoints), 'y-'] 
+        config.plotQueue.append(plottableDirections)
     return directionsPoints
 
 def build_lattice(directionsPoints):
     t0 = time.time()
     directionsEdges = util.to_pairs(directionsPoints)   
-    sampledPoints = lattice.sample_edges(directionsEdges,
+    sampledPoints = interpolate.sample_edges(directionsEdges,
                              config.directionsSampleSpacing)
     xSpline, ySpline = lattice.get_spline(sampledPoints)    
-    splineTValues = lattice.get_tvalues(len(sampledPoints))
-    splineValues = lattice.get_splinevalues(xSpline, ySpline, splineTValues)
-    plottableSpline = [splineValues, 'r-']
-    config.plotQueue.append(plottableSpline)
-    #curvature = lattice.get_curvature(xSpline, ySpline, splineTValues)
-    sliceTValues = lattice.get_slicetvalues(splineTValues,
+    splineTValues = interpolate.get_tvalues(len(sampledPoints))
+    splineValues = interpolate.get_splinevalues(xSpline, ySpline, splineTValues)
+    sliceTValues = interpolate.get_slicetvalues(splineTValues,
                                   config.splineSampleSpacing)
     newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline)    
     latticeSlices = newLattice.latticeSlices
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
+    if config.visualMode:
+        plottableSpline = [splineValues, 'r-']
+        config.plotQueue.append(plottableSpline)
     return latticeSlices
 
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)

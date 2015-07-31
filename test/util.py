@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide a suite of utility function for the algorithm.
-Last Modified: 7/17/15
+Last Modified: 7/30/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Clarify function usage.
+Last Modification Purpose: Organized functions by usage.
 """
 
 #Standard Modules
@@ -16,11 +16,9 @@ from collections import OrderedDict
 #Our Modules
 import config
 
-#Used by: core.py
-def get_firstlast(inList):
-    return [inList[0], inList[-1]]
 
-#Used by: directions.py
+#Points Operations:
+
 def round_num(num):
     return round(num, config.ndigits)
 
@@ -28,44 +26,68 @@ def round_nums(nums):
     return [round_num(num) for num in nums]
 
 def round_points(points):
+    """Used in directions.build_directions()"""
     return [round_nums(point) for point in points]
 
-#Used by: proj.py
+def to_pairs(points):
+    pairs = []
+    for index in range(len(points) - 1):
+        pair = [points[index], points[index+1]]
+        pairs.append(pair)
+    return pairs
+
+
+#Pair Operations:
+
 def swap_pair(pair):
     return [pair[1], pair[0]]
 
 def swap_pairs(pairs):
+    """Used in proj.py"""
     return [swap_pair(pair) for pair in pairs]
 
+
+#List Operations:
+
+def get_firstlast(inList):
+    """Used in core.get_directions()"""
+    return [inList[0], inList[-1]]
+
 def get_maxmin(inList):
+    """Used for testing"""
     return [max(inList), min(inList)]
 
-#Used by: edges.py
+def list_mean(inList):
+    """Used in genVelocity.py"""
+    mean = sum(inList)/float(len(inList))
+    return mean
+
+def remove_duplicates(inList):
+    """Used in directions.py"""
+    return list(OrderedDict.fromkeys(list(itertools.chain(*inList))))
+
+
+#List of Lists Operations:
+
 def fast_concat(listOfLists):
+    """Used in edges.py"""
     concatenated = itertools.chain.from_iterable(listOfLists)
     return list(concatenated)
 
 def list_of_lists_len(listOfLists):
+    """Used for testing"""
     return sum(map(len,listOfLists))
 
-def list_mean(inList):
-    mean = sum(inList)/float(len(inList))
-    return mean
 
-#Used by: directions.py
-def remove_duplicates(inList):
-    return list(OrderedDict.fromkeys(list(itertools.chain(*inList))))
+#List Pair Operations:
 
-#Used by: routes.py
 def smart_concat(listA,listB):
+    """Used in graphs.py"""
     newList = listA + listB[1:]
     return newList
 
-#def operation_on_pieces(operation,pieceSize,inList):
-#    pieces=[inList[index:index+pieceSize] for index in xrange(0,len(inList),pieceSize)]
-#    resultPieces = map(operation,pieces)
-#    result = fast_concat(resultPieces)
-#    return result
+
+#Vector Operations:
 
 def safe_operation(operation,vectorA,vectorB):
     if len(vectorA) == len(vectorB):
@@ -83,45 +105,19 @@ def add(vectorA,vectorB):
 def subtract(vectorA,vectorB):
     return safe_operation(operator.sub,vectorA,vectorB)
 
+def entry_multiply(vectorA,vectorB):
+    return safe_operation(operator.mul,vectorA,vectorB)
+
 def scale(scalar,vector):
     return [element * scalar for element in vector]
 
 def norm(vector):
     return math.sqrt(sum(map(lambda x: x**2, vector)))
 
-def entry_multiply(vectorA,vectorB):
-    return safe_operation(operator.mul,vectorA,vectorB)
-
-
-def to_pairs(points):
-    pairs = []
-    for index in range(len(points) - 1):
-        pair = [points[index], points[index+1]]
-        pairs.append(pair)
-    return pairs
-
-def fix_inputString(inputString):
-    titleString = inputString.title()
-    return titleString.replace(" ","_")
-
-def edge_to_vector(edge):
-    edgeStart, edgeEnd = edge
-    edgeVector = subtract(edgeEnd, edgeStart)
-    return edgeVector
-
 def vector_to_angle(vector):
     xVal, yVal = vector
     angle = math.degrees(math.atan2(yVal, xVal))
     return angle    
-
-def distance_to_point(edge, distance):    
-    edgeStart, edgeEnd = edge               
-    edgeVector = subtract(edgeEnd, edgeStart)
-    edgeLength = norm(edgeVector)
-    scaleFactor = distance / edgeLength
-    scaledVector = scale(scaleFactor, edgeVector)
-    point = add(scaledVector, edgeStart)
-    return point
 
 def sample_vectorinterior(vector, spacing):
     if norm(vector) < spacing:
@@ -142,9 +138,24 @@ def build_grid(vector, spacing, startVector):
         grid = [add(point, startVector) for point in untranslatedGrid]
         return grid
 
+#Edge Operations:
+
+def edge_to_vector(edge):
+    edgeStart, edgeEnd = edge
+    edgeVector = subtract(edgeEnd, edgeStart)
+    return edgeVector
+
+#String Operations:
+
+def fix_inputString(inputString):
+    titleString = inputString.title()
+    return titleString.replace(" ","_")
+
 def smart_print(string):
     if config.verboseMode:
         print(string)     
+
+#Other Operations:
 
 def interval_to_value(inputVal, upperboundOutputValPairs, elseVal):
     for upperboundOutputValPair in upperboundOutputValPairs:
@@ -152,7 +163,6 @@ def interval_to_value(inputVal, upperboundOutputValPairs, elseVal):
         if inputVal < upperbound:
             return outputVal
     return elseVal
-
 
 def placeIndexinList(index, orderedList_of_integers):
     k = 0
