@@ -11,7 +11,7 @@ import util
 import cacher
 import visualize
 import sample_graphs
-import mergeTree
+import mergetree
 
 class Graph:
     pylonCost = 0
