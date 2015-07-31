@@ -151,15 +151,20 @@ def merge_two_graphs(graphA, graphB):
     return mergedGraph
 
 def graphs_sets_merger(graphsSetA, graphsSetB):
-    merged = []
-    for graphA in graphsSetA:
-        for graphB in graphsSetB:
+    mergedGraphs = []
+    print("graphsSetA:")
+    print(graphsSetA)
+    print("graphsSeB:")
+    print(graphsSetB)
+    for graphA in graphsSetA.selectedGraphs:
+        for graphB in graphsSetB.selectedGraphs:
             if is_graph_pair_compatible(graphA, graphB):            
-                merged.append(merge_two_graphs(graphA, graphB))
-    if (len(merged) == 0):
+                mergedGraphs.append(merge_two_graphs(graphA, graphB))
+    if (len(mergedGraphs) == 0):
         return None
     else:
-        return merged
+        mergedGraphsSet = GraphsSet(mergedGraphs)
+        return mergedGraphsSet
 
 def merge_basegraphssets(baseGraphSets):
     rootGraphSet = mergetree.merge_allobjects(baseGraphSets, graphs_sets_merger,
