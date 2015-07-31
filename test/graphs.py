@@ -1,30 +1,39 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To generate routes from the lattice edges and merge them.
-Last Modified: 7/27/15
+Last Modified: 7/30/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Removed angle differences (used for debugging).
+Last Modification Purpose: Graph merging now uses MergeTree and ParetoFront.
 """
 
 import config
 import util
 import cacher
 import visualize
-import sample_graphs
-import mergeTree
+import mergetree
+import paretofront
+import interpolate
 
 class Graph:
+    numEdges = 0
     pylonCost = 0
     landCost = 0
     startId = 0
     endId = 0
     startAngle = 0
     endAngle = 0
+    curvatureMetric = None
     latlngs = []
     geospatials = []
 
-    def __init__(self, pylonCost, landCost, startId, endId, startAngle,
-                 endAngle, latlngs, geospatials):
+    def compute_curvature(self):        
+        if self.numEdges > config.graphCurvatureMinNumEdges:
+            self.curvatureMetric = interpolate.graph_curvature(
+                            self.geospatials, config.graphSampleSpacing)
+
+    def __init__(self, numEdges, pylonCost, landCost, startId, endId,
+                 startAngle, endAngle, latlngs, geospatials):
+        self.numEdges = numEdges
         self.pylonCost = pylonCost
         self.landCost = landCost
         self.startId = startId
@@ -32,7 +41,14 @@ class Graph:
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.latlngs = latlngs
-        self.geospatials = geospatials
+        self.geospatials = geospatials    
+        self.compute_curvature()
+
+    def to_costcurvature_point(self):
+        if self.numEdges > config.graphCurvatureMinNumEdges:
+            cost = self.pylonCost + self.landCost
+            curvature = self.curvatureMetric
+            return [cost, curvature]
 
     def to_plottable(self, style):
         plottableGraph = [zip(*self.geospatials), style]
@@ -41,15 +57,87 @@ class Graph:
     def display(self):     
         print("This graph's land cost is: " + str(self.landcost) + ".")
         print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
+        print("This graph's root mean squared curvature is: " +
+              str(rmsCurvature) + ".")
 
+class GraphsSet:
+    minimizeCost = True
+    minimizeCurvature = True
+    graphsNumEdges = None #The number of edges each constituent graph has.
+    unfilteredGraphs = None
+    costCurvaturePoints = None
+    paretoFront = None
+    selectedGraphs = None      
 
+    def graphs_to_costcurvaturepoints(self):
+        if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
+            self.costCurvaturePoints = [graph.to_costcurvature_point()
+                                        for graph in self.unfilteredGraphs]
+
+    def select_graphs(self):
+        if self.costCurvaturePoints == None:
+            self.selectedGraphs = self.unfilteredGraphs
+        else:
+            self.paretoFront = paretofront.ParetoFront(self.costCurvaturePoints,
+                                                minimizeCost, minimizeCurvature)
+            selectedGraphIndices = self.paretoFront.frontsIndices[0]
+            self.selectedGraphs = [self.unfilteredGraphs[i] for i in
+                                   selectedGraphIndices]
+
+    def __init__(self, graphs):              
+        self.unfilteredGraphs = graphs
+        self.graphsNumEdges = self.unfilteredGraphs[0].numEdges
+        self.graphs_to_costcurvaturepoints()
+        self.select_graphs()
+
+    def update_graphs(self):
+        if self.paretoFront == None:
+            return False
+        else:
+            areGraphsUpdated = self.paretoFront.build_nextfront()
+            if areGraphsUpdated:
+                selectedGraphIndices = self.paretoFront.frontsIndices[-1]
+                for i in selectedGraphIndices:
+                    self.selectedGraphs.append(self.unfilteredGraphs[i])
+                return True
+            else:
+                return False       
+
+def graphset_updater(graphset):
+    isGraphSetUpdated = graphset.update_graphs()
+    return isGraphSetUpdated
+
+def edge_to_graph(edge):
+    numEdges = 1
+    pylonCost = edge.pylonCost
+    landCost = edge.landCost
+    startId = edge.startId
+    endId = edge.endId
+    startAngle = endAngle = edge.angle
+    latlngs = edge.latlngs
+    geospatials = edge.geospatials
+    newGraph = Graph(numEdges, pylonCost, landCost, startId, endId,
+                   startAngle, endAngle, latlngs, geospatials)
+    return newGraph
+
+def edges_set_to_graphs_set(edgesSet):
+    graphs = map(edge_to_graph, edgesSet)
+    graphsSet = GraphsSet(graphs) 
+    return graphsSet
+
+def edgessets_to_basegraphssets(edgessets):
+    baseGraphSets = map(edges_set_to_graphs_set, edgessets)
+    return baseGraphSets
+    
 def is_graph_pair_compatible(graphA, graphB):
     if (graphA.endId == graphB.startId):
-        if abs(graphA.endAngle - graphB.startAngle) < config.degreeConstraint:
+        angleDifference = abs(graphA.endAngle - graphB.startAngle)
+        if angleDifference < config.degreeConstraint:
             return True
     return False
 
 def merge_two_graphs(graphA, graphB):
+    numEdges = graphA.numEdges + graphB.numEdges
     pylonCost = graphA.pylonCost + graphB.pylonCost
     landCost = graphA.landCost + graphB.landCost
     startId = graphA.startId
@@ -58,28 +146,45 @@ def merge_two_graphs(graphA, graphB):
     endAngle = graphB.endAngle
     latlngs = util.smart_concat(graphA.latlngs, graphB.latlngs)
     geospatials = util.smart_concat(graphA.geospatials, graphB.geospatials)
-    mergedGraph = Graph(pylonCost, landCost, startId, endId, startAngle,
-                        endAngle, latlngs, geospatials)
+    mergedGraph = Graph(numEdges, pylonCost, landCost, startId, endId,
+                        startAngle, endAngle, latlngs, geospatials)
     return mergedGraph
 
-def edge_to_graph(edge):
-    pylonCost = edge.pylonCost
-    landCost = edge.landCost
-    startId = edge.startId
-    endId = edge.endId
-    startAngle = endAngle = edge.angle
-    latlngs = edge.latlngs
-    geospatials = edge.geospatials
-    newGraph = Graph(pylonCost, landCost, startId, endId, startAngle, endAngle,
-                     latlngs, geospatials)
-    return newGraph
+def graphs_sets_merger(graphsSetA, graphsSetB):
+    mergedGraphs = []
+    print("graphsSetA:")
+    print(graphsSetA)
+    print("graphsSeB:")
+    print(graphsSetB)
+    for graphA in graphsSetA.selectedGraphs:
+        for graphB in graphsSetB.selectedGraphs:
+            if is_graph_pair_compatible(graphA, graphB):            
+                mergedGraphs.append(merge_two_graphs(graphA, graphB))
+    if (len(mergedGraphs) == 0):
+        return None
+    else:
+        mergedGraphsSet = GraphsSet(mergedGraphs)
+        return mergedGraphsSet
 
-def edgesset_to_graphsset(edgesSet):
-    return [edge_to_graph(edge) for edge in edgesSet]
+def merge_basegraphssets(baseGraphSets):
+    rootGraphSet = mergetree.merge_allobjects(baseGraphSets, graphs_sets_merger,
+                                              graphset_updater)
+    return rootGraphSet
+    
+def build_graphs(edgessets):
+    baseGraphsSets = edgessets_to_basegraphssets(edgessets)
+    completeGraphs = merge_basegraphssets(baseGraphsSets)
+    #completeGraphs = recursivemerge_graphssets(baseGraphsSets)
+    return completeGraphs
+    
+def get_graphs(edgessets):
+    graphs = cacher.get_object("graphs", build_graphs, [edgessets],
+                                cacher.save_graphs, config.graphsFlag)
+    return graphs
 
-def edgessets_to_graphssets(edgesSets):
-    return [edgesset_to_graphsset(edgesSet) for edgesSet in edgesSets]
+        
 
+"""
 def merge_two_graphssets(graphsSetA, graphsSetB):
     merged = []
     for graphA in graphsSetA:
@@ -100,7 +205,6 @@ def merge_two_graphssets(graphsSetA, graphsSetB):
         raise ValueError('No compatible graphs in graphsets pair.')        
     sampledGraphs = sample_graphs.variation_constrained(merged)
     return sampledGraphs
-
 
 def recursivemerge_graphssets(graphsSets):
     layers = [graphsSets]
@@ -142,15 +246,4 @@ def recursivemerge_graphssets(graphsSets):
 
     completeGraphs = layers[layersIndex][0]  
     return completeGraphs
-
-def build_graphs(edgessets):
-    graphsSets = edgessets_to_graphssets(edgessets)
-    completeGraphs = recursivemerge_graphssets(graphsSets)
-    return completeGraphs
-    
-def get_graphs(edgessets):
-    graphs = cacher.get_object("graphs", build_graphs, [edgessets],
-                                cacher.save_graphs, config.graphsFlag)
-    return graphs
-
-        
+"""

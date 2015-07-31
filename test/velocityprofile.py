@@ -13,5 +13,5 @@ import time
 
 
 class VelocityProfile:
-    
+   x = 0 
 

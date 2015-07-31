@@ -14,6 +14,7 @@ import config
 import util
 import cacher
 import proj
+import interpolate
 
 class SlicePoint:
     """Builds a point from geospatial coordinates, id, and a rightofway flag"""
@@ -107,7 +108,7 @@ class Lattice:
             newSlice = Slice(idIndex, directionsPoint, splinePoint)
             idIndex = newSlice.idIndex
             self.latticeSlices.append(newSlice.as_list())
-            self.plottableSlices.append(newSlice.to_plottable())
+            self.plottableSlices.append(newSlice.plottable_slice())
 
 
 def build_directionsspline(directionsPoints):
@@ -127,7 +128,7 @@ def get_directionsspline(directionsPoints):
     return directionsSpline
 
 def get_lattice(sliceTValues, directionsPoints, xSpline, ySpline):
-    lattice = cacher.get_object("lattice", build_lattice,
+    lattice = cacher.get_object("lattice", Lattice,
               [sliceTValues, directionsPoints, xSpline, ySpline],
               cacher.save_lattice, config.latticeFlag)
     return lattice

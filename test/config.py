@@ -25,7 +25,7 @@ useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
-useCachedGraphs = True
+useCachedGraphs = False
 
 """
 Lattice Generation parameters
@@ -41,15 +41,15 @@ ndigits = 6 #the number of digits used for rounding
 """
 Graph Generation parameters
 """
-numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
-graphSampleSize = 10
+#numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
+#graphSampleSize = 10
+graphCurvatureMinNumEdges = 3
 
 """
 Engineering constraints.
 """
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
 maxSpeed = 330.0 #maximum speed of the capsule (in m/s)
-#maxCost = 15000000000
 
 """
 Pylon Cost parameters
@@ -64,8 +64,10 @@ landPointSpacing = 30.0 #spacing between points for land cost sampling in meters
 """
 Comfort parameters.
 """
-gTolerance = 0.5 * 9.81
-lateralAccel = 0.3 * 9.81
+linearAccelTol = 0.5 * 9.81
+lateralAccelTol = 0.3 * 9.81
+
+curvatureThreshhold = (lateralAccelTol / maxSpeed**2)
 
 """
 Legal Parameters

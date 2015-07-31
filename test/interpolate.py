@@ -1,13 +1,14 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide interpolation functions for use across program.
-Last Modified: 7/30/15
+Last Modified: 7/31/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Created Module
+Last Modification Purpose: Added function to compute curvature metric for graph
 """
 
 #Standard Modules:
 import scipy.interpolate
+import numpy as np
 
 #Our Modules:
 import util
@@ -90,6 +91,7 @@ def splines_curvature(xSpline, ySpline, tValues):
     return [tValues, curvature]
 
 def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
+    numPoints = tValues.size
     weights = np.ones(numPoints)
     weights[0] = weights[-1] = endWeights
 
@@ -103,3 +105,25 @@ def interpolating_splines(xArray, yArray, tValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     return [xSpline, ySpline]
+
+def curvature_metric(graphCurvatureArray):
+    curvatureSize = graphCurvatureArray.size
+    curvatureThreshhold = np.empty(curvatureSize)
+    curvatureThreshhold.fill(config.curvatureThreshhold)
+    absoluteCurvature = np.absolute(graphCurvatureArray)
+    relativeCurvature = np.subtract(absoluteCurvature, curvatureThreshhold)
+    excessCurvature = relativeCurvature.clip(min=0)
+    curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
+    return curvatureMetric
+
+def graph_curvature(graphPoints, graphSampleSpacing):
+    graphEdges = points_to_edges(graphPoints)
+    numPoints = len(graphPoints)
+    sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
+    tValues = get_tvalues(numPoints)
+    xValsArray, yValsArray = points_to_arrays(sampledGraphPoints)
+    xSpline, ySpline = interpolating_splines(xValsArray, yValsArray, tValues)
+    graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
+    graphCurvature = curvature_metric(graphCurvatureArray)
+    return graphCurvature
+     

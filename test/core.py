@@ -39,7 +39,7 @@ def build_lattice(directionsPoints):
     directionsEdges = util.to_pairs(directionsPoints)   
     sampledPoints = interpolate.sample_edges(directionsEdges,
                              config.directionsSampleSpacing)
-    xSpline, ySpline = lattice.get_spline(sampledPoints)    
+    xSpline, ySpline = lattice.get_directionsspline(sampledPoints)    
     splineTValues = interpolate.get_tvalues(len(sampledPoints))
     splineValues = interpolate.get_splinevalues(xSpline, ySpline, splineTValues)
     sliceTValues = interpolate.get_slicetvalues(splineTValues,
@@ -75,7 +75,7 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
-    fullRoutes = [computev2.route_to_fullRoute(route) for route in completeGraphs] 
+    #fullRoutes = [computev2.route_to_fullRoute(route) for route in completeGraphs] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     if config.visualMode:
