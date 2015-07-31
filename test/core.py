@@ -39,7 +39,7 @@ def build_lattice(directionsPoints):
     directionsEdges = util.to_pairs(directionsPoints)   
     sampledPoints = interpolate.sample_edges(directionsEdges,
                              config.directionsSampleSpacing)
-    xSpline, ySpline = lattice.get_spline(sampledPoints)    
+    xSpline, ySpline = lattice.get_directionsspline(sampledPoints)    
     splineTValues = interpolate.get_tvalues(len(sampledPoints))
     splineValues = interpolate.get_splinevalues(xSpline, ySpline, splineTValues)
     sliceTValues = interpolate.get_slicetvalues(splineTValues,

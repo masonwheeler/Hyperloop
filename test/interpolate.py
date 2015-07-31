@@ -8,6 +8,7 @@ Last Modification Purpose: Created Module
 
 #Standard Modules:
 import scipy.interpolate
+import numpy as np
 
 #Our Modules:
 import util
@@ -90,6 +91,7 @@ def splines_curvature(xSpline, ySpline, tValues):
     return [tValues, curvature]
 
 def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
+    numPoints = tValues.size
     weights = np.ones(numPoints)
     weights[0] = weights[-1] = endWeights
 

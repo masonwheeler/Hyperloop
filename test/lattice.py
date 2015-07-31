@@ -14,6 +14,7 @@ import config
 import util
 import cacher
 import proj
+import interpolate
 
 class SlicePoint:
     """Builds a point from geospatial coordinates, id, and a rightofway flag"""
