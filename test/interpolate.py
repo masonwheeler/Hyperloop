@@ -114,4 +114,14 @@ def graph_curvature(graphPoints, graphSampleSpacing):
     xValsArray, yValsArray = points_to_arrays(sampledGraphPoints)
     xSpline, ySpline = interpolating_splines(xValsArray, yValsArray, tValues)
     graphCurvature = splines_curvature(xSpline, ySpline, tValues)
-    
+   
+def curvature_metric(graphCurvature):
+    curvatureSize = graphCurvature.size
+    curvatureThreshhold = np.empty(curvatureSize)
+    curvatureThreshhold.fill(config.curvatureThreshhold)
+    absoluteCurvature = np.absolute(graphCurvature)
+    relativeCurvature = np.subtract(absoluteCurvature, curvatureThreshhold)
+    excessCurvature = relativeCurvature.clip(min=0)
+    curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
+    return curvatureMetric
+     
