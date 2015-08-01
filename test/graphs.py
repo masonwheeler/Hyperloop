@@ -73,6 +73,8 @@ class GraphsSet:
         if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
             self.costCurvaturePoints = [graph.to_costcurvature_point()
                                         for graph in self.unfilteredGraphs]
+            print("costCurvaturePoints:")
+            print(self.costCurvaturePoints)
 
     def select_graphs(self):
         if self.costCurvaturePoints == None:
@@ -152,17 +154,23 @@ def merge_two_graphs(graphA, graphB):
 
 def graphs_sets_merger(graphsSetA, graphsSetB):
     mergedGraphs = []
-    print("graphsSetA:")
-    print(graphsSetA)
-    print("graphsSeB:")
-    print(graphsSetB)
     for graphA in graphsSetA.selectedGraphs:
         for graphB in graphsSetB.selectedGraphs:
+            print(graphB.endId, graphA.startId)
             if is_graph_pair_compatible(graphA, graphB):            
                 mergedGraphs.append(merge_two_graphs(graphA, graphB))
     if (len(mergedGraphs) == 0):
+        print("no graphs were compatible")
+        plottableA = [graphA.to_plottable('k-') for graphA in
+                      graphsSetA.selectedGraphs]            
+        plottableB = [graphB.to_plottable('r-') for graphB in
+                      graphsSetB.selectedGraphs]
+        failedMergeResults = plottableA + plottableB        
+        visualize.plot_objects(failedMergeResults)
         return None
     else:
+        print("built a new graphset")
+        print(len(mergedGraphs))
         mergedGraphsSet = GraphsSet(mergedGraphs)
         return mergedGraphsSet
 
@@ -174,7 +182,6 @@ def merge_basegraphssets(baseGraphSets):
 def build_graphs(edgessets):
     baseGraphsSets = edgessets_to_basegraphssets(edgessets)
     completeGraphs = merge_basegraphssets(baseGraphsSets)
-    #completeGraphs = recursivemerge_graphssets(baseGraphsSets)
     return completeGraphs
     
 def get_graphs(edgessets):

@@ -9,7 +9,6 @@ Last Modification Purpose: To remove unnecessary
 
 #Standard Modules:
 import math
-from progress.bar import Bar
 
 #Our Modules
 import util
@@ -20,12 +19,6 @@ import pylons
 import landcover
 import cacher
 
-
-class SlowBar(Bar):
-    suffix = '%(percent).1f%% - %(minutes)d minutes remaining...'
-    @property
-    def minutes(self):
-        return self.eta // 60
 
 class Edge:
     isInRightOfWay = False

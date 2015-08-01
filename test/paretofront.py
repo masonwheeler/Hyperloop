@@ -121,7 +121,7 @@ class ParetoFront:
         #At least 3 points are needed to build a convex hull
         if numPoints < 3:           
             if numPoints == 0:
-                pass
+                raise ValueError("No Points passed to Pareto Front")
             else:   
                 frontIndices = self.prunedPointsIndices
                 self.frontsIndices.append(frontIndices)

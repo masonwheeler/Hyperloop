@@ -44,6 +44,7 @@ Graph Generation parameters
 #numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
 #graphSampleSize = 10
 graphCurvatureMinNumEdges = 3
+graphSampleSpacing = 1000.0
 
 """
 Engineering constraints.
