@@ -136,7 +136,7 @@ class MergeTree:
         self.get_data(data)
 
 
-def objects_to_leaves(objects, data_updater):   
+def objects_to_leaves(objects, data_updater):  
     """Takes list of objects and initializes a list of MergeTrees.""" 
     leavesList = [MergeTree(None, None, eachObject, None, data_updater)
                   for eachObject in objects]
@@ -157,8 +157,8 @@ def merge_branchlayer(branchLayer, children_merger, data_updater):
         nextBranchLayer.append(mergedBranch)
     if len(branchLayer) == 1:
         #Take last branch and merge it with the result of the previous merge
-        leftBranch = branchLayer.popleft()
-        rightBranch = nextBranchLayer.pop()
+        rightBranch = branchLayer.popleft()
+        leftBranch = nextBranchLayer.pop()
         data = None
         mergedBranch = MergeTree(leftBranch, rightBranch, data, children_merger,
                                                                 data_updater)
