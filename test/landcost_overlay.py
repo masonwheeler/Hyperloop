@@ -12,10 +12,15 @@ import lattice
 import cacher
 import core
 
+<<<<<<< HEAD
+config.pointSpacing = 30
+config.splineSampleSpacing = 3
+=======
 
 config.pointSpacing = 30
 config.splineSampleSpacing = 3
 config.cwd = os.getcwd()
+>>>>>>> cb1f006b738c4bf2adeee3301344022bdf424e81
 
 start = "Los_Angeles"
 end = "San_Francisco"
