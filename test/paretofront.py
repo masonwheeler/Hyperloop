@@ -6,7 +6,7 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To add comments.
 """
 
-from scipy.spatial import ConvexHull
+import scipy.spatial
 import numpy as np
 
 class ParetoFront:
@@ -127,7 +127,10 @@ class ParetoFront:
                 self.frontsIndices.append(frontIndices)
                 self.remove_frontindices(frontIndices)
         else:
-            convexHull = ConvexHull(self.pointsArray)
+            try:
+                convexHull = scipy.spatial.ConvexHull(self.pointsArray)
+            except scipy.spatial.qhull.QhullError:
+                raise ValueError("All points are in a line.")
             #The indices of the points in the convex hull in the points array.
             hullIndicesRelPoints = convexHull.vertices
             #The coordinates of the points in the convex hull.
@@ -154,7 +157,7 @@ class ParetoFront:
                 return True
         else:
             prunedPoints = self.pointsArray[self.prunedPointsIndices]
-            convexHull = ConvexHull(prunedPoints)
+            convexHull = scipy.spatial.ConvexHull(prunedPoints)
             hullIndicesRelPrunedPoints = convexHull.vertices
             hullIndicesRelOriginalPoints = self.prunedPointsIndices[
                                             hullIndicesRelPrunedPoints]

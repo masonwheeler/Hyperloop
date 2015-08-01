@@ -73,18 +73,22 @@ class GraphsSet:
         if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
             self.costCurvaturePoints = [graph.to_costcurvature_point()
                                         for graph in self.unfilteredGraphs]
-            print("costCurvaturePoints:")
-            print(self.costCurvaturePoints)
 
     def select_graphs(self):
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs
         else:
-            self.paretoFront = paretofront.ParetoFront(self.costCurvaturePoints,
-                                      self.minimizeCost, self.minimizeCurvature)
-            selectedGraphIndices = self.paretoFront.frontsIndices[0]
-            self.selectedGraphs = [self.unfilteredGraphs[i] for i in
-                                   selectedGraphIndices]
+            try:
+                self.paretoFront = paretofront.ParetoFront(
+                                  self.costCurvaturePoints,
+                                  self.minimizeCost, self.minimizeCurvature)
+                selectedGraphIndices = self.paretoFront.frontsIndices[-1]
+                print("unfilteredGraphsLen: " + str(len(self.unfilteredGraphs)))
+                print("selectedGraphIndices: " + str(selectedGraphIndices))
+                self.selectedGraphs = [self.unfilteredGraphs[i] for i in
+                                       selectedGraphIndices]
+            except ValueError:
+                self.selectedGraphs = self.unfilteredGraphs
 
     def __init__(self, graphs):              
         self.unfilteredGraphs = graphs

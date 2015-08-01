@@ -102,9 +102,7 @@ def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
     ySpline.set_smoothing_factor(smoothingFactor)
     return [xSpline, ySpline]
 
-def interpolating_splines(xArray, yArray):
-    numPoints = xArray.size
-    tValues = get_tvalues(numPoints)
+def interpolating_splines(xArray, yArray, tValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     ySpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, yArray)
     return [xSpline, ySpline]
@@ -117,15 +115,19 @@ def curvature_metric(graphCurvatureArray):
     relativeCurvature = np.subtract(absoluteCurvature, curvatureThreshhold)
     excessCurvature = relativeCurvature.clip(min=0)
     curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
+    #print(" curvature Array: " + str(graphCurvatureArray))
+    #print(" curvature threshhold: " + str(curvatureThreshhold))
+    print("curvature metric: " + str(curvatureMetric))
     return curvatureMetric
 
 def graph_curvature(graphPoints, graphSampleSpacing):
     graphEdges = points_to_edges(graphPoints)
-    numPoints = len(graphPoints)
     sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
+    xArray, yArray = points_to_arrays(sampledGraphPoints)
+    numPoints = xArray.size
     tValues = get_tvalues(numPoints)
-    xValsArray, yValsArray = points_to_arrays(sampledGraphPoints)
-    xSpline, ySpline = interpolating_splines(xValsArray, yValsArray)
+    xSpline, ySpline = interpolating_splines(xArray, yArray, tValues)
+    #splineValues = get_splinevalues(xSpline, ySpline
     graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
     graphCurvature = curvature_metric(graphCurvatureArray)
     return graphCurvature
