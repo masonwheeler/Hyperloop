@@ -45,7 +45,7 @@ def build_lattice(directionsPoints):
     sliceTValues = interpolate.get_slicetvalues(splineTValues,
                                   config.splineSampleSpacing)
     newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
-                                               xSpline, ySpline)    
+                                               xSpline, ySpline) 
     latticeSlices = newLattice.latticeSlices
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")

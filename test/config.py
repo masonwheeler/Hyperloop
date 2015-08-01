@@ -24,7 +24,7 @@ Cache Overwriting Switches.
 useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
-useCachedEdges = True
+useCachedEdges = False
 useCachedGraphs = False
 
 """
@@ -90,10 +90,10 @@ padding = 20   #padding (in meters)
 #Note the omission of Alaska only values (please enter values in USD/ meter^2.)
 costTable = {11: 300, #Open Water (Source: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf)
              12: 4, #Perennial Ice/Snow
-             21: 20,    #Developed, Open Space
+             21: 10,    #Developed, Open Space
              22: 20,    #Developed, Low Intensity
-             23: 20,    #Developed, Medium Intensity
-             24: 20,    #Developed, High Intensity
+             23: 50,    #Developed, Medium Intensity
+             24: 120,    #Developed, High Intensity
              31: 4,    #Barren Land
              41: 4,    #Deciduous Forest
              42: 4,    #Evergreen Forest

@@ -92,9 +92,7 @@ class Edge:
         edgeDict = {"geospatials" : self.geospatials,
                     "latlngs" : self.latlngs,
                     "landCost" : self.landCost,
-                    "pylonCost" : self.pylonCost,
-                    "pylons" : self.pylons,
-                    "landCostSamples" : self.landCostSamples}
+                    "pylonCost" : self.pylonCost}
         return edgeDict
 
     def display(self):
