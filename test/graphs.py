@@ -81,7 +81,7 @@ class GraphsSet:
             self.selectedGraphs = self.unfilteredGraphs
         else:
             self.paretoFront = paretofront.ParetoFront(self.costCurvaturePoints,
-                                                minimizeCost, minimizeCurvature)
+                                      self.minimizeCost, self.minimizeCurvature)
             selectedGraphIndices = self.paretoFront.frontsIndices[0]
             self.selectedGraphs = [self.unfilteredGraphs[i] for i in
                                    selectedGraphIndices]
@@ -156,7 +156,6 @@ def graphs_sets_merger(graphsSetA, graphsSetB):
     mergedGraphs = []
     for graphA in graphsSetA.selectedGraphs:
         for graphB in graphsSetB.selectedGraphs:
-            print(graphB.endId, graphA.startId)
             if is_graph_pair_compatible(graphA, graphB):            
                 mergedGraphs.append(merge_two_graphs(graphA, graphB))
     if (len(mergedGraphs) == 0):
@@ -169,8 +168,6 @@ def graphs_sets_merger(graphsSetA, graphsSetB):
         visualize.plot_objects(failedMergeResults)
         return None
     else:
-        print("built a new graphset")
-        print(len(mergedGraphs))
         mergedGraphsSet = GraphsSet(mergedGraphs)
         return mergedGraphsSet
 
