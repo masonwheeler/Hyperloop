@@ -117,7 +117,7 @@ def curvature_metric(graphCurvatureArray):
     curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
     #print(" curvature Array: " + str(graphCurvatureArray))
     #print(" curvature threshhold: " + str(curvatureThreshhold))
-    print("curvature metric: " + str(curvatureMetric))
+    #print("curvature metric: " + str(curvatureMetric))
     return curvatureMetric
 
 def graph_curvature(graphPoints, graphSampleSpacing):

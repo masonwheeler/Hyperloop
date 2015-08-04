@@ -182,7 +182,8 @@ def merge_basegraphssets(baseGraphSets):
     
 def build_graphs(edgessets):
     baseGraphsSets = edgessets_to_basegraphssets(edgessets)
-    completeGraphs = merge_basegraphssets(baseGraphsSets)
+    rootGraphSet = merge_basegraphssets(baseGraphsSets)
+    completeGraphs = rootGraphSet.data.selectedGraphs
     return completeGraphs
     
 def get_graphs(edgessets):
