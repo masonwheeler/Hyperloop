@@ -8,6 +8,7 @@ Last Modification Purpose: Added functions and classes for testing purposes
 
 import collections
 
+import config
 
 class MergeTree:
     """
@@ -169,6 +170,8 @@ def merge_allobjects(objects, children_merger, data_updater):
     """Recursively merges objects until list is completely merged."""
     branchLayer = objects_to_leaves(objects, data_updater) 
     while len(branchLayer) > 1:
+        config.holder += 1
+        print("On layer " + str(config.holder))
         branchLayer = merge_branchlayer(branchLayer, children_merger,
                                                      data_updater)
     mergedObjects = branchLayer[0]

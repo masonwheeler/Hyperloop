@@ -45,6 +45,7 @@ Graph Generation parameters
 #graphSampleSize = 10
 graphCurvatureMinNumEdges = 3
 graphSampleSpacing = 1000.0
+numFronts = 12
 
 """
 Engineering constraints.
@@ -142,6 +143,7 @@ workingSaveDirectory = ""
 Unitialized Global variables.
 """
 
+holder = 0
 proj = 0
 directionsCoords = 0
 plotQueue = []

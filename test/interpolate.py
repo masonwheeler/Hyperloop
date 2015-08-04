@@ -9,6 +9,7 @@ Last Modification Purpose: Added function to compute curvature metric for graph
 #Standard Modules:
 import scipy.interpolate
 import numpy as np
+import time
 
 #Our Modules:
 import util
@@ -118,17 +119,23 @@ def curvature_metric(graphCurvatureArray):
     #print(" curvature Array: " + str(graphCurvatureArray))
     #print(" curvature threshhold: " + str(curvatureThreshhold))
     #print("curvature metric: " + str(curvatureMetric))
-    return curvatureMetric
+    return curvatureMetric * 10**10
 
 def graph_curvature(graphPoints, graphSampleSpacing):
+    #t0 = time.clock()
     graphEdges = points_to_edges(graphPoints)
     sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
+    #t1 = time.clock()
+    #print("sampling edges took " + str(t1 -t0) + " seconds.")
     xArray, yArray = points_to_arrays(sampledGraphPoints)
     numPoints = xArray.size
     tValues = get_tvalues(numPoints)
+    #t2 = time.clock()
     xSpline, ySpline = interpolating_splines(xArray, yArray, tValues)
     #splineValues = get_splinevalues(xSpline, ySpline
     graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
     graphCurvature = curvature_metric(graphCurvatureArray)
+    #t3 = time.clock()
+    #print("Interpolating samples took " + str(t1 -t0) + " seconds.")
     return graphCurvature
      
