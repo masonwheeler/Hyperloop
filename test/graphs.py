@@ -14,6 +14,8 @@ import mergetree
 import paretofront
 import interpolate
 
+import time
+
 class Graph:
     numEdges = 0
     pylonCost = 0
@@ -33,6 +35,8 @@ class Graph:
 
     def __init__(self, numEdges, pylonCost, landCost, startId, endId,
                  startAngle, endAngle, latlngs, geospatials):
+        #config.holder += 1
+        #print("number of graphs created" + str(config.holder))
         self.numEdges = numEdges
         self.pylonCost = pylonCost
         self.landCost = landCost
@@ -53,6 +57,11 @@ class Graph:
     def to_plottable(self, style):
         plottableGraph = [zip(*self.geospatials), style]
         return plottableGraph
+
+    def plot_costcurvature(self):
+        costCurvature = self.to_costcurvature_point()
+        #return [costCurvature, style]
+        return costCurvature
         
     def display(self):     
         print("This graph's land cost is: " + str(self.landcost) + ".")
@@ -66,7 +75,7 @@ class GraphsSet:
     graphsNumEdges = None #The number of edges each constituent graph has.
     unfilteredGraphs = None
     costCurvaturePoints = None
-    paretoFront = None
+    front = None
     selectedGraphs = None      
 
     def graphs_to_costcurvaturepoints(self):
@@ -78,36 +87,60 @@ class GraphsSet:
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs
         else:
+            ##print("selecting graphs")
             try:
-                self.paretoFront = paretofront.ParetoFront(
+                self.front = paretofront.ParetoFront(
                                   self.costCurvaturePoints,
                                   self.minimizeCost, self.minimizeCurvature)
-                selectedGraphIndices = self.paretoFront.frontsIndices[-1]
-                print("unfilteredGraphsLen: " + str(len(self.unfilteredGraphs)))
-                print("selectedGraphIndices: " + str(selectedGraphIndices))
+                ##print("fronts indices" + str(self.front.frontsIndices))
+                selectedGraphsIndices = self.front.frontsIndices[-1]
+                ##print("Selected graphs indices: " + str(selectedGraphsIndices))
+                #print(selectedGraphsIndices)
+                numFronts = 1
+                while (self.front.build_nextfront() and
+                       numFronts <= config.numFronts):
+                    numFronts += 1
+                    ##print("fronts indices" + str(self.front.frontsIndices))
+                    ##print(self.front.frontsIndices[-1])                    
+                    selectedGraphsIndices += self.front.frontsIndices[-1]
+                    ##print("selected graphs indices: " + str(selectedGraphsIndices))
+                    #print(len(selectedGraphsIndices))
+                    ##print("Selected graphs indices: " + str(selectedGraphsIndices))
+                ##print("unfilteredGraphsLen: " + str(len(self.unfilteredGraphs)))
+                ##print("number of graphs: " + str(len(self.unfilteredGraphs)))
+                ##time.sleep(1)                
                 self.selectedGraphs = [self.unfilteredGraphs[i] for i in
-                                       selectedGraphIndices]
+                                       selectedGraphsIndices] 
             except ValueError:
+                ##print("encountered Value Error")
                 self.selectedGraphs = self.unfilteredGraphs
+                return 0
+    
+    def update_graphs(self):
+        ##print("updating graphs")
+        if self.front == None:
+            return False
+        else:
+            try:
+                areGraphsUpdated = self.front.build_nextfront()
+            except ValueError:
+                return False
+            if areGraphsUpdated:
+                selectedGraphIndices = self.front.frontsIndices[-1]
+                ##print("all fronts indices: " + str(self.front.frontsIndices))
+                ##print("selectedGraphIndices: " + str(selectedGraphIndices))
+                ##print("numunfilteredGraphs: " + str(len(self.unfilteredGraphs)))
+                for i in selectedGraphIndices:
+                    self.selectedGraphs.append(self.unfilteredGraphs[i])                
+                return True                
+            else:
+                return False       
 
     def __init__(self, graphs):              
         self.unfilteredGraphs = graphs
         self.graphsNumEdges = self.unfilteredGraphs[0].numEdges
         self.graphs_to_costcurvaturepoints()
-        self.select_graphs()
-
-    def update_graphs(self):
-        if self.paretoFront == None:
-            return False
-        else:
-            areGraphsUpdated = self.paretoFront.build_nextfront()
-            if areGraphsUpdated:
-                selectedGraphIndices = self.paretoFront.frontsIndices[-1]
-                for i in selectedGraphIndices:
-                    self.selectedGraphs.append(self.unfilteredGraphs[i])
-                return True
-            else:
-                return False       
+        self.select_graphs()       
 
 def graphset_updater(graphset):
     isGraphSetUpdated = graphset.update_graphs()
@@ -158,20 +191,27 @@ def merge_two_graphs(graphA, graphB):
 
 def graphs_sets_merger(graphsSetA, graphsSetB):
     mergedGraphs = []
-    for graphA in graphsSetA.selectedGraphs:
-        for graphB in graphsSetB.selectedGraphs:
+    selectedA = graphsSetA.selectedGraphs
+    selectedB = graphsSetB.selectedGraphs
+    #print("num points in selection A: " + str(len(selectedA)))
+    #print("num points in selection B: " + str(len(selectedB)))
+    for graphA in selectedA:
+        for graphB in selectedB:
+            #print(graphA.endId, graphB.startId)
             if is_graph_pair_compatible(graphA, graphB):            
                 mergedGraphs.append(merge_two_graphs(graphA, graphB))
     if (len(mergedGraphs) == 0):
-        print("no graphs were compatible")
-        plottableA = [graphA.to_plottable('k-') for graphA in
-                      graphsSetA.selectedGraphs]            
-        plottableB = [graphB.to_plottable('r-') for graphB in
-                      graphsSetB.selectedGraphs]
-        failedMergeResults = plottableA + plottableB        
-        visualize.plot_objects(failedMergeResults)
+        ##print("no graphs were compatible")
+        ##if config.visualMode:
+        ##    plottableA = [graphA.to_plottable('k-') for graphA in
+        ##                  graphsSetA.selectedGraphs]            
+        ##    plottableB = [graphB.to_plottable('r-') for graphB in
+        ##                  graphsSetB.selectedGraphs]
+        ##    failedMergeResults = plottableA + plottableB        
+        ##    visualize.plot_objects(failedMergeResults)
         return None
-    else:
+    else:              
+        #print("number of merged graphs:" + str(len(mergedGraphs)))
         mergedGraphsSet = GraphsSet(mergedGraphs)
         return mergedGraphsSet
 
@@ -182,7 +222,8 @@ def merge_basegraphssets(baseGraphSets):
     
 def build_graphs(edgessets):
     baseGraphsSets = edgessets_to_basegraphssets(edgessets)
-    completeGraphs = merge_basegraphssets(baseGraphsSets)
+    rootGraphSet = merge_basegraphssets(baseGraphsSets)
+    completeGraphs = rootGraphSet.data.selectedGraphs
     return completeGraphs
     
 def get_graphs(edgessets):

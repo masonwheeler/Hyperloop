@@ -6,7 +6,7 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To add comments.
 """
 
-import scipy.spatial
+import scipy
 import numpy as np
 
 class ParetoFront:
@@ -109,64 +109,127 @@ class ParetoFront:
             return frontIndices      
 
     def remove_frontindices(self, frontIndicesRelPoints):
-        """Give the indices of the points without the indices of the front."""
+        """Gives the indices of the points without the indices of the front."""
         self.prunedPointsIndices = np.setdiff1d(self.prunedPointsIndices,
                                                 frontIndicesRelPoints)
  
+    def remove_duplicates(self, pointsArray):
+        """Gives the indices of the unique points."""
+        #reshapes the points array into an array of tuples
+        tuplesArray = np.ascontiguousarray(pointsArray).view(
+        np.dtype((np.void, pointsArray.dtype.itemsize * pointsArray.shape[1])))        
+        #selects the indices of the unique tuples.
+        _, uniqueIndices = np.unique(tuplesArray, return_index=True)
+        return uniqueIndices
+
     def __init__(self, points, xReverse, yReverse):
+        self.frontsIndices = []
+        ##print("created new pareto front with fronts indices: " + str(self.frontsIndices))
         self.xReverse, self.yReverse = xReverse, yReverse
-        self.pointsArray = np.array(map(np.array, points))
+        #Raw points array may contain duplicates
+        rawPointsArray = np.array(map(np.array, points))
+        #The indices of the unique points in the raw points array.
+        uniqueIndices = self.remove_duplicates(rawPointsArray)
+        #The unique points in the raw points array.
+        self.pointsArray = rawPointsArray[uniqueIndices]
+        #The number of rows in the points array
         numPoints = self.pointsArray.shape[0]
+        #set the indices of the pruned points as the indices of all points
         self.prunedPointsIndices = np.arange(numPoints)
         #At least 3 points are needed to build a convex hull
-        if numPoints < 3:           
+        if numPoints < 3:                     
+            #if there are no points, raise a value error.
             if numPoints == 0:
                 raise ValueError("No Points passed to Pareto Front")
             else:   
+                #if there are 1 or 2 points, add these to the fronts
+                print("added last points")
                 frontIndices = self.prunedPointsIndices
-                self.frontsIndices.append(frontIndices)
+                self.frontsIndices.append(frontIndices.tolist())
                 self.remove_frontindices(frontIndices)
         else:
+            #If there are enough points, try to build a convex hull.
             try:
                 convexHull = scipy.spatial.ConvexHull(self.pointsArray)
+            #If convex hull not built, raise a value error.
             except scipy.spatial.qhull.QhullError:
+                print("all points are in a line.")
                 raise ValueError("All points are in a line.")
-            #The indices of the points in the convex hull in the points array.
-            hullIndicesRelPoints = convexHull.vertices
-            #The coordinates of the points in the convex hull.
-            hullVertices = self.pointsArray[hullIndicesRelPoints]
-            #The indices of the points in the pareto front within the hull.
+            #If another strange error occurs, record that.
+            except ValueError:
+                print("Qhull encountered other error")
+                raise ValueError("Qhull encountered other error")
+            #The indices of the vertices in the convex hull in the points array
+            hullIndices = convexHull.vertices
+            #The vertices in the convex hull.
+            hullVertices = self.pointsArray[hullIndices]
+            #The indices of the points in the pareto front in the hull array.
             frontIndicesRelHull = self.vertices_to_frontindices(hullVertices,
                                                 self.xReverse, self.yReverse)
             #The indices of the points in the pareto front in the points array.
-            frontIndicesRelPoints = hullIndicesRelPoints[frontIndicesRelHull]
+            frontIndicesRelPoints = hullIndices[frontIndicesRelHull]
             #Add the indices of the points in the pareto front to list.
-            self.frontsIndices.append(frontIndicesRelPoints)
+            self.frontsIndices.append(frontIndicesRelPoints.tolist())
             #Remove the indices of the points in the pareto front from list.
             self.remove_frontindices(frontIndicesRelPoints)
 
     def build_nextfront(self):
-        """Build the Pareto front of the points with the last front removed."""
-        numPointsLeft = self.prunedPointsIndices.shape[0]
+        """
+        Build the Pareto front of the points with the last front removed
+
+        If the next front is successfully built return True, otherwise False.
+        Since points array does not have duplicates,
+        the pruned points array does not have duplicates.
+        """
+        #Initialize the points which have not been in a front yet
+        prunedPoints = self.pointsArray[self.prunedPointsIndices]
+        #The number of rows in the pruned points array
+        numPointsLeft = prunedPoints.shape[0]
+        #At least 3 points are needed to build a convex hull
         if numPointsLeft < 3:
+            #If there are no points, record failure
             if numPointsLeft == 0:
                 return False
             else:
+                #If there are 1 or 2 points, add them to the front
                 frontIndicesRelPoints = self.prunedPointsIndices
+                self.frontsIndices.append(frontIndicesRelPoints.tolist())
                 self.remove_frontindices(frontIndicesRelPoints)
                 return True
         else:
-            prunedPoints = self.pointsArray[self.prunedPointsIndices]
-            convexHull = scipy.spatial.ConvexHull(prunedPoints)
+            #If there are enough points, try to build a convex hull
+            try:               
+                convexHull = scipy.spatial.ConvexHull(prunedPoints)
+            #if convex hull not built, raise a value error.
+            except scipy.spatial.qhull.QhullError:
+                print("all points are in a line.")
+                raise ValueError("All points are in a line.")
+            #If another strange error occurs, record that.
+            except ValueError:
+                print("Qhull encountered other error")
+                raise ValueError("Qhull encountered other error")
+            #The indices of the vertices in the convex hull 
+            # relative to the pruned points array
             hullIndicesRelPrunedPoints = convexHull.vertices
-            hullIndicesRelOriginalPoints = self.prunedPointsIndices[
+            #The indices of the vertices in the convex hull
+            # relative to the points array
+            hullIndicesRelPoints = self.prunedPointsIndices[
                                             hullIndicesRelPrunedPoints]
-            hullVertices = self.pointsArray[hullIndicesRelOriginalPoints]
+            #The vertices in the convex hull
+            hullVertices = self.pointsArray[hullIndicesRelPoints]
+            #The indices of the points in the front 
+            # relative to the convex hull.
             frontIndicesRelHull = self.vertices_to_frontindices(hullVertices,
                                                 self.xReverse, self.yReverse)
-            frontIndicesRelOriginalPoints = hullIndicesRelOriginalPoints[
-                                          frontIndicesRelHull]
-            self.frontsIndices.append(frontIndicesRelOriginalPoints)
-            self.remove_frontindices(frontIndicesRelOriginalPoints)            
+            #The indices of the points in the front
+            # relative to the points array.
+            frontIndicesRelPoints = hullIndicesRelPoints[frontIndicesRelHull]
+            #Add the indices of the points in the pareto front to list.
+            ##print("front indices: " + str(frontIndicesRelPoints))          
+            frontIndicesList = frontIndicesRelPoints.tolist()
+            ##print(frontIndicesList)
+            self.frontsIndices.append(frontIndicesList)          
+            #Remove the indices of the points in the pareto front from list.
+            self.remove_frontindices(frontIndicesRelPoints)            
             return True          
 

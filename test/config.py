@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = False
 timingMode = False
 useDropbox = False
@@ -45,6 +45,7 @@ Graph Generation parameters
 #graphSampleSize = 10
 graphCurvatureMinNumEdges = 3
 graphSampleSpacing = 1000.0
+numFronts = 8
 
 """
 Engineering constraints.
@@ -142,6 +143,7 @@ workingSaveDirectory = ""
 Unitialized Global variables.
 """
 
+holder = 0
 proj = 0
 directionsCoords = 0
 plotQueue = []

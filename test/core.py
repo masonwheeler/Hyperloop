@@ -29,9 +29,9 @@ def build_directions(start, end):
     proj.set_projection(startLatLng, endLatLng)
     directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
                                                    config.proj)
-    if config.visualMode:
-        plottableDirections = [zip(*directionsPoints), 'y-'] 
-        config.plotQueue.append(plottableDirections)
+    #if config.visualMode:
+    #    plottableDirections = [zip(*directionsPoints), 'y-'] 
+    #    config.plotQueue.append(plottableDirections)
     return directionsPoints
 
 def build_lattice(directionsPoints):
@@ -49,9 +49,9 @@ def build_lattice(directionsPoints):
     latticeSlices = newLattice.latticeSlices
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
-    if config.visualMode:
-        plottableSpline = [splineValues, 'r-']
-        config.plotQueue.append(plottableSpline)
+    #if config.visualMode:
+    #    plottableSpline = [splineValues, 'r-']
+    #    config.plotQueue.append(plottableSpline)
     return latticeSlices
 
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
@@ -67,6 +67,14 @@ def build_graphs(latticeSlices):
     #config.plotQueue += plottableGraphs
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
+    if config.visualMode:
+        #plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
+        costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
+        costs, curvatures = zip(*costCurvature)
+        visualize.scatter_plot(costs, curvatures)
+        #print(plottableCostCurvature)
+        #config.plotQueue += plottableGraphs
+        #config.plotQueue += plottableCostCurvature
     return completeGraphs
 
 def pair_analysis(start,end):
@@ -78,6 +86,6 @@ def pair_analysis(start,end):
     #fullRoutes = [computev2.route_to_fullRoute(route) for route in completeGraphs] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
-    if config.visualMode:
-        visualize.plot_objects(config.plotQueue)
+    #if config.visualMode:
+    #    visualize.plot_objects(config.plotQueue)
     return 0
