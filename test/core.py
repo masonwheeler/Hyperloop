@@ -60,6 +60,10 @@ def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    for graph in completeGraphs:
+        print("pylon cost: " + str(graph.pylonCost))
+        print("land cost: " + str(graph.landCost))
+        print("curvature: " + str(graph.curvatureMetric))
     #randomGraph = random.choice(completeGraphs) 
     #plottableGraph = randomGraph.to_plottable('b-') 
     #plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]

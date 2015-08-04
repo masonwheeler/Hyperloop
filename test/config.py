@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = False
 timingMode = False
 useDropbox = False
@@ -45,7 +45,7 @@ Graph Generation parameters
 #graphSampleSize = 10
 graphCurvatureMinNumEdges = 3
 graphSampleSpacing = 1000.0
-numFronts = 8
+numFronts = 12
 
 """
 Engineering constraints.
