@@ -66,9 +66,9 @@ def build_graphs(latticeSlices):
         print("curvature: " + str(graph.curvatureMetric))
     #randomGraph = random.choice(completeGraphs) 
     #plottableGraph = randomGraph.to_plottable('b-') 
-    #plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]
+    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]
     #config.plotQueue.append(plottableGraph)
-    #config.plotQueue += plottableGraphs
+    config.plotQueue += plottableGraphs
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
     if config.visualMode:
