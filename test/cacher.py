@@ -17,6 +17,7 @@ import util
 
 
 def create_basefolders():
+    """Creates the cache and save folders"""    
     cacheDirectory = config.cwd + "/cache/"
     config.cacheDirectory = cacheDirectory
     if config.useDropbox:
@@ -30,16 +31,19 @@ def create_basefolders():
         os.makedirs(saveDirectory)
 
 def create_workingcachename(start,end):
+    """Names the cache folder for a given city pair"""
     workingCacheName = "_".join([start,"to",end])
     config.workingCacheName = workingCacheName
     return workingCacheName
 
 def create_workingsavedirname(start,end):
+    """Names the save folder for a given city pair"""
     workingSaveDirName = "_".join([start,"to",end])
     config.workingSaveDirName = workingSaveDirName
     return workingSaveDirName
 
 def create_workingcachedirectory(workingCacheName):
+    """Creates the cache folder for a given city pair"""
     workingCacheDirectory = config.cacheDirectory + workingCacheName + "/"
     config.workingCacheDirectory = workingCacheDirectory
     if not os.path.exists(workingCacheDirectory):
@@ -47,12 +51,14 @@ def create_workingcachedirectory(workingCacheName):
     return workingCacheDirectory
 
 def create_routesdirectory(workingSaveDirectory):
+    """Creates the folder used to save completed routes"""
     routesDirectory = workingSaveDirectory + "routes/"
     if not os.path.exists(routesDirectory):
         os.makedirs(routesDirectory)
     return routesDirectory
 
 def create_workingsavedirectory(workingSaveDirName):
+    """Creates the save directory for a given city pair"""
     workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
     create_routesdirectory(workingSaveDirectory + workingSaveDirName + "_")
     config.workingSaveDirectory = workingSaveDirectory
@@ -61,6 +67,7 @@ def create_workingsavedirectory(workingSaveDirName):
     return workingSaveDirectory
 
 def create_necessaryfolders(start, end):
+    """Creates all of the cache and save folders"""
     create_basefolders()
     workingCacheName = create_workingcachename(start,end)
     workingSaveDirName = create_workingsavedirname(start,end)

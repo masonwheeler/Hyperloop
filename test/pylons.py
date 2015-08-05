@@ -10,7 +10,7 @@ import util
 import config
 
 
-def build_pylons(pylonLocations): #, tubeSamples):
+def build_pylons(pylonLocations):
     pylonLocationsByElevation = sorted(pylonLocations,
         key=lambda pylonLocation : pylonLocation["elevation"])
     highestPylonLocation = pylonLocationsByElevation[-1]
@@ -20,10 +20,8 @@ def build_pylons(pylonLocations): #, tubeSamples):
         pylonLocation["pylonHeight"] = \
           highestElevation - pylonLocation["elevation"]
 
-    #for tubeSample in tubeSamples:
-    #    tubeSample["elevation"] = highestElevation
         
-    return pylonLocations #, tubeSamples]
+    return pylonLocations
         
 def get_pyloncosts(pylonLocations):
     for pylonLocation in pylonLocations:
