@@ -118,8 +118,9 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):
 
 
 def save_listlike(listObject, listName):    
-    listSavePath = get_object_savepath(listName)
-    with open(listSavePath + ".csv", 'wb') as listHandle:
+    #listSavePath = get_object_savepath(listName)
+    savepath = config.dropboxDirectory + "/save/" + listName + ".csv" 
+    with open(savepath, 'wb') as listHandle:
         writer = csv.writer(listHandle)
         writer.writerows(listObject)       
 
