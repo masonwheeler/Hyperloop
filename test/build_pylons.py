@@ -125,39 +125,4 @@ def get_relevant_indices(elevations, pylonSpacing):
       i += 1
     
     return relevantIndices
-
-
-def build_pylons(pylonLocations):
-    pylonLocationElevations = [pylonLocation["elevation"] for pylonLocation in pylonLocations]
-    curvatureTolerance = config.gTolerance * math.pow(config.maxSpeed, 2)
-    relevantIndices = get_relevant_indices(paddedElevations, config.pylonSpacing,
-                                           curvatureTolerance)
-
-    sVals = [n * config.pylonSpacing for n in range(len(pylonLocations))]
-    sPoints = [sVals[relevantIndex] for relevantIndex in relevantIndices]
-    zPoints = [paddedElevations[relevantIndex] for relevantIndex
-                                               in relevantIndices]
-    sVals, zVals = szPointstozVals(sPoints, zPoints, 5, sVals)
-#    Heights = szPointstoHeights(sPoints, zPoints, 5)
-    pylonHeights = util.subtract(zVals,pylonLocationElevations)
-
-    for i in range(len(pylonLocations)):
-        pylonLocations[i]["pylonHeight"] = pylonHeights[i]
-    return pylonLocations
-
-
-
-def get_pyloncosts(pylonLocations):
-    for pylonLocation in pylonLocations:
-        if pylonLocation["pylonHeight"] >= 0:
-          pylonLocation["pylonCost"] = (config.pylonBaseCost + 
-              pylonLocation["pylonHeight"] * config.pylonCostPerMeter)
-        else:
-          pylonLocation["pylonCost"] = config.pylonSpacing * config.tunnelingCostPerMeter)
-    return pylonLocations
-
-
-def route_pyloncost(pylonLocations):
-    routePylonCost = sum([pylonLocation["pylonCost"] for pylonLocation
-                         in pylonLocations])
-    return routePylonCost
+    
