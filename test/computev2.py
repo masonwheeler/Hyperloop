@@ -9,6 +9,9 @@ Last Modification Purpose: To make compatible with graph modifications.
 #Standard Modules:
 import math
 import numpy as np
+import csv
+import matplotlib.pyplot as plt
+
 
 #Our Modules
 import genVelocityv2 as gen
@@ -60,13 +63,15 @@ def graph_to_route(xPoints):
 #    xPoints = graph.geospatials
     tPoints = np.arange(10,200.000001,(200-10.)/(len(xPoints)-1))
     xVals = np.transpose(spat.txPointstoxyVals(tPoints, xPoints, 7))
-    sVals, vVals = gen.vPoints(xVals)
+    sVals, vVals, vMaxVals = gen.vPoints(xVals)
     zVals = build_pylons.build_pylons(sVals, xVals)
     points = [(xVals[i][0],xVals[i][1],zVals[i]) for i in range(len(xVals))]
     tVals = param.vValstotVals(sVals, vVals)
     vVals = [vVals[i-1]*(points[i]-points[i-1])/np.linalg.norm(points[i]-points[i-1]) for i in range(1,len(vVals))]+[[0,0]]
     aVals = np.transpose([ND(vVals[:][mu], tVals) for mu in [0,1,2]])
-
+    
+    plt.plot(sVals, vVals, sVals, vMaxVals)
+    plt.show()
     # Sample velocity and acceleration at "s":   
     vSamples = chunks(vVals, config.numHeights)
     aSamples = chunks(aVals, config.numHeights)
@@ -77,3 +82,15 @@ def graph_to_route(xPoints):
     comfort = [cmft.comfort(vSamples[i], aSamples[i], T[i], mu) for i in range(len(vSamples))]
     cost = 0  #    cost = graph.landCost + graph.pylonCost
     return Route(cost, tVals, points, vVals, aVals, comfort)
+
+
+
+with open('graph001.csv', 'rb') as f:
+    reader = csv.reader(f)
+    xPoints = list(reader)
+
+graph_to_route(xPoints)
+
+
+
+
