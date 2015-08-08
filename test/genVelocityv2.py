@@ -36,21 +36,27 @@ def sort_vMaxindices(vMaxPoints):
 def get_relevant_indices(vMaxPoints, sPoints):
   lowest = sort_vMaxindices(vMaxPoints)    
   relevantIndices = [0, len(vMaxPoints)- 1]  #[beginning of route, lowest location, end of route]
+  print 
   def newLocationisBad(i):
-    newLocation = util.placeIndexinList(lowest[i], relevantIndices) # append newcomer to list; try it on for size
-    actualForwardChange = np.absolute(vMaxPoints[newLocation+1]-vMaxPoints[newLocation])
-    if (np.absolute(sPoints[newLocation+1] - sPoints[newLocation]) < 2*config.linearAccelTol/config.jerkTol):
-      maxForwardChange = np.absolute((sPoints[newLocation+1] - sPoints[newLocation])/2)**2*config.jerkTol
-    else: 
-      maxForwardChange = np.absolute(sPoints[newLocation+1] - sPoints[newLocation]-config.linearAccelTol/config.jerkTol)*config.linearAccelTol
-    actualBackwardChange = np.absolute(vMaxPoints[newLocation]-vMaxPoints[newLocation-1])
-    if (np.absolute(sPoints[newLocation] - sPoints[newLocation-1]) < 2*config.linearAccelTol/config.jerkTol):
-      maxBackwardChange = np.absolute((sPoints[newLocation] - sPoints[newLocation-1])/2)**2*config.jerkTol
-    else: 
-      maxBackwardChange = np.absolute(sPoints[newLocation] - sPoints[newLocation-1]-config.linearAccelTol/config.jerkTol)*config.linearAccelTol
-    relevantIndices.pop(newLocation) # return list back to normal
-    if (actualForwardChange > maxForwardChange or actualBackwardChange > maxBackwardChange):  # Let's see; how did we do?
-      return True
+    print i
+    print lowest[i]
+    if i < len(lowest)-1:
+      newLocation = util.placeIndexinList(lowest[i], relevantIndices) # append newcomer to list; try it on for size
+      actualForwardChange = np.absolute(vMaxPoints[relevantIndices[newLocation+1]]-vMaxPoints[relevantIndices[newLocation]])
+      if (np.absolute(sPoints[relevantIndices[newLocation+1]] - sPoints[relevantIndices[newLocation]]) < 2*config.linearAccelTol/config.jerkTol):
+        maxForwardChange = np.absolute((sPoints[relevantIndices[newLocation+1]] - sPoints[relevantIndices[newLocation+1]])/2)**2*config.jerkTol
+      else: 
+        maxForwardChange = np.absolute(sPoints[relevantIndices[newLocation+1]] - sPoints[relevantIndices[newLocation]]-config.linearAccelTol/config.jerkTol)*config.linearAccelTol
+      actualBackwardChange = np.absolute(vMaxPoints[relevantIndices[newLocation]]-vMaxPoints[relevantIndices[newLocation-1]])
+      if (np.absolute(sPoints[relevantIndices[newLocation]] - sPoints[relevantIndices[newLocation-1]]) < 2*config.linearAccelTol/config.jerkTol):
+        maxBackwardChange = np.absolute((sPoints[relevantIndices[newLocation]] - sPoints[relevantIndices[newLocation-1]])/2)**2*config.jerkTol
+      else: 
+        maxBackwardChange = np.absolute(sPoints[relevantIndices[newLocation]] - sPoints[relevantIndices[newLocation-1]]-config.linearAccelTol/config.jerkTol)*config.linearAccelTol
+      relevantIndices.pop(newLocation) # return list back to normal
+      if (actualForwardChange > maxForwardChange or actualBackwardChange > maxBackwardChange):  # Let's see; how did we do?
+        return True
+      else:
+        return False
     else:
       return False
 
@@ -58,14 +64,16 @@ def get_relevant_indices(vMaxPoints, sPoints):
     i = 0
     while newLocationisBad(i):
       i+=1
-    if i == len(lowest)-1:
+    if (i >= len(lowest)-1 or len(lowest)<2):
       return "Stop"
     else:
       util.placeIndexinList(lowest[i], relevantIndices)
+      lowest.pop(i)
       return "Go"
 
   while scan() == "Go":  #we will continue to zero-out pylons while it is safe to do so. 
     print "scanning."
+  print relevantIndices
   return relevantIndices
 
 
@@ -75,3 +83,5 @@ def vPoints(xPoints):
   relevantsPoints, relevantvMaxPoints = [[sPoints[i] for i in relevantIndices], [vmaxpoints[i] for i in relevantIndices]]
   vFunc = interp1d(relevantsPoints, relevantvMaxPoints, kind='cubic')
   return [sPoints, vFunc(sPoints), vmaxpoints]
+
+
