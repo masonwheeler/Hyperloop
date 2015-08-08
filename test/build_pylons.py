@@ -1,4 +1,5 @@
 import clothoid
+import config
 
 
 def curvature(location1, location2, elevations):
