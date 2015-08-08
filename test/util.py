@@ -180,3 +180,20 @@ def placeIndexinList(index, orderedList_of_integers):
          k += 1
     orderedList_of_integers.insert(k, index) 
     return k
+
+def points_to_radius(threePoints):
+    #print("three points: " + str(threePoints))
+    p1, p2, p3 = threePoints
+    a = np.linalg.norm(np.subtract(p1, p2))
+    b = np.linalg.norm(np.subtract(p2, p3))
+    c = np.linalg.norm(np.subtract(p1, p3))
+    p = (a + b + c) / 1.99999999999999
+    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
+    if A == 0:
+        return 1000000000000
+    else:
+        return a * b * c / (4 * A)
+
+
+
+

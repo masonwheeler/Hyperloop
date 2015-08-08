@@ -79,4 +79,4 @@ def vPoints(xPoints):
     relevantIndices = get_relevant_indices(vMaxPoints, sPoints)
     relevantsPoints, relevantvMaxPoints = [[sPoints[i] for i in relevantIndices], [vMaxPoints[i] for i in relevantIndices]]
     vFunc = interp1d(relevantsPoints, relevantvMaxPoints, kind='cubic')
-    return vFunc(sPoints)
+    return [sPoints, vFunc(sPoints)]

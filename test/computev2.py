@@ -11,7 +11,7 @@ import math
 import numpy as np
 
 #Our Modules
-import velocityprofile as vel
+import genVelocityv2 as gen
 import spatialinterpolation as spat
 import reparametrize as param
 import config
@@ -57,12 +57,9 @@ def chunks(l, n):
 
 def graph_to_route(graph):
     xPoints = graph.geospatials
-    sPoints, vPoints = vel.xPointstovPoints(xPoints)
-    vFunc = vel.vPointstovFunc(sPoints, vPoints)
     tPoints = np.arange(10,200.000001,(200-10.)/(len(xPoints)-1))
     xVals = np.transpose(spat.txPointstoxyVals(tPoints, xPoints, 7))
-    sVals = param.xValstosVals(xVals)
-    vVals = param.vFunctovVals(vFunc, sVals, sPoints)
+    sVals, vVals = gen.vPoints(xVals)
     tVals = param.vValstotVals(sVals, vVals)
     vVals = [vVals[i-1]*(xVals[i]-xVals[i-1])/np.linalg.norm(xVals[i]-xVals[i-1]) for i in range(1,len(vVals))]+[[0,0]]
     aVals = np.transpose([ND(vVals[:][mu], tVals) for mu in [0,1]])
