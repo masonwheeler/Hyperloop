@@ -63,15 +63,19 @@ def graph_to_route(xPoints):
 #    xPoints = graph.geospatials
     tPoints = np.arange(10,200.000001,(200-10.)/(len(xPoints)-1))
     xVals = np.transpose(spat.txPointstoxyVals(tPoints, xPoints, 7))
-    sVals, vVals, vMaxVals = gen.vPoints(xVals)
-    zVals = build_pylons.build_pylons(sVals, xVals)
+    sVals, vVals, vmaxvals = gen.vPoints(xVals)
+    sVals, zVals, pylonElevations = build_pylons.build_pylons(sVals, xVals)
     points = [(xVals[i][0],xVals[i][1],zVals[i]) for i in range(len(xVals))]
     tVals = param.vValstotVals(sVals, vVals)
     vVals = [vVals[i-1]*(points[i]-points[i-1])/np.linalg.norm(points[i]-points[i-1]) for i in range(1,len(vVals))]+[[0,0]]
     aVals = np.transpose([ND(vVals[:][mu], tVals) for mu in [0,1,2]])
     
-    plt.plot(sVals, vVals, sVals, vMaxVals)
+    plt.plot(sVals, vVals, sVals, vmaxvals)
     plt.show()
+
+    plt.plot(sVals, zVals, sVals, pylonElevations)
+    plt.show()
+
     # Sample velocity and acceleration at "s":   
     vSamples = chunks(vVals, config.numHeights)
     aSamples = chunks(aVals, config.numHeights)
@@ -89,6 +93,7 @@ with open('graph001.csv', 'rb') as f:
     reader = csv.reader(f)
     xPoints = list(reader)
 
+xPoints = [[float(xPoint[0]),float(xPoint[1])] for xPoint in xPoints]
 graph_to_route(xPoints)
 
 

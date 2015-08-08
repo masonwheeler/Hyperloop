@@ -12,6 +12,7 @@ import math
 import itertools
 import operator
 from collections import OrderedDict
+import numpy as np
 
 #Our Modules
 import config
