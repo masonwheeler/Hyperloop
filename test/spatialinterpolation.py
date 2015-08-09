@@ -12,6 +12,7 @@ import numpy as np
 
 #Our Modules:
 import quintic as quint
+import config
 
 def txPointstoxVals(tPoints, xPoints, n , mu):
   xPoints = [point[mu] for point in xPoints]
@@ -28,9 +29,9 @@ def txPointstoxVals(tPoints, xPoints, n , mu):
     for j in range(1,m-1):
       G[j] = [tPoints[j*n:(j+1)*n+1],xPoints[j*n:(j+1)*n+1], (xPoints[j*n+1]-xPoints[j*n])/(tPoints[j*n+1]-tPoints[j*n]),0,(xPoints[(j+1)*n+1]-xPoints[(j+1)*n])/(tPoints[(j+1)*n+1]-tPoints[(j+1)*n]),0]
     G[-1] = [tPoints[(m-1)*n:N+1], xPoints[(m-1)*n:N+1],(xPoints[(m-1)*n+1]-xPoints[(m-1)*n])/(tPoints[(m-1)*n+1]-tPoints[(m-1)*n]) ,0,0,0]
-  xCoeffs = sum([quint.interp(g) for g in G],[])
-  tVals = sum([[tPoints[j]+(i/128.)*(tPoints[j+1]-tPoints[j]) for i in range(2,128)] for j in range(len(tPoints)-1)],[])
-  xVals = quint.Coeffs_to_Vals(xCoeffs, tVals, tPoints)
+  xCoeffs = sum([quint.minimum_jerk_interpolation(g) for g in G],[])
+  tVals = sum([[tPoints[j]+(i/config.numHeights)*(tPoints[j+1]-tPoints[j]) for i in range(2,config.numHeights)] for j in range(len(tPoints)-1)],[])
+  xVals = quint.coeffs_to_vals(xCoeffs, tVals, tPoints)
   return [tVals, xVals]
 
 def txPointstoxyVals(tPoints, xPoints, n):

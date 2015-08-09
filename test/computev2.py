@@ -9,12 +9,16 @@ Last Modification Purpose: To make compatible with graph modifications.
 #Standard Modules:
 import math
 import numpy as np
+import csv
+import matplotlib.pyplot as plt
+
 
 #Our Modules
-import velocityprofile as vel
+import genVelocityv2 as gen
 import spatialinterpolation as spat
 import reparametrize as param
 import config
+import build_pylons
 
 class Route:
     cost = 0
@@ -55,38 +59,43 @@ def chunks(l, n):
     chunks = [l[i:i + n] for i in range(0, len(l), n)]
     return chunks
 
-def graph_to_route(graph):
-    xPoints = graph.geospatials
-    sPoints, vPoints = vel.xPointstovPoints(xPoints)
-    vFunc = vel.vPointstovFunc(sPoints, vPoints)
+def graph_to_route(xPoints):
+#    xPoints = graph.geospatials
     tPoints = np.arange(10,200.000001,(200-10.)/(len(xPoints)-1))
     xVals = np.transpose(spat.txPointstoxyVals(tPoints, xPoints, 7))
-    sVals = param.xValstosVals(xVals)
-    vVals = param.vFunctovVals(vFunc, sVals, sPoints)
+    sVals, vVals, vmaxvals = gen.vPoints(xVals)
+    sVals, zVals, pylonElevations = build_pylons.build_pylons(sVals, xVals)
+    points = [(xVals[i][0],xVals[i][1],zVals[i]) for i in range(len(xVals))]
     tVals = param.vValstotVals(sVals, vVals)
-    vVals = [vVals[i-1]*(xVals[i]-xVals[i-1])/np.linalg.norm(xVals[i]-xVals[i-1]) for i in range(1,len(vVals))]+[[0,0]]
-    aVals = np.transpose([ND(vVals[:][mu], tVals) for mu in [0,1]])
-   
-    #Edges = route.edges
-    #h = [edge.heights for edge in Edges]
-    #dt = [times[1]-times[0] for times in s]
-    #dh = [list_differentiate(heights, dt[i]) for i in range(len(h))]
-    #d2h = [list_differentiate(dheights, dt[i]) for i in range(len(h))]
+    vVals = [vVals[i-1]*(points[i]-points[i-1])/np.linalg.norm(points[i]-points[i-1]) for i in range(1,len(vVals))]+[[0,0]]
+    aVals = np.transpose([ND(vVals[:][mu], tVals) for mu in [0,1,2]])
+    
+    plt.plot(sVals, vVals, sVals, vmaxvals)
+    plt.show()
+
+    plt.plot(sVals, zVals, sVals, pylonElevations)
+    plt.show()
 
     # Sample velocity and acceleration at "s":   
     vSamples = chunks(vVals, config.numHeights)
     aSamples = chunks(aVals, config.numHeights)
-    #v = [zip(v[i][0], v[i][1], dh[i]) for i in range(len(vSamples))]
-    #a = [zip(a[i][0], a[i][1], d2h[i]) for i in range(len(aSamples))]      
 
     #Output is comfort rating and triptime:
     T = [tPoints[i]-tPoints[i-1] for i in range(1,len(t))]
     mu = 1
-    comfort = [cmft.comfort(v[i], a[i], T[i], mu) for i in range(len(v))]
-    times = tVals
-    joined_a = sum(a,[])
-    a_points = [np.linalg.norm(accel_vector) for accel_vector in joined_a]
-    v_points = vVals
-    cost = graph.landCost + graph.pylonCost
-    points = xVals
-    return Route(cost, times, points, v_points, a_points, comfort)
+    comfort = [cmft.comfort(vSamples[i], aSamples[i], T[i], mu) for i in range(len(vSamples))]
+    cost = 0  #    cost = graph.landCost + graph.pylonCost
+    return Route(cost, tVals, points, vVals, aVals, comfort)
+
+
+
+with open('graph001.csv', 'rb') as f:
+    reader = csv.reader(f)
+    xPoints = list(reader)
+
+xPoints = [[float(xPoint[0]),float(xPoint[1])] for xPoint in xPoints]
+graph_to_route(xPoints)
+
+
+
+

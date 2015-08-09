@@ -27,7 +27,7 @@ def xValstosVals(xVals):
     sVals = [0] * len(xVals)
     for i in range(1, len(xVals)):
         sVals[i] = sVals[i-1] + np.linalg.norm(xVals[i] - xVals[i-1])
-    return sVals  	
+    return sVals
 
 def vFunctovVals(vFunc, sVals, sPoints):
     sVals = np.array(sVals)

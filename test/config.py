@@ -68,7 +68,7 @@ Comfort parameters.
 """
 linearAccelTol = 0.5 * 9.81
 lateralAccelTol = 0.3 * 9.81
-
+jerkTol = 2
 curvatureThreshhold = (lateralAccelTol / maxSpeed**2)
 
 """
