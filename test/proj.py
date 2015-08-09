@@ -40,7 +40,7 @@ def latlng_to_geospatial(latlng, proj):
     return proj(latlng[1], latlng[0])
 
 def geospatial_to_latlng(geospatial, proj):
-    lonlat =  proj(geospatial[0], geospatial[1], inverse=True)
+    lonlat = proj(geospatial[0], geospatial[1], inverse=True)
     return util.swap_pair(lonlat)
 
 def latlngs_to_geospatials(latlngs, proj):

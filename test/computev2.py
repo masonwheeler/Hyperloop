@@ -89,7 +89,7 @@ def graph_to_route(xPoints):
 
 
 
-with open('graph001.csv', 'rb') as f:
+with open('/Users/Droberts/Dropbox/save/Dallas_to_Austin/Dallas_to_Austin_graphs/Dallas_to_Austin_graph001.csv', 'rb') as f:
     reader = csv.reader(f)
     xPoints = list(reader)
 

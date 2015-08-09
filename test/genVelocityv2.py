@@ -38,8 +38,6 @@ def get_relevant_indices(vMaxPoints, sPoints):
   relevantIndices = [0, len(vMaxPoints)- 1]  #[beginning of route, lowest location, end of route]
   print 
   def newLocationisBad(i):
-    print i
-    print lowest[i]
     if i < len(lowest)-1:
       newLocation = util.placeIndexinList(lowest[i], relevantIndices) # append newcomer to list; try it on for size
       actualForwardChange = np.absolute(vMaxPoints[relevantIndices[newLocation+1]]-vMaxPoints[relevantIndices[newLocation]])
@@ -72,9 +70,8 @@ def get_relevant_indices(vMaxPoints, sPoints):
       return "Go"
 
   while scan() == "Go":  #we will continue to zero-out pylons while it is safe to do so. 
-    print "scanning."
-  print relevantIndices
-  return relevantIndices
+    pass
+  return list(set(relevantIndices))
 
 
 def vPoints(xPoints):

@@ -1,6 +1,13 @@
 import clothoid
 import config
+import proj
+import directions
+import util
+import elevation
 
+directionsLatLng = directions.get_directions("Dallas", "Austin")
+startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
+proj.set_projection(startLatLng, endLatLng)
 
 def curvature(location1, location2, elevations):
   "Computes the curvature of the clothoid"
@@ -41,21 +48,22 @@ def get_relevant_indices(elevations, pylonSpacing):
     i = 0
     while newLocationisBad(i):
       i+=1
-    if i == len(tallest)-1:
+    if (i >= len(tallest)-1 or len(tallest)<2):
       return "Stop"
     else:
       util.placeIndexinList(tallest[i], relevantIndices)
+      tallest.pop(i)
       return "Go"
 
-  while scan() == "Go":#we will continue to zero-out pylons while it is safe to do so. 
-    print "Scanning."
-  return relevantIndices
+  while scan() == "Go":  #we will continue to zero-out pylons while it is safe to do so. 
+    pass
+  return list(set(relevantIndices))
 
 
 def build_pylons(sVals, xVals):
   xValsLonglats = proj.geospatials_to_latlngs(xVals, config.proj)
-  Elevations = elevation.usgs_elevation(pylonLatLngs)
-  j = []
+  Elevations = elevation.usgs_elevation(xValsLonglats)
+  j = [] 
   i = 0
   for k in range(int(sVals[-1]/config.pylonSpacing)):
     while sVals[i] < k*config.pylonSpacing:
