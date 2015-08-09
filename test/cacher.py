@@ -50,17 +50,18 @@ def create_workingcachedirectory(workingCacheName):
         os.makedirs(workingCacheDirectory)
     return workingCacheDirectory
 
-def create_routesdirectory(workingSaveDirectory):
+def create_graphsdirectory(workingSaveDirectory):
     """Creates the folder used to save completed routes"""
-    routesDirectory = workingSaveDirectory + "routes/"
-    if not os.path.exists(routesDirectory):
-        os.makedirs(routesDirectory)
-    return routesDirectory
+    graphsDirectory = workingSaveDirectory + "graphs/"
+    config.workingGraphsDirectory = graphsDirectory 
+    if not os.path.exists(graphsDirectory):
+        os.makedirs(graphsDirectory)
+    return graphsDirectory
 
 def create_workingsavedirectory(workingSaveDirName):
     """Creates the save directory for a given city pair"""
     workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
-    create_routesdirectory(workingSaveDirectory + workingSaveDirName + "_")
+    create_graphsdirectory(workingSaveDirectory + workingSaveDirName + "_")
     config.workingSaveDirectory = workingSaveDirectory
     if not os.path.exists(workingSaveDirectory):
         os.makedirs(workingSaveDirectory)
@@ -124,11 +125,10 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):
         return computedObject
 
 
-def save_listlike(listObject, listName):    
-    listSavePath = get_object_savepath(listName)
-    with open(listSavePath + ".csv", 'wb') as listHandle:
+def save_list_csv(aList, savePath):        
+    with open(savepath + ".csv", 'wb') as listHandle:
         writer = csv.writer(listHandle)
-        writer.writerows(listObject)       
+        writer.writerows(aList)       
 
 def save_directions(directionsObject, directionsName):
     pass
@@ -139,11 +139,15 @@ def save_spline(splineObject, splineName):
 def save_lattice(latticeObject, latticeName):
     pass
 
-def save_graphs(graphsObject, graphsName):
-    pass
+def save_graphs(graphs, graphsName):
+    index = 0
+    for graph in graphs:
+        graphSaveName = "graph" + str(index).zfill(3)
+        graphSavePath = config.graphsDirectory + graphSaveName
+        save_list_csv(graph.geospatials, graphSaveName)
+        index += 1
 
 def save_edgessets(edgesSets, edgesName):
-    #pass
     flattenedEdges = util.fast_concat(edgesSets)
     edgeDicts = [edge.as_dict() for edge in flattenedEdges]
     edgesSavePath = get_object_savepath(edgesName)

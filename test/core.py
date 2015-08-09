@@ -43,10 +43,11 @@ def build_lattice(directionsPoints):
     splineTValues = interpolate.get_tvalues(len(sampledPoints))
     splineValues = interpolate.get_splinevalues(xSpline, ySpline, splineTValues)
     sliceTValues = interpolate.get_slicetvalues(splineTValues,
-                                  config.splineSampleSpacing)
+                                  config.splineSampleSpacing)   
     newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline) 
     latticeSlices = newLattice.latticeSlices
+    print(latticeSlices)
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
     #if config.visualMode:
@@ -59,16 +60,13 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
+    print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
-    for graph in completeGraphs:
-        print("pylon cost: " + str(graph.pylonCost))
-        print("land cost: " + str(graph.landCost))
-        print("curvature: " + str(graph.curvatureMetric))
-    #randomGraph = random.choice(completeGraphs) 
-    #plottableGraph = randomGraph.to_plottable('b-') 
-    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]
-    #config.plotQueue.append(plottableGraph)
-    config.plotQueue += plottableGraphs
+    #print(completeGraphs[0].numEdges)
+    #for graph in completeGraphs:
+    #    print("pylon cost: " + str(graph.pylonCost))
+    #    print("land cost: " + str(graph.landCost))
+    #    print("curvature: " + str(graph.curvatureMetric))
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
     if config.visualMode:
