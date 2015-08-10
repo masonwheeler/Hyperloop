@@ -32,7 +32,7 @@ def _3Droute_to_4Droute(x):
     t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
     for i in range(2, len(v)):
         t[i] = t[i-1] + (s[i] - s[i-1]) / v[i-1]
-    t[-1] = (s[-1] - s[-2]) / util.mean(v[-2:len(vVals)])
+    t[-1] = (s[-1] - s[-2]) / util.mean(v[-2:len(v)])
     
     x, y, z = np.transpose(x)
 	return np.transpose([x, y, z, t])
