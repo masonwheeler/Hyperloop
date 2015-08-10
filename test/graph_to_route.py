@@ -28,12 +28,14 @@ def graph_to_2Droute(graph):
 
 def _2Droute_to_3Droute(x):
 	s, z = landscape.genLandscape(x, "elevation")
+	s, z = landscape.matchLandscape(s, z, "elevation")
 	s, z = interp.superQuint(s, z, 200)
 	x, y = np.transpose(x)
 	return np.transpose([x, y, z])
 
 def _3Droute_to_4Droute(x):
 	s, v = landscape.genLandscape(x, "velocity")
+	s, v = landscape.matchLandscape(s, v, "velocity")
 	s, v = interp.superQuint(s, v, 200)
 	
 	t = [0] * len(v)
