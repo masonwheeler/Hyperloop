@@ -130,6 +130,8 @@ def sperling_comfort_index(vel, accel, timeInterval, component):
     sperlingComfortIndex =  4.42*(accelFrequencyWeightedRMS)**0.3
     return sperlingComfortIndex
 
+
+
 """
 T = 300
 N = 10000

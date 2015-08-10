@@ -195,4 +195,7 @@ def points_to_radius(threePoints):
     else:
         return a * b * c / (4 * A)
 
-
+def breakUp(data, n):
+    n = max(1, n)
+    chunks = [data[i:i + n] for i in range(0, len(data), n)]
+    return chunks
