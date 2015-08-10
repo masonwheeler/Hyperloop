@@ -42,9 +42,9 @@ def gamma_matrix_start(t):
                                  [1, t, t**2, t**3, t**4, t**5]])
     return gammaMatrixStart
 
-def minimum_jerk_interpolation(waypointsAndBCs):
-    t, x, dx0, d2x0, dxN, d2xN = waypointsAndBCs
+def quint(t, x, dx0, dxN):
     N = len(x)-1 #number of viapoints
+    d2x0 = d2xN = 0
     b0 = np.array([x[0], dx0, d2x0]) #initial position and derivatives
     bN = np.array([x[N], dxN, d2xN]) #final position and derivatives
     def bj(j): 
@@ -71,9 +71,49 @@ def minimum_jerk_interpolation(waypointsAndBCs):
     listOfCoefficients = alist.tolist()
     return listOfCoefficients
 
-def coeffs_to_vals(a, s, t_i):
-    condlist = [(t_i[j] < s)*(s < t_i[j+1]) for j in range(len(t_i)-2)]
-    def f(k):
-        return lambda x: sum([a[k][j] * (x)**j for j in range(len(a[k]))])
-    funclist = [f(k) for k in range(len(a))]
-    return np.piecewise(s, condlist, funclist)
+# superQuint(): Extends quint() to allow for high numbers (> 5) of waypoints to be interpolated, 
+# without running into ill-conditioning problems:
+
+def joinIndices(N):
+    m, k = divmod(N, 5)
+    if m >= 2:
+        return [5*j for j in range(m+1)]
+    else: 
+        return [5*j for j in range(m)] + [int(5*(m-1)+np.ceil((5+m)/2))]
+
+
+def superQuint(t, x, M):
+    J = joinIndices(len(x)-1)
+    if len(J) == 0:
+        polys = quint(t[:j[0]+1],x[:j[0]+1],0,0)
+    else:
+        u = [(x[j+1]-x[j-1])/(t[j+1]-t[j-1]) for j in J]
+        polys = [quint(t[:j[0]+1],x[:j[0]+1],0,u[0])]\
+            + sum([quint(t[j[i]:j[i+1]+1],x[j[i]:j[i+1]+1],u[i],u[i+1]) for i in range(1,len(J)-1)])
+            + [quint(t[j[-1]:],x[j[-1]:],u[-1],0)]
+    tM = [[t[i]+(m/M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)]
+    xM = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in tM[i]]\
+             for i in range(len(tM))]
+    return [sum(tM), sum(xM)]
+
+
+# paraSuperQ(): Extends superQuint() to allow for an interpolation without an explicit parametrization a priori:
+# this function is used to generate the spatial interpolation of each graph.
+
+def paraSuperQ(x, M):
+    t = [15*n for n in range(len(x))]
+    xPoints, yPoints = np.transpose(x)
+    xM = superQuint(t, xPoints, M)
+    yM = superQuint(t, yPoints, M)
+    return np.transpose([xM, yM])
+
+
+
+
+
+
+
+
+
+
+

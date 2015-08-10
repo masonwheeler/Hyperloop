@@ -196,5 +196,3 @@ def points_to_radius(threePoints):
         return a * b * c / (4 * A)
 
 
-
-
