@@ -38,15 +38,13 @@ def to_pairs(points):
     return pairs
 
 def distance_to_point(edge, distance):            
-   edgeStart, edgeEnd = edge                       
-   edgeVector = subtract(edgeEnd, edgeStart)        
-   edgeLength = norm(edgeVector)        
-   scaleFactor = distance / edgeLength        
-   scaledVector = scale(scaleFactor, edgeVector)        
-   point = add(scaledVector, edgeStart)        
-   return point
-
-
+    edgeStart, edgeEnd = edge                       
+    edgeVector = subtract(edgeEnd, edgeStart)        
+    edgeLength = norm(edgeVector)        
+    scaleFactor = distance / edgeLength        
+    scaledVector = scale(scaleFactor, edgeVector)        
+    point = add(scaledVector, edgeStart)        
+    return point
 
 #Pair Operations:
 

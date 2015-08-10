@@ -3,9 +3,8 @@ Original Developer: Jonathan Ward
 Purpose of Module: Main entry point for the route optimization code.
 Last Modified: 7/16/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To clarify Module usage.
+Last Modification Purpose: To add useful comments.
 """
-
 
 #Standard Modules:
 import sys
