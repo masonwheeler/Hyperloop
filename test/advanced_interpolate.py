@@ -15,6 +15,7 @@ import math
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import csv
 
 """
 For an exposition of the following see (Polyakov page 79).
@@ -90,14 +91,14 @@ def joinIndices(N):
 def superQuint(sInterp, zInterp, s, K):
     J = joinIndices(len(zInterp)-1)
     if len(J) == 0:
-        polys = quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,0)
+        polys = quint(sInterp,zInterp,0,0)
     else:
         u = [(zInterp[j+1]-zInterp[j-1])/(sInterp[j+1]-sInterp[j-1]) for j in J]
-        polys = [quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,u[0])] + sum([quint(sInterp[j[i]:j[i+1]+1],zInterp[j[i]:j[i+1]+1],u[i],u[i+1]) for i in range(1,len(J)-1)]) + [quint(sInterp[j[-1]:],zInterp[j[-1]:],u[-1],0)]
+        polys = quint(sInterp[:J[0]+1],zInterp[:J[0]+1],0,u[0]) + sum([quint(sInterp[J[i]:J[i+1]+1],zInterp[J[i]:J[i+1]+1],u[i],u[i+1]) for i in range(len(J)-1)],[]) + quint(sInterp[J[-1]:],zInterp[J[-1]:],u[-1],0)
+
     sM = [[s[i] for i in range(K[j],K[j+1])] for j in range(len(K)-1)]
-    zM = [[np.dot(polys[i],[1,dist,dist**2,dist**3,dist**4,dist**5]) for dist in sM[i]]\
-             for i in range(len(sM))]
-    return [sum(sM), sum(zM)]
+    zM = [[np.dot(polys[i],[1,dist,dist**2,dist**3,dist**4,dist**5]) for dist in sM[i]] for i in range(len(sM))]
+    return [sum(sM, []), sum(zM, [])]
 
 
 # paraSuperQ(): Extends superQuint() to allow for an interpolation without an explicit parametrization a priori:
@@ -106,10 +107,10 @@ def superQuint(sInterp, zInterp, s, K):
 def paraSuperQ(x, M):
     t = [15*n for n in range(len(x))]
     xPoints, yPoints = np.transpose(x)
-    tM = sum([[t[i]+(m/M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)])
+    tM = sum([[t[i]+(m*1./M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)],[])
     K = [i*M for i in range(len(t))]
-    xM = superQuint(t, xPoints, tM, K)
-    yM = superQuint(t, yPoints, tM, K)
+    tM, xM = superQuint(t, xPoints, tM, K)
+    tM, yM = superQuint(t, yPoints, tM, K)
     return np.transpose([xM, yM])
 
 
@@ -145,5 +146,43 @@ def paraSuperQ(x, M):
 # should get 5,5,5,3,3,...
 # print [joinIndices(n) for n in range(30)]
 
+
+
 # Test superQuint(sp, vp, s, K):
+# t = sorted(list(set([random.uniform(-100,100) for i in range(4000)])))
+# x = [random.uniform(-10,10) for i in range(len(t))]
+# K = sorted(list(set([random.randint(0,len(t)-1) for i in range(40)])))
+
+# xPoints = [x[k] for k in K]
+# tPoints = [t[k] for k in K]
+
+# t, x = superQuint(tPoints, xPoints, t, K)
+
+# plt.plot(t, x, '.', tPoints, xPoints, 'o')
+# plt.show()
+
+
+
+
+# # Test paraSuperQ(x, M):
+# xPoints = [random.uniform(-100,100) for i in range(40)]
+# yPoints = [random.uniform(-100,100) for i in range(40)]
+# x = np.transpose([xPoints, yPoints])
+
+
+# with open('/Users/Droberts/Dropbox/save/Dallas_to_Austin/Dallas_to_Austin_graphs/Dallas_to_Austin_graph003.csv', 'rb') as f:
+#     reader = csv.reader(f)
+#     x = list(reader)
+# x = [[float(p[0]),float(p[1])] for p in x]
+# xPoints, yPoints = np.transpose(x)
+
+# xVals = paraSuperQ(x, 10)
+# xVals, yVals = np.transpose(xVals)
+
+# plt.plot(xVals, yVals, '.', xPoints, yPoints, 'o')
+# plt.show()
+
+
+
+
 
