@@ -16,29 +16,12 @@ def sortIndices(z, Type):
 		return sorted(zIndices, key = lambda i: z[i], reverse=False)
 
 
-def curvature(i, j, z):   #Computes the curvature of the clothoid 
-  x0, x1 = [i * config.pylonSpacing, j * config.pylonSpacing]
-  tht0, tht1  = [0, 0]
-  y0, y1 = [z[i], z[j]]
-  k, K, L = clothoid.buildClothoid(x0, y0, theta0, x1, y1, theta1)
-  extremalCurvatures = [k + L*K, k]
-  return max(np.absolute(extremalCurvatures))
-
-
 def genLandscape(x, Type):
   s = [0]*len(x)
   for i in range(0, len(x)-1):
     s[i+1] = s[i] + np.linalg.norm(x[i+1] - x[i])
 
   if Type == "elevation":
-	J = [] 
-  	index = 0
-  	for k in range(int(s[-1]/config.pylonSpacing)):
-   	  while s[index] < k*config.pylonSpacing:
-      	index+=1
-      J+=[index]
-  	x = [x[j] for j in J]
- 	s = [s[j] for j in J]
  	xlnglat = proj.geospatials_to_latlngs(x, config.proj)
   	z = elevation.usgs_elevation(xlnglat)
 
@@ -58,21 +41,30 @@ def matchLandscape(s, z, Type):
 	  new = util.placeIndexinList(index, K) # append newcomer to list; try it on for size
       
       if Type == "elevation":
+      	def curvature(i, j, z):   #Computes the curvature of the clothoid 
+		  x0, x1 = [s[i], s[j]]
+		  y0, y1 = [z[i], z[j]]
+  		  tht0, tht1  = [0, 0]
+  		  k, K, L = clothoid.buildClothoid(x0, y0, theta0, x1, y1, theta1)
+  		  extremalCurvatures = [k + L*K, k]
+  		  return max(np.absolute(extremalCurvatures))
+
       	curvatures = [curvature(K[new], K[new+1], z), curvature(K[new-1], K[new], z)]
       	bools = [k > config.latAccelTol/config.maxSpeed**2 for curvature in curvatures]
 
   	  elif Type == "velocity":
-  	  	dz = [np.absolute(z[K[new+1]]-z[K[new]]), np.absolute(z[K[new]]-z[K[new-1]])]
-  	  	ds = [s[K[new+1]]-s[K[new]], s[K[new]]-z[K[new-1]]]
-
-  	  	V = [(z[K[new+1]]+z[K[new]])/2, (z[K[new]]+z[K[new-1]])/2]
-  	  	C = [v * config.linearAccelTol for v in V] 
-  	  	D = [v**2 * config.jerkTol for v in V] 
+  	  	C = [v * config.linearAccelTol for v in V]
+  	  	D = [v**2 * config.jerkTol for v in V]
   	  	def dzTol(s):
   	  	  if s < 2*C/D:
   	  	  	return (s/2)**2*D
   	  	  else:
   	  	  	return (s-C/D)*C
+
+  	  	dz = [np.absolute(z[K[new+1]]-z[K[new]]), np.absolute(z[K[new]]-z[K[new-1]])]
+  	  	ds = [s[K[new+1]]-s[K[new]], s[K[new]]-z[K[new-1]]]
+  	  	V = [(z[K[new+1]]+z[K[new]])/2, (z[K[new]]+z[K[new-1]])/2]
+
        	bools = [dz[i] > dzTol(ds[i]) for i in range(len(ds))]
       
       K.pop(new) # return list back to normal
@@ -92,6 +84,6 @@ def matchLandscape(s, z, Type):
 
 	while matchLandscape() == "Success! See if we can match another point.":
 		pass
-	return [[s[k] for k in K], [z[k] for k in K]]
+	return [[s[k] for k in K], [z[k] for k in K], s, K]
 
 

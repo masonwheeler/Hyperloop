@@ -18,15 +18,15 @@ def graph_to_2Droute(graph):
 
 def _2Droute_to_3Droute(x):
 	s, z = landscape.genLandscape(x, "elevation")
-	s, z = landscape.matchLandscape(s, z, "elevation")
-	s, z = interp.superQuint(s, z, 200)
+	sInterp, zInterp, K = landscape.matchLandscape(s, z, "elevation")
+	s, z = interp.superQuint(sInterp, zInterp, s, K)
 	x, y = np.transpose(x)
 	return np.transpose([x, y, z])
 
 def _3Droute_to_4Droute(x):
 	s, v = landscape.genLandscape(x, "velocity")
-	s, v = landscape.matchLandscape(s, v, "velocity")
-	s, v = interp.superQuint(s, v, 200)
+	sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
+	s, v = interp.superQuint(sInterp, vInterp, s, K)
 	
 	t = [0] * len(v)
     t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
