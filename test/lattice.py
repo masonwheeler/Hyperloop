@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To build a lattice using smoothing spline.
-Last Modified: 7/30/15
+Last Modified: 8/10/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Moved some functions to util.py and interpolate.py
+Last Modification Purpose: Added docstrings
 """
 
 #Standard Modules:
@@ -19,7 +19,7 @@ import interpolate
 class SlicePoint:
     """Builds a point from geospatial coordinates, id, and a rightofway flag"""
     pointId = 0 #Unique identifier used in merging process.
-    geospatialCoords = []
+    geospatialCoords = [] #
     latlngCoords = []
     isInRightOfWay = False #Denotes whether the point is on state property.
     
@@ -31,6 +31,7 @@ class SlicePoint:
                                                       config.proj)
     
     def as_dict(self):
+        """Returns the SlicePoint data as a dictionary"""
         pointDict = {"pointId" : self.pointId,
                      "geospatialCoords" : self.geospatialCoords,
                      "latlngCoords" : self.latlngCoords,
@@ -40,27 +41,32 @@ class SlicePoint:
 
 class Slice:
     """Builds Lattice SLice from a directions point and a spline point."""
-    idIndex = 0
-    directionsPoint = []
-    splinePoint = []
-    slicePoints = []    
-    pointSpacing = config.pointSpacing
+    idIndex = 0 #Unique identifier for the first SlicePoint in the Slice
+    directionsPoint = [] #The SlicePoint in the right of way
+    splinePoint = [] #The SlicePoint in the interpolating spline
+    slicePoints = [] #Contains all SlicePoints in the Slice
+    pointSpacing = config.pointSpacing #Sets the spacing between Slice points
 
     def build_slice(self, idIndex, directionsPoint, splinePoint):              
-        sliceVector = util.subtract(directionsPoint, splinePoint)
-        sliceGrid = util.build_grid(sliceVector, self.pointSpacing, splinePoint)
+        """Constructs each SlicePoint in the Slice and its idIndex"""
+        sliceVector = util.subtract(directionsPoint, splinePoint)        
+        sliceGrid = util.build_grid(sliceVector, self.pointSpacing,
+                                                 splinePoint)
         sliceSplinePoint = SlicePoint(idIndex,splinePoint, False).as_dict()
         idIndex += 1
         if sliceGrid == None:            
-            sliceDirectionsPoint = SlicePoint(idIndex,directionsPoint, True).as_dict()
+            sliceDirectionsPoint = SlicePoint(idIndex, 
+                                     directionsPoint, True).as_dict()
             idIndex += 1
             slicePoints = [sliceSplinePoint, sliceDirectionsPoint]
         else:
             sliceGridPoints = []
             for point in sliceGrid:
-                sliceGridPoints.append(SlicePoint(idIndex, point, False).as_dict())
+                sliceGridPoints.append(SlicePoint(idIndex, point,
+                                                  False).as_dict())
                 idIndex += 1
-            sliceDirectionsPoint = SlicePoint(idIndex, directionsPoint, True).as_dict()
+            sliceDirectionsPoint = SlicePoint(idIndex, directionsPoint,
+                                              True).as_dict()
             idIndex += 1
             slicePoints = [sliceSplinePoint] + sliceGridPoints + \
                           [sliceDirectionsPoint]   
@@ -92,7 +98,7 @@ class Lattice:
     plottableSlices = []
 
     def get_sliceendpoints(self, sliceTValue, sampledDirections, xSpline,
-                                                                 ySpline):
+                                                                 ySpline):          
         rawDirectionsPoint = sampledDirections[int(sliceTValue.tolist())]    
         rawSplinePoint = [xSpline(sliceTValue), ySpline(sliceTValue)]
         fixedDirectionsPoint = list(rawDirectionsPoint)

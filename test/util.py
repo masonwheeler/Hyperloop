@@ -3,7 +3,7 @@ Original Developer: Jonathan Ward
 Purpose of Module: To provide a suite of utility function for the algorithm.
 Last Modified: 7/30/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Organized functions by usage.
+Last Modification Purpose: Added docstrings
 """
 
 #Standard Modules
@@ -20,33 +20,42 @@ import config
 
 #Points Operations:
 
-def round_num(num):
+def _round_num(num):
+    """Rounds number to predefined number of places"""
     return round(num, config.ndigits)
 
-def round_nums(nums):
-    return [round_num(num) for num in nums]
+def _round_nums(nums):
+    """Rounds a list of numbers"""
+    return [_round_num(num) for num in nums]
 
 def round_points(points):
-    """Used in directions.build_directions()"""
-    return [round_nums(point) for point in points]
+    """
+    Rounds the values in each point in a list of points
+    
+    Used in directions.build_directions()
+    """
+    return [_round_nums(point) for point in points]
 
 def to_pairs(points):
+    """
+    Converts a list of points to a list of pairs of points
+
+    Used in core.build_lattice()
+    """
     pairs = []
     for index in range(len(points) - 1):
         pair = [points[index], points[index+1]]
         pairs.append(pair)
     return pairs
 
-def distance_to_point(edge, distance):            
-   edgeStart, edgeEnd = edge                       
-   edgeVector = subtract(edgeEnd, edgeStart)        
-   edgeLength = norm(edgeVector)        
-   scaleFactor = distance / edgeLength        
-   scaledVector = scale(scaleFactor, edgeVector)        
-   point = add(scaledVector, edgeStart)        
-   return point
-
-
+def distance_along_edge_to_point(edge, distanceAlongEdge):            
+    edgeStart, edgeEnd = edge                       
+    edgeVector = subtract(edgeEnd, edgeStart)        
+    edgeLength = norm(edgeVector)        
+    scaleFactor = distanceAlongEdge / edgeLength        
+    scaledVector = scale(scaleFactor, edgeVector)        
+    point = add(scaledVector, edgeStart)        
+    return point
 
 #Pair Operations:
 
@@ -56,7 +65,6 @@ def swap_pair(pair):
 def swap_pairs(pairs):
     """Used in proj.py"""
     return [swap_pair(pair) for pair in pairs]
-
 
 #List Operations:
 

@@ -22,7 +22,7 @@ def sample_edge(edge, sampleSpacing, offset):
     edgeLength = util.norm(util.edge_to_vector(edge))
     edgePoints = []
     while offset <= edgeLength:
-        point = util.distance_to_point(edge, offset)
+        point = util.distance_along_edge_to_point(edge, offset)
         edgePoints.append(point)
         offset += sampleSpacing
     offset -= edgeLength
