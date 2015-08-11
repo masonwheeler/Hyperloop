@@ -7,6 +7,7 @@ Last Modification Purpose: To make compatible with graph modifications.
 """
 
 import advanced_interpolation as interp
+from scipy.interpolate import PchipInterpolator
 import match_landscape as landscape
 import comfort as cmft
 import util
@@ -18,16 +19,19 @@ def graph_to_2Droute(graph):
 
 def _2Droute_to_3Droute(x):
 	s, z = landscape.genLandscape(x, "elevation")
-	sInterp, zInterp, K = landscape.matchLandscape(s, z, "elevation")
-	s, z = interp.superQuint(sInterp, zInterp, s, K)
+	sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
+	f = PchipInterpolator(sInterp, zInterp)
+	z = f(s)
+
 	x, y = np.transpose(x)
 	return np.transpose([x, y, z])
 
 def _3Droute_to_4Droute(x):
 	s, v = landscape.genLandscape(x, "velocity")
 	sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
-	s, v = interp.superQuint(sInterp, vInterp, s, K)
-	
+	f = PchipInterpolator(sInterp, vInterp)
+	v = f(s)
+
 	t = [0] * len(v)
     t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
     for i in range(2, len(v)):
