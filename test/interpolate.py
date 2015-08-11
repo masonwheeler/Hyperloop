@@ -18,15 +18,24 @@ import config
 def points_to_edges(points):
     return util.to_pairs(points)
 
-def sample_edge(edge, sampleSpacing, offset):
+def distance_along_edge_to_point(edge, distanceAlongEdge):
+    edgeStart, edgeEnd = edge
+    edgeVector = util.subtract(edgeEnd, edgeStart)
+    edgeLength = util.norm(edgeVector)
+    scaleFactor = distanceAlongEdge / edgeLength
+    scaledVector = util.scale(scaleFactor, edgeVector)
+    point = util.add(scaledVector, edgeStart)
+    return point
+
+def sample_edge(edge, sampleSpacing, distanceAlongEdge):
     edgeLength = util.norm(util.edge_to_vector(edge))
     edgePoints = []
-    while offset <= edgeLength:
-        point = util.distance_along_edge_to_point(edge, offset)
+    while distanceAlongEdge <= edgeLength:
+        point = distance_along_edge_to_point(edge, distanceAlongEdge)
         edgePoints.append(point)
-        offset += sampleSpacing
-    offset -= edgeLength
-    return [edgePoints, offset]
+        distanceAlongEdge += sampleSpacing
+    distanceAlongEdge -= edgeLength
+    return [edgePoints, distanceAlongEdge]
 
 def sample_edges(edges, sampleSpacing):
     offset = 0

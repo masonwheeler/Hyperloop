@@ -69,7 +69,7 @@ def geospatials_to_latlngs(geospatials, proj):
 
 def set_projection(startLatLng, endLatLng):
     """Sets the projection used for converting lat-lngs to geospatials"""
-    startLonLat, endLonLat = util.swap_pairs([startLatLng, endLatLng])
+    startLonLat, endLonLat = map(util.swap_pair, [startLatLng, endLatLng])
     #config.proj = omerc_proj(startLonLat, endLonLat)
     config.proj = albers_proj()
 

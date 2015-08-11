@@ -40,7 +40,7 @@ class SlicePoint:
 
 
 class Slice:
-    """Builds Lattice SLice from a directions point and a spline point."""
+    """Builds Lattice Slice from a directions point and a spline point."""
     idIndex = 0 #Unique identifier for the first SlicePoint in the Slice
     directionsPoint = [] #The SlicePoint in the right of way
     splinePoint = [] #The SlicePoint in the interpolating spline

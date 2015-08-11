@@ -48,23 +48,15 @@ def to_pairs(points):
         pairs.append(pair)
     return pairs
 
-def distance_along_edge_to_point(edge, distanceAlongEdge):            
-    edgeStart, edgeEnd = edge                       
-    edgeVector = subtract(edgeEnd, edgeStart)        
-    edgeLength = norm(edgeVector)        
-    scaleFactor = distanceAlongEdge / edgeLength        
-    scaledVector = scale(scaleFactor, edgeVector)        
-    point = add(scaledVector, edgeStart)        
-    return point
-
 #Pair Operations:
 
 def swap_pair(pair):
-    return [pair[1], pair[0]]
+    """
+    Swaps a pair of points
 
-def swap_pairs(pairs):
-    """Used in proj.py"""
-    return [swap_pair(pair) for pair in pairs]
+    Used in proj.py
+    """
+    return [pair[1], pair[0]]
 
 #List Operations:
 
