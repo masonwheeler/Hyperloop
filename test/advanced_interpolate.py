@@ -82,19 +82,19 @@ def joinIndices(N):
         return [5*j for j in range(m)] + [int(5*(m-1)+np.ceil((5+m)/2))]
 
 
-def superQuint(t, x, M):
-    J = joinIndices(len(x)-1)
+def superQuint(sInterp, zInterp, s, K):
+    J = joinIndices(len(zInterp)-1)
     if len(J) == 0:
-        polys = quint(t[:j[0]+1],x[:j[0]+1],0,0)
+        polys = quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,0)
     else:
-        u = [(x[j+1]-x[j-1])/(t[j+1]-t[j-1]) for j in J]
-        polys = [quint(t[:j[0]+1],x[:j[0]+1],0,u[0])]\
-            + sum([quint(t[j[i]:j[i+1]+1],x[j[i]:j[i+1]+1],u[i],u[i+1]) for i in range(1,len(J)-1)])
-            + [quint(t[j[-1]:],x[j[-1]:],u[-1],0)]
-    tM = [[t[i]+(m/M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)]
-    xM = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in tM[i]]\
-             for i in range(len(tM))]
-    return [sum(tM), sum(xM)]
+        u = [(zInterp[j+1]-zInterp[j-1])/(sInterp[j+1]-sInterp[j-1]) for j in J]
+        polys = [quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,u[0])]\
+            + sum([quint(sInterp[j[i]:j[i+1]+1],zInterp[j[i]:j[i+1]+1],u[i],u[i+1]) for i in range(1,len(J)-1)])
+            + [quint(sInterp[j[-1]:],zInterp[j[-1]:],u[-1],0)]
+    sM = [[s[i] for i in range(K[j],K[j+1])] for j in range(len(K)-1)]
+    zM = [[np.dot(polys[i],[1,dist,dist**2,dist**3,dist**4,dist**5]) for time in sM[i]]\
+             for i in range(len(sM))]
+    return [sum(sM), sum(zM)]
 
 
 # paraSuperQ(): Extends superQuint() to allow for an interpolation without an explicit parametrization a priori:
@@ -103,14 +103,19 @@ def superQuint(t, x, M):
 def paraSuperQ(x, M):
     t = [15*n for n in range(len(x))]
     xPoints, yPoints = np.transpose(x)
-    xM = superQuint(t, xPoints, M)
-    yM = superQuint(t, yPoints, M)
+    tM = sum([[t[i]+(m/M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)])
+    K = [i*M for i in range(len(t))]
+    xM = superQuint(t, xPoints, tM, K)
+    yM = superQuint(t, yPoints, tM, K)
     return np.transpose([xM, yM])
 
-
-
-
-
+t = [i for i in range(30)]
+x = [i**2-10*i for i in range(30)]
+print "x is:"
+print x
+print "t is:"
+print t
+superQuint(x, 200)
 
 
 
