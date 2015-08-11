@@ -13,6 +13,8 @@ Citations:
 
 import math
 import numpy as np
+import random
+import matplotlib.pyplot as plt
 
 """
 For an exposition of the following see (Polyakov page 79).
@@ -75,11 +77,14 @@ def quint(t, x, dx0, dxN):
 # without running into ill-conditioning problems:
 
 def joinIndices(N):
-    m, k = divmod(N, 5)
-    if m >= 2:
-        return [5*j for j in range(m+1)]
-    else: 
-        return [5*j for j in range(m)] + [int(5*(m-1)+np.ceil((5+m)/2))]
+    if N <= 5:
+        return []
+    else:
+        m, k = divmod(N, 5)
+        if k >= 2:
+            return [5*j for j in range(1,m+1)]
+        else: 
+            return [5*j for j in range(1,m)] + [int(5*(m-1)+np.ceil((5+k)/2.))]
 
 
 def superQuint(sInterp, zInterp, s, K):
@@ -88,11 +93,9 @@ def superQuint(sInterp, zInterp, s, K):
         polys = quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,0)
     else:
         u = [(zInterp[j+1]-zInterp[j-1])/(sInterp[j+1]-sInterp[j-1]) for j in J]
-        polys = [quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,u[0])]\
-            + sum([quint(sInterp[j[i]:j[i+1]+1],zInterp[j[i]:j[i+1]+1],u[i],u[i+1]) for i in range(1,len(J)-1)])
-            + [quint(sInterp[j[-1]:],zInterp[j[-1]:],u[-1],0)]
+        polys = [quint(sInterp[:j[0]+1],zInterp[:j[0]+1],0,u[0])] + sum([quint(sInterp[j[i]:j[i+1]+1],zInterp[j[i]:j[i+1]+1],u[i],u[i+1]) for i in range(1,len(J)-1)]) + [quint(sInterp[j[-1]:],zInterp[j[-1]:],u[-1],0)]
     sM = [[s[i] for i in range(K[j],K[j+1])] for j in range(len(K)-1)]
-    zM = [[np.dot(polys[i],[1,dist,dist**2,dist**3,dist**4,dist**5]) for time in sM[i]]\
+    zM = [[np.dot(polys[i],[1,dist,dist**2,dist**3,dist**4,dist**5]) for dist in sM[i]]\
              for i in range(len(sM))]
     return [sum(sM), sum(zM)]
 
@@ -109,16 +112,38 @@ def paraSuperQ(x, M):
     yM = superQuint(t, yPoints, tM, K)
     return np.transpose([xM, yM])
 
-t = [i for i in range(30)]
-x = [i**2-10*i for i in range(30)]
-print "x is:"
-print x
-print "t is:"
-print t
-superQuint(x, 200)
+
+# Test quint(t, x, v1, v2):
+
+# t = [i for i in range(6)]
+# x = [random.uniform(-10,10) for i in range(len(t))]
+# v1 = random.uniform(-10,10)
+# v2 = random.uniform(-10,10)
+# print "x is:"
+# print x
+# print "t is:"
+# print t
+# print "(v1, v2) is:"
+# print [v1, v2]
+
+# polys = quint(t, x, v1, v2)
+
+# tM = [[t[i]+(m/100.)*(t[i+1]-t[i]) for m in range(100)] for i in range(len(t)-1)]
+# xM = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in tM[i]] for i in range(len(tM))]
+# tM = sum(tM, [])
+# xM = sum(xM, [])
+
+# print "xM is:"
+# print xM
+# print "tM is:"
+# print tM
+# plt.plot(tM, xM, t, x)
+# plt.show()
 
 
+# Test joinIndices(N):
+# should get 5,5,5,3,3,...
+# print [joinIndices(n) for n in range(30)]
 
-
-
+# Test superQuint(sp, vp, s, K):
 
