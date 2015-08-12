@@ -6,7 +6,19 @@ as many features of the route geometry as permitted by comfort constraints.
 import util
 import config
 import clothoid
+import proj
+import numpy as np
 import random
+import advanced_interpolate as interp
+import matplotlib.pyplot as plt
+import csv
+import directions
+import elevation
+
+directionsLatLng = directions.get_directions("Dalls", "Austin")
+startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
+proj.set_projection(startLatLng, endLatLng)
+ 
 
 def sortIndices(z, Type):
   zIndices = range(len(z))
@@ -84,11 +96,38 @@ def matchLandscape(s, z, Type):
 
   while matchLandscape() == "Success! See if we can match another point.":
     pass
-  return [[s[k] for k in K], [z[k] for k in K], s, K]
+  return [[s[k] for k in K], [z[k] for k in K]]
 
 
 
 # Test sortIndices(z, Type):
-z = [random.uniform(-10,10) for i in range(4)]
-print z
-print sortIndices(z, "velocity")
+# z = [random.uniform(-10,10) for i in range(4)]
+# print z
+# print sortIndices(z, "velocity")
+
+
+# Test genLandscape(x, Type):
+ 
+
+with open('/Users/Droberts/Dropbox/save/Dallas_to_Austin/Dallas_to_Austin_graphs/Dallas_to_Austin_graph003.csv', 'rb') as f:
+    reader = csv.reader(f)
+    x = list(reader)
+x = [[float(p[0]),float(p[1])] for p in x]
+x = interp.paraSuperQ(x, 200)
+s, z = genLandscape(x, "elevation")
+
+plt.plot(s, z)
+plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -16,7 +16,6 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import csv
-from scipy.interpolate import spline, UnivariateSpline, Akima1DInterpolator, PchipInterpolator
 
 """
 For an exposition of the following see (Polyakov page 79).
