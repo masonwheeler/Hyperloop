@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To generate routes from the lattice edges and merge them.
-Last Modified: 7/30/15
+Last Modified: 8/10/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Graph merging now uses MergeTree and ParetoFront.
+Last Modification Purpose: Added docstrings.
 """
 
 import config
@@ -15,18 +15,20 @@ import paretofront
 import interpolate
 
 class Graph:
-    numEdges = 0
-    pylonCost = 0
-    landCost = 0
-    startId = 0
-    endId = 0
-    startAngle = 0
-    endAngle = 0
-    curvatureMetric = None
-    latlngs = []
-    geospatials = []
+    """Stores list of spatial points, their edge costs and curvature"""
+    numEdges = 0 #The number of edges in a graph
+    pylonCost = 0 #The cost of the pylons to be built along the graph's edges
+    landCost = 0 #The cost of the land to be acquired along the graph's edges
+    startId = 0 #The id of the start point in the graph
+    endId = 0 #The id of the end point in the graph
+    startAngle = 0 #The angle of the start edge in the graph
+    endAngle = 0 #The angle of the end edge in the graph
+    curvatureMetric = None #The value of the curvature metric 
+    latlngs = [] #The latitude longitude coordinates of each point in the graph
+    geospatials = [] #The geospatial coordinates of each point in the graph
 
-    def compute_curvature(self):        
+    def compute_curvature(self):       
+        """Compute the curvature of an interpolation of the graph""" 
         if self.numEdges > config.graphCurvatureMinNumEdges:
             self.curvatureMetric = interpolate.graph_curvature(
                             self.geospatials, config.graphSampleSpacing)
@@ -45,22 +47,25 @@ class Graph:
         self.compute_curvature()
 
     def to_costcurvature_point(self):
+        """Return the cost and curvature of the graph"""
         if self.numEdges > config.graphCurvatureMinNumEdges:
             cost = self.pylonCost + self.landCost
             curvature = self.curvatureMetric
             return [cost, curvature]
 
     def to_plottable(self, style):
+        """Return the geospatial coords of the graph in plottable format"""
         plottableGraph = [zip(*self.geospatials), style]
         return plottableGraph
         
     def display(self):     
+        """display the cost and curvature of the graph"""
         print("This graph's land cost is: " + str(self.landcost) + ".")
         print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
-        print("This graph's root mean squared curvature is: " +
-              str(rmsCurvature) + ".")
+        print("This graph's curvature is: " + str(self.curvatureMetric) + ".")
 
 class GraphsSet:
+    """Stores all selected graphs between two given lattice slices"""
     minimizeCost = True
     minimizeCurvature = True
     graphsNumEdges = None #The number of edges each constituent graph has.
@@ -70,11 +75,18 @@ class GraphsSet:
     selectedGraphs = None      
 
     def graphs_to_costcurvaturepoints(self):
+        """Compute cost and curvature of each graph with min number of edges"""
         if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
             self.costCurvaturePoints = [graph.to_costcurvature_point()
                                         for graph in self.unfilteredGraphs]
 
     def select_graphs(self):
+        """
+        Select the Pareto optimal graphs, minimizing cost and curvature
+
+        If the cost and curvature of the graphs have not been computed,
+        then return all of the graphs.
+        """
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs
         else:
@@ -95,6 +107,12 @@ class GraphsSet:
                 return 0
     
     def update_graphs(self):
+        """
+        Update the selected graphs
+
+        If the graphs are successfully updated return True, else return False.
+        Update the graphs by adding the next front from the Pareto Frontier
+        """
         if self.front == None:
             return False
         else:
@@ -117,10 +135,12 @@ class GraphsSet:
         self.select_graphs()       
 
 def graphset_updater(graphset):
+    """Wrapper function to update a graphset"""
     isGraphSetUpdated = graphset.update_graphs()
     return isGraphSetUpdated
 
 def edge_to_graph(edge):
+    """Initializes a graph from an edge"""
     numEdges = 1
     pylonCost = edge.pylonCost
     landCost = edge.landCost
@@ -134,6 +154,7 @@ def edge_to_graph(edge):
     return newGraph
 
 def edges_set_to_graphs_set(edgesSet):
+    """Creates a GraphsSet from a set of edges"""
     graphs = map(edge_to_graph, edgesSet)
     graphsSet = GraphsSet(graphs) 
     return graphsSet
