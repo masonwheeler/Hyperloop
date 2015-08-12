@@ -85,9 +85,8 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
-    #fullRoutes = [computev2.route_to_fullRoute(route) for route in completeGraphs] 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
-    #if config.visualMode:
-    #    visualize.plot_objects(config.plotQueue)
+    if config.visualMode:
+        visualize.plot_objects(config.plotQueue)
     return 0

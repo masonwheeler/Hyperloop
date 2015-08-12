@@ -2,9 +2,9 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To build edges with associated cost and elevation data
                    from pairs of lattice points.
-Last Modified: 7/23/15
+Last Modified: 8/10/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To remove unnecessary
+Last Modification Purpose: To add docstrings
 """
 
 #Standard Modules:
