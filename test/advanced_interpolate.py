@@ -16,6 +16,7 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import csv
+from scipy.interpolate import spline, UnivariateSpline, Akima1DInterpolator, PchipInterpolator
 
 """
 For an exposition of the following see (Polyakov page 79).
@@ -88,17 +89,17 @@ def joinIndices(N):
             return [5*j for j in range(1,m)] + [int(5*(m-1)+np.ceil((5+k)/2.))]
 
 
-def superQuint(sInterp, zInterp, s, K):
-    J = joinIndices(len(zInterp)-1)
+def superQuint(t, x, M):
+    J = joinIndices(len(x)-1)
     if len(J) == 0:
-        polys = quint(sInterp,zInterp,0,0)
+        polys = quint(t,x,0,0)
     else:
-        u = [(zInterp[j+1]-zInterp[j-1])/(sInterp[j+1]-sInterp[j-1]) for j in J]
-        polys = quint(sInterp[:J[0]+1],zInterp[:J[0]+1],0,u[0]) + sum([quint(sInterp[J[i]:J[i+1]+1],zInterp[J[i]:J[i+1]+1],u[i],u[i+1]) for i in range(len(J)-1)],[]) + quint(sInterp[J[-1]:],zInterp[J[-1]:],u[-1],0)
+        u = [(x[j+1]-x[j-1])/(t[j+1]-t[j-1]) for j in J]
+        polys = quint(t[:J[0]+1],x[:J[0]+1],0,u[0]) + sum([quint(t[J[i]:J[i+1]+1],x[J[i]:J[i+1]+1],u[i],u[i+1]) for i in range(len(J)-1)],[]) + quint(t[J[-1]:],x[J[-1]:],u[-1],0)
 
-    sM = [[s[i] for i in range(K[j],K[j+1])] for j in range(len(K)-1)]
-    zM = [[np.dot(polys[i],[1,dist,dist**2,dist**3,dist**4,dist**5]) for dist in sM[i]] for i in range(len(sM))]
-    return [sum(sM, []), sum(zM, [])]
+    tM = [[t[i]+(m*1./M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)]
+    xM = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in tM[i]] for i in range(len(tM))]
+    return [sum(tM, []), sum(xM, [])]
 
 
 # paraSuperQ(): Extends superQuint() to allow for an interpolation without an explicit parametrization a priori:
@@ -107,10 +108,8 @@ def superQuint(sInterp, zInterp, s, K):
 def paraSuperQ(x, M):
     t = [15*n for n in range(len(x))]
     xPoints, yPoints = np.transpose(x)
-    tM = sum([[t[i]+(m*1./M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)],[])
-    K = [i*M for i in range(len(t))]
-    tM, xM = superQuint(t, xPoints, tM, K)
-    tM, yM = superQuint(t, yPoints, tM, K)
+    tM, xM = superQuint(t, xPoints, M)
+    tM, yM = superQuint(t, yPoints, M)
     return np.transpose([xM, yM])
 
 
@@ -149,19 +148,13 @@ def paraSuperQ(x, M):
 
 
 # Test superQuint(sp, vp, s, K):
-# t = sorted(list(set([random.uniform(-100,100) for i in range(4000)])))
-# x = [random.uniform(-10,10) for i in range(len(t))]
-# K = sorted(list(set([random.randint(0,len(t)-1) for i in range(40)])))
+# tPoints = sorted(list(set([random.uniform(-100,100) for i in range(50)])))
+# xPoints = [random.uniform(-10,10) for i in range(len(tPoints))]
 
-# xPoints = [x[k] for k in K]
-# tPoints = [t[k] for k in K]
-
-# t, x = superQuint(tPoints, xPoints, t, K)
+# t, x = superQuint(tPoints, xPoints, 10)
 
 # plt.plot(t, x, '.', tPoints, xPoints, 'o')
 # plt.show()
-
-
 
 
 # # Test paraSuperQ(x, M):
