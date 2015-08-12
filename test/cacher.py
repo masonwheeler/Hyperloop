@@ -75,43 +75,49 @@ def create_necessaryfolders(start, end):
     create_workingcachedirectory(workingCacheName)
     create_workingsavedirectory(workingSaveDirName)
 
-
 def get_object_cachepath(objectName):
+    """Gets the path where the object will be cached"""
     objectFileBase = "_".join([config.workingCacheName, objectName])
     objectFileName = objectFileBase + ".p"
     objectPath = config.workingCacheDirectory + objectFileName
     return objectPath
 
 def get_object_savepath(objectName):
+    """Gets the path where the object will be saved"""
     objectFileBase = "_".join([config.workingSaveDirName, objectName])
     objectPath = config.workingSaveDirectory + objectFileBase
     return objectPath
 
 def cache_object(inObject, objectName):
+    """Caches the object for future use"""
     objectCachePath = get_object_cachepath(objectName)
     fileHandle = open(objectCachePath, "wb")
     pickle.dump(inObject, fileHandle)
     fileHandle.close()
 
 def load_object(objectName):
+    """Loads the cached object"""
     objectCachePath = get_object_cachepath(objectName)
     fileHandle = open(objectCachePath, "rb")
     loadedObject = pickle.load(fileHandle)
     fileHandle.close()
     return loadedObject
 
-def object_cached(objectName):
+def is_object_cached(objectName):
+    """Returns a boolean indicating whether the object is cached"""
     objectCachePath = get_object_cachepath(objectName)
     objectCached = os.path.isfile(objectCachePath)
     return objectCached
 
-def object_saved(objectName):
+def is_object_saved(objectName):
+    """Returns a boolean indicated whether the object is saved"""
     objectSavePath = get_object_savepath(objectName)
     objectSaved = os.path.isfile(objectSavePath)
     return objectSaved
 
 def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):    
-    if (object_cached(objectName) and flag):
+    """Either computes the object or loads a cached version"""
+    if (is_object_cached(objectName) and flag):
         print(objectName + " exists.")
         loadedObject = load_object(objectName)
         print("Loaded " + objectName)
@@ -124,6 +130,7 @@ def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):
         saveFunction(computedObject, objectName)
         return computedObject
 
+########## Functions for saving specific datatypes ########## 
 
 def save_list_csv(aList, savePath):        
     with open(savepath + ".csv", 'wb') as listHandle:

@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To generate routes from the lattice edges and merge them.
-Last Modified: 7/30/15
+Last Modified: 8/10/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Graph merging now uses MergeTree and ParetoFront.
+Last Modification Purpose: Added docstrings.
 """
 
 import config
@@ -14,29 +14,27 @@ import mergetree
 import paretofront
 import interpolate
 
-import time
-
 class Graph:
-    numEdges = 0
-    pylonCost = 0
-    landCost = 0
-    startId = 0
-    endId = 0
-    startAngle = 0
-    endAngle = 0
-    curvatureMetric = None
-    latlngs = []
-    geospatials = []
+    """Stores list of spatial points, their edge costs and curvature"""
+    numEdges = 0 #The number of edges in a graph
+    pylonCost = 0 #The cost of the pylons to be built along the graph's edges
+    landCost = 0 #The cost of the land to be acquired along the graph's edges
+    startId = 0 #The id of the start point in the graph
+    endId = 0 #The id of the end point in the graph
+    startAngle = 0 #The angle of the start edge in the graph
+    endAngle = 0 #The angle of the end edge in the graph
+    curvatureMetric = None #The value of the curvature metric 
+    latlngs = [] #The latitude longitude coordinates of each point in the graph
+    geospatials = [] #The geospatial coordinates of each point in the graph
 
-    def compute_curvature(self):        
+    def compute_curvature(self):       
+        """Compute the curvature of an interpolation of the graph""" 
         if self.numEdges > config.graphCurvatureMinNumEdges:
             self.curvatureMetric = interpolate.graph_curvature(
                             self.geospatials, config.graphSampleSpacing)
 
     def __init__(self, numEdges, pylonCost, landCost, startId, endId,
                  startAngle, endAngle, latlngs, geospatials):
-        #config.holder += 1
-        #print("number of graphs created" + str(config.holder))
         self.numEdges = numEdges
         self.pylonCost = pylonCost
         self.landCost = landCost
@@ -49,27 +47,25 @@ class Graph:
         self.compute_curvature()
 
     def to_costcurvature_point(self):
+        """Return the cost and curvature of the graph"""
         if self.numEdges > config.graphCurvatureMinNumEdges:
             cost = self.pylonCost + self.landCost
             curvature = self.curvatureMetric
             return [cost, curvature]
 
     def to_plottable(self, style):
+        """Return the geospatial coords of the graph in plottable format"""
         plottableGraph = [zip(*self.geospatials), style]
         return plottableGraph
-
-    def plot_costcurvature(self):
-        costCurvature = self.to_costcurvature_point()
-        #return [costCurvature, style]
-        return costCurvature
         
     def display(self):     
+        """display the cost and curvature of the graph"""
         print("This graph's land cost is: " + str(self.landcost) + ".")
         print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
-        print("This graph's root mean squared curvature is: " +
-              str(rmsCurvature) + ".")
+        print("This graph's curvature is: " + str(self.curvatureMetric) + ".")
 
 class GraphsSet:
+    """Stores all selected graphs between two given lattice slices"""
     minimizeCost = True
     minimizeCurvature = True
     graphsNumEdges = None #The number of edges each constituent graph has.
@@ -79,45 +75,44 @@ class GraphsSet:
     selectedGraphs = None      
 
     def graphs_to_costcurvaturepoints(self):
+        """Compute cost and curvature of each graph with min number of edges"""
         if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
             self.costCurvaturePoints = [graph.to_costcurvature_point()
                                         for graph in self.unfilteredGraphs]
 
     def select_graphs(self):
+        """
+        Select the Pareto optimal graphs, minimizing cost and curvature
+
+        If the cost and curvature of the graphs have not been computed,
+        then return all of the graphs.
+        """
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs
         else:
-            ##print("selecting graphs")
             try:
                 self.front = paretofront.ParetoFront(
                                   self.costCurvaturePoints,
                                   self.minimizeCost, self.minimizeCurvature)
-                ##print("fronts indices" + str(self.front.frontsIndices))
                 selectedGraphsIndices = self.front.frontsIndices[-1]
-                ##print("Selected graphs indices: " + str(selectedGraphsIndices))
-                #print(selectedGraphsIndices)
                 numFronts = 1
                 while (self.front.build_nextfront() and
                        numFronts <= config.numFronts):
                     numFronts += 1
-                    ##print("fronts indices" + str(self.front.frontsIndices))
-                    ##print(self.front.frontsIndices[-1])                    
                     selectedGraphsIndices += self.front.frontsIndices[-1]
-                    ##print("selected graphs indices: " + str(selectedGraphsIndices))
-                    #print(len(selectedGraphsIndices))
-                    ##print("Selected graphs indices: " + str(selectedGraphsIndices))
-                ##print("unfilteredGraphsLen: " + str(len(self.unfilteredGraphs)))
-                ##print("number of graphs: " + str(len(self.unfilteredGraphs)))
-                ##time.sleep(1)                
                 self.selectedGraphs = [self.unfilteredGraphs[i] for i in
                                        selectedGraphsIndices] 
             except ValueError:
-                ##print("encountered Value Error")
                 self.selectedGraphs = self.unfilteredGraphs
                 return 0
     
     def update_graphs(self):
-        ##print("updating graphs")
+        """
+        Update the selected graphs
+
+        If the graphs are successfully updated return True, else return False.
+        Update the graphs by adding the next front from the Pareto Frontier
+        """
         if self.front == None:
             return False
         else:
@@ -127,9 +122,6 @@ class GraphsSet:
                 return False
             if areGraphsUpdated:
                 selectedGraphIndices = self.front.frontsIndices[-1]
-                ##print("all fronts indices: " + str(self.front.frontsIndices))
-                ##print("selectedGraphIndices: " + str(selectedGraphIndices))
-                ##print("numunfilteredGraphs: " + str(len(self.unfilteredGraphs)))
                 for i in selectedGraphIndices:
                     self.selectedGraphs.append(self.unfilteredGraphs[i])                
                 return True                
@@ -143,10 +135,12 @@ class GraphsSet:
         self.select_graphs()       
 
 def graphset_updater(graphset):
+    """Wrapper function to update a graphset"""
     isGraphSetUpdated = graphset.update_graphs()
     return isGraphSetUpdated
 
 def edge_to_graph(edge):
+    """Initializes a graph from an edge"""
     numEdges = 1
     pylonCost = edge.pylonCost
     landCost = edge.landCost
@@ -160,6 +154,7 @@ def edge_to_graph(edge):
     return newGraph
 
 def edges_set_to_graphs_set(edgesSet):
+    """Creates a GraphsSet from a set of edges"""
     graphs = map(edge_to_graph, edgesSet)
     graphsSet = GraphsSet(graphs) 
     return graphsSet
@@ -193,25 +188,13 @@ def graphs_sets_merger(graphsSetA, graphsSetB):
     mergedGraphs = []
     selectedA = graphsSetA.selectedGraphs
     selectedB = graphsSetB.selectedGraphs
-    #print("num points in selection A: " + str(len(selectedA)))
-    #print("num points in selection B: " + str(len(selectedB)))
     for graphA in selectedA:
         for graphB in selectedB:
-            #print(graphA.endId, graphB.startId)
             if is_graph_pair_compatible(graphA, graphB):            
                 mergedGraphs.append(merge_two_graphs(graphA, graphB))
     if (len(mergedGraphs) == 0):
-        ##print("no graphs were compatible")
-        ##if config.visualMode:
-        ##    plottableA = [graphA.to_plottable('k-') for graphA in
-        ##                  graphsSetA.selectedGraphs]            
-        ##    plottableB = [graphB.to_plottable('r-') for graphB in
-        ##                  graphsSetB.selectedGraphs]
-        ##    failedMergeResults = plottableA + plottableB        
-        ##    visualize.plot_objects(failedMergeResults)
         return None
     else:              
-        #print("number of merged graphs:" + str(len(mergedGraphs)))
         mergedGraphsSet = GraphsSet(mergedGraphs)
         return mergedGraphsSet
 
@@ -231,68 +214,3 @@ def get_graphs(edgessets):
                                 cacher.save_graphs, config.graphsFlag)
     return graphs
 
-        
-
-"""
-def merge_two_graphssets(graphsSetA, graphsSetB):
-    merged = []
-    for graphA in graphsSetA:
-        for graphB in graphsSetB:
-            if is_graph_pair_compatible(graphA, graphB):            
-                merged.append(merge_two_graphs(graphA, graphB))
-    if (merged == []):
-        print("Graphs Set A Length:" + str(len(graphsSetA)))
-        print("Graphs Set B Length:" + str(len(graphsSetB)))
-        print("Potential Angle Pairs:")
-        for graphA in graphsSetA:
-            for graphB in graphsSetB:
-                print(graphA.endId, graphB.startId)
-        #plottableA = [graphA.to_plottable('k-') for graphA in graphsSetA]            
-        #plottableB = [graphB.to_plottable('r-') for graphB in graphsSetB]
-        #failedMergeResults = plottableA + plottableB        
-        #visualize.plot_objects(failedMergeResults)
-        raise ValueError('No compatible graphs in graphsets pair.')        
-    sampledGraphs = sample_graphs.variation_constrained(merged)
-    return sampledGraphs
-
-def recursivemerge_graphssets(graphsSets):
-    layers = [graphsSets]
-    layersIndex = 0
-    workingLayerIndex = 0
-
-    numLayers = 1
-    workingLayerSize = len(graphsSets)
-    breakFlag = False
-    
-    while (numLayers != 1 or workingLayerSize != 1):
-        if (workingLayerSize - workingLayerIndex == 0):
-            if (numLayers - layersIndex == 1):
-                breakFlag = True;
-            else:
-                layersIndex += 1
-                workingLayerIndex = 0
-                workingLayerSize = len(layers[layersIndex])
-        elif (workingLayerSize - workingLayerIndex == 1):
-            if (numLayers - layersIndex == 1):
-                breakFlag = True;
-            else:
-                layers[layersIndex + 1].append(
-                  layers[layersIndex][workingLayerIndex])
-                layersIndex += 1
-                workingLayerIndex = 0
-                workingLayerSize = len(layers[layersIndex])
-        else:
-            if (numLayers - layersIndex == 1):
-                layers.append([])
-                numLayers += 1
-            graphsSetA = layers[layersIndex][workingLayerIndex]
-            graphsSetB = layers[layersIndex][workingLayerIndex + 1]
-            merged = merge_two_graphssets(graphsSetA, graphsSetB)
-            layers[layersIndex+1].append(merged)                
-            workingLayerIndex += 2
-        if breakFlag:
-            break
-
-    completeGraphs = layers[layersIndex][0]  
-    return completeGraphs
-"""
