@@ -3,7 +3,7 @@ Original Developer: Jonathan Ward
 Purpose of Module: To generate routes from the lattice edges and merge them.
 Last Modified: 8/10/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Added docstrings.
+Last Modification Purpose: Changed Class attributes to Instance attributes.
 """
 
 import config
@@ -16,16 +16,6 @@ import interpolate
 
 class Graph:
     """Stores list of spatial points, their edge costs and curvature"""
-    numEdges = 0 #The number of edges in a graph
-    pylonCost = 0 #The cost of the pylons to be built along the graph's edges
-    landCost = 0 #The cost of the land to be acquired along the graph's edges
-    startId = 0 #The id of the start point in the graph
-    endId = 0 #The id of the end point in the graph
-    startAngle = 0 #The angle of the start edge in the graph
-    endAngle = 0 #The angle of the end edge in the graph
-    curvatureMetric = None #The value of the curvature metric 
-    latlngs = [] #The latitude longitude coordinates of each point in the graph
-    geospatials = [] #The geospatial coordinates of each point in the graph
 
     def compute_curvature(self):       
         """Compute the curvature of an interpolation of the graph""" 
@@ -35,15 +25,15 @@ class Graph:
 
     def __init__(self, numEdges, pylonCost, landCost, startId, endId,
                  startAngle, endAngle, latlngs, geospatials):
-        self.numEdges = numEdges
-        self.pylonCost = pylonCost
-        self.landCost = landCost
-        self.startId = startId
-        self.endId = endId
-        self.startAngle = startAngle
-        self.endAngle = endAngle
-        self.latlngs = latlngs
-        self.geospatials = geospatials    
+        self.numEdges = numEdges #The number of edges in a graph
+        self.pylonCost = pylonCost #The total cost of the pylons
+        self.landCost = landCost #The total cost of the land acquired
+        self.startId = startId #The id of the start point in the graph
+        self.endId = endId #The id of the end point in the graph
+        self.startAngle = startAngle #The angle of the start edge in the graph
+        self.endAngle = endAngle #The angle of the end edge in the graph
+        self.latlngs = latlngs #The latitude longitude coordinates
+        self.geospatials = geospatials #The geospatial coordinates
         self.compute_curvature()
 
     def to_costcurvature_point(self):
@@ -68,11 +58,6 @@ class GraphsSet:
     """Stores all selected graphs between two given lattice slices"""
     minimizeCost = True
     minimizeCurvature = True
-    graphsNumEdges = None #The number of edges each constituent graph has.
-    unfilteredGraphs = None
-    costCurvaturePoints = None
-    front = None
-    selectedGraphs = None      
 
     def graphs_to_costcurvaturepoints(self):
         """Compute cost and curvature of each graph with min number of edges"""

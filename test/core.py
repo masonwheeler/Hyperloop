@@ -29,9 +29,9 @@ def build_directions(start, end):
     proj.set_projection(startLatLng, endLatLng)
     directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
                                                    config.proj)
-    #if config.visualMode:
-    #    plottableDirections = [zip(*directionsPoints), 'y-'] 
-    #    config.plotQueue.append(plottableDirections)
+    if config.visualMode:
+        plottableDirections = [zip(*directionsPoints), 'y-'] 
+        config.plotQueue.append(plottableDirections)
     return directionsPoints
 
 def build_lattice(directionsPoints):
@@ -47,12 +47,11 @@ def build_lattice(directionsPoints):
     newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
                                                xSpline, ySpline) 
     latticeSlices = newLattice.latticeSlices
-    print(latticeSlices)
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
-    #if config.visualMode:
-    #    plottableSpline = [splineValues, 'r-']
-    #    config.plotQueue.append(plottableSpline)
+    if config.visualMode:
+        plottableSpline = [splineValues, 'r-']
+        config.plotQueue.append(plottableSpline)
     return latticeSlices
 
 #    config.degreeConstraint = min(math.fabs(math.pi - math.acos(min((config.distanceBtwnSlices*(config.gTolerance/330**2))**2/2-1,1))),math.pi)*(180./math.pi)
@@ -84,7 +83,7 @@ def pair_analysis(start,end):
     t0 = time.time()
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
-    completeGraphs = build_graphs(latticeSlices)
+    #completeGraphs = build_graphs(latticeSlices)
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     if config.visualMode:

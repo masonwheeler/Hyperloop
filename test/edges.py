@@ -21,6 +21,12 @@ import cacher
 
 
 class Edge:
+    """
+    Object that stores pairs of lattice points, the associated data
+    
+    Stores whether the line between the pair of points is in the right of way.
+    Stores whether the edge is compatible with any other edges.
+    """
     isInRightOfWay = False
     isUseful = True
     landCost = 0

@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To build a lattice using smoothing spline.
-Last Modified: 8/10/15
+Last Modified: 8/13/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Added docstrings
+Last Modification Purpose: Added Iteratively Spline construction
 """
 
 #Standard Modules:
@@ -117,6 +117,44 @@ class Lattice:
             self.plottableSlices.append(newSlice.plottable_slice())
 
 
+def iterativelybuild_directionsspline(directionsPoints):
+    xCoordsList, yCoordsList = zip(*directionsPoints)
+    xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
+    numPoints = len(directionsPoints)
+    tValues = np.arange(numPoints)
+    INITIAL_END_WEIGHTS = 100000
+    INITIAL_SMOOTHING_FACTOR = 10**13    
+    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, tValues,
+                               INITIAL_END_WEIGHTS, INITIAL_SMOOTHING_FACTOR)
+    splinesCurvature = interpolate.splines_curvature(xSpline, ySpline, tValues)
+    isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
+                                            config.curvatureThreshhold)
+    if isCurvatureValid:
+        testSmoothingFactor = INITIAL_SMOOTHING_FACTOR
+        while isCurvatureValid:            
+            testSmoothingFactor *= 0.5
+            interpolate.set_smoothing_factors(xSpline, ySpline,
+                                              testSmoothingFactor)
+            splinesCurvature = interpolate.splines_curvature(xSpline, ySpline,
+                                                                      tValues)
+            isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
+                                                    config.curvatureThreshhold)
+        
+        testSmoothingFactor *= 2
+        interpolate.set_smoothing_factors(xSpline, ySpline,
+                                          testSmoothingFactor)
+        return [xSpline, ySpline]
+    else:
+        while not isCurvatureValid:            
+            testSmoothingFactor *= 2
+            interpolate.set_smoothing_factors(xSpline, ySpline,
+                                              testSmoothingValue)
+            splinesCurvature = interpolate.splines_curvature(xSpline, ySpline,
+                                                                      tValues)
+            isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
+                                                    config.curvatureThreshhold)
+        return [xSpline, ySpline]
+    
 def build_directionsspline(directionsPoints):
     xCoordsList, yCoordsList = zip(*directionsPoints)
     xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
@@ -124,12 +162,12 @@ def build_directionsspline(directionsPoints):
     tValues = np.arange(numPoints)
     endWeights = 100000
     smoothingFactor = 10**13
-    directionsSpline = interpolate.smoothing_splines(xArray, yArray, tValues,
+    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, tValues,
                                                  endWeights, smoothingFactor)
-    return directionsSpline
+    return [xSpline, ySpline]
     
 def get_directionsspline(directionsPoints):
-    directionsSpline = cacher.get_object("spline", build_directionsspline,
+    directionsSpline = cacher.get_object("spline", iterativelybuild_directionsspline,
        [directionsPoints], cacher.save_spline, config.splineFlag)
     return directionsSpline
 

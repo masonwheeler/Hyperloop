@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide interpolation functions for use across program.
-Last Modified: 7/31/15
+Last Modified: 8/13/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Added function to compute curvature metric for graph
+Last Modification Purpose: Added function to set smoothing factor
 """
 
 #Standard Modules:
@@ -112,10 +112,27 @@ def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
     ySpline.set_smoothing_factor(smoothingFactor)
     return [xSpline, ySpline]
 
+def set_smoothing_factors(xSpline, ySpline, smoothingFactor):
+    xSpline.set_smoothing_factor(smoothingFactor)
+    ySpline.set_smoothing_factor(smoothingFactor)
+    return [xSpline, ySpline]
+
 def interpolating_splines(xArray, yArray, tValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
     ySpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, yArray)
     return [xSpline, ySpline]
+
+def is_curvature_valid(curvatureArray, curvatureThreshhold):
+    curvatureSize = curvatureArray.size
+    curvatureThreshholdArray = np.empty(curvatureSize)
+    curvatureThreshholdArray.fill(curvatureThreshhold)
+    absoluteCurvatureArray = np.absolute(curvatureArray)
+    relativeCurvatureArray = np.subtract(absoluteCurvatureArray,
+                                         curvatureThreshholdArray)
+    excessCurvatureArray = relativeCurvatureArray.clip(min=0)
+    totalExcessCurvature = np.sum(excessCurvatureArray)
+    isCurvatureValid = (totalExcessCurvature == 0)
+    return isCurvatureValid    
 
 def curvature_metric(graphCurvatureArray):
     curvatureSize = graphCurvatureArray.size
@@ -125,26 +142,16 @@ def curvature_metric(graphCurvatureArray):
     relativeCurvature = np.subtract(absoluteCurvature, curvatureThreshhold)
     excessCurvature = relativeCurvature.clip(min=0)
     curvatureMetric = np.sqrt(np.mean(np.square(excessCurvature)))
-    #print(" curvature Array: " + str(graphCurvatureArray))
-    #print(" curvature threshhold: " + str(curvatureThreshhold))
-    #print("curvature metric: " + str(curvatureMetric))
     return curvatureMetric * 10**10
 
 def graph_curvature(graphPoints, graphSampleSpacing):
-    #t0 = time.clock()
     graphEdges = points_to_edges(graphPoints)
     sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
-    #t1 = time.clock()
-    #print("sampling edges took " + str(t1 -t0) + " seconds.")
     xArray, yArray = points_to_arrays(sampledGraphPoints)
     numPoints = xArray.size
     tValues = get_tvalues(numPoints)
-    #t2 = time.clock()
     xSpline, ySpline = interpolating_splines(xArray, yArray, tValues)
-    #splineValues = get_splinevalues(xSpline, ySpline
     graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
     graphCurvature = curvature_metric(graphCurvatureArray)
-    #t3 = time.clock()
-    #print("Interpolating samples took " + str(t1 -t0) + " seconds.")
     return graphCurvature
      

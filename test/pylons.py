@@ -1,5 +1,5 @@
 """
-Original Developer: David Roberts
+Original Developer: Jonathan Ward
 Purpose of Module: To determine the pylon cost component of an edge
 Last Modified: 7/23/15
 Last Modified By: Jonathan Ward
@@ -8,7 +8,6 @@ Last Modification Purpose: To add support for tube heights.
 
 import util
 import config
-
 
 def build_pylons(pylonLocations):
     pylonLocationsByElevation = sorted(pylonLocations,
@@ -19,7 +18,6 @@ def build_pylons(pylonLocations):
     for pylonLocation in pylonLocations:
         pylonLocation["pylonHeight"] = \
           highestElevation - pylonLocation["elevation"]
-
         
     return pylonLocations
         
@@ -33,4 +31,5 @@ def edge_pyloncost(pylonLocations):
     edgePylonCost = sum([pylonLocation["pylonCost"] for pylonLocation
                          in pylonLocations])
     return edgePylonCost
+
 

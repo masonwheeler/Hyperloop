@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = False
 timingMode = False
 useDropbox = False
@@ -21,8 +21,8 @@ useDropbox = False
 """
 Cache Overwriting Switches.
 """
-useCachedDirections = False
-useCachedSpline = True
+useCachedDirections = True
+useCachedSpline = False
 useCachedLattice = True
 useCachedEdges = True
 useCachedGraphs = True

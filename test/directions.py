@@ -27,10 +27,11 @@ def HTTP_to_string(HTTPData):
 
 def directions(origin, destination):
     """Pulls directions from Google API"""
-    rawDirections = urllib2.urlopen(
-    'https://maps.googleapis.com/maps/api/directions/json?origin=' + origin +
-    '&destination=' + destination +
-    '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4')
+    url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' + \
+    origin + '&destination=' + destination + \
+    '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
+    util.smart_print("url: " + url)
+    rawDirections = urllib2.urlopen(url)
     stringDirections = HTTP_to_string(rawDirections)
     return stringDirections
 
