@@ -10,18 +10,25 @@ import util
 import config
 import abstract
 
-class PotentialPylon(abstract.AbstractPoint):
+class Pylon(abstract.AbstractPoint):
+
+    def construction_cost(self, pylonHeight):
+        cost = config.pylonBaseCost + pylonHeight * config.pylonCostPerMeter
+        return cost
+
     def __init__(self, geospatials, latlngs, landElevation, pylonHeight
                                                                pylonId):
         pylonCoordinates = {"geospatials" : geospatials,
                             "latlngs" : latlngs,
                             "landElevation" : landElevation,
                             "pylonHeight" : pylonHeight,
-        self.cost = pylonHeight
+        self.cost = self.construction_cost(pylonHeight)
         abstract.AbstractPoint.__init__(pylonCoordinates, pylonId)
 
         
-class PotentialPylonOptions(abstract.AbstractSlice):   
+class PylonsSlice(abstract.AbstractSlice):   
+    pylonHeightOptionSpacing = config.pylonHeightOptionSpacing
+
     def pylons_builder(self, shortestPylonCoords, tallestPylonCoords,
                              shortestPylonId):       
         heightDifference = tallestPylonCoords["pylonHeight"] - \
@@ -30,14 +37,14 @@ class PotentialPylonOptions(abstract.AbstractSlice):
         latlngs = shortestPylonCoords["latlngs"]
         landElevation = shortestPylonCoords["landElevation"]
         shortestPylonHeight = shortestPylonCoords["pylonHeight"]
-        pylonHeightOptions = util.build_grid2(heightDifference, #rename gridfunc
-          config.pylonHeightOptionSpacing, shortestPylonHeight)     
+        pylonHeightOptions = util.build_grid2(heightDifference,
+          self.pylonHeightOptionSpacing, shortestPylonHeight)     
         pylonIds = map(lambda x: x + shortestPylonId,
                        range(len(pylonHeightOptions)))
         enumeratedPylonHeightOptions = zip(pylonHeightOptions, pylonIds)
         potentialPylonOptions = map(lambda height_id:
-            PotentialPylon(geospatials, latlngs, landElevation, height_id[0], 
-            height_id[1]), enumeratedPylonHeightOptions)
+        Pylon(geospatials, latlngs, landElevation, height_id[0], height_id[1]),
+        enumeratedPylonHeightOptions)
         return potentialPylonOptions        
 
     def __init__(self, minElevation, maxElevation, shortestPylonId,
@@ -52,9 +59,45 @@ class PotentialPylonOptions(abstract.AbstractSlice):
                               "latlngs" : latlngs,
                                "landElevation": maxElevation,
                                "pylonHeight" : tallestPylonHeight}
-        abstract.AbstractSlice.__init__(shortestPylonCoords,
-            tallestPylonCoords, shortestPylonId, self.pylons_builder)
+        abstract.AbstractSlice.__init__(shortestPylonCoords, tallestPylonCoords,
+                                        shortestPylonId, self.pylons_builder)
+
+
+class PylonsLattice(abstract.AbstractLattice):
+    def __init__(self, minMaxElevations, pylons_builder):
+        abstract.AbstractLattice.__init__(minMaxElevations, pylonsBuilder)
+
+
+class TubeEdge(abstract.AbstractEdge):
+
+    def tube_cost(self, startPylon, endPylon):
+        startPylon.coord
+
+    def pylon_cost(self, startPylonCoords, endPylonCoords):   
+        return startPylon.cost + endPylon.cost
+
+    def __init__(self, startPylon, endPylon, startId, endId):
+        abstract.AbstractEdge.__init__(startPylonCoords, endPylonCoords,
+                                       startId, endId)
+        self.tubeCost = self.tube_cost(startPylon, endPylon)
+        self.pylonCost = self.pylon_cost(startPylon, endPylon)        
         
+
+class TubeEdgesSets(abstract.AbstractEdgesSets):
+
+    def tube_edge_builder(self, startPylon, endPylon):
+        startId = startPylon.pointId
+        endId = endPylon.pointId
+        return TubeEdge(startPylon, endPylon, startId, endId)
+
+
+    def is_tube_edge_pair_compatible(self, tubeEdgeA, tubeEdgeB):
+        
+
+    def __init__(self, lattice)
+        abstract.AbstractEdgesSets.__init__(lattice, self.tube_edge_builder,
+                                            self.is_tube_edge_pair_compatible)
+           
 
 class TubeElevationGraph(abstract.AbstractGraph):
     def __init__(self, startId, endId, startAngle, endAngle, numEdges
