@@ -6,6 +6,9 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Created Module
 """
 
+import paretofront
+import mergetree
+
 class AbstractPoint:
     def __init__(self, coordinates, pointId):
         self.pointId = pointId
@@ -87,7 +90,5 @@ class AbstractGraphsSets:
 
 class AbstractPath:
     def __init__(self, graph, get_graphcoords)
-        self.graphCoords = get_graphcoords(graph)  
-
-        
+        self.graphCoords = get_graphcoords(graph)          
 

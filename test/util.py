@@ -149,6 +149,25 @@ def build_grid(vector, spacing, startVector):
         grid = [add(point, startVector) for point in untranslatedGrid]
         return grid
 
+def sample_vector(vector, spacing):
+    if norm(vector) < spacing:
+        return None
+    else:
+        effectiveScale = norm(vector) / spacing
+        unitVector = scale(1.0 / effectiveScale, vector)
+        numPoints = int(effectiveScale)
+        pointIndices = range(0, numPoints + 1)
+        pointVectors = [scale(index, unitVector) for index in pointIndices]
+        return pointVectors
+
+def build_grid2(vector, spacing, startVector):
+    untranslatedGrid = sample_vector(vector, spacing)
+    if untranslatedGrid == None:
+        return []
+    else:
+        grid = [add(point, startVector) for point in untranslatedGrid]
+        return grid
+
 #Edge Operations:
 
 def edge_to_vector(edge):
