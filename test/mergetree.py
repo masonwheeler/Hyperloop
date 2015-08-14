@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide data structure used for merging discrete elements
-Last Modified: 7/30/15
+Last Modified: 8/13/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Added functions and classes for testing purposes
+Last Modification Purpose: Added MasterTree Class
 """
 
 import collections
@@ -136,6 +136,9 @@ class MergeTree:
         self.data_updater = data_updater         
         self.get_data(data)
 
+
+class MasterTree:
+    def __init__(self, objectsToMerge):
 
 def objects_to_leaves(objects, data_updater):  
     """Takes list of objects and initializes a list of MergeTrees.""" 

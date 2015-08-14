@@ -9,15 +9,18 @@ Last Modification Purpose: Created Module
 import paretofront
 import mergetree
 
+
 class AbstractPoint:
     def __init__(self, coordinates, pointId):
         self.pointId = pointId
         self.coordinates = coordinates
+
         
 class AbstractSlice:
     def __init__(self, startCoords, endCoords, startId, points_builder):
         self.points = points_builder(startCoords, endCoords, startId)
         self.endId = startId + len(self.points)
+
         
 class AbstractLattice:
     def __init__(self, slicesStartEndCoords, points_builder):
@@ -30,6 +33,84 @@ class AbstractLattice:
             self.slices.append(newSlice)
             startId = newSlice.endId
 
+
+class AbstractEdge:
+    def __init__(self, startCoords, endCoords, startId, endId):
+        self.startCoords = startCoords
+        self.endCoords = endCoords
+        self.startId = startId
+        self.endId = endId
+
+
+class AbstractEdgesSets:  
+    def lattice_to_unfiltered_edges_sets(self, lattice, edge_builder):
+        unfilteredEdgesSets = []
+        for latticeSliceIndex in range(len(lattice) - 1):
+            latticeSliceA = lattice[latticeSliceIndex]
+            latticeSliceB = lattice[latticeSliceIndex + 1]
+            edgesSet = []
+            for pointA in sliceA:
+                for pointB in sliceB:
+                    edgesSet.append(edge_builder(pointA, pointB))
+            unfilteredEdgesSets.append(edgesSet)
+        return unfilteredEdgesSets
+
+    def determine_useful_edges(self, edgesSets):
+        """Edge is useful if there are compatible adjacent edges"""
+        for edgeA in edgesSets[0]:
+            compatibles = [self.edge_pair_compatible(edgeA, edgeB)
+                           for edgeB in edgesSets[1]]
+            edgeA.isUseful = any(compatibles)
+        for edgeSetIndex in range(1, len(edgesSets) - 1):
+            for edgeB in edgesSets[edgeSetIndex]:
+                compatiblesA = [self.edge_pair_compatible(edgeA, edgeB)
+                                for edgeA in edgesSets[edgeSetIndex - 1]]
+                compatiblesC = [self.edge_pair_compatible(edgeB, edgeC)
+                                for edgeC in edgesSets[edgeSetIndex + 1]]
+                edgeB.isUseful = any(compatiblesA) and any(compatiblesC)
+        for edgeB in edgeSets[-1]:
+            compataibles = [self.edge_pair_compataible(edgeA, edgeB)
+                            for edgeA in edgesSets[-2]]
+            edgeB.isUseful = any(compatibles)
+
+    def filter_edges(self, edgesSets):
+        filteredEdgesSets = []
+        for edgesSet in edgesSets:
+            filteredEdgesSet = filter(lambda edge : edge.isUseful, edgesSets)
+            filteredEdgesSets.append(filteredEdgesSet)
+        return filteredEdgesSets
+
+    def check_empty(self, edgesSets):
+        for edgesSet in edgesSets:
+            if len(edgesSet) == 0:
+                return True
+        return False
+        
+    def iterative_filter(self, unfilteredEdgesSets):
+        prefilterNumEdges = util.list_of_lists_len(unfilteredEdgesSets)
+        util.smart_print("The original number of edges: " +
+                         str(prefilteredNumEdges))
+        filteredEdgesSetsList = []
+        while True:
+            self.determine_useful_edges(unfilteredEdgesSets)
+            filteredEdgesSets = self.filter_edges(unfilteredEdgesSets)
+            if self.check_empty(filteredEdgesSets):
+                raise ValueError("Encountered Empty EdgesSet")
+            postfilterNumEdges = util.list_of_lists_len(filteredEdgesSets)
+            if postfilterNumEdges == prefilterNumEdges:
+                break            
+            prefilterNumEdges = postfilterNumEdges
+            filteredEdgesSetsList.append(filteredEdgesSets)            
+        return filteredEdgesSetsList
+        
+    def __init__(self, lattice, edge_builder, is_edge_pair_compatible):
+        self.unfilteredEdgesSets = self.lattice_to_unfiltered_edges_sets(
+                                                    lattice, edge_builder)
+        self.filteredEdgesSetsList = self.iterative_filter(
+                                        self.unfilteredEdgesSets)
+        self.finalEdgesSets = self.filteredEdgesSetsList[-1]
+         
+
 class AbstractGraph:
     def __init__(self, startId, endId, startAngle, endAngle, numEdges):
         self.startId = startId
@@ -38,7 +119,8 @@ class AbstractGraph:
         self.endAngle = endAngle
         self.numEdges = numEdges
 
-class AbstractGraphsSets:
+
+class AbstractGraphsSet:
     def select_graphs(self, minimizeAVals, minimizeBVals):
         if self.graphsABVals == None:
             self.selectedGraphs = self.unfilteredGraphs
@@ -87,6 +169,7 @@ class AbstractGraphsSets:
                 return True
             else:
                 return False
+
 
 class AbstractPath:
     def __init__(self, graph, get_graphcoords)
