@@ -113,6 +113,9 @@ class AbstractEdgesSets:
          
 
 class AbstractGraph:
+
+    def init_from_edge(self, edge):
+
     def __init__(self, startId, endId, startAngle, endAngle, numEdges):
         self.startId = startId
         self.endId = endId
