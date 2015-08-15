@@ -113,16 +113,25 @@ class AbstractEdgesSets:
          
 
 class AbstractGraph:
-
-    def init_from_edge(self, edge):
-
     def __init__(self, startId, endId, startAngle, endAngle, numEdges):
         self.startId = startId
         self.endId = endId
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.numEdges = numEdges
+    
+    def init_from_edge(self, edge):
+        numEdges = 1
+        graph = self.__init__(edge.startId, edge.endId,
+                              edge.startAngle, edge.endAngle, numEdges)  
+        return graph
 
+    def merge_two_graphs(self, graphA, graphB):
+        mergedGraph = self.__init__(graphA.startId, graphB.endId
+                                    graphA.startAngle, graphB.endAngle,
+                                    graphA.numEdges + graphB.numEdges)
+        return mergedGraph
+        
 
 class AbstractGraphsSet:
     def select_graphs(self, minimizeAVals, minimizeBVals):
@@ -145,12 +154,14 @@ class AbstractGraphsSet:
                 self.selectedGraphs = self.unfilteredGraphs
                 return False
 
-    def __init__(self, graphs, graphs_evaluator, minimizeAVals, minimizeBVals):
+    def __init__(self, graphs, graphs_evaluator, is_graph_pair_compatible,
+                       minimizeAVals, minimizeBVals):
         self.unfilteredGraphs = graphs
         graphsNumEdges = graphs[0].numEdges
         self.graphsABVals = graphs_evaluator(graphs, graphsNumEdges)
         self.select_graphs(minimizeAVals, minimizeBVals)
         self.minimizeAVals, self.minimizeBVals = minimizeAVals, minimizeBVals
+        self.is_graph_pair_compatible = is_graph_pair_compatible
 
     def update_graphs(self):
         """
@@ -173,6 +184,20 @@ class AbstractGraphsSet:
                 return True
             else:
                 return False
+
+    def merge_two_graphssets(self, graphsSetA, graphsSetB)
+        mergedGraphs = []
+        selectedA = graphsSetsA.selectedGraphs
+        selectedB = graphsSetsB.selectedGraphs
+        for graphA in selectedA:
+            for graphB in selectedB:
+                if self.is_graph_pair_compatible(graphA, graphB):
+                    mergedGraphs.append(merge_two_graphs(graphA, graphB))
+        if (len(mergedGraphs) == 0):
+            return None
+        else:
+            mergedGraphsSet = self.__init__(mergedGraphs)
+            return mergedGraphsSet
 
 
 class AbstractPath:
