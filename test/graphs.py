@@ -54,6 +54,7 @@ class Graph:
         print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
         print("This graph's curvature is: " + str(self.curvatureMetric) + ".")
 
+
 class GraphsSet:
     """Stores all selected graphs between two given lattice slices"""
     minimizeCost = True

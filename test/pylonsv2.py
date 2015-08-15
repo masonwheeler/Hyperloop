@@ -64,17 +64,33 @@ class PylonsSlice(abstract.AbstractSlice):
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def __init__(self, minMaxElevations, pylons_builder):
-        abstract.AbstractLattice.__init__(minMaxElevations, pylonsBuilder)
+    def __init__(self, minMaxElevations):
+        abstract.AbstractLattice.__init__(minMaxElevations, PylonsSlice)
 
 
 class TubeEdge(abstract.AbstractEdge):
-
     def tube_cost(self, startPylon, endPylon):
-        startPylon.coord
+        startPylonLandElevation = startPylon.coordinates["landElevation"]
+        startPylonHeight = startPylon.coordinates["pylonHeight"]
+        endPylonLandElevation = endPylon.coordinates["landElevation"]
+        endPylonHeight = endPylon.coordinates["height"]
+        startTubeElevation = startPylonLandElevation + startPylonHeight
+        endTubeElevation = endPylonLandElevation + endPylonHeight
+        elevationDifference = startTubeElevation - endTubeElevation
+        
+        startPylonGeospatials = startPylon.coordinates["geospatials"]
+        endPylonGeospatials = endPylon.coordinates["geospatials"]
+        geospatialVector = util.edge_to_vector([startPylonGeospatials,
+                                                endPylonGeospatials])
+        geospatialDistance = util.norm(geospatialsVector)
+    
+        tubeLength = util.norm([elevationDifference, geospatialsDistance])
+        tubeCost = tubeLength * config.tubeCostPerMeter
+        return tubeCost
 
     def pylon_cost(self, startPylonCoords, endPylonCoords):   
-        return startPylon.cost + endPylon.cost
+        totalPylonCost =  startPylon.cost + endPylon.cost
+        return totalPylonCost
 
     def __init__(self, startPylon, endPylon, startId, endId):
         abstract.AbstractEdge.__init__(startPylonCoords, endPylonCoords,
