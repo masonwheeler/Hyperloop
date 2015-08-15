@@ -100,12 +100,13 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
            
 
 class TubeElevationGraph(abstract.AbstractGraph):
+
     def __init__(self, startId, endId, startAngle, endAngle, numEdges
                        cost, triptimeExcess):
         abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
                                                                     numEdges)
         self.cost = cost
-        self.triptimeExcess
+        self.triptimeExcess = triptimeExcess
 
     def cost_triptime_excess(self):
         return [self.cost, self.triptimeExcess]
