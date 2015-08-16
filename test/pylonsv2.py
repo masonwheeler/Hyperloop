@@ -18,10 +18,12 @@ class Pylon(abstract.AbstractPoint):
 
     def __init__(self, geospatials, latlngs, landElevation, pylonHeight
                                                                pylonId):
+        tubeElevation = landElevation + pylonHeight
         pylonCoordinates = {"geospatials" : geospatials,
                             "latlngs" : latlngs,
                             "landElevation" : landElevation,
                             "pylonHeight" : pylonHeight,
+                            "tubeElevation": tubeElevation}
         self.cost = self.construction_cost(pylonHeight)
         abstract.AbstractPoint.__init__(pylonCoordinates, pylonId)
 
@@ -57,8 +59,8 @@ class PylonsSlice(abstract.AbstractSlice):
                                "pylonHeight" : shortestPylonHeight}
         tallestPylonCoords = {"geospatials" : geospatials,
                               "latlngs" : latlngs,
-                               "landElevation": maxElevation,
-                               "pylonHeight" : tallestPylonHeight}
+                              "landElevation": maxElevation,
+                              "pylonHeight" : tallestPylonHeight}
         abstract.AbstractSlice.__init__(shortestPylonCoords, tallestPylonCoords,
                                         shortestPylonId, self.pylons_builder)
 
@@ -68,14 +70,10 @@ class PylonsLattice(abstract.AbstractLattice):
         abstract.AbstractLattice.__init__(minMaxElevations, PylonsSlice)
 
 
-class TubeEdge(abstract.AbstractEdge):
+class TubeEdge(abstract.AbstractEdge):    
     def tube_cost(self, startPylon, endPylon):
-        startPylonLandElevation = startPylon.coordinates["landElevation"]
-        startPylonHeight = startPylon.coordinates["pylonHeight"]
-        endPylonLandElevation = endPylon.coordinates["landElevation"]
-        endPylonHeight = endPylon.coordinates["height"]
-        startTubeElevation = startPylonLandElevation + startPylonHeight
-        endTubeElevation = endPylonLandElevation + endPylonHeight
+        startTubeElevation = startPylon.coordinates["tubeElevation"]
+        endTubeElevation = endPylon.coordinates["tubeElevation"]
         elevationDifference = startTubeElevation - endTubeElevation
         
         startPylonGeospatials = startPylon.coordinates["geospatials"]
@@ -108,36 +106,77 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
 
 
     def is_tube_edge_pair_compatible(self, tubeEdgeA, tubeEdgeB):
+        if edgeA.endId == edgeB.startId:
+            if abs(edgeA.angle - edgeB.angle) < config.tubeDegreeConstraint:
+                return True
+        return False
         
-
     def __init__(self, lattice)
         abstract.AbstractEdgesSets.__init__(lattice, self.tube_edge_builder,
                                             self.is_tube_edge_pair_compatible)
            
 
-class TubeElevationGraph(abstract.AbstractGraph):
+class TubeGraph(abstract.AbstractGraph):
+
+    def compute_triptime_excess(self, tubeElevations, geospatials, numEdges):
+        
+        return triptimeExcess
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges
-                       cost, triptimeExcess):
+                       tubeCost, pylonCost, tubeElevations, geospatials,
+                                                         triptimeExcess):
         abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
                                                                     numEdges)
-        self.cost = cost
-        self.triptimeExcess = triptimeExcess
+        self.tubeCost = tubeCost
+        self.pylonCost = pylonCost
+        self.tubeElevations = tubeElevations
+        self.geospatials = geospatials
+        self.triptimeExcess = self.compute_triptime_excess(self.tubeElevations,
+                                                     self.geospatials, numEdges)
 
-    def cost_triptime_excess(self):
-        return [self.cost, self.triptimeExcess]
+    def init_from_tube_edge(self, tubeEdge):
+        tubeGraph = abstract.AbstractGraph.init_from_edge(tubeEdge)
+        tubeGraph.tubeCost = tubeEdge.tubeCost
+        tubeGraph.pylonCost = tubeEdge.pylonCost        
+        tubeElevations = [tubeEdge.startPoint.coordinates["tubeElevation"],
+                      tubeEdge.endPoint.coordinates["tubeElevation"]]        
+        tubeGraph.tubeElevations = tubeElevations
+        tubeGraph.geospatials = [tubeEdge.startPoint.coordinates["geospatials"],
+                                 tubeEdge.endPoint.coordinates["geospatials"]]
+        tubeGraph.triptimeExcess = self.compute_triptime_excess(
+            tubeGraph.tubeElevations, tubeGraph.geospatials, tubeGraph.numEdges)
+        return tubeGraph
 
-class TubeElevationGraphsSets(abstract.AbstractGraphSets):
+    def merge_two_tubegraphs(self, tubeGraphA, tubeGraphB):
+        mergedTubeGraph = abstract.AbstactGraph.merge_two_graphs(tubeGraphA,
+                                                                 tubeGraphB)
+        mergedTubeGraph.tubeCost = tubeGraphA.tubeCost + tubeGraphB.tubeCost
+        mergedTubeGraph.pylonCost = tubeGraphA.pylonCost + tubeGraphB.pylonCost
+        mergedTubeGraph.tubeElevations = util.smart_concat(
+                        tubeGraphA.tubeElevations, tubeGraphB.tubeElevations)
+        mergedTubeGraph.geospatials = util.smart_concat(tubeGraphA.geospatials,
+                                                        tubeGraphB.geospatials)
+        mergedTubeGraph.triptimeExcess = self.compute_triptime_excess(
+               mergedTubeGraph.tubeElevations, mergedTubeGraph.geospatials,
+               mergedTubeGraph.numEdges)
+        return mergedTubeGraph
+
+
+class TubeGraphsSets(abstract.AbstractGraphSets):
     def graphs_cost_triptime_excess(self, tubeElevationGraphs)
-        graphsCostTriptimeExcess = [graph.cost_triptime_excess() for graph
-                                    in tubeElevationGraphs]
+        graphsCostTriptimeExcess = [[graph.tubeCost + graph.pylonCost,
+                                     graph.triptimeExcess]
+                                     for graph in tubeElevationGraphs]
         return graphsCostTriptimeExcess
 
-    def __init__(self, tubeElevationGraphs, graphs_cost_triptime_excess):
+    def __init__(self, tubeElevationGraphs):
         minimizeCost = True
         minimizeTriptimeExcess = True
         abstract.AbstractGraphSets.__init__(tubeElevationGraphs,
-            graphs_cost_triptime_excess, minimizeCost, minimizeTriptimeExcess)
+        self.graphs_cost_triptime_excess, minimizeCost, minimizeTriptimeExcess)
+
+    def init_from_tube_edges_sets(self, tubeEdgesSets)
+    
                        
          
 class TubePath:
