@@ -1,7 +1,7 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To determine the pylon cost component of an edge
-Last Modified: 8/12/15
+Last Modified: 8/15/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: To implement a non naive pylon cost method.
 """
@@ -10,8 +10,8 @@ import util
 import config
 import abstract
 
-class Pylon(abstract.AbstractPoint):
 
+class Pylon(abstract.AbstractPoint):
     def construction_cost(self, pylonHeight):
         cost = config.pylonBaseCost + pylonHeight * config.pylonCostPerMeter
         return cost
@@ -118,7 +118,9 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
 class TubeGraph(abstract.AbstractGraph):
 
     def compute_triptime_excess(self, tubeElevations, geospatials, numEdges):
-        
+        if numEdges < config.minNumTubeEdges:
+            return None    
+        else:             
         return triptimeExcess
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges
@@ -181,10 +183,4 @@ class TubeGraphsSets(abstract.AbstractGraphSets):
         tubeGraphsSets = self.__init__(tubeGraphs)
         return tubeGraphsSets    
         
-        
-    
-                       
-         
-class TubePath:
-    
-    
+                                      

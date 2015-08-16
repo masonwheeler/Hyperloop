@@ -131,6 +131,8 @@ class AbstractGraph:
                                     graphA.startAngle, graphB.endAngle,
                                     graphA.numEdges + graphB.numEdges)
         return mergedGraph
+
+    def build_local_lattice(self):
         
 
 class AbstractGraphsSet:
