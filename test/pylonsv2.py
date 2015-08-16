@@ -98,7 +98,6 @@ class TubeEdge(abstract.AbstractEdge):
         
 
 class TubeEdgesSets(abstract.AbstractEdgesSets):
-
     def tube_edge_builder(self, startPylon, endPylon):
         startId = startPylon.pointId
         endId = endPylon.pointId
@@ -163,19 +162,26 @@ class TubeGraph(abstract.AbstractGraph):
 
 
 class TubeGraphsSets(abstract.AbstractGraphSets):
-    def graphs_cost_triptime_excess(self, tubeElevationGraphs)
-        graphsCostTriptimeExcess = [[graph.tubeCost + graph.pylonCost,
-                                     graph.triptimeExcess]
-                                     for graph in tubeElevationGraphs]
+    def tubegraphs_cost_triptime_excess(self, tubeGraphs)
+        graphsCostTriptimeExcess = [[tubeGraph.tubeCost + tubeGraph.pylonCost,
+                                     tubeGraph.triptimeExcess]
+                                     for tubeGraph in tubeElevationGraphs]
         return graphsCostTriptimeExcess
 
-    def __init__(self, tubeElevationGraphs):
+    def __init__(self, tubeGraphs):
         minimizeCost = True
         minimizeTriptimeExcess = True
-        abstract.AbstractGraphSets.__init__(tubeElevationGraphs,
-        self.graphs_cost_triptime_excess, minimizeCost, minimizeTriptimeExcess)
+        abstract.AbstractGraphSets.__init__(tubeGraphs,
+                           self.tubegraphs_cost_triptime_excess,
+                           minimizeCost, minimizeTriptimeExcess)
 
-    def init_from_tube_edges_sets(self, tubeEdgesSets)
+    def init_from_tube_edges_sets(self, tubeEdgesSets):
+        tubeGraphs = [map(TubeGraph.init_from_tube_edge, tubeEdgesSet) for
+                      tubeEdgesSet in tubeEdgesSets]
+        tubeGraphsSets = self.__init__(tubeGraphs)
+        return tubeGraphsSets    
+        
+        
     
                        
          
