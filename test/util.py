@@ -104,11 +104,9 @@ def safe_operation(operation,vectorA,vectorB):
     if len(vectorA) == len(vectorB):
         return map(operation,vectorA,vectorB)
     else:
-        print("Mismatched vector lengths.")
         print(vectorA)
         print(vectorB)
-        sys.exit()
-        return None
+        raise ValueError("Mismatched vector lengths.")
 
 def add(vectorA,vectorB):
     return safe_operation(operator.add,vectorA,vectorB)

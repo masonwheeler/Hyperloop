@@ -28,7 +28,7 @@ class AbstractLattice:
         startId = 0
         for sliceBound in slicesBounds:
             newSlice = AbstractSlice(sliceBounds, startId, points_builder)
-            self.slices.append(newSlice)
+            self.slices.append(newSlice.points)
             startId = newSlice.endId
 
 

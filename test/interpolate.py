@@ -73,7 +73,7 @@ def get_slicetvalues(tValues, nth):
     sliceTValues = tValues[::nth]
     return sliceTValues
 
-def splines_curvature(xSpline, ySpline, tValues):
+def parameteric_splines_2d_curvature(xSpline, ySpline, tValues):
     xFirstDeriv = xSpline.derivative(n=1)
     yFirstDeriv = ySpline.derivative(n=1)
     xSecondDeriv = xSpline.derivative(n=2)
@@ -134,6 +134,7 @@ def is_curvature_valid(curvatureArray, curvatureThreshhold):
     isCurvatureValid = (totalExcessCurvature == 0)
     return isCurvatureValid    
 
+"""
 def curvature_metric(graphCurvatureArray):
     curvatureSize = graphCurvatureArray.size
     curvatureThreshhold = np.empty(curvatureSize)
@@ -154,4 +155,5 @@ def graph_curvature(graphPoints, graphSampleSpacing):
     graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
     graphCurvature = curvature_metric(graphCurvatureArray)
     return graphCurvature
+"""
      
