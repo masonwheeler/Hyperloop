@@ -23,11 +23,11 @@ class AbstractSlice:
 
         
 class AbstractLattice:
-    def __init__(self, slicesStartEndCoords, points_builder):
+    def __init__(self, slicesStartAndEndCoords, points_builder):
         self.slices = []
         startId = 0
-        for eachSliceStartEndCoords in slicesStartEndCoords:
-            startCoords, endCoords = eachSliceStartEndCoords
+        for eachSliceStartAndEndCoords in slicesStartAndEndCoords:
+            startCoords, endCoords = eachSliceStartAndEndCoords
             newSlice = AbstractSlice(startCoords, endCoords, startId,
                                                       points_builder)
             self.slices.append(newSlice)

@@ -2,9 +2,9 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To build edges with associated cost and elevation data
                    from pairs of lattice points.
-Last Modified: 8/10/15
+Last Modified: 8/16/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To add docstrings
+Last Modification Purpose: To test out pylonsv2
 """
 
 #Standard Modules:
@@ -16,6 +16,7 @@ import config
 import proj
 import elevation
 import pylons
+import tube
 import landcover
 import cacher
 
@@ -41,11 +42,11 @@ class Edge:
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
-        pylonGeospatials = util.build_grid(self.geospatialVector,
+        pylonLocationsGeospatials = util.build_grid(self.geospatialVector,
                                 config.pylonSpacing, startGeospatial)
-        pylonLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
-                                                        config.proj)
-        pylonElevations = elevation.usgs_elevation(pylonLatLngs)       
+        pylonLocationsLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
+                                                                 config.proj)
+        pylonLocationsLandElevations = elevation.usgs_elevation(pylonLatLngs)       
         pylonAttributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
         newPylons = [{"geospatial" : pylonAttribute[0],
                        "latlng" : pylonAttribute[1],

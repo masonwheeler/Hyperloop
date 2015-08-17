@@ -1,14 +1,15 @@
 """
 Original Developer: Jonathan Ward
-Purpose of Module: To determine the pylon cost component of an edge
+Purpose of Module: To determine the tube/pylon cost component of an edge
 Last Modified: 8/15/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To implement a non naive pylon cost method.
+Last Modification Purpose: To implement a non naive tube/pylon cost method.
 """
 
 import util
 import config
 import abstract
+import mergeTree
 
 
 class Pylon(abstract.AbstractPoint):
@@ -40,7 +41,7 @@ class PylonsSlice(abstract.AbstractSlice):
         landElevation = shortestPylonCoords["landElevation"]
         shortestPylonHeight = shortestPylonCoords["pylonHeight"]
         pylonHeightOptions = util.build_grid2(heightDifference,
-          self.pylonHeightOptionSpacing, shortestPylonHeight)     
+                 pylonHeightOptionSpacing, shortestPylonHeight)     
         pylonIds = map(lambda x: x + shortestPylonId,
                        range(len(pylonHeightOptions)))
         enumeratedPylonHeightOptions = zip(pylonHeightOptions, pylonIds)
@@ -49,8 +50,7 @@ class PylonsSlice(abstract.AbstractSlice):
         enumeratedPylonHeightOptions)
         return potentialPylonOptions        
 
-    def __init__(self, minElevation, maxElevation, shortestPylonId,
-                       geospatials, latlngs):
+    def __init__(self, shortestPylon, tallestPylon, shortestPylonId):
         shortestPylonHeight = 0
         tallestPylonHeight = maxElevation - minElevation
         shortestPylonCoords = {"geospatials" : geospatials,
@@ -66,8 +66,8 @@ class PylonsSlice(abstract.AbstractSlice):
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def __init__(self, minMaxElevations):
-        abstract.AbstractLattice.__init__(minMaxElevations, PylonsSlice)
+    def __init__(self, minMaxElevations): #Need to add support for geospatials
+        abstract.AbstractLattice.__init__(shortestAndtallestPylons, PylonsSlice)
 
 
 class TubeEdge(abstract.AbstractEdge):    

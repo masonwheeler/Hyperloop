@@ -3,15 +3,19 @@ Original Developer: David Roberts
 Purpose of Module: To house an important algorithm which extracts
 as many features of the route geometry as permitted by comfort constraints.
 """
-import util
-import config
-import clothoid
-import proj
+
+#Standard Modules
 import numpy as np
 import random
 import advanced_interpolate as interp
 import matplotlib.pyplot as plt
 import csv
+
+#Our Modules
+import util
+import config
+import clothoid
+import proj
 import directions
 import elevation
 

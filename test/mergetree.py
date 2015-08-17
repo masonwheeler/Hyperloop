@@ -179,52 +179,12 @@ class MasterTree:
         return mergedObjects
 
     def __init__(self, objectsToMerge, children_merger, data_updater):
-        self.root = self.merge_all_objects(objectsToMerge)
+        rootMergeTree = self.merge_all_objects(objectsToMerge, children_merger,
+                                                           data_updater)
+        self.root = rootMergeTree.data
         
 
-def objects_to_leaves(objects, data_updater):  
-    """Takes list of objects and initializes a list of MergeTrees.""" 
-    leavesList = [MergeTree(None, None, eachObject, None, data_updater)
-                  for eachObject in objects]
-    leaves = collections.deque(leavesList)
-    return leaves
-
-def merge_branchlayer(branchLayer, children_merger, data_updater):
-    """Creates next layer of MergeTrees."""
-    #Use Deque for performance, it has O(1) pops and appends on both sides.
-    nextBranchLayer = collections.deque()
-    while len(branchLayer) > 1:
-        #Take first two branches and merge them
-        leftBranch = branchLayer.popleft()
-        rightBranch = branchLayer.popleft()
-        data = None
-        mergedBranch = MergeTree(leftBranch, rightBranch, data, children_merger,
-                                                                data_updater)
-        nextBranchLayer.append(mergedBranch)
-    if len(branchLayer) == 1:
-        #Take last branch and merge it with the result of the previous merge
-        rightBranch = branchLayer.popleft()
-        leftBranch = nextBranchLayer.pop()
-        data = None
-        mergedBranch = MergeTree(leftBranch, rightBranch, data, children_merger,
-                                                                data_updater)
-        nextBranchLayer.append(mergedBranch)
-    return nextBranchLayer
-       
-def merge_allobjects(objects, children_merger, data_updater):
-    """Recursively merges objects until list is completely merged."""
-    branchLayer = objects_to_leaves(objects, data_updater) 
-    while len(branchLayer) > 1:
-        config.holder += 1
-        print("On layer " + str(config.holder))
-        branchLayer = merge_branchlayer(branchLayer, children_merger,
-                                                     data_updater)
-    mergedObjects = branchLayer[0]
-    return mergedObjects
-
-
 #Testing Purposes
-"""
 class Number:
     value = None
     timesUpdated = 0
@@ -233,7 +193,6 @@ class Number:
     def __init__(self, value, maxUpdates):
         self.value = value
         self.maxUpdates = maxUpdates
-
     def update_value(self):
         if self.timesUpdated < self.maxUpdates:
             print("updating value")
@@ -247,7 +206,6 @@ class Number:
             print("max updates reached")
             return False
 
-
 def numbers_merger(numberA, numberB):
     mergedValue = numberA.value + numberB.value
     if mergedValue < 10:
@@ -260,8 +218,8 @@ def number_updater(number):
     isNumberUpdated = number.update_value()
     return isNumberUpdated
 
+
 maxUpdates = 3
-numbers = [Number(value, maxUpdates) for value in range(7)]
-merged = merge_objects(numbers, numbers_merger, number_updater)
-print("root value is: " + str(merged.data.value))
-"""
+numbers = [Number(value, maxUpdates) for value in range(4)]
+rootNumber = MasterTree(numbers, numbers_merger, number_updater).root
+print("root value is: " + str(rootNumber.value))

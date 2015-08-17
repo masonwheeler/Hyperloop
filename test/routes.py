@@ -55,7 +55,18 @@ class VelocityProfilesSet:
 class Route:
     def __init__(self, path, velocityProfile):
 
-
+    def as_dict(self):
+        routeDict = {
+                     "latlngs" : self.latlngs,
+                     "landCost" : self.landCost,
+                     "tubeElevations" : self.tubeElevations,
+                     "pylons" : self.pylons,
+                     "tubeCost" : self.tubeCost,
+                     "pylonCost" : self.pylonCost,
+                     "velocityProfile" : self.velocityProfile,
+                     "comfortRating" : self.comfortRating,
+                     "tripTime" : self.tripTime
+                     }
 
 
 
