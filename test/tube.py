@@ -103,12 +103,11 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
            
 
 class TubeGraph(abstract.AbstractGraph):
-
     def compute_triptime_excess(self, tubeCoordinates, numEdges):
         if numEdges < config.minNumTubeEdges:
             return None    
         else:             
-            
+            interpolate.compute_trip_time_excess            
             triptimeExcess =          
             return triptimeExcess
 

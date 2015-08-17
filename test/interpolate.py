@@ -47,36 +47,43 @@ def sample_edges(edges, sampleSpacing):
         points += edgePoints
     return points
 
-########## For Spline Construction##########
+########## Auxilary Functions ##########
 
-def points_to_arrays(points):
-    xCoordsList, yCoordsList = zip(*points)
+def points_2d_to_arrays(points2d):
+    xCoordsList, yCoordsList = zip(*points2d)
     xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
     return [xArray, yArray]
 
-def get_tvalues(numPoints):
-    tValues = np.arange(0.0, float(numPoints))
-    return tValues
+def points_3d_to_arrays(points3d):
+    xCoordsList, yCoordsList, zCoordsList = zip(*points3d)
+    xArray = np.array(xCoordsList)
+    yArray = np.array(yCoordsList)
+    zArray = np.array(zCoordsList)
+    return [xArray, yArray, zArray]
 
-def get_splinevalues(xSpline, ySpline, tValues):
-    xValues = xSpline(tValues)
-    yValues = ySpline(tValues)
+def get_s_values(numPoints):
+    sValues = np.arange(0.0, float(numPoints))
+    return sValues
+
+def get_splinevalues(xSpline, ySpline, sValues):
+    xValues = xSpline(sValues)
+    yValues = ySpline(sValues)
     return xValues, yValues
 
-def get_slicetvalues(tValues, nth):
-    sliceTValues = tValues[::nth]
-    return sliceTValues
+def get_slicesValues(sValues, nth):
+    slicesValues = sValues[::nth]
+    return slicesValues
 
 ########## For 2d Smoothing Splines ##########
 
-def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
-    numPoints = tValues.size
+def smoothing_splines(xArray, yArray, sValues, endWeights, smoothingFactor):
+    numPoints = sValues.size
     weights = np.ones(numPoints)
     weights[0] = weights[-1] = endWeights
 
-    xSpline = scipy.interpolate.UnivariateSpline(tValues, xArray, weights)
+    xSpline = scipy.interpolate.UnivariateSpline(sValues, xArray, weights)
     xSpline.set_smoothing_factor(smoothingFactor)
-    ySpline = scipy.interpolate.UnivariateSpline(tValues, yArray, weights)
+    ySpline = scipy.interpolate.UnivariateSpline(sValues, yArray, weights)
     ySpline.set_smoothing_factor(smoothingFactor)
     return [xSpline, ySpline]
 
@@ -85,56 +92,69 @@ def set_smoothing_factors(xSpline, ySpline, smoothingFactor):
     ySpline.set_smoothing_factor(smoothingFactor)
     return [xSpline, ySpline]
 
-def interpolating_splines(xArray, yArray, tValues):
-    xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
-    ySpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, yArray)
+########## For Interpolating Splines ##########
+
+def interpolating_splines_2d(xArray, yArray, sValues):
+    xSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, xArray)
+    ySpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, yArray)
     return [xSpline, ySpline]
+
+def interpolating_splines_3d(xArray, yArray, zArray, sValues):
+    xSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, xArray)
+    ySpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, yArray)
+    zSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, zArray)
+    return [xSpline, ySpline, zSpline]
 
 ########## For Curvature Computations ##########
 
-def parameteric_splines_2d_curvature(xSpline, ySpline, tValues):
-    xFirstDeriv = xSpline.derivative(n=1)
-    yFirstDeriv = ySpline.derivative(n=1)
-    xSecondDeriv = xSpline.derivative(n=2)
-    ySecondDeriv = ySpline.derivative(n=2)
-    xFirstDerivValues = xFirstDeriv(tValues)
-    yFirstDerivValues = yFirstDeriv(tValues)
-    xSecondDerivValues = xSecondDeriv(tValues)
-    ySecondDerivValues = ySecondDeriv(tValues)
+def get_derivative_values(spline, sValues):
+    firstDeriv = spline.derivative(n=1)
+    secondDeriv = spline.derivative(n=2)
+    firstDerivValues = firstDeriv(sValues)
+    secondDerivValues = secondDeriv(sValues)
+    return [firstDerivValues, secondDerivValues]
 
-    tLength = tValues.size
-    powers = np.empty(tLength)
+def compute_explicit_curvature(firstDerivValues, secondDerivValues):
+    sLength = firstDerivValues.size
+    powers = np.empty(sLength)
     powers.fill(1.5)
-    curvature = np.divide(
-                  np.subtract(
-                    np.multiply(xFirstDerivValues, ySecondDerivValues),
-                    np.multiply(yFirstDerivValues, xSecondDerivValues)
-                  ),
-                  np.power(
-                    np.add(
-                      np.square(xFirstDerivValues),
-                      np.square(yFirstDerivValues)
-                    ),
-                    powers
-                  )
-                )
-    return curvature
+    ones = np.ones(sLength)
+    curvatureArray = np.divide(
+                         np.absolute(secondDerivValues),
+                         np.power(
+                             np.add(ones, firstDerivValues),
+                             powers
+                         )
+                      )
+    return curvatureArray
+                                                       
+def compute_curvature_array_2d(xFirstDerivValues, xSecondDerivValues,
+                               yFirstDerivValues, ySecondDerivValues):
+    sLength = xFirstDerivValues.size
+    powers = np.empty(sLength)
+    powers.fill(1.5)
+    curvatureArray2d = np.divide(
+                           np.subtract(
+                               np.multiply(xFirstDerivValues,
+                                           ySecondDerivValues),
+                               np.multiply(yFirstDerivValues,
+                                           xSecondDerivValues)
+                           ),
+                           np.power(
+                               np.add(
+                                  np.square(xFirstDerivValues),
+                                  np.square(yFirstDerivValues)
+                               ),
+                               powers
+                           )
+                       )
+    return curvatureArray2d
 
-def parameteric_splines_3d_curvature(xSpline, ySpline, zSpline, tValues):
-    xFirstDeriv = xSpline.derivative(n=1)
-    yFirstDeriv = ySpline.derivative(n=1)
-    zFirstDeriv = zSpline.derivative(n=1)
-    xSecondDeriv = xSpline.derivative(n=2)
-    ySecondDeriv = ySpline.derivative(n=2)
-    zSecondDeriv = zSpline.derivative(n=2)
-    xFirstDerivValues = xFirstDeriv(tValues)
-    yFirstDerivValues = yFirstDeriv(tValues)    
-    zFirstDerivValues = zFirstDeriv(tValues)
-    xSecondDerivValues = xSecondDeriv(tValues)
-    ySecondDerivValues = ySecondDeriv(tValues)
-    zSecondDerivValues = zSecondDeriv(tValues)
-    tLength = tValues.size
-    powers = np.empty(tLength)
+def compute_curvature_array_3d(xFirstDerivValues, xSecondDerivValues,
+                               yFirstDerivValues, ySecondDerivValues,
+                               zFirstDerivValues, zSecondDerivValues):
+    sLength = xFirstDerivValues.size
+    powers = np.empty(sLength)
     powers.fill(1.5)
 
     firstTerm = np.square(
@@ -155,7 +175,7 @@ def parameteric_splines_3d_curvature(xSpline, ySpline, zSpline, tValues):
                         np.multiply(xSecondDerivValues, yFirstDerivValues)
                     )
                 )
-    curvature = np.divide(
+    curvatureArray3d = np.divide(
                     np.sqrt(
                         np.add(
                             np.add(firstTerm, secondTerm),
@@ -173,7 +193,54 @@ def parameteric_splines_3d_curvature(xSpline, ySpline, zSpline, tValues):
                     powers
                     )                                         
                 )
-    return curvature
+    return curvatureArray3d
+
+def parameteric_splines_2d_curvature(xSpline, ySpline, sValues):
+    xFirstDerivValues, xSecondDerivValues = get_derivative_values(xSpline,
+                                                                  sValues)
+    yFirstDerivValues, ySecondDerivValues = get_derivative_values(ySpline,
+                                                                  sValues)
+    curvatureArray2d = compute_curvature_array_2d(
+            xFirstDerivValues, xSecondDerivValues,
+            yFirstDerivValues, ySecondDerivValues)            
+    return curvatureArray2d
+
+def parameteric_splines_3d_curvature(xSpline, ySpline, zSpline, sValues):
+    xFirstDerivValues, xSecondDerivValues = get_derivative_values(xSpline,
+                                                                  sValues)
+    yFirstDerivValues, ySecondDerivValues = get_derivative_values(ySpline,
+                                                                  sValues)
+    zFirstDerivValues, zSecondDerivValues = get_derivative_values(zSpline,
+                                                                  sValues)
+    curvatureArray3d = compute_curvature_array_3d(
+            xFirstDerivValues, xSecondDerivValues,
+            yFirstDerivValues, ySecondDerivValues,
+            zFirstDerivValues, zSecondDerivValues)            
+    return curvatureArray3d
+
+def parametric_splines_vertical_and_lateral_curvatures(xSpline, ySpline,
+                                                       zSpline, sValues):    
+    xFirstDerivValues, xSecondDerivValues = get_derivative_values(xSpline,
+                                                                  sValues)
+    yFirstDerivValues, ySecondDerivValues = get_derivative_values(ySpline,
+                                                                  sValues)
+    zFirstDerivValues, zSecondDerivValues = get_derivative_values(zSpline,
+                                                                  sValues)    
+    verticalCurvatureARray = compute_explicit_curvature(zFirstDerivValues,
+                                                        zSecondDerivValues)
+    lateralCurvatureArray = compute_curvature_array_2d(        
+                 xFirstDerivValues, xSecondDerivValues,
+                 yFirstDerivValues, ySecondDerivValues)            
+    return [verticalCurvatureArray, lateralCurvatureArray]    
+
+def vertical_curvature_to_max_allowed_velocity(verticalCurvature):    
+
+def lateral_curvature_to_max_allowed_velocity(lateralCurvature):
+
+def curvature_3d_to_max_allowed_velocity(curvature3d):
+
+def trip_time_excess(max_allowed_velocity):
+    
 
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
     curvatureSize = curvatureArray.size
@@ -186,8 +253,6 @@ def is_curvature_valid(curvatureArray, curvatureThreshhold):
     totalExcessCurvature = np.sum(excessCurvatureArray)
     isCurvatureValid = (totalExcessCurvature == 0)
     return isCurvatureValid    
-
-def compute_trip_time_excess(
 
 """
 def curvature_metric(graphCurvatureArray):
@@ -205,9 +270,9 @@ def graph_curvature(graphPoints, graphSampleSpacing):
     sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
     xArray, yArray = points_to_arrays(sampledGraphPoints)
     numPoints = xArray.size
-    tValues = get_tvalues(numPoints)
-    xSpline, ySpline = interpolating_splines(xArray, yArray, tValues)
-    graphCurvatureArray = splines_curvature(xSpline, ySpline, tValues)
+    sValues = get_sValues(numPoints)
+    xSpline, ySpline = interpolating_splines(xArray, yArray, sValues)
+    graphCurvatureArray = splines_curvature(xSpline, ySpline, sValues)
     graphCurvature = curvature_metric(graphCurvatureArray)
     return graphCurvature
 """
