@@ -172,11 +172,11 @@ class TubeGraphsSets(abstract.AbstractGraphSets):
         abstract.AbstractGraphSets.__init__(tubeGraphs,
                            self.tubegraphs_cost_triptime_excess,
                            minimizeCost, minimizeTriptimeExcess)
-
-    def init_from_tube_edges_sets(self, tubeEdgesSets):
+    
+    @classmethod
+    def init_from_tube_edges_sets(cls, tubeEdgesSets):
         tubeGraphs = [map(TubeGraph.init_from_tube_edge, tubeEdgesSet) for
-                      tubeEdgesSet in tubeEdgesSets]
-        tubeGraphsSets = self.__init__(tubeGraphs)
-        return tubeGraphsSets    
+                      tubeEdgesSet in tubeEdgesSets]        
+        return cls(tubeGraphs)
         
                                       

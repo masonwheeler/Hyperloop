@@ -15,6 +15,8 @@ import time
 import util
 import config
 
+########## For Edge Sampling ##########
+
 def points_to_edges(points):
     return util.to_pairs(points)
 
@@ -40,20 +42,12 @@ def sample_edge(edge, sampleSpacing, distanceAlongEdge):
 def sample_edges(edges, sampleSpacing):
     offset = 0
     points = []
-    pointsList = []
     for edge in edges:
         edgePoints, offset = sample_edge(edge, sampleSpacing, offset)
-        pointsList.append(edgePoints)
         points += edgePoints
     return points
 
-def sample_edges(edges, sampleSpacing):
-    offset = 0
-    points = []
-    for edge in edges:
-        edgePoints, offset = sample_edge(edge, sampleSpacing, offset)
-        points += edgePoints
-    return points
+########## For Spline Construction##########
 
 def points_to_arrays(points):
     xCoordsList, yCoordsList = zip(*points)
@@ -72,6 +66,31 @@ def get_splinevalues(xSpline, ySpline, tValues):
 def get_slicetvalues(tValues, nth):
     sliceTValues = tValues[::nth]
     return sliceTValues
+
+########## For 2d Smoothing Splines ##########
+
+def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
+    numPoints = tValues.size
+    weights = np.ones(numPoints)
+    weights[0] = weights[-1] = endWeights
+
+    xSpline = scipy.interpolate.UnivariateSpline(tValues, xArray, weights)
+    xSpline.set_smoothing_factor(smoothingFactor)
+    ySpline = scipy.interpolate.UnivariateSpline(tValues, yArray, weights)
+    ySpline.set_smoothing_factor(smoothingFactor)
+    return [xSpline, ySpline]
+
+def set_smoothing_factors(xSpline, ySpline, smoothingFactor):
+    xSpline.set_smoothing_factor(smoothingFactor)
+    ySpline.set_smoothing_factor(smoothingFactor)
+    return [xSpline, ySpline]
+
+def interpolating_splines(xArray, yArray, tValues):
+    xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
+    ySpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, yArray)
+    return [xSpline, ySpline]
+
+########## For Curvature Computations ##########
 
 def parameteric_splines_2d_curvature(xSpline, ySpline, tValues):
     xFirstDeriv = xSpline.derivative(n=1)
@@ -101,26 +120,60 @@ def parameteric_splines_2d_curvature(xSpline, ySpline, tValues):
                 )
     return curvature
 
-def smoothing_splines(xArray, yArray, tValues, endWeights, smoothingFactor):
-    numPoints = tValues.size
-    weights = np.ones(numPoints)
-    weights[0] = weights[-1] = endWeights
+def parameteric_splines_3d_curvature(xSpline, ySpline, zSpline, tValues):
+    xFirstDeriv = xSpline.derivative(n=1)
+    yFirstDeriv = ySpline.derivative(n=1)
+    zFirstDeriv = zSpline.derivative(n=1)
+    xSecondDeriv = xSpline.derivative(n=2)
+    ySecondDeriv = ySpline.derivative(n=2)
+    zSecondDeriv = zSpline.derivative(n=2)
+    xFirstDerivValues = xFirstDeriv(tValues)
+    yFirstDerivValues = yFirstDeriv(tValues)    
+    zFirstDerivValues = zFirstDeriv(tValues)
+    xSecondDerivValues = xSecondDeriv(tValues)
+    ySecondDerivValues = ySecondDeriv(tValues)
+    zSecondDerivValues = zSecondDeriv(tValues)
+    tLength = tValues.size
+    powers = np.empty(tLength)
+    powers.fill(1.5)
 
-    xSpline = scipy.interpolate.UnivariateSpline(tValues, xArray, weights)
-    xSpline.set_smoothing_factor(smoothingFactor)
-    ySpline = scipy.interpolate.UnivariateSpline(tValues, yArray, weights)
-    ySpline.set_smoothing_factor(smoothingFactor)
-    return [xSpline, ySpline]
-
-def set_smoothing_factors(xSpline, ySpline, smoothingFactor):
-    xSpline.set_smoothing_factor(smoothingFactor)
-    ySpline.set_smoothing_factor(smoothingFactor)
-    return [xSpline, ySpline]
-
-def interpolating_splines(xArray, yArray, tValues):
-    xSpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, xArray)
-    ySpline = scipy.interpolate.InterpolatedUnivariateSpline(tValues, yArray)
-    return [xSpline, ySpline]
+    firstTerm = np.square(
+                    np.subtract(
+                        np.multiply(zSecondDerivValues, yFirstDerivValues),
+                        np.multiply(ySecondDerivValues, zFirstDerivValues)
+                    )
+                )
+    secondTerm = np.square(
+                     np.subtract(
+                         np.multiply(xSecondDerivValues, zFirstDerivValues),
+                         np.multiply(zSecondDerivValues, xFirstDerivValues)
+                     )
+                 )
+    thirdTerm = np.square(
+                    np.subtract(
+                        np.multiply(ySecondDerivValues, xFirstDerivValues),
+                        np.multiply(xSecondDerivValues, yFirstDerivValues)
+                    )
+                )
+    curvature = np.divide(
+                    np.sqrt(
+                        np.add(
+                            np.add(firstTerm, secondTerm),
+                            thirdTerm
+                        )
+                    ),
+                    np.power(
+                        np.add(
+                            np.add(
+                                np.square(xFirstDerivValues),
+                                np.square(yFirstDerivValues)
+                            ),
+                            np.square(zFirstDerivValues)
+                        )
+                    powers
+                    )                                         
+                )
+    return curvature
 
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
     curvatureSize = curvatureArray.size
@@ -133,6 +186,8 @@ def is_curvature_valid(curvatureArray, curvatureThreshhold):
     totalExcessCurvature = np.sum(excessCurvatureArray)
     isCurvatureValid = (totalExcessCurvature == 0)
     return isCurvatureValid    
+
+def compute_trip_time_excess(
 
 """
 def curvature_metric(graphCurvatureArray):

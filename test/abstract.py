@@ -117,18 +117,6 @@ class AbstractGraph:
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.numEdges = numEdges
-    
-    def init_from_edge(self, edge):
-        numEdges = 1
-        graph = self.__init__(edge.startId, edge.endId,
-                              edge.startAngle, edge.endAngle, numEdges)  
-        return graph
-
-    def merge_two_graphs(self, graphA, graphB):
-        mergedGraph = self.__init__(graphA.startId, graphB.endId
-                                    graphA.startAngle, graphB.endAngle,
-                                    graphA.numEdges + graphB.numEdges)
-        return mergedGraph
 
     def build_local_lattice(self):
         

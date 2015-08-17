@@ -195,6 +195,7 @@ class Number:
     def __init__(self, value, maxUpdates):
         self.value = value
         self.maxUpdates = maxUpdates
+
     def update_value(self):
         if self.timesUpdated < self.maxUpdates:
             print("updating value")
@@ -223,5 +224,5 @@ def number_updater(number):
 
 maxUpdates = 3
 numbers = [Number(value, maxUpdates) for value in range(4)]
-rootNumber = MasterTree(numbers, numbers_merger, number_updater).root
+rootNumber = MasterTree(numbers, Number.numbers_merger, number_updater).root
 print("root value is: " + str(rootNumber.value))
