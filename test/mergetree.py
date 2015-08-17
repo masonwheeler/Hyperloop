@@ -6,8 +6,10 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Added MasterTree Class
 """
 
+#Standard Modules:
 import collections
 
+#Our Modules:
 import config
 
 class MergeTree:

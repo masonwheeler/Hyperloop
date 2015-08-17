@@ -42,19 +42,32 @@ class Edge:
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
-        pylonLocationsGeospatials = util.build_grid(self.geospatialVector,
+        pylonSlicesGeospatials = util.build_grid(self.geospatialVector,
                                 config.pylonSpacing, startGeospatial)
-        pylonLocationsLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
+        pylonSlicesLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
                                                                  config.proj)
-        pylonLocationsLandElevations = elevation.usgs_elevation(pylonLatLngs)       
-        pylonAttributes = zip(*[pylonGeospatials, pylonLatLngs, pylonElevations])
+        pylonSlicesLandElevations = elevation.usgs_elevation(pylonLatLngs)       
+        highestLandElevation = max(pylonLocationsLandElevations)
+        pylonSlicesHeightDiffernces = [highestLandElevation - landElevation
+                             for landElevation in pylonSlicesLandElevations]
+        pylonSlicesBounds = [{
+            "geospatials": pylonSlicesGeospatials[i],
+            "latlngs": pylonSlicesLatLngs[i],
+            "landElevation" : pylonSlicesLandElevations[i],
+            "heightDifference" : pylonSlicesHeightDifferences[i]
+            }]
+        pylonLattice = tube.PylonLattice(pylonSlicesBounds)
+        tubeEdgesSets = tube.TubeEdgesSets(pylonLattice)
+        tubeGraphsSets = tube.init_from_tube_edges_sets(tubeEdgesSets)
+
+        pylonAttributes = zip(*[pylonSlicesGeospatials, pylonSlicesLatLngs,  
+                                pylonSlicesElevations])
         newPylons = [{"geospatial" : pylonAttribute[0],
                        "latlng" : pylonAttribute[1],
                         "elevation" : pylonAttribute[2],
                         "pylonHeight" : 0,
                         "pylonCost" : 0}
                        for pylonAttribute in pylonAttributes]      
-
         pylons.build_pylons(newPylons)
         pylons.get_pyloncosts(newPylons)        
         self.pylonCost = pylons.edge_pyloncost(newPylons)               

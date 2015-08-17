@@ -2,9 +2,9 @@
 Original Developer: Jonathan Ward
 Purpose of Module: To determine the land acquisition cost associated with
                    building the Hyperloop route along a given edge.
-Last Modified: 7/21/15
+Last Modified: 8/16/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To return pixel values directly.
+Last Modification Purpose: fixed function naming
 """
 
 #Standard Modules:
@@ -16,33 +16,14 @@ import config
 import util
 import geotiff
 
-def costdensity_to_cost(costDensity):
+def cost_density_to_local_cost(costDensity):
     length = config.landPointSpacing 
     width = 2.0 * config.landPadding
     area = length * width
-    return costDensity * area
+    localCost = costDensity * area
+    return localCost
 
-"""
-def land_cost(landcostGrid):
-    geotiffFilePath = config.cwd + config.geotiffFilePath
-    fileHandle = gdal.Open(geotiffFilePath)
-    geoTransform = fileHandle.GetGeoTransform()
-    rasterBand = fileHandle.GetRasterBand(1)
-    spatialReference = osr.SpatialReference()
-    spatialReference.ImportFromWkt(fileHandle.GetProjection())
-    spatialReferenceLatLon = spatialReference.CloneGeogCS()
-    coordTrans = osr.CoordinateTransformation(spatialReferenceLatLon,
-                                              spatialReference)    
-    edgeLandCost = 0
-    for landcostLatLng in landcostGrid:
-        latlngPixelVal = geotiff.pixel_val(coordTrans, geoTransform,
-                         rasterBand, util.swap_pair(landcostLatLng))
-        latlng_costDensity = config.costTable[latlngPixelVal]
-        edgeLandCost += cost(latlng_costDensity)
-    return edgeLandCost
-"""
-    
-def landcover_costDensities(landcoverLatLngs):
+def landcover_cost_densities(landcoverLatLngs):
     geotiffFilePath = config.cwd + config.geotiffFilePath
     fileHandle = gdal.Open(geotiffFilePath)
     geoTransform = fileHandle.GetGeoTransform()
@@ -59,8 +40,8 @@ def landcover_costDensities(landcoverLatLngs):
                             in landcoverPixelValues]
     return landcoverCostDensities
         
-def costDensities_to_landcost(landcoverCostDensities):
-    landcoverCosts = map(costdensity_to_cost, landcoverCostDensities)
+def cost_densities_to_landcost(landcoverCostDensities):
+    landcoverCosts = map(cost_density_to_local_cost, landcoverCostDensities)
     edgeLandCost = sum(landcoverCosts)
     return edgeLandCost
     

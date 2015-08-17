@@ -17,19 +17,17 @@ class AbstractPoint:
 
         
 class AbstractSlice:
-    def __init__(self, startCoords, endCoords, startId, points_builder):
-        self.points = points_builder(startCoords, endCoords, startId)
+    def __init__(self, sliceBounds, startId, points_builder):
+        self.points = points_builder(sliceBounds, startId)
         self.endId = startId + len(self.points)
 
         
 class AbstractLattice:
-    def __init__(self, slicesStartAndEndCoords, points_builder):
+    def __init__(self, slicesBounds, points_builder):
         self.slices = []
         startId = 0
-        for eachSliceStartAndEndCoords in slicesStartAndEndCoords:
-            startCoords, endCoords = eachSliceStartAndEndCoords
-            newSlice = AbstractSlice(startCoords, endCoords, startId,
-                                                      points_builder)
+        for sliceBound in slicesBounds:
+            newSlice = AbstractSlice(sliceBounds, startId, points_builder)
             self.slices.append(newSlice)
             startId = newSlice.endId
 
@@ -200,9 +198,4 @@ class AbstractGraphsSet:
         else:
             mergedGraphsSet = self.__init__(mergedGraphs)
             return mergedGraphsSet
-
-
-class AbstractPath:
-    def __init__(self, graph, get_graphcoords)
-        self.graphCoords = get_graphcoords(graph)          
 

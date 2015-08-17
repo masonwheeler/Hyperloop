@@ -17,8 +17,8 @@ class Pylon(abstract.AbstractPoint):
         cost = config.pylonBaseCost + pylonHeight * config.pylonCostPerMeter
         return cost
 
-    def __init__(self, geospatials, latlngs, landElevation, pylonHeight
-                                                               pylonId):
+    def __init__(self, geospatials, latlngs, landElevation, pylonHeight,
+                                                tubeElevation, pylonId):
         tubeElevation = landElevation + pylonHeight
         pylonCoordinates = {"geospatials" : geospatials,
                             "latlngs" : latlngs,
@@ -32,42 +32,31 @@ class Pylon(abstract.AbstractPoint):
 class PylonsSlice(abstract.AbstractSlice):   
     pylonHeightOptionSpacing = config.pylonHeightOptionSpacing
 
-    def pylons_builder(self, shortestPylonCoords, tallestPylonCoords,
-                             shortestPylonId):       
-        heightDifference = tallestPylonCoords["pylonHeight"] - \
-                           shortestPylonCoords["pylonHeight"]
-        geospatials = shortestPylonCoords["geospatials"]
-        latlngs = shortestPylonCoords["latlngs"]
-        landElevation = shortestPylonCoords["landElevation"]
-        shortestPylonHeight = shortestPylonCoords["pylonHeight"]
-        pylonHeightOptions = util.build_grid2(heightDifference,
-                 pylonHeightOptionSpacing, shortestPylonHeight)     
-        pylonIds = map(lambda x: x + shortestPylonId,
-                       range(len(pylonHeightOptions)))
-        enumeratedPylonHeightOptions = zip(pylonHeightOptions, pylonIds)
-        potentialPylonOptions = map(lambda height_id:
-        Pylon(geospatials, latlngs, landElevation, height_id[0], height_id[1]),
-        enumeratedPylonHeightOptions)
-        return potentialPylonOptions        
-
-    def __init__(self, shortestPylon, tallestPylon, shortestPylonId):
+    def pylons_builder(self, pylonSliceBounds, shortestPylonId):       
+        heightDifference = pylonSliceBounds["heightDifference"]
+        geospatials = pylonSliceBounds["geospatials"]
+        latlngs = pylonSliceBounds["latlngs"]
+        landElevation = pylonSliceBounds["landElevation"]
         shortestPylonHeight = 0
-        tallestPylonHeight = maxElevation - minElevation
-        shortestPylonCoords = {"geospatials" : geospatials,
-                               "latlngs" : latlngs,
-                               "landElevation": minElevation,
-                               "pylonHeight" : shortestPylonHeight}
-        tallestPylonCoords = {"geospatials" : geospatials,
-                              "latlngs" : latlngs,
-                              "landElevation": maxElevation,
-                              "pylonHeight" : tallestPylonHeight}
-        abstract.AbstractSlice.__init__(shortestPylonCoords, tallestPylonCoords,
-                                        shortestPylonId, self.pylons_builder)
+        pylonHeightOptions = util.build_grid2(heightDifference,
+                 pylonHeightOptionSpacing, shortestPylonHeight)    
+        tubeElevationOptions = [pylonHeightOption + landElevation 
+                                for pylonHeightOption in pylonHeightOptions]
+        pylonIds = [index + shortestPylonId for index
+                    in range(len(pylonHeightOptions))]
+        pylonOptions = [Pylon(geospatials, latlng, landElevation,
+            pylonHeightOptions[i], tubeElevationOptions[i], pylonIds[i])
+            for i in range(len(pylonIds))]
+        return pylonOptions        
+
+    def __init__(self, pylonsSliceBounds, shortestPylonId):
+        abstract.AbstractSlice.__init__(pylonSliceBounds, shortestPylonId,
+                                        self.pylons_builder)
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def __init__(self, minMaxElevations): #Need to add support for geospatials
-        abstract.AbstractLattice.__init__(shortestAndtallestPylons, PylonsSlice)
+    def __init__(self, pylonSliceBounds):
+        abstract.AbstractLattice.__init__(pylonSlicesBounds, PylonsSlice)
 
 
 class TubeEdge(abstract.AbstractEdge):    

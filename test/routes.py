@@ -64,6 +64,7 @@ class Route:
                      "tubeCost" : self.tubeCost,
                      "pylonCost" : self.pylonCost,
                      "velocityProfile" : self.velocityProfile,
+                     "accelerationProfile" : self.accelerationProfile,
                      "comfortRating" : self.comfortRating,
                      "tripTime" : self.tripTime
                      }
