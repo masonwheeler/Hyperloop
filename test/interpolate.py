@@ -233,13 +233,47 @@ def parametric_splines_vertical_and_lateral_curvatures(xSpline, ySpline,
                  yFirstDerivValues, ySecondDerivValues)            
     return [verticalCurvatureArray, lateralCurvatureArray]    
 
-def vertical_curvature_to_max_allowed_velocity(verticalCurvature):    
+def curvature_array_to_max_allowed_vels(curvatureArray, accelConstraint):
+    maxAllowedVels = np.sqrt(
+                            np.divide(accelConstraintArray,
+                                            curvatureArray)
+                           )
+    return maxAllowedVels
 
-def lateral_curvature_to_max_allowed_velocity(lateralCurvature):
+def vertical_curvature_array_to_max_allowed_vels(verticalCurvatureArray):
+    maxAllowedVels = curvature_array_to_max_allowed_vels(
+            verticalCurvatureArray, config.verticalAccelConstraint)
+    return maxAllowedVels
 
-def curvature_3d_to_max_allowed_velocity(curvature3d):
+def lateral_curvature_array_to_max_allowed_vels(lateralCurvatureArray):
+    maxAllowedVels = curvature_array_to_max_allowed_vels(
+              lateralCurvatureArray, config.lateralAccelConstraint)
+    return maxAllowedVels
 
-def trip_time_excess(max_allowed_velocity):
+def curvature_array_3d_to_max_allowed_vels(curvatureArray3d):
+    maxAllowedvels = curvature_array_to_max_allowed_vels(
+                       curvatureArray3d, config.totalAccelConstraint)
+    return maxAllowedvels
+
+def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
+    verticalCurvatureArray, lateralCurvatureArray = \
+        parametic_splines_vertical_and_lateral_curvature(xSpline, ySpline
+                                                         zSpline, sValues):
+    maxAllowedVels_vertical = \
+        vertical_curvature_array_to_max_allowed_vels(
+                                    verticalCurvatureArray) 
+    maxAllowedVels_lateral = \
+        lateral_curvature_array_to_max_allowed_vels(
+                                    lateralCurvatureArray)
+    effectiveMaxAllowedVels = np.minimum(maxAllowedVels_vertical,
+                                         maxAllowedVels_lateral) 
+    return effectiveMaxAllowedVels
+
+def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
+    numVels = maxAllowedVels.length
+    maxPossibleVels.empty(numVels)
+    maxPossibleVels.fill(config.maxPossibleVels)
+    
     
 
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
