@@ -69,10 +69,9 @@ def get_s_values(numPoints):
     sValues = np.arange(0.0, float(numPoints))
     return sValues
 
-def get_splinevalues(xSpline, ySpline, sValues):
-    xValues = xSpline(sValues)
-    yValues = ySpline(sValues)
-    return xValues, yValues
+def get_spline_values(spline, sValues):
+    splineValues = spline(sValues)
+    return splineValues
 
 def get_slicesValues(sValues, nth):
     slicesValues = sValues[::nth]

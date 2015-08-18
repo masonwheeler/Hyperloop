@@ -42,7 +42,11 @@ def landcover_cost_densities(landcoverLatLngs):
         
 def cost_densities_to_landcost(landcoverCostDensities):
     landcoverCosts = map(cost_density_to_local_cost, landcoverCostDensities)
-    edgeLandCost = sum(landcoverCosts)
-    return edgeLandCost
-    
+    landCost = sum(landcoverCosts)
+    return landCost
+
+def get_land_cost(landcoverLatLngs):
+    landCoverCostDensities = landcover_cost_densities(landcoverLatLngs)
+    landCost = cost_densities_to_landcost(landCoverCostDensities)
+    return landCost
                 

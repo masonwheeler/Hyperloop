@@ -6,54 +6,53 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Created Module
 """
 
-class Path:
-    def sample_geospatials(self, graphGeospatials, geospatial_sample_distance):
+import interpolate
+import proj
+import landcover
+import elevation
+
+class Path2d:
+    def sample_geospatials(self, graphGeospatials, geospatialSampleDistance):
+        sampledGeospatials = interpolate.sample_path(graphGeospatials,
+                                             geospatialSampleDistance)
         return sampledGeospatials
         
-    def interpolate_geospatials(self, sampledGeospatials)
-        return interpolatedGeospatials
+    def get_interpolating_geospatials(self, sampledGeospatials):
+        xArray, yArray = points_2d_to_arrays(sampledGeospatials)
+        numPoints = len(sampledGeospatials)
+        sValues = interpolate.get_s_values(numPoints)
+        xSpline, ySpline = interpolate.interpolating_splines_2d(xArray, yArray,
+                                                                       sValues)
+        xValues = interpolate.get_spline_values(xSpline, sValues)
+        yValues = interpolate.get_spline_values(ySpline, sValues)
+        interpolatingGeospatials = [xValues, yValues]
+        return interpolatingGeospatials
 
-    def interpolate_latlngs(self, interpolatedGeospatials):
-        return interpolatedLatLngs
+    def get_interpolating_latlngs(self, interpolatingGeospatials):
+        interpolatingLatLngs = proj.geospatials_to_latlngs(
+                                    interpolatingGeospatials)
+        return interpolatingLatLngs
 
     def compute_land_cost(self, interpolatedLatLngs):
+        landCost = landcover.get_land_cost(interpolatedLatLngs)
         return landCost
 
     def get_land_elevations(self, interpolatedLatLngs):
+        elevation.usgs_elevation(interpolateLatLngs)
         return landElevations
 
-    def build_pylons(self, landElevations):
-        return pylons
-
-    def build_tube(self, pylons):
-        return tubeCoordinates
-
-    def compute_pylon_cost(self, pylons):
-        return pylonCost
-    
-    def compute_tube_cost(self, tubeCoordinates):
-        return tubeCost
-    
-    def compute_tube_curvature(self, tubeCoordinates):
-        return tubeCurvature
-
-    def compute_max_speeds(self, tubeCurvature, maxLateralAccel,
-                                                maxVerticalAccel):
-        return maxSpeeds
+    def get_tube_options(self, landElevations):
+        return tubeGraphOptions
     
     def __init__(self, graphGeospatials):
+
+class Path3d:
+    def get_velocity_profile_options(self, tubeOptions):
+
+    def __init__(self, tubeOption):
          
-
-class VelocityProfile:    
-    def __init__(self,):
-
-
-class VelocityProfilesSet:
-    def __init__(self, path)
-
-
 class Route:
-    def __init__(self, path, velocityProfile):
+    def __init__(self, tube, velocityProfile):
 
     def as_dict(self):
         routeDict = {
