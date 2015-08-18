@@ -84,20 +84,20 @@ class TubeEdge(abstract.AbstractEdge):
         
 
 class TubeEdgesSets(abstract.AbstractEdgesSets):
+    tubeEdgeDegreeConstraint = config.tubeDegreeConstraint    
+
     def tube_edge_builder(self, startPylon, endPylon):
         tubeEdge = TubeEdge(startPylon, endPylon)
         return tubeEdge
     
     @staticmethod
     def is_tube_edge_pair_compatible(self, tubeEdgeA, tubeEdgeB):
-        if edgeA.endId == edgeB.startId:
-            if abs(edgeA.angle - edgeB.angle) < config.tubeEdgeDegreeConstraint:
-                return True
-        return False        
-
-    def __init__(self, lattice)
-        abstract.AbstractEdgesSets.__init__(lattice, self.tube_edge_builder,
-                                            self.is_tube_edge_pair_compatible)
+        return abstract.AbstractEdgesSets.is_edge_pair_compatible(tubeEdgeA,
+                                   tubeEdgeB, self.tubeEdgeDegreeConstraint)
+                                                                             
+    def __init__(self, pylonsLattice)
+        abstract.AbstractEdgesSets.__init__(pylonsLattice,
+            self.tube_edge_builder, self.is_tube_edge_pair_compatible)
                
 
 class TubeGraph(abstract.AbstractGraph):
