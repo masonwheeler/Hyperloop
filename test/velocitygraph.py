@@ -1,13 +1,31 @@
 """
 Original Developer: Jonathan Ward
-Purpose of Module: To provide a naive velocity profile generation method
+iesPurpose of Module: To provide a naive velocity profile generation method
 Last Modified: 8/16/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: Created Module
 """
 
-import abstract
+#Standard Modules
+import numpy as np
 
+#Our Modules
+import abstract
+import comfort
+
+def reparametrize_velocities(velocitiesByArcLength, arcLengthStepSize):
+    numVelocities = velocitiesByArcLength.length
+    arcLengthStepSizeArray = np.empty(numVelocities)
+    arcLengthStepSizeArray = np.fill(arcLengthStepSize)
+    timeStepsArray = np.divide(arcLengthStepSizeArray,
+                                velocitiesByArcLength)
+    timesElapsedArray = np.cumsum(timeStepsArray)
+    
+
+def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
+    numVels = maxAllowedVels.length
+    maxPossibleVels.empty(numVels)
+    maxPossibleVels.fill(config.maxPossibleVelocity)
 
 class Velocity(abstract.AbstractPoint):
     def __init__(self, speed, distanceAlongPath, velocityId):
@@ -67,7 +85,7 @@ class VelocityProfileGraph(abstract.AbstractGraph):
     def reparametrize_velocity(self, velocitiesByArclength):
         return velocitiesByTime
 
-    def compute_comfort(self, velocitiesByTime):
+    def compute_comfort(self, velocitiesByTime):        
         return comfort
 
     def compute_trip_time(self, velocitiesByTime):

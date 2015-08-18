@@ -156,7 +156,7 @@ class TubeGraph(abstract.AbstractGraph):
         return data
 
 
-class TubeGraphsSets(abstract.AbstractGraphSets):
+class TubeGraphsSets(abstract.AbstractGraphsSet):
     def tubegraphs_cost_triptime_excess(self, tubeGraphs)
         graphsCostAndtriptimeExcess = [[tubeGraph.tubeCost + tubeGraph.pylonCost,
                                      tubeGraph.triptimeExcess]
@@ -166,7 +166,7 @@ class TubeGraphsSets(abstract.AbstractGraphSets):
     def __init__(self, tubeGraphs):
         minimizeCost = True
         minimizeTriptimeExcess = True
-        abstract.AbstractGraphSets.__init__(tubeGraphs,
+        abstract.AbstractGraphsSet.__init__(tubeGraphs,
                            self.tubegraphs_cost_triptime_excess,
                            minimizeCost, minimizeTriptimeExcess)
     

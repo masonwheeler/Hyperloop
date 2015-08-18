@@ -9,7 +9,6 @@ Last Modification Purpose: Added function to set smoothing factor
 #Standard Modules:
 import scipy.interpolate
 import numpy as np
-import time
 
 #Our Modules:
 import util
@@ -46,6 +45,11 @@ def sample_edges(edges, sampleSpacing):
         edgePoints, offset = sample_edge(edge, sampleSpacing, offset)
         points += edgePoints
     return points
+
+def sample_path(pathPoints, pathSampleSpacing):
+    pathEdges = points_to_edges(pathPoints)
+    sampledPathPoints = sample_edges(pathEdges, pathSampleSpacing)
+    return sampledPathPoints
 
 ########## Auxilary Functions ##########
 
