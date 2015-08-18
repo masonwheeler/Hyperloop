@@ -44,7 +44,7 @@ class PylonsSlice(abstract.AbstractSlice):
         landElevation = pylonSliceBounds["landElevation"]
         shortestPylonHeight = 0
         pylonHeightOptions = util.build_grid2(heightDifference,
-                 pylonHeightOptionSpacing, shortestPylonHeight)    
+                 self.pylonHeightOptionSpacing, shortestPylonHeight)    
         tubeElevationOptions = [pylonHeightOption + landElevation 
                                 for pylonHeightOption in pylonHeightOptions]
         pylonIds = [index + shortestPylonId for index
@@ -60,8 +60,8 @@ class PylonsSlice(abstract.AbstractSlice):
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def __init__(self, pylonSliceBounds):
-        abstract.AbstractLattice.__init__(pylonSlicesBounds, PylonsSlice)
+    def __init__(self, pylonsSlicesBounds):
+        abstract.AbstractLattice.__init__(pylonsSlicesBounds, PylonsSlice)
 
 
 class TubeEdge(abstract.AbstractEdge):    
@@ -77,30 +77,28 @@ class TubeEdge(abstract.AbstractEdge):
         totalPylonCost =  startPylon.cost + endPylon.cost
         return totalPylonCost
 
-    def __init__(self, startPylon, endPylon, startId, endId):
-        abstract.AbstractEdge.__init__(startPylon.coords, endPylon.coords,
-                                       startId, endId)
+    def __init__(self, startPylon, endPylon):
+        abstract.AbstractEdge.__init__(startPylon, endPylon)
         self.tubeCost = self.tube_cost(startPylon, endPylon)
         self.pylonCost = self.pylon_cost(startPylon, endPylon)        
         
 
 class TubeEdgesSets(abstract.AbstractEdgesSets):
     def tube_edge_builder(self, startPylon, endPylon):
-        startId = startPylon.pointId
-        endId = endPylon.pointId
-        tubeEdge = TubeEdge(startPylon, endPylon, startId, endId)
+        tubeEdge = TubeEdge(startPylon, endPylon)
         return tubeEdge
-
+    
+    @staticmethod
     def is_tube_edge_pair_compatible(self, tubeEdgeA, tubeEdgeB):
         if edgeA.endId == edgeB.startId:
             if abs(edgeA.angle - edgeB.angle) < config.tubeEdgeDegreeConstraint:
                 return True
-        return False
-        
+        return False        
+
     def __init__(self, lattice)
         abstract.AbstractEdgesSets.__init__(lattice, self.tube_edge_builder,
                                             self.is_tube_edge_pair_compatible)
-           
+               
 
 class TubeGraph(abstract.AbstractGraph):
     def compute_triptime_excess(self, tubeCoordinates, numEdges):

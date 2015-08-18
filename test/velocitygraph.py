@@ -40,5 +40,38 @@ class VelocitiesLattice(abstract.AbstractLattice):
                                           VelocitiesSlice)
 
 class VelocityProfileEdge(abstract.AbstractEdge);
-    def 
+    def __init__(self, startVelocity, endVelocity):
+        abstract.AbstractEdge.__init__(startVelocity, endVelocity) 
+
+
+class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
+    velocityProfileEdgeDegreeConstraint = config.velocityProfileDegreeConstraint
+
+    def velocity_profile_edge_builder(self, startVelocity, endVelocity):
+        velocityProfileEdge = VelocityProfileEdge(startVelocity, endVelocity)
+        return velocityProfileEdge
+
+    @staticmethod
+    def is_velocity_profile_edge_pair_compatible(self, velocityProfileEdgeA,
+                                               velocityProfileEdgeB):
+        return abstract.AbstractEdgesSets.is_edge_pair_compatible(
+                        velocityProfileEdgeA, velocityProfileEdgeB,     
+                          self.velocityProfileEdgeDegreeConstraint)
+
+    def __init__(self, velocitiesLattice)
+        abstract.AbstractEdgesSets.__init__(velocitiesLattice,
+            self.velocity_profile_edge_builder
+
+
+
+
+
+
+
+
+
+
+
+
+
 

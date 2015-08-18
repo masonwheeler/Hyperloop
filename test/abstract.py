@@ -33,14 +33,20 @@ class AbstractLattice:
 
 
 class AbstractEdge:
-    def __init__(self, startCoords, endCoords, startId, endId):
-        self.startCoords = startCoords
-        self.endCoords = endCoords
-        self.startId = startId
-        self.endId = endId
+    def __init__(self, startPoint, endPoint):
+        self.startCoords = startPoint.coords
+        self.endCoords = endPoint.coords
+        self.startId = startPoint.pointId
+        self.endId = endPoint.pointId
 
 
 class AbstractEdgesSets:  
+    @staticmethod
+    def is_edge_pair_compatible(edgeA, edgeB, degreeConstraint):
+        edgePairCompatible = (edgeA.endId = edgeB.startId and
+             abs(edgeA.angle - edgeB.angle) < degreeConstraint)
+        return edgePairCompatible                   
+
     def lattice_to_unfiltered_edges_sets(self, lattice, edge_builder):
         unfilteredEdgesSets = []
         for latticeSliceIndex in range(len(lattice) - 1):
