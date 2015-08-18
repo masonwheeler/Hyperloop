@@ -117,7 +117,7 @@ def frequency_weighted_rms(accelFrequency, timeInterval, component):
         (weighting_factors(frequencyIndex/timeInterval)[accelComponent]
         * accelFrequency[frequencyIndex]) for frequencyIndex
         in range(-frequencyHalfWidth, frequencyHalfWidth+1)]
-    frequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
+   sfrequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
                                     for accelVal in accelFrequencyWeighted]))
     return frequencyWeightedRMS
 

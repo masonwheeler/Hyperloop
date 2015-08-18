@@ -272,7 +272,7 @@ def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
 def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
     numVels = maxAllowedVels.length
     maxPossibleVels.empty(numVels)
-    maxPossibleVels.fill(config.maxPossibleVels)
+    maxPossibleVels.fill(config.maxPossibleVelocity)
     
     
 
