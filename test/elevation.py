@@ -14,6 +14,7 @@ import simplejson
 #Our Modules
 import config
 import usgs
+import proj
 
 def google_elevation(coords):
     args = {
@@ -37,9 +38,14 @@ def usgs_elevation(latlngs):
     elevations = [usgs.get_elevation(latlng) for latlng in latlngs]
     return elevations
 
+def get_elevation_profile(geospatials):
+    latlngs = proj.geospatials_to_latlngs(geospatials, config.proj)
+    elevations = usgs_elevation(latlngs)
+    elevationProfile = [{"latlngs" : latlngs[i],
+                         "geospatial" : geospatials[i],
+                         "elevations" : elevations[i]}
+                        for i in range(len(latlngs))]
+    return elevationProfile
+        
+        
 
-#coords = [(37.7833,-122.4167), (34.0500, -118.2500)]
-#googleElevation = google_elevation(coords)
-#usgsElevation = usgs_elevation(coords)
-#print("Google gives " + str(googleElevation))
-#print("USGS gives " + str(usgsElevation))

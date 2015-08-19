@@ -44,21 +44,9 @@ class Edge:
         startGeospatial, endGeospatial = self.geospatials
         pylonSlicesGeospatials = util.build_grid(self.geospatialVector,
                                 config.pylonSpacing, startGeospatial)
-        pylonSlicesLatLngs = proj.geospatials_to_latlngs(pylonGeospatials,
-                                                                 config.proj)
-        pylonSlicesLandElevations = elevation.usgs_elevation(pylonLatLngs)       
-        highestLandElevation = max(pylonLocationsLandElevations)
-        pylonSlicesHeightDiffernces = [highestLandElevation - landElevation
-                             for landElevation in pylonSlicesLandElevations]
-        pylonSlicesBounds = [{
-            "geospatials": pylonSlicesGeospatials[i],
-            "latlngs": pylonSlicesLatLngs[i],
-            "landElevation" : pylonSlicesLandElevations[i],
-            "heightDifference" : pylonSlicesHeightDifferences[i]
-            }]
-        pylonLattice = tube.PylonLattice(pylonSlicesBounds)
-        tubeEdgesSets = tube.TubeEdgesSets(pylonLattice)
-        tubeGraphsSets = tube.init_from_tube_edges_sets(tubeEdgesSets)
+        elevationProfile = elevation.get_elevation_profile(
+                                    pylonSlicesGeospatials) 
+        
 
         pylonAttributes = zip(*[pylonSlicesGeospatials, pylonSlicesLatLngs,  
                                 pylonSlicesElevations])

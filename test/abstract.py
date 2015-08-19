@@ -124,7 +124,7 @@ class AbstractGraph:
         self.endAngle = endAngle
         self.numEdges = numEdges
 
-    def build_local_lattice(self):
+    #def build_local_lattice(self): to be implemented
         
 
 class AbstractGraphsSet:
@@ -179,7 +179,8 @@ class AbstractGraphsSet:
             else:
                 return False
 
-    def merge_two_graphssets(self, graphsSetA, graphsSetB)
+    @staticmethod
+    def merge_two_graphs_sets(self, graphsSetA, graphsSetB)
         mergedGraphs = []
         selectedA = graphsSetsA.selectedGraphs
         selectedB = graphsSetsB.selectedGraphs
@@ -187,9 +188,17 @@ class AbstractGraphsSet:
             for graphB in selectedB:
                 if self.is_graph_pair_compatible(graphA, graphB):
                     mergedGraphs.append(merge_two_graphs(graphA, graphB))
-        if (len(mergedGraphs) == 0):
-            return None
-        else:
-            mergedGraphsSet = self.__init__(mergedGraphs)
-            return mergedGraphsSet
+        return mergedGraphs
+
+def graphs_sets_merger(graphsSetA, graphsSetB):
+    mergedGraphs = GraphsSets.merge_two_graphs_sets(graphsSetA, graphsSetB)
+    if (len(mergedGraphs) == 0):
+        return None
+    else:
+        mergedGraphsSet = GraphsSets(mergedGraphs)
+        return mergedGraphsSet
+
+def graphs_sets_updater(graphsSets):
+    graphsSets.update_graphs()
+    return graphsSets
 

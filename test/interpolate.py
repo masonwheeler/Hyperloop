@@ -103,11 +103,26 @@ def interpolating_splines_2d(xArray, yArray, sValues):
     ySpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, yArray)
     return [xSpline, ySpline]
 
+def interpolate_points_2d(points2d):
+    numPoints = len(points3d)
+    sValues = get_s_values(numPoints)
+    xArray, yArray = points_2d_to_arrays(points2d) 
+    xSpline, ySpline = interpolating_splines_3d(xArray, yArray, sValues)
+    return [xSpline, ySpline]
+
 def interpolating_splines_3d(xArray, yArray, zArray, sValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, xArray)
     ySpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, yArray)
     zSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, zArray)
     return [xSpline, ySpline, zSpline]
+
+def interpolate_points_3d(points3d):
+    numPoints = len(points3d)
+    sValues = get_s_values(numPoints)
+    xArray, yArray, zArray = points_3d_to_arrays(points3d) 
+    xSpline, ySpline, zSpline = interpolating_splines_3d(xArray, yArray,
+                                                        zArray, sValues)
+    return [xSpline, ySpline, zSpline, sValues]
 
 ########## For Curvature Computations ##########
 
@@ -272,6 +287,12 @@ def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
     effectiveMaxAllowedVels = np.minimum(maxAllowedVels_vertical,
                                          maxAllowedVels_lateral) 
     return effectiveMaxAllowedVels
+
+def points_3d_max_allowed_vels(points3d):
+    xSpline, ySpline, zSpline, sValues = interpolate_points_3d(points3d)
+    maxAllowedVels = effective_max_allowed_vels(xSpline, ySpline, zSpline,
+                                                                  sValues)
+    return maxAllowedVels
 
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
     curvatureSize = curvatureArray.size

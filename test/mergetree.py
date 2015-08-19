@@ -209,8 +209,13 @@ class Number:
             print("max updates reached")
             return False
 
+    @staticmethod
+    def merge_two_numbers(numberA, numberB):
+        mergedValue = numberA.value + numberB.value
+        return mergedValue
+
 def numbers_merger(numberA, numberB):
-    mergedValue = numberA.value + numberB.value
+    mergedValue = Number.merge_two_numbers(numberA, numberB)
     if mergedValue < 10:
         mergedNumber = Number(mergedValue, numberA.maxUpdates)
         return mergedNumber
@@ -223,7 +228,8 @@ def number_updater(number):
 
 
 maxUpdates = 3
-numbers = [Number(value, maxUpdates) for value in range(4)]
-rootNumber = MasterTree(numbers, Number.numbers_merger, number_updater).root
+numbers = [Number(value, maxUpdates) for value in range(6)]
+rootNumber = MasterTree(numbers, numbers_merger, number_updater).root
 print("root value is: " + str(rootNumber.value))
 """
+

@@ -11,7 +11,7 @@ import config
 import abstract
 import mergeTree
 import interpolate
-
+import velocity
 
 class Pylon(abstract.AbstractPoint):
     def construction_cost(self, pylonHeight):
@@ -60,7 +60,10 @@ class PylonsSlice(abstract.AbstractSlice):
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def __init__(self, pylonsSlicesBounds):
+    def elevation_profile_to_pylon_slices_bounds(self, elevationProfile):
+        
+
+    def __init__(self, elevationProfile):
         abstract.AbstractLattice.__init__(pylonsSlicesBounds, PylonsSlice)
 
 
@@ -101,12 +104,14 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
                
 
 class TubeGraph(abstract.AbstractGraph):
-    def compute_triptime_excess(self, tubeCoordinates, numEdges):
+    velocityArclengthStepSize = config.velocityArclengthStepSize
+    def compute_triptime_excess(self, tubeCoords, numEdges):
         if numEdges < config.minNumTubeEdges:
             return None    
         else:             
-            interpolate.compute_trip_time_excess            
-            triptimeExcess =          
+            maxAllowedVels = interpolate.points_3d_max_allowed_vels(tubeCoords)
+            triptimeExcess = velocity.compute_local_trip_time_excess(
+                      maxAllowedVels, self.velocityArclengthStepSize)
             return triptimeExcess
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges
@@ -124,7 +129,7 @@ class TubeGraph(abstract.AbstractGraph):
         startId = tubeEdge.startId
         endId = tubeEdge.endId
         startAngle = tubeEdge.startAngle
-        endAngle = tubeEdge.endAngle
+        endAngle = tubeEdge.endAngle  
         numEdges = 1        
         tubeCost = tubeEdge.tubeCost
         pylonCost = tubeEdge.pylonCost        
@@ -176,4 +181,15 @@ class TubeGraphsSets(abstract.AbstractGraphsSet):
                       tubeEdgesSet in tubeEdgesSets]        
         return cls(tubeGraphs)
         
+def elevation_profile_to_tube_graphs(elevationProfile):
+    pylonsLattice = PylonsLattice(elevationProfile)
+    tubeEdgesSets = TubeEdgesSets(pylonsLattice)
+    tubeGraphsSets = TubeGraphsSets.init_from_tube_edges_sets(tubeEdgesSets)
+    tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSets,
+                abstract.graphs_sets_merger, abstract.graphs_sets_updater)
+    rootTubeGraphsSet = graphsTree.root
+    selectedTubeGraphs = rootGraphsSet.selectedGraphs
+    return selectedTubeGraphs
+    
+    
                                       

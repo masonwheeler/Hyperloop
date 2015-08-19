@@ -155,17 +155,6 @@ def iterativelybuild_directionsspline(directionsPoints):
                                                     config.curvatureThreshhold)
         return [xSpline, ySpline]
     
-def build_directionsspline(directionsPoints):
-    xCoordsList, yCoordsList = zip(*directionsPoints)
-    xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
-    numPoints = len(directionsPoints)
-    tValues = np.arange(numPoints)
-    endWeights = 100000
-    smoothingFactor = 10**13
-    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, tValues,
-                                                 endWeights, smoothingFactor)
-    return [xSpline, ySpline]
-    
 def get_directionsspline(directionsPoints):
     directionsSpline = cacher.get_object("spline", iterativelybuild_directionsspline,
        [directionsPoints], cacher.save_spline, config.splineFlag)
@@ -177,3 +166,15 @@ def get_lattice(sliceTValues, directionsPoints, xSpline, ySpline):
               cacher.save_lattice, config.latticeFlag)
     return lattice
 
+"""    
+def build_directionsspline(directionsPoints):
+    xCoordsList, yCoordsList = zip(*directionsPoints)
+    xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
+    numPoints = len(directionsPoints)
+    tValues = np.arange(numPoints)
+    endWeights = 100000
+    smoothingFactor = 10**13
+    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, tValues,
+                                                 endWeights, smoothingFactor)
+    return [xSpline, ySpline]
+"""
