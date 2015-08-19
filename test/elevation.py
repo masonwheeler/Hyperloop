@@ -33,8 +33,8 @@ def google_elevation(coords):
 
     return elevationArray
 
-def usgs_elevation(coords):
-    elevations = [usgs.get_elevation(latlngCoord) for latlngCoord in coords]
+def usgs_elevation(latlngs):
+    elevations = [usgs.get_elevation(latlng) for latlng in latlngs]
     return elevations
 
 

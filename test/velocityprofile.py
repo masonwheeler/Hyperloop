@@ -12,14 +12,49 @@ import numpy as np
 #Our Modules
 import abstract
 import comfort
+import interpolate
 
-def reparametrize_velocities(velocitiesByArcLength, arcLengthStepSize):
+def time_elapsed_to_velocity(velocityPair, timeElapsed):
+    startVelocity, endVelocity = velocityPair
+    startVelocityTime, startVelocityVal = startVelocity
+    endVelocityTime, endVelocityVal = endVelocity 
+
+def sample_velocity_pair(velocityPair, timeStepSize, timeElapsed):
+    sampledVelocities = []
+    velocityPairTimeDifference = velocityPair[1][0] - velocityPair[0][0]
+    while timeElapsed <= velocityPairTimeDifference:
+        velocity = time_elapsed_to_velocity(velocityPair, timeElapsed)
+        sampledVelocities.append(velocity)
+        timeElapsed += timeStepSize
+    timeElapsed -= velocityPairTimeDifference
+    return [sampledVelocities, timeElapsed]    
+
+def sample_velocities(velocitiesByTime, timeStepSize):
+    timeElapsed = 0
+    velocities = []
+    for velocityPair in velocityPairs:
+        sampledVelocities, timeElapsed = sample_velocity_pair(velocity_pair,
+                                                                timeElapsed)
+        velocities += sampledVelocities 
+    return velocities
+                   
+
+def reparametrize_velocities(velocitiesByArcLength, arcLengthStepSize,
+                                                        timeStepSize):
     numVelocities = velocitiesByArcLength.length
     arcLengthStepSizeArray = np.empty(numVelocities)
     arcLengthStepSizeArray = np.fill(arcLengthStepSize)
-    timeStepsArray = np.divide(arcLengthStepSizeArray,
-                                velocitiesByArcLength)
+    paddedVelocities = np.append(velocitiesByArcLength, 0)
+    shiftedVelocities = np.insert(velocitiesByArcLength, 0, 0)    
+    paddedVelocitiesSums = np.add(paddedVelocities, shiftedVelocities)
+    velocitiesSums = paddedVelocitiesSums[1:-1]
+    meanVelocitiesByArcLength = np.divide(velocitiesSums, 2)
+    times = np.divide(arcLengthStepSizeArray,
+                     meanVelocitiesByArcLength)
+    timeCheckpointsArray = np.insert(times, 0, 0)    
+    totalTime = np.sum(timeCheckpointsArray)
     timesElapsedArray = np.cumsum(timeStepsArray)
+    velocitiesByTime = 
     
 
 def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
@@ -82,7 +117,10 @@ class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
 
 
 class VelocityProfileGraph(abstract.AbstractGraph):
-    def reparametrize_velocity(self, velocitiesByArclength):
+    velocityArcLengthStepSize = config.velocityArcLengthStepSize
+    def reparametrize_velocities(self, velocitiesByArclength):
+        velocitiesByTime = reparametrize_velocities(velocitiesByArcLength,
+                                                velocityArcLengthStepSize)
         return velocitiesByTime
 
     def compute_comfort(self, velocitiesByTime):        
