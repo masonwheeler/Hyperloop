@@ -104,7 +104,9 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
                
 
 class TubeGraph(abstract.AbstractGraph):
+    
     velocityArclengthStepSize = config.velocityArclengthStepSize
+    
     def compute_triptime_excess(self, tubeCoords, numEdges):
         if numEdges < config.minNumTubeEdges:
             return None    
@@ -115,14 +117,18 @@ class TubeGraph(abstract.AbstractGraph):
             return triptimeExcess
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges
-                       tubeCost, pylonCost, tubeCoords, geospatials):
+                       tubeCost, pylonCost, tubeCoords):
         abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
                                                                     numEdges)
         self.tubeCost = tubeCost
         self.pylonCost = pylonCost
         self.tubeCoords = tubeCoords
-        self.geospatials = geospatials
         self.triptimeExcess = self.compute_triptime_excess(tubeCoords, numEdges)
+
+    def tube_cost_trip_time_excess(self):
+        costTripTimeExcess = [self.tubeCost + self.pylonCost,
+                                         self.triptimeExcess]
+        return costTripTimeExcess
 
     @classmethod
     def init_from_tube_edge(cls, tubeEdge):
@@ -135,11 +141,8 @@ class TubeGraph(abstract.AbstractGraph):
         pylonCost = tubeEdge.pylonCost        
         tubeCoords = [tubeEdge.startPoint.coords["tubeCoords"],
                       tubeEdge.endPoint.coords["tubeCoords"]]        
-        geospatials = [tubeEdge.startPoint.coords["geospatials"],
-                       tubeEdge.endPoint.coords["geospatials"]]
-        triptimeExcess = self.compute_triptime_excess(tubeCoords, numEdges)
         data = cls(startId, endId, startAngle, endAngle, numEdges, tubeCost,
-                   pylonCost, tubeCoords, geospatials, triptimeExcess)
+                   pylonCost, tubeCoords)
         return data
     
     @classmethod
@@ -153,19 +156,16 @@ class TubeGraph(abstract.AbstractGraph):
         pylonCost = tubeGraphA.pylonCost + tubeGraphB.pylonCost
         tubeCoords = util.smart_concat(tubeGraphA.tubeCoords,
                                        tubeGraphB.tubeCoords)
-        geospatials = util.smart_concat(tubeGraphA.geospatials,
-                                        tubeGraphB.geospatials)
-        triptimeExcess = self.compute_triptime_excess(tubeCoords, numEdges)
         data = cls(startId, endId, startAngle, endAngle, numEdges, tubeCost,
-                   pylonCost, tubeCoords, geospatials, triptimeExcess)
+                   pylonCost, tubeCoords)
         return data
 
 
 class TubeGraphsSets(abstract.AbstractGraphsSet):
+    
     def tubegraphs_cost_triptime_excess(self, tubeGraphs)
-        graphsCostAndtriptimeExcess = [[tubeGraph.tubeCost + tubeGraph.pylonCost,
-                                     tubeGraph.triptimeExcess]
-                                     for tubeGraph in tubeElevationGraphs]
+        graphsCostAndtriptimeExcess = [tubeGraph.tube_cost_trip_time_excess()
+                                       for tubeGraph in tubeElevationGraphs]
         return graphsCostAndTriptimeExcess
 
     def __init__(self, tubeGraphs):
@@ -180,6 +180,7 @@ class TubeGraphsSets(abstract.AbstractGraphsSet):
         tubeGraphs = [map(TubeGraph.init_from_tube_edge, tubeEdgesSet) for
                       tubeEdgesSet in tubeEdgesSets]        
         return cls(tubeGraphs)
+
         
 def elevation_profile_to_tube_graphs(elevationProfile):
     pylonsLattice = PylonsLattice(elevationProfile)

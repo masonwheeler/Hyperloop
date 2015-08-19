@@ -30,26 +30,42 @@ class Path2d:
 
     def get_interpolating_latlngs(self, interpolatingGeospatials):
         interpolatingLatLngs = proj.geospatials_to_latlngs(
-                                    interpolatingGeospatials)
+                                           interpolatingGeospatials)
         return interpolatingLatLngs
 
-    def compute_land_cost(self, interpolatedLatLngs):
+    def compute_land_cost(self, interpolatingLatLngs):
         landCost = landcover.get_land_cost(interpolatedLatLngs)
         return landCost
 
-    def get_land_elevations(self, interpolatedLatLngs):
-        elevation.usgs_elevation(interpolateLatLngs)
-        return landElevations
+    def get_elevation_profile(self, interpolatedLatLngs):
+        elevationProfile = elevation.get_elevation_profile(interpolatedLatLngs)
+        return elevationProfile
 
-    def get_tube_options(self, landElevations):
-        return tubeGraphOptions
+    def get_tube_graphs(self, elevationProfile):
+        return tubeGraphs
     
-    def __init__(self, graphGeospatials):
+    def __init__(self, spatialGraph):
+        graphGeospatials = spatialGraph.geospatials
+        sampledGeospatials = self.sample_geospatials(graphGeospatials)
+        interpolatingGeospatials = self.get_interpolating_geospatials(
+                                                       sampledGeospatials)
+        interpolatingLatLngs = self.get_interpolating_lat_lngs(
+                                           interpolatingGeospatials)
+        elevationProfile = elevation.get_elevation_profile(
+                                       interpolatingGeospatials)
+        self.landCost = self.compute_land_cost(interpolatingLatLngs)
+        self.tubeGraphs = self.get_tube_graphs(self.elevationProfile)
+
 
 class Path3d:
-    def get_velocity_profile_options(self, tubeOptions):
+    def get_velocity_profile_graphs(self, tubeGraph):
+        tubeCoords = tubeGraph.tubeCoords
+        
 
-    def __init__(self, tubeOption):
+    def __init__(self, landCost, tubeGraph):
+        self.landCost = landCost
+        velocityProfileGraphs = get_velocity_profile_graphs
+
          
 class Route:
     def __init__(self, tube, velocityProfile):
