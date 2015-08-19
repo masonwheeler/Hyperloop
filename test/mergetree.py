@@ -185,7 +185,7 @@ class MasterTree:
                                                            data_updater)
         self.root = rootMergeTree.data
         
-
+"""
 #Testing Purposes
 class Number:
     value = None
@@ -226,3 +226,4 @@ maxUpdates = 3
 numbers = [Number(value, maxUpdates) for value in range(4)]
 rootNumber = MasterTree(numbers, Number.numbers_merger, number_updater).root
 print("root value is: " + str(rootNumber.value))
+"""

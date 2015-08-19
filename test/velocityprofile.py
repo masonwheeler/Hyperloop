@@ -82,11 +82,17 @@ def reparametrize_velocities(velocitiesByArcLength, arclengthStepSize,
     sampledVelocitiesByTime = sample_velocities(velocitiesByTime)
     return sampledVelocitiesByTime
     
-
-def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
-    numVels = maxAllowedVels.length
-    maxPossibleVels.empty(numVels)
-    maxPossibleVels.fill(config.maxPossibleVelocity)
+def compute_local_trip_time_excess(maxAllowedVelocities,
+                                     arclengthStepSize):
+    numVelocities = maxAllowedVelocities.length
+    maxPossibleVelocities.empty(numVelocities)
+    maxPossibleVelocities.fill(config.maxPossibleVelocity)
+    minimumPossibleTripTime = compute_trip_time(maxPossibleVelocities,
+                                                    arclengthStepSize)
+    minimumAllowedTripTime = compute_trip_time(maxAllowedVelocities,
+                                                  arclengthStepSize)
+    localTripTimeExcess = minimumAllowedTripTime - minimumPossibleTripTime
+    return localTripTimeExcess
 
 
 class Velocity(abstract.AbstractPoint):
