@@ -39,10 +39,11 @@ def sample_edge(edge, sampleSpacing, distanceAlongEdge):
     return [edgePoints, distanceAlongEdge]
 
 def sample_edges(edges, sampleSpacing):
-    offset = 0
+    distanceAlongEdge = 0
     points = []
     for edge in edges:
-        edgePoints, offset = sample_edge(edge, sampleSpacing, offset)
+        edgePoints, distanceAlongEdge = sample_edge(edge, sampleSpacing,
+                                                      distanceAlongEdge)
         points += edgePoints
     return points
 
@@ -271,13 +272,6 @@ def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
     effectiveMaxAllowedVels = np.minimum(maxAllowedVels_vertical,
                                          maxAllowedVels_lateral) 
     return effectiveMaxAllowedVels
-
-def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
-    numVels = maxAllowedVels.length
-    maxPossibleVels.empty(numVels)
-    maxPossibleVels.fill(config.maxPossibleVelocity)
-    
-    
 
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
     curvatureSize = curvatureArray.size

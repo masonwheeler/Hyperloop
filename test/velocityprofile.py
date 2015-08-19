@@ -14,14 +14,28 @@ import abstract
 import comfort
 import interpolate
 
+def velocities_to_velocity_pairs(velocities):
+    velocityPairs = util.to_pairs(velocities)
+    return velocityPairs
+
 def time_elapsed_to_velocity(velocityPair, timeElapsed):
     startVelocity, endVelocity = velocityPair
     startVelocityTime, startVelocityVal = startVelocity
     endVelocityTime, endVelocityVal = endVelocity 
+    velocityDifference = endVelocityVal - startVelocityVal
+    timeDifference = endVelocityTime - startVelocityTime
+    relativeVelocityVal = timeElapsed * velocityDifference/timeDifference
+    velocityVal = startVelocityVal + relativeVelocityVal
+    velocityTime = startVelocityTime + timeElapsed
+    velocity = [velocityTime, velocityVal]
+    return velocity    
 
 def sample_velocity_pair(velocityPair, timeStepSize, timeElapsed):
-    sampledVelocities = []
-    velocityPairTimeDifference = velocityPair[1][0] - velocityPair[0][0]
+    sampledVelocities = []    
+    startVelocity, endVelocity = velocityPair
+    startVelocityTime, startVelocityVal = startVelocity
+    endVelocityTime, endVelocityVal = endVelocity 
+    velocityPairtimeDifference = endVelocityTime - startVelocityTime
     while timeElapsed <= velocityPairTimeDifference:
         velocity = time_elapsed_to_velocity(velocityPair, timeElapsed)
         sampledVelocities.append(velocity)
@@ -38,9 +52,8 @@ def sample_velocities(velocitiesByTime, timeStepSize):
         velocities += sampledVelocities 
     return velocities
                    
-
-def reparametrize_velocities(velocitiesByArcLength, arcLengthStepSize,
-                                                        timeStepSize):
+def velocities_by_arclength_to_time_checkpoints_array(velocitiesByArcLength, 
+                                                         arcLengthStepSize):
     numVelocities = velocitiesByArcLength.length
     arcLengthStepSizeArray = np.empty(numVelocities)
     arcLengthStepSizeArray = np.fill(arcLengthStepSize)
@@ -52,9 +65,22 @@ def reparametrize_velocities(velocitiesByArcLength, arcLengthStepSize,
     times = np.divide(arcLengthStepSizeArray,
                      meanVelocitiesByArcLength)
     timeCheckpointsArray = np.insert(times, 0, 0)    
-    totalTime = np.sum(timeCheckpointsArray)
-    timesElapsedArray = np.cumsum(timeStepsArray)
-    velocitiesByTime = 
+    return timeCheckPointsArray
+    
+def compute_trip_time(velocitiesByArcLength, arcLengthStepSize):
+    timeCheckpointsArray = velocities_by_arclength_to_time_checkpoints_array(
+                                    velocitiesByArcLength, arclengthStepSize)
+    tripTime = np.sum(timeCheckpointsArray)
+    return tripTime    
+
+def reparametrize_velocities(velocitiesByArcLength, arclengthStepSize,
+                                                        timeStepSize):    
+    timeCheckpointsArray = velocities_by_arclength_to_time_checkpoints_array(
+                                    velocitiesByArcLength, arclengthStepSize)
+    timesElapsed = np.cumsum(timeCheckpointsArray)
+    velocitiesByTime = np.array([timesElapsed, velocitiesByArcLength]).T
+    sampledVelocitiesByTime = sample_velocities(velocitiesByTime)
+    return sampledVelocitiesByTime
     
 
 def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
@@ -62,11 +88,13 @@ def max_allowed_vels_to_edge_trip_time_excess(maxAllowedVels):
     maxPossibleVels.empty(numVels)
     maxPossibleVels.fill(config.maxPossibleVelocity)
 
+
 class Velocity(abstract.AbstractPoint):
     def __init__(self, speed, distanceAlongPath, velocityId):
         velocityCoords = {"speed" : speed,
                           "distanceAlongPath":  distanceAlongPath}
         abstract.AbstractPoint.__init__(velocityCoords, velocityId)
+
 
 class VelocitiesSlice(abstract.AbstractSlice):
     speedOptionsSpacing = config.speedOptionsSpacing
@@ -87,10 +115,12 @@ class VelocitiesSlice(abstract.AbstractSlice):
         abstract.AbstractSlice.__init__(velocitiesSliceBounds,
                    lowestVelocityId, self.velocities_builder):
 
+
 class VelocitiesLattice(abstract.AbstractLattice):
     def __init__(self, velocitiesSlicesBounds):
         abstract.AbstractLattice.__init__(velocitiesSlicesBounds,
                                           VelocitiesSlice)
+
 
 class VelocityProfileEdge(abstract.AbstractEdge);
     def __init__(self, startVelocity, endVelocity):
@@ -184,13 +214,4 @@ class VelocityProfileGraphsSet(abstract.AbstractGraphsSet):
                 velocityProfileEdgesSet)
             for velocityProfileEdgesSet in velocityProfileEdgesSets]
         return cls(velocityProfileGraphs)
-
-
-
-
-
-
-
-
-
 
