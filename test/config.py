@@ -21,8 +21,8 @@ useDropbox = False
 """
 Cache Overwriting Switches.
 """
-useCachedDirections = True
-useCachedSpline = False
+useCachedDirections = False
+useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
 useCachedGraphs = True

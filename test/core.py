@@ -59,31 +59,31 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
-    print(len(finishedEdgesSets))
-    completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    #print(len(finishedEdgesSets))
+    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print(completeGraphs[0].numEdges)
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
     #    print("land cost: " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
-    t1 = time.time()
-    print("Building the graphs took " + str(t1-t0) + " seconds.")
-    if config.visualMode:
+    #t1 = time.time()
+    #print("Building the graphs took " + str(t1-t0) + " seconds.")
+    #if config.visualMode:
         #plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
-        costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
-        costs, curvatures = zip(*costCurvature)
-        visualize.scatter_plot(costs, curvatures)
+        #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
+        #costs, curvatures = zip(*costCurvature)
+        #visualize.scatter_plot(costs, curvatures)
         #print(plottableCostCurvature)
         #config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
-    return completeGraphs
+    return 0 #completeGraphs
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
-    #completeGraphs = build_graphs(latticeSlices)
+    completeGraphs = build_graphs(latticeSlices)
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     if config.visualMode:
