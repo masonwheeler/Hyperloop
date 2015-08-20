@@ -31,13 +31,13 @@ class Pylon(abstract.AbstractPoint):
                   "tubeElevation": tubeElevation,
                   "tubeCoords": tubeCoords}
         self.cost = self.construction_cost(pylonHeight)
-        abstract.AbstractPoint.__init__(coords, pylonId)
+        abstract.AbstractPoint.__init__(self, coords, pylonId)
 
         
 class PylonsSlice(abstract.AbstractSlice):   
     pylonHeightStepSize = config.pylonHeightStepSize
 
-    def pylons_builder(self, pylonSliceBounds, shortestPylonId):       
+    def pylons_builder(self, latticeXCoord, pylonSliceBounds, shortestPylonId):       
         pylonHeightDifference = pylonSliceBounds["pylonHeightDifference"]
         geospatials = pylonSliceBounds["geospatial"]
         latlngs = pylonSliceBounds["latlng"]
@@ -54,9 +54,9 @@ class PylonsSlice(abstract.AbstractSlice):
             for i in range(len(pylonIds))]
         return pylonOptions        
 
-    def __init__(self, pylonsSliceBounds, shortestPylonId):
-        abstract.AbstractSlice.__init__(pylonsSliceBounds, shortestPylonId,
-                                        self.pylons_builder)
+    def __init__(self, latticeXCoord, pylonsSliceBounds, shortestPylonId):
+        abstract.AbstractSlice.__init__(self, latticeXCoord, pylonsSliceBounds,
+                                          shortestPylonId, self.pylons_builder)
 
 
 class PylonsLattice(abstract.AbstractLattice):
@@ -79,12 +79,14 @@ class PylonsLattice(abstract.AbstractLattice):
         pylonsSlicesBounds = [self.elevation_point_to_pylons_slice_bounds(
                       elevationPoint, maxLandElevation) for elevationPoint
                                                        in elevationProfile]
-        return pylonsSlicesBounds
+        return pylonsSlicesBounds   
 
     def __init__(self, elevationProfile):
         pylonsSlicesBounds = self.elevation_profile_to_pylons_slices_bounds(
                                                            elevationProfile)
-        abstract.AbstractLattice.__init__(pylonsSlicesBounds, PylonsSlice)
+        pylon_slice_builder = PylonsSlice
+        abstract.AbstractLattice.__init__(self, pylonsSlicesBounds,
+                                               pylon_slice_builder)
 
 
 class TubeEdge(abstract.AbstractEdge):    
@@ -119,7 +121,7 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
                                    tubeEdgeB, self.tubeEdgeDegreeConstraint)
                                                                              
     def __init__(self, pylonsLattice):
-        abstract.AbstractEdgesSets.__init__(pylonsLattice,
+        abstract.AbstractEdgesSets.__init__(self, pylonsLattice,
             self.tube_edge_builder, self.is_tube_edge_pair_compatible)
                
 
@@ -138,8 +140,8 @@ class TubeGraph(abstract.AbstractGraph):
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges,
                        tubeCost, pylonCost, tubeCoords):
-        abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
-                                                                    numEdges)
+        abstract.AbstractGraph.__init__(self, startId, endId,
+                                   startAngle, endAngle, numEdges)
         self.tubeCost = tubeCost
         self.pylonCost = pylonCost
         self.tubeCoords = tubeCoords
@@ -191,7 +193,7 @@ class TubeGraphsSet(abstract.AbstractGraphsSet):
     def __init__(self, tubeGraphs):
         minimizeCost = True
         minimizeTriptimeExcess = True
-        abstract.AbstractGraphsSet.__init__(tubeGraphs,
+        abstract.AbstractGraphsSet.__init__(self, tubeGraphs,
                            self.tubegraphs_cost_triptime_excess,
                            minimizeCost, minimizeTriptimeExcess)
     

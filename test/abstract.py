@@ -31,7 +31,7 @@ class AbstractLattice:
         self.slices = []
         startId = 0
         latticeXCoord = 0
-        for sliceBound in slicesBounds:
+        for sliceBounds in slicesBounds:
             newSlice = AbstractSlice(latticeXCoord, sliceBounds, startId,
                                                           points_builder)
             self.slices.append(newSlice.points)
