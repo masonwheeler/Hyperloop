@@ -154,9 +154,31 @@ class VelocitiesSlice(abstract.AbstractSlice):
 
 
 class VelocitiesLattice(abstract.AbstractLattice):
-    def __init__(self, velocitiesSlicesBounds):
+
+    def max_allowed_velocities_to_velocity_slice_bounds(maxAllowedVelocities):
+        numArcLengthSteps = maxAllowedVelocities.length - 1
+        arcLengthStepsArray = np.empty(numArcLengthPoints)
+        arcLengthStepsArray = np.fill(config.arclengthStepSize)
+        partialArcLengthArray = np.cumsum(arcLengthStepsArray)
+        arcLengthArray = np.insert(partialArcLengthArray, 0, 0)
+        velocitySlicesBounds = []
+        for i in range(len(maxAllowedVelocities.length)):
+            maxSpeed = maxAllowedVelocities[i]
+            minSpeed = config.speedStepSize
+            speedStepSize = config.speedStepSize
+            distanceAlongPath = arcLengthArray[i]
+            velocitySliceBounds = {"maxSpeed" : maxSpeed,
+                                   "minSpeed" : minSpeed,
+                                   "speedStepSize" : speedStepSize,
+                                   "distanceAlongPath" : distanceAlongPath}
+            velocitySlicesBounds.append(velocitySliceBounds)
+        return velocitySlicesBounds
+
+    def __init__(self, maxAllowedVelocities):
+        velocitySlicesBounds = max_allowed_velocities_to_velocity_slice_bounds(
+                                                          maxAllowedVelocities)
         abstract.AbstractLattice.__init__(velocitiesSlicesBounds,
-                                          VelocitiesSlice)
+                                                 VelocitiesSlice)
 
 
 class VelocityProfileEdge(abstract.AbstractEdge);
@@ -180,7 +202,8 @@ class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
 
     def __init__(self, velocitiesLattice)
         abstract.AbstractEdgesSets.__init__(velocitiesLattice,
-            self.velocity_profile_edge_builder
+                           self.velocity_profile_edge_builder,
+               self.is_velocity_profile_edge_pair_compataible)
 
 
 class VelocityProfileGraph(abstract.AbstractGraph):
@@ -252,24 +275,17 @@ class VelocityProfileGraphsSet(abstract.AbstractGraphsSet):
             for velocityProfileEdgesSet in velocityProfileEdgesSets]
         return cls(velocityProfileGraphs)
 
-def max_allowed_velocities_to_velocity_slice_bounds(maxAllowedVelocities):
-    numArcLengthSteps = maxAllowedVelocities.length - 1
-    arcLengthStepsArray = np.empty(numArcLengthPoints)
-    arcLengthStepsArray = np.fill(config.arclengthStepSize)
-    partialArcLengthArray = np.cumsum(arcLengthStepsArray)
-    arcLengthArray = np.insert(partialArcLengthArray, 0, 0)
-    velocitySlicesBounds = []
-    for i in range(len(maxAllowedVelocities.length)):
-        maxSpeed = maxAllowedVelocities[i]
-        minSpeed = config.speedStepSize
-        speedStepSize = config.speedStepSize
-        distanceAlongPath = arcLengthArray[i]
-        velocitySliceBounds = {"maxSpeed" : maxSpeed,
-                               "minSpeed" : minSpeed,
-                               "speedStepSize" : speedStepSize,
-                               "distanceAlongPath" : distanceAlongPath}
-        velocitySlicesBounds.append(velocitySliceBounds)
-    return velocitySlicesBounds
-        
-    
+
+def max_allowed_velocities_to_velocity_profile_graphs(maxAllowedVelocities):
+    velocitiesLattice = VelocitiesLattice(maxAllowedVelocities)
+    velocityProfileEdgesSets = VelocityProfileEdgesSets(velocitiesLattice)
+    velocityProfileGraphsSet =
+         VelocityProfileGraphsSet.init_from_velocity_profile_edges_sets(
+            velocityProfileEdgesSets)
+    velocityProfileGraphsSetsTree = mergeTree.MasterTree(
+         velocityProfileGraphsSet, abstract.graphs_sets_merger,
+                                  abstract.graphs_sets_updater)
+    rootVelocityProfileGraphsSet = velocityProfileGraphsSetsTree.root
+    selectedVelocityProfileGraphs = rootVelocityProfileGraphsSet.selectedGraphs
+    return selectedVelocityProfileGraphs
     
