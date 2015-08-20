@@ -35,7 +35,7 @@ class Pylon(abstract.AbstractPoint):
 
         
 class PylonsSlice(abstract.AbstractSlice):   
-    pylonHeightOptionSpacing = config.pylonHeightOptionSpacing
+    pylonHeightStepSize = config.pylonHeightStepSize
 
     def pylons_builder(self, pylonSliceBounds, shortestPylonId):       
         pylonHeightDifference = pylonSliceBounds["pylonHeightDifference"]
@@ -44,7 +44,7 @@ class PylonsSlice(abstract.AbstractSlice):
         landElevation = pylonSliceBounds["landElevation"]
         shortestPylonHeight = 0
         pylonHeightOptions = util.build_grid2(pylonHeightDifference,
-                 self.pylonHeightOptionSpacing, shortestPylonHeight)    
+                 self.pylonHeightStepSize, shortestPylonHeight)    
         tubeElevationOptions = [pylonHeightOption + landElevation 
                                 for pylonHeightOption in pylonHeightOptions]
         pylonIds = [index + shortestPylonId for index
@@ -123,7 +123,7 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
 
 class TubeGraph(abstract.AbstractGraph):
     
-    velocityArclengthStepSize = config.velocityArclengthStepSize
+    velocityArcLengthStepSize = config.velocityArcLengthStepSize
     
     def compute_triptime_excess(self, tubeCoords, numEdges):
         if numEdges < config.minNumTubeEdges:
@@ -131,7 +131,7 @@ class TubeGraph(abstract.AbstractGraph):
         else:             
             maxAllowedVels = interpolate.points_3d_max_allowed_vels(tubeCoords)
             triptimeExcess = velocity.compute_local_trip_time_excess(
-                      maxAllowedVels, self.velocityArclengthStepSize)
+                      maxAllowedVels, self.velocityArcLengthStepSize)
             return triptimeExcess
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges,

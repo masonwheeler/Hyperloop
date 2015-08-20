@@ -12,6 +12,7 @@ import numpy as np
 #Our Modules
 import abstract
 import comfort
+import config
 import interpolate
 
 def velocities_to_velocity_pairs(velocities):
@@ -138,7 +139,6 @@ class VelocitiesSlice(abstract.AbstractSlice):
         maxSpeed = velocitiesSliceBounds["maxSpeed"]
         minSpeed = velocitiesSliceBounds["minSpeed"]
         speedStepSize = velocitiesSliceBounds["speedStepSize"]
-        distanceAlongPath = velocitiesSliceBounds["distanceAlongPath"]
         speedDifference = maxSpeed - minSpeed
         speedOptions = util.build_grid2(speedDifference,
                            speedsStepSize, minimumSpeed)
@@ -169,8 +169,7 @@ class VelocitiesLattice(abstract.AbstractLattice):
             distanceAlongPath = arcLengthArray[i]
             velocitySliceBounds = {"maxSpeed" : maxSpeed,
                                    "minSpeed" : minSpeed,
-                                   "speedStepSize" : speedStepSize,
-                                   "distanceAlongPath" : distanceAlongPath}
+                                   "speedStepSize" : speedStepSize}
             velocitySlicesBounds.append(velocitySliceBounds)
         return velocitySlicesBounds
 
@@ -233,10 +232,14 @@ class VelocityProfileGraph(abstract.AbstractGraph):
     def init_from_velocity_profile_edge(cls, velocityProfileEdge):
         startId = velocityProfileEdge.startId
         endId = velocityProfileEdge.endId
-        startAngle = velocityProfileEdge.startId
-        endAngle = velocityProfileEdge.endId
+        startAngle = velocityProfileEdge.startAngle
+        endAngle = velocityProfileEdge.endAngle
         numEdges = 1
-        velocitiesByArcLength = [
+        velocitiesByArcLength = [velocityProfileEdge.startVelocity,
+                                   velocityProfileEdge.endVelocity]
+        data = cls(StartId, endId, startAngle, endAngle, numEdges, 
+                                            velocitiesByArcLength)
+        return data
         
     @classmethod
     def merge_two_velocity_profile_graphs(cls, velocityProfileGraphA,

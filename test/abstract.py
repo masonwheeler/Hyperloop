@@ -8,18 +8,21 @@ Last Modification Purpose: Created Module
 
 import paretofront
 import mergetree
-
+import math
 
 class AbstractPoint:
-    def __init__(self, xCoord, yCoord, pointId):
+    def __init__(self, pointId, latticeXCoord, latticeYCoord,
+                                spatialXCoord, spatialYCoord):
         self.pointId = pointId
-        self.xCoord = xCoord #for planned use with graph refinement
-        self.yCoord = yCoord #for planned use with graph refinement
+        self.latticeXCoord = latticeXCoord
+        self.latticeYCoord = latticeYCoord
+        self.spatialXCoord = spatialXCoord
+        self.spatialYcoord = spatialYCoord
 
         
 class AbstractSlice:
-    def __init__(self, xCoord, sliceBounds, startId, points_builder):
-        self.points = points_builder(xCoord, sliceBounds, startId)
+    def __init__(self, latticeXCoord, sliceBounds, startId, points_builder):
+        self.points = points_builder(latticeXCoord, sliceBounds, startId)
         self.endId = startId + len(self.points)
 
         
@@ -27,9 +30,10 @@ class AbstractLattice:
     def __init__(self, slicesBounds, points_builder):
         self.slices = []
         startId = 0
-        xCoord = 0
+        latticeXCoord = 0
         for sliceBound in slicesBounds:
-            newSlice = AbstractSlice(xCoord, sliceBounds, startId, points_builder)
+            newSlice = AbstractSlice(latticeXCoord, sliceBounds, startId,
+                                                          points_builder)
             self.slices.append(newSlice.points)
             startId = newSlice.endId
             xCoord += 1
@@ -37,10 +41,20 @@ class AbstractLattice:
 
 class AbstractEdge:
     def __init__(self, startPoint, endPoint):
-        self.startCoords = [startPoint.xCoord, startPoint.yCoord]
-        self.endCoords = [endPoint.xCoord, endPoint.yCoord]
         self.startId = startPoint.pointId
         self.endId = endPoint.pointId
+        self.startLatticeCoords = [startPoint.latticeXCoord,
+                                   startPoint.latticeYCoord]
+        self.endLatticeCoords = [endPoint.latticeXCoord,
+                                 endPoint.latticeYCoord]
+        self.startSpatialCoords = [startPoint.spatialXCoord,
+                                   startPoint.spatialYCoord]
+        self.endSpatialCoords = [endPoint.spatialXCoord,
+                                 endPoint.spatialYCoord]
+        self.angle = math.degrees(math.atan2(
+                       endPoint.spatialYCoord - startPoint.spatialYCoord,
+                       endPoint.spatialXCoord - startPoint.spatialXCoord))
+        self.isUseful = True
 
 
 class AbstractEdgesSets:  
@@ -94,6 +108,8 @@ class AbstractEdgesSets:
         return False
         
     def iterative_filter(self, unfilteredEdgesSets, is_edge_pair_compatible):
+        self.determine_useful_edges(unfilteredEdgesSets,
+                                    is_edge_pair_compatible)
         prefilterNumEdges = util.list_of_lists_len(unfilteredEdgesSets)
         util.smart_print("The original number of edges: " +
                          str(prefilteredNumEdges))

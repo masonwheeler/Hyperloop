@@ -74,9 +74,9 @@ def get_spline_values(spline, sValues):
     splineValues = spline(sValues)
     return splineValues
 
-def get_slicesValues(sValues, nth):
-    slicesValues = sValues[::nth]
-    return slicesValues
+def get_slice_s_values(sValues, nth):
+    sliceSValues = sValues[::nth]
+    return sliceSValues
 
 ########## For 2d Smoothing Splines ##########
 
@@ -214,7 +214,7 @@ def compute_curvature_array_3d(xFirstDerivValues, xSecondDerivValues,
                 )
     return curvatureArray3d
 
-def parameteric_splines_2d_curvature(xSpline, ySpline, sValues):
+def parametric_splines_2d_curvature(xSpline, ySpline, sValues):
     xFirstDerivValues, xSecondDerivValues = get_derivative_values(xSpline,
                                                                   sValues)
     yFirstDerivValues, ySecondDerivValues = get_derivative_values(ySpline,
@@ -224,7 +224,7 @@ def parameteric_splines_2d_curvature(xSpline, ySpline, sValues):
             yFirstDerivValues, ySecondDerivValues)            
     return curvatureArray2d
 
-def parameteric_splines_3d_curvature(xSpline, ySpline, zSpline, sValues):
+def parametric_splines_3d_curvature(xSpline, ySpline, zSpline, sValues):
     xFirstDerivValues, xSecondDerivValues = get_derivative_values(xSpline,
                                                                   sValues)
     yFirstDerivValues, ySecondDerivValues = get_derivative_values(ySpline,

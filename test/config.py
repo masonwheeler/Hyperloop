@@ -28,7 +28,7 @@ useCachedEdges = True
 useCachedGraphs = True
 
 """
-Lattice Generation parameters
+Lattice Generation Parameters
 """
 pointSpacing = 2000 # (in meters) spacing between points in the same slice
 directionsSampleSpacing = 10 # (in meters)
@@ -39,13 +39,23 @@ splineSampleSpacing = 1000 # (in units of directionsSampleSpacing) i.e.
 ndigits = 6 #the number of digits used for rounding
 
 """
-Graph Generation parameters
+Graph Generation Parameters
 """
-#numPaths = [300,250,200,150,100,50,25] # Number of paths to output from merging
-#graphSampleSize = 10
 graphCurvatureMinNumEdges = 3
 graphSampleSpacing = 1000.0
 numFronts = 12
+
+"""
+Tube Generation Parameters
+"""
+pylonHeightStepSize = 10
+tubeDegreeConstraint = 30
+
+"""
+Velocity Profile Generation Parameters
+"""
+velocityProfileDegreeConstraint = 30
+velocityArcLengthStepSize = 100 
 
 """
 Engineering constraints.

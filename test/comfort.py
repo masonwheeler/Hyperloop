@@ -34,12 +34,12 @@ import numpy as np
 import config
 
 
-"""
- 1. Find acceleration in passenger frame:
-      {t_i}, {v_i}, {a_i}  -->  {T_i}, {N_i}, {B_i} -->  {ap_i}
-"""
 
 def accel_passenger(vel, accel, component):
+    """
+    Find acceleration in passenger frame:
+       {t_i}, {v_i}, {a_i}  -->  {T_i}, {N_i}, {B_i} -->  {ap_i}
+    """
     tangentVector = [vel[i] / np.linalg.norm(vel[i]) for i in range(len(vel))]
     normalVector = [np.cross(vel[i], np.cross(accel[i], vel[i]))/
                    np.linalg.norm(np.cross(vel[i], np.cross(accel[i], vel[i])))
@@ -75,9 +75,8 @@ a = [[-5.41209, 26.5291, -23.7259],
      [-28.5665, -20.2583, 8.33999], 
      [-24.534, 16.1627, -20.805]]
 
-print aPassenger(v, a, 1)
+assert(aPassenger(v, a, 1) == [36, 36, 36, 36, 36])
 """
-#should get [36, 36, 36, 36, 36]
 
 """
 2. Take Fast Fourier Transform of psnger accel:
@@ -91,9 +90,9 @@ See (Gangadharan) equations (7) and (8) for weighting factors.
 """
 
 def vertical_weighting_factor(frequency):
-	  verticalWeightingFactor = 0.588 * math.sqrt(
+    verticalWeightingFactor = 0.588 * math.sqrt(
       (1.911 * frequency**2 + (.25 * frequency**2)**2) /
-      ((1 - 0.2777 * frequency**2)**2 +
+      ((1 - 0.2777 * frequency**2)**2 + 
        (1.563 * frequency - 0.0368 * frequency**3)**2))
     return verticalWeightingFactor
 
@@ -101,8 +100,8 @@ def horizontal_weighting_factor(frequency):
     return 1.25 * vertical_weighting_factor(frequency)
 
 def weighting_factors(frequency):
-  	weightingFactors = [0, vertical_weighing_factor(frequency),
-                           horizontal_weighing_factor(frequency)]
+    weightingFactors = [0, vertical_weighing_factor(frequency),
+                        horizontal_weighing_factor(frequency)]
     return weightingFactors
 
 """
@@ -117,7 +116,7 @@ def frequency_weighted_rms(accelFrequency, timeInterval, component):
         (weighting_factors(frequencyIndex/timeInterval)[accelComponent]
         * accelFrequency[frequencyIndex]) for frequencyIndex
         in range(-frequencyHalfWidth, frequencyHalfWidth+1)]
-   sfrequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
+    sfrequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
                                     for accelVal in accelFrequencyWeighted]))
     return frequencyWeightedRMS
 

@@ -36,21 +36,21 @@ def build_directions(start, end):
 
 def build_lattice(directionsPoints):
     t0 = time.time()
-    directionsEdges = util.to_pairs(directionsPoints)   
-    sampledPoints = interpolate.sample_edges(directionsEdges,
-                             config.directionsSampleSpacing)
+    sampledPoints = interpolate.sample_path(directionsPoints,
+                              config.directionsSampleSpacing)
+    sValues = interpolate.get_s_values(len(sampledPoints))
     xSpline, ySpline = lattice.get_directionsspline(sampledPoints)    
-    splineTValues = interpolate.get_tvalues(len(sampledPoints))
-    splineValues = interpolate.get_splinevalues(xSpline, ySpline, splineTValues)
-    sliceTValues = interpolate.get_slicetvalues(splineTValues,
-                                  config.splineSampleSpacing)   
-    newLattice = lattice.get_lattice(sliceTValues, sampledPoints,
-                                               xSpline, ySpline) 
+    sliceSValues = interpolate.get_slice_s_values(sValues,
+                                config.splineSampleSpacing)   
+    newLattice = lattice.get_lattice(sliceSValues, sampledPoints,
+                                                xSpline, ySpline) 
     latticeSlices = newLattice.latticeSlices
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
     if config.visualMode:
-        plottableSpline = [splineValues, 'r-']
+        xValues = interpolate.get_spline_values(xSpline, sValues)
+        yValues = interpolate.get_spline_values(ySpline, sValues)
+        plottableSpline = [[xValues, yValues], 'r-']
         config.plotQueue.append(plottableSpline)
     return latticeSlices
 

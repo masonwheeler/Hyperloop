@@ -105,41 +105,41 @@ class Lattice:
         fixedSplinePoint = [point.tolist() for point in rawSplinePoint]
         return [fixedDirectionsPoint, fixedSplinePoint]
 
-    def __init__(self, sliceTValues, directionsPoints, xSpline, ySpline):
+    def __init__(self, sliceSValues, directionsPoints, xSpline, ySpline):
         slices = []
         idIndex = 1
-        for sliceTValue in np.nditer(sliceTValues):
-            directionsPoint, splinePoint = self.get_sliceendpoints(sliceTValue,
-                                           directionsPoints, xSpline, ySpline)
+        for sliceSValue in np.nditer(sliceSValues):
+            directionsPoint, splinePoint = self.get_sliceendpoints(sliceSValue,
+                                            directionsPoints, xSpline, ySpline)
             newSlice = Slice(idIndex, directionsPoint, splinePoint)
             idIndex = newSlice.idIndex
             self.latticeSlices.append(newSlice.as_list())
             self.plottableSlices.append(newSlice.plottable_slice())
 
+def curvature_test(xSpline, ySpline, sValues):
+    splinesCurvature = interpolate.parametric_splines_2d_curvature(
+                                            xSpline, ySpline, sValues)
+    isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
+                                            config.curvatureThreshhold)
+    return isCurvatureValid
 
 def iterativelybuild_directionsspline(directionsPoints):
     xCoordsList, yCoordsList = zip(*directionsPoints)
     xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
     numPoints = len(directionsPoints)
-    tValues = np.arange(numPoints)
+    sValues = np.arange(numPoints)
     INITIAL_END_WEIGHTS = 100000
     INITIAL_SMOOTHING_FACTOR = 10**13    
-    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, tValues,
+    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, sValues,
                                INITIAL_END_WEIGHTS, INITIAL_SMOOTHING_FACTOR)
-    splinesCurvature = interpolate.splines_curvature(xSpline, ySpline, tValues)
-    isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
-                                            config.curvatureThreshhold)
+    isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
     if isCurvatureValid:
         testSmoothingFactor = INITIAL_SMOOTHING_FACTOR
         while isCurvatureValid:            
             testSmoothingFactor *= 0.5
             interpolate.set_smoothing_factors(xSpline, ySpline,
-                                              testSmoothingFactor)
-            splinesCurvature = interpolate.splines_curvature(xSpline, ySpline,
-                                                                      tValues)
-            isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
-                                                    config.curvatureThreshhold)
-        
+                                              testSmoothingFactor)                    
+            isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
         testSmoothingFactor *= 2
         interpolate.set_smoothing_factors(xSpline, ySpline,
                                           testSmoothingFactor)
@@ -149,10 +149,7 @@ def iterativelybuild_directionsspline(directionsPoints):
             testSmoothingFactor *= 2
             interpolate.set_smoothing_factors(xSpline, ySpline,
                                               testSmoothingValue)
-            splinesCurvature = interpolate.splines_curvature(xSpline, ySpline,
-                                                                      tValues)
-            isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
-                                                    config.curvatureThreshhold)
+            isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
         return [xSpline, ySpline]
     
 def get_directionsspline(directionsPoints):
@@ -160,9 +157,9 @@ def get_directionsspline(directionsPoints):
        [directionsPoints], cacher.save_spline, config.splineFlag)
     return directionsSpline
 
-def get_lattice(sliceTValues, directionsPoints, xSpline, ySpline):
+def get_lattice(sliceSValues, directionsPoints, xSpline, ySpline):
     lattice = cacher.get_object("lattice", Lattice,
-              [sliceTValues, directionsPoints, xSpline, ySpline],
+              [sliceSValues, directionsPoints, xSpline, ySpline],
               cacher.save_lattice, config.latticeFlag)
     return lattice
 
