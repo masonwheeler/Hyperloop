@@ -11,14 +11,15 @@ import mergetree
 
 
 class AbstractPoint:
-    def __init__(self, coordinates, pointId):
+    def __init__(self, xCoord, yCoord, pointId):
         self.pointId = pointId
-        self.coordinates = coordinates
+        self.xCoord = xCoord #for planned use with graph refinement
+        self.yCoord = yCoord #for planned use with graph refinement
 
         
 class AbstractSlice:
-    def __init__(self, sliceBounds, startId, points_builder):
-        self.points = points_builder(sliceBounds, startId)
+    def __init__(self, xCoord, sliceBounds, startId, points_builder):
+        self.points = points_builder(xCoord, sliceBounds, startId)
         self.endId = startId + len(self.points)
 
         
@@ -26,16 +27,18 @@ class AbstractLattice:
     def __init__(self, slicesBounds, points_builder):
         self.slices = []
         startId = 0
+        xCoord = 0
         for sliceBound in slicesBounds:
-            newSlice = AbstractSlice(sliceBounds, startId, points_builder)
+            newSlice = AbstractSlice(xCoord, sliceBounds, startId, points_builder)
             self.slices.append(newSlice.points)
             startId = newSlice.endId
+            xCoord += 1
 
 
 class AbstractEdge:
     def __init__(self, startPoint, endPoint):
-        self.startCoords = startPoint.coords
-        self.endCoords = endPoint.coords
+        self.startCoords = [startPoint.xCoord, startPoint.yCoord]
+        self.endCoords = [endPoint.xCoord, endPoint.yCoord]
         self.startId = startPoint.pointId
         self.endId = endPoint.pointId
 
