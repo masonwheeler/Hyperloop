@@ -66,18 +66,18 @@ class Edge:
         self.pylonCost = 0
 
     def build_landcost_samples(self):
-        startGeospatial, endGeospatial = self.geospatials
-        landcoverGeospatials = util.build_grid(self.geospatialVector,
-                                config.landPointSpacing, startGeospatial)
-        landcoverLatLngs = proj.geospatials_to_latlngs(
-                               landcoverGeospatials, config.proj)
-        landcoverPixelValues = landcover.landcover_costDensities(
-                                              landcoverLatLngs)
         if self.isInRightOfWay:
             self.landCost = config.rightOfWayLandCost          
         else:
-            self.landCost = \
-               landcover.costDensities_to_landcost(landcoverPixelValues)        
+            startGeospatial, endGeospatial = self.geospatials
+            landcoverGeospatials = util.build_grid(self.geospatialVector,
+                                    config.landPointSpacing, startGeospatial)
+            landcoverLatLngs = proj.geospatials_to_latlngs(landcoverGeospatials,
+                                                                    config.proj)
+            landcoverCostDensities = landcover.landcover_cost_densities(
+                                                           landcoverLatLngs)
+            self.landCost = landcover.cost_densities_to_landcost(
+                                              landcoverCostDensities)
 
     def __init__(self,startPoint,endPoint):        
         self.isInRightOfWay = (startPoint["isInRightOfWay"]
