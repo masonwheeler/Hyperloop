@@ -60,11 +60,12 @@ class PylonsSlice(abstract.AbstractSlice):
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def elevation_point_to_pylons_slice_bounds(self, elevationPoint, maxElevation):
+    def elevation_point_to_pylons_slice_bounds(self, elevationPoint,
+                                                  maxLandElevation):
         latlng = elevationPoint["latlng"]
         geospatial = elevationPoint["geospatial"]
-        elevation = elevationPoint["elevation"]
-        pylonHeightDifference = maxElevation - elevation
+        landElevation = elevationPoint["landElevation"]
+        pylonHeightDifference = maxLandElevation - landElevation
         pylonsSliceBounds = {"pylonHeightDifference" : pylonHeightDifference,
                              "geospatial" : geospatial,
                              "latlng" : latlng,
@@ -72,16 +73,17 @@ class PylonsLattice(abstract.AbstractLattice):
         return pylonsSliceBounds
 
     def elevation_profile_to_pylons_slices_bounds(self, elevationProfile):
-        elevations = [elevationPoint["elevation"] for elevationPoint 
-                                                 in elevationProfile]
-        maxElevation = max(elevations)
-        pylonsSlicesBounds = [elevation_point_to_pylons_slice_bounds(
-           elevationPoint, maxElevation) for elevationPoint in elevationProfile]
+        landElevations = [elevationPoint["landElevation"] for elevationPoint
+                                                        in elevationProfile]
+        maxLandElevation = max(landElevations)
+        pylonsSlicesBounds = [self.elevation_point_to_pylons_slice_bounds(
+                      elevationPoint, maxLandElevation) for elevationPoint
+                                                       in elevationProfile]
         return pylonsSlicesBounds
 
     def __init__(self, elevationProfile):
-        pylonsSlicesBounds = elevation_profile_to_pylon_slices_bounds(
-                                                         elevationProfile)
+        pylonsSlicesBounds = self.elevation_profile_to_pylons_slices_bounds(
+                                                           elevationProfile)
         abstract.AbstractLattice.__init__(pylonsSlicesBounds, PylonsSlice)
 
 
