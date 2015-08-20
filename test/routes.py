@@ -61,8 +61,14 @@ class Path2d:
 class Path3d:
     def get_velocity_profile_graphs(self, tubeGraph):
         tubeCoords = tubeGraph.tubeCoords
-        localMaxAllowedVels = interpolate.points_3d_local_max_allowed_vels(
-                                                                    tubeCoords)
+        localMaxAllowedVelocities =
+             interpolate.points_3d_local_max_allowed_velocities(tubeCoords)
+        maxEndPointVelocities = velocity.compute_max_endpoint_velocities(
+                           config.maxLinearAccel, config.maxPossibleVelocity,
+                                            config.velocityArcLengthStepSize)
+        globalMaxAllowedVelocities = velocity.global_max_allowed_velocities(
+                           localMaxAllowedVelocities, maxEndPointVelocities)
+        
 
     def __init__(self, landCost, tubeGraph):
         self.landCost = landCost

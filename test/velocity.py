@@ -53,30 +53,30 @@ def sample_velocities(velocitiesByTime, timeStepSize):
     return velocities
                    
 def velocities_by_arclength_to_time_checkpoints_array(velocitiesByArcLength, 
-                                                         arcLengthStepSize):
+                                              velocityArcLengthStepSize):
     numVelocities = velocitiesByArcLength.length
-    arcLengthStepSizeArray = np.empty(numVelocities)
-    arcLengthStepSizeArray = np.fill(arcLengthStepSize)
+    velocityArcLengthStepSizeArray = np.empty(numVelocities)
+    velocityArcLengthStepSizeArray = np.fill(velocityArcLengthStepSize)
     paddedVelocities = np.append(velocitiesByArcLength, 0)
     shiftedVelocities = np.insert(velocitiesByArcLength, 0, 0)    
     paddedVelocitiesSums = np.add(paddedVelocities, shiftedVelocities)
     velocitiesSums = paddedVelocitiesSums[1:-1]
     meanVelocitiesByArcLength = np.divide(velocitiesSums, 2)
-    times = np.divide(arcLengthStepSizeArray,
+    times = np.divide(velocityArcLengthStepSizeArray,
                      meanVelocitiesByArcLength)
     timeCheckpointsArray = np.insert(times, 0, 0)    
     return timeCheckPointsArray
     
-def compute_trip_time(velocitiesByArcLength, arcLengthStepSize):
+def compute_trip_time(velocitiesByArcLength, velocityArcLengthStepSize):
     timeCheckpointsArray = velocities_by_arclength_to_time_checkpoints_array(
-                                    velocitiesByArcLength, arclengthStepSize)
+                            velocitiesByArcLength, velocityArclengthStepSize)
     tripTime = np.sum(timeCheckpointsArray)
     return tripTime    
 
-def reparametrize_velocities(velocitiesByArcLength, arclengthStepSize,
-                                                        timeStepSize):    
+def reparametrize_velocities(velocitiesByArcLength, velocityArclengthStepSize,
+                                                                timeStepSize):    
     timeCheckpointsArray = velocities_by_arclength_to_time_checkpoints_array(
-                                    velocitiesByArcLength, arclengthStepSize)
+                            velocitiesByArcLength, velocityArclengthStepSize)
     timesElapsed = np.cumsum(timeCheckpointsArray)
     velocitiesByTime = np.array([timesElapsed, velocitiesByArcLength]).T
     sampledVelocitiesByTime = sample_velocities(velocitiesByTime)
@@ -88,9 +88,9 @@ def compute_local_trip_time_excess(maxAllowedVelocities,
     maxPossibleVelocities.empty(numVelocities)
     maxPossibleVelocities.fill(config.maxPossibleVelocity)
     minimumPossibleTripTime = compute_trip_time(maxPossibleVelocities,
-                                                    arclengthStepSize)
+                                                velocityArclengthStepSize)
     minimumAllowedTripTime = compute_trip_time(maxAllowedVelocities,
-                                                  arclengthStepSize)
+                                              velocityArclengthStepSize)
     localTripTimeExcess = minimumAllowedTripTime - minimumPossibleTripTime
     return localTripTimeExcess
 
@@ -133,14 +133,15 @@ class Velocity(abstract.AbstractPoint):
 
 
 class VelocitiesSlice(abstract.AbstractSlice):
-    speedOptionsSpacing = config.speedOptionsSpacing
 
     def velocities_builder(self, velocitiesSliceBounds, lowestVelocityId):
-        speedDifference = velocitiesSliceBounds["speedDifference"]
+        maxSpeed = velocitiesSliceBounds["maxSpeed"]
+        minSpeed = velocitiesSliceBounds["minSpeed"]
+        speedStepSize = velocitiesSliceBounds["speedStepSize"]
         distanceAlongPath = velocitiesSliceBounds["distanceAlongPath"]
-        minimumSpeed = speedOptionsSpacing
+        speedDifference = maxSpeed - minSpeed
         speedOptions = util.build_grid2(speedDifference,
-                        self.speedOptionsSpacing, minimumSpeed)
+                           speedsStepSize, minimumSpeed)
         velocityIds = [index + lowestVelocityId for index
                        in range(len(speedOptions))]
         velocityOptions = [Velocity(speedOptions[i], distanceAlongPath,
@@ -251,3 +252,24 @@ class VelocityProfileGraphsSet(abstract.AbstractGraphsSet):
             for velocityProfileEdgesSet in velocityProfileEdgesSets]
         return cls(velocityProfileGraphs)
 
+def max_allowed_velocities_to_velocity_slice_bounds(maxAllowedVelocities):
+    numArcLengthSteps = maxAllowedVelocities.length - 1
+    arcLengthStepsArray = np.empty(numArcLengthPoints)
+    arcLengthStepsArray = np.fill(config.arclengthStepSize)
+    partialArcLengthArray = np.cumsum(arcLengthStepsArray)
+    arcLengthArray = np.insert(partialArcLengthArray, 0, 0)
+    velocitySlicesBounds = []
+    for i in range(len(maxAllowedVelocities.length)):
+        maxSpeed = maxAllowedVelocities[i]
+        minSpeed = config.speedStepSize
+        speedStepSize = config.speedStepSize
+        distanceAlongPath = arcLengthArray[i]
+        velocitySliceBounds = {"maxSpeed" : maxSpeed,
+                               "minSpeed" : minSpeed,
+                               "speedStepSize" : speedStepSize,
+                               "distanceAlongPath" : distanceAlongPath}
+        velocitySlicesBounds.append(velocitySliceBounds)
+    return velocitySlicesBounds
+        
+    
+    
