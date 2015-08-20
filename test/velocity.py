@@ -94,6 +94,36 @@ def compute_local_trip_time_excess(maxAllowedVelocities,
     localTripTimeExcess = minimumAllowedTripTime - minimumPossibleTripTime
     return localTripTimeExcess
 
+def compute_max_endpoint_velocities(maxLinearAccel, maxPossibleVelocity,
+                                             velocityArclengthStepSize):
+    velocity = 0    
+    maxEndPointVelocities = []
+    while velocity < maxPossibleVelocity:
+        maxEndPointVelocites.append(velocity)
+        velocity = np.sqrt(2 * velocityArcLengthStepSize * maxLinearAccel \
+                           + np.square(currentVelocity))
+    return maxEndPointVelocities    
+
+def global_max_allowed_velocities(localMaxAllowedVelocities,
+                                     maxEndPointVelocities):
+    endpointVelocitiesLength = maxEndPointVelocities.length
+    maxStartVelocities = maxEndPointVelocities
+    maxEndVelocities = maxEndPointVelocities[::-1]
+    localMaxStartVelocities = localMaxAllowedVelocities[
+                                :endpointVelocitiesLength]
+    localMaxEndVelocities = localMaxAllowedVelocities[
+                                -endpointVelocitiesLength:]
+    effectiveMaxStartVelocities = np.minimum(maxStartVelocities,
+                                             localMaxStartVelocities)
+    effectiveMaxEndVelocities = np.minimum(maxEndVelocities,
+                                           localMaxEndVelocities)
+    globalMaxAllowedVelocities = localMaxAllowedVelocities
+    globalMaxAllowedVelocities[:endpointVelocitiesLength] = \
+         effectiveMaxStartVelocities
+    globalMaxAllowedVelocities[-endpointVelocitiesLength:] = \
+         effectiveMaxEndVelocities
+    return globalMaxAllowedVelocities       
+
 
 class Velocity(abstract.AbstractPoint):
     def __init__(self, speed, distanceAlongPath, velocityId):

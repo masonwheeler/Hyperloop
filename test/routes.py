@@ -10,6 +10,7 @@ import interpolate
 import proj
 import landcover
 import elevation
+import velocity
 
 class Path2d:
     def sample_geospatials(self, graphGeospatials, geospatialSampleDistance):
@@ -60,7 +61,8 @@ class Path2d:
 class Path3d:
     def get_velocity_profile_graphs(self, tubeGraph):
         tubeCoords = tubeGraph.tubeCoords
-        
+        localMaxAllowedVels = interpolate.points_3d_local_max_allowed_vels(
+                                                                    tubeCoords)
 
     def __init__(self, landCost, tubeGraph):
         self.landCost = landCost

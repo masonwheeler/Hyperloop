@@ -288,11 +288,11 @@ def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
                                          maxAllowedVels_lateral) 
     return effectiveMaxAllowedVels
 
-def points_3d_max_allowed_vels(points3d):
+def points_3d_local_max_allowed_vels(points3d):
     xSpline, ySpline, zSpline, sValues = interpolate_points_3d(points3d)
-    maxAllowedVels = effective_max_allowed_vels(xSpline, ySpline, zSpline,
-                                                                  sValues)
-    return maxAllowedVels
+    localMaxAllowedVels = effective_max_allowed_vels(xSpline, ySpline, zSpline,
+                                                                       sValues)
+    return localMaxAllowedVels
 
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
     curvatureSize = curvatureArray.size
