@@ -41,9 +41,9 @@ def usgs_elevation(latlngs):
 def get_elevation_profile(geospatials):
     latlngs = proj.geospatials_to_latlngs(geospatials, config.proj)
     elevations = usgs_elevation(latlngs)
-    elevationProfile = [{"latlngs" : latlngs[i],
+    elevationProfile = [{"latlng" : latlngs[i],
                          "geospatial" : geospatials[i],
-                         "elevations" : elevations[i]}
+                         "elevation" : elevations[i]}
                         for i in range(len(latlngs))]
     return elevationProfile
         

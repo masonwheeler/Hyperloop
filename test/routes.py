@@ -12,7 +12,7 @@ import landcover
 import elevation
 import velocity
 
-class Path2d:
+class SpatialPath2d:
     def sample_geospatials(self, graphGeospatials, geospatialSampleDistance):
         sampledGeospatials = interpolate.sample_path(graphGeospatials,
                                              geospatialSampleDistance)
@@ -58,31 +58,39 @@ class Path2d:
         self.tubeGraphs = self.get_tube_graphs(self.elevationProfile)
 
 
-class Path3d:
-    def get_velocity_profile_graphs(self, tubeGraph):
-        tubeCoords = tubeGraph.tubeCoords
-        localMaxAllowedVelocities =
+class SpatialPath3d:
+    def get_velocity_profile_graphs(self, tubeCoords):
+        localMaxAllowedVelocities = \
              interpolate.points_3d_local_max_allowed_velocities(tubeCoords)
         maxEndPointVelocities = velocity.compute_max_endpoint_velocities(
                            config.maxLinearAccel, config.maxPossibleVelocity,
                                             config.velocityArcLengthStepSize)
         globalMaxAllowedVelocities = velocity.global_max_allowed_velocities(
                            localMaxAllowedVelocities, maxEndPointVelocities)
-        
+        selectedVelocityProfileGraphs = \
+            velocity.max_allowed_velocities_to_velocity_profile_graphs(
+                                            globalMaxAllowedVelocities)
+        return selectedVelocityProfileGraphs
+         
 
     def __init__(self, landCost, tubeGraph):
         self.landCost = landCost
-        velocityProfileGraphs = get_velocity_profile_graphs
+        self.tubeCost = tubeGraph.tubeCost
+        self.pylonCost = tubeGraph.pylonCost
+        self.tubeCoords = tubeGraph.tubeCoords
+        self.pylons = tubeGraph.pylons     
+        self.velocityProfileGraphs = get_velocity_profile_graphs(
+                                                    self.tubeCoords)
 
          
 class Route:
-    def __init__(self, tube, velocityProfile):
+    def __init__(self, tube, velocityProfileGraph):
 
     def as_dict(self):
         routeDict = {
                      "latlngs" : self.latlngs,
                      "landCost" : self.landCost,
-                     "tubeElevations" : self.tubeElevations,
+                     "tubeCoords" : self.tubeElevations,
                      "pylons" : self.pylons,
                      "tubeCost" : self.tubeCost,
                      "pylonCost" : self.pylonCost,

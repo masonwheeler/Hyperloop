@@ -9,7 +9,7 @@ Last Modification Purpose: To implement a non naive tube/pylon cost method.
 import util
 import config
 import abstract
-import mergeTree
+import mergetree
 import interpolate
 import velocity
 
@@ -38,12 +38,12 @@ class PylonsSlice(abstract.AbstractSlice):
     pylonHeightOptionSpacing = config.pylonHeightOptionSpacing
 
     def pylons_builder(self, pylonSliceBounds, shortestPylonId):       
-        heightDifference = pylonSliceBounds["heightDifference"]
-        geospatials = pylonSliceBounds["geospatials"]
-        latlngs = pylonSliceBounds["latlngs"]
+        pylonHeightDifference = pylonSliceBounds["pylonHeightDifference"]
+        geospatials = pylonSliceBounds["geospatial"]
+        latlngs = pylonSliceBounds["latlng"]
         landElevation = pylonSliceBounds["landElevation"]
         shortestPylonHeight = 0
-        pylonHeightOptions = util.build_grid2(heightDifference,
+        pylonHeightOptions = util.build_grid2(pylonHeightDifference,
                  self.pylonHeightOptionSpacing, shortestPylonHeight)    
         tubeElevationOptions = [pylonHeightOption + landElevation 
                                 for pylonHeightOption in pylonHeightOptions]
@@ -55,15 +55,33 @@ class PylonsSlice(abstract.AbstractSlice):
         return pylonOptions        
 
     def __init__(self, pylonsSliceBounds, shortestPylonId):
-        abstract.AbstractSlice.__init__(pylonSliceBounds, shortestPylonId,
+        abstract.AbstractSlice.__init__(pylonsSliceBounds, shortestPylonId,
                                         self.pylons_builder)
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def elevation_profile_to_pylon_slices_bounds(self, elevationProfile):
-        
+    def elevation_point_to_pylons_slice_bounds(self, elevationPoint, maxElevation):
+        latlng = elevationPoint["latlng"]
+        geospatial = elevationPoint["geospatial"]
+        elevation = elevationPoint["elevation"]
+        pylonHeightDifference = maxElevation - elevation
+        pylonsSliceBounds = {"pylonHeightDifference" : pylonHeightDifference,
+                             "geospatial" : geospatial,
+                             "latlng" : latlng,
+                             "landElevation" : landElevation}
+        return pylonsSliceBounds
+
+    def elevation_profile_to_pylons_slices_bounds(self, elevationProfile):
+        elevations = [elevationPoint["elevation"] for elevationPoint 
+                                                 in elevationProfile]
+        maxElevation = max(elevations)
+        pylonsSlicesBounds = [elevation_point_to_pylons_slice_bounds(
+           elevationPoint, maxElevation) for elevationPoint in elevationProfile]
+        return pylonsSlicesBounds
 
     def __init__(self, elevationProfile):
+        pylonsSlicesBounds = elevation_profile_to_pylon_slices_bounds(
+                                                         elevationProfile)
         abstract.AbstractLattice.__init__(pylonsSlicesBounds, PylonsSlice)
 
 
@@ -98,7 +116,7 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
         return abstract.AbstractEdgesSets.is_edge_pair_compatible(tubeEdgeA,
                                    tubeEdgeB, self.tubeEdgeDegreeConstraint)
                                                                              
-    def __init__(self, pylonsLattice)
+    def __init__(self, pylonsLattice):
         abstract.AbstractEdgesSets.__init__(pylonsLattice,
             self.tube_edge_builder, self.is_tube_edge_pair_compatible)
                
@@ -116,7 +134,7 @@ class TubeGraph(abstract.AbstractGraph):
                       maxAllowedVels, self.velocityArclengthStepSize)
             return triptimeExcess
 
-    def __init__(self, startId, endId, startAngle, endAngle, numEdges
+    def __init__(self, startId, endId, startAngle, endAngle, numEdges,
                        tubeCost, pylonCost, tubeCoords):
         abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
                                                                     numEdges)
@@ -161,9 +179,9 @@ class TubeGraph(abstract.AbstractGraph):
         return data
 
 
-class TubeGraphsSets(abstract.AbstractGraphsSet):
+class TubeGraphsSet(abstract.AbstractGraphsSet):
     
-    def tubegraphs_cost_triptime_excess(self, tubeGraphs)
+    def tubegraphs_cost_triptime_excess(self, tubeGraphs):
         graphsCostAndtriptimeExcess = [tubeGraph.tube_cost_trip_time_excess()
                                        for tubeGraph in tubeElevationGraphs]
         return graphsCostAndTriptimeExcess
@@ -185,8 +203,8 @@ class TubeGraphsSets(abstract.AbstractGraphsSet):
 def elevation_profile_to_tube_graphs(elevationProfile):
     pylonsLattice = PylonsLattice(elevationProfile)
     tubeEdgesSets = TubeEdgesSets(pylonsLattice)
-    tubeGraphsSets = TubeGraphsSets.init_from_tube_edges_sets(tubeEdgesSets)
-    tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSets,
+    tubeGraphsSet = TubeGraphsSet.init_from_tube_edges_sets(tubeEdgesSets)
+    tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSet,
                 abstract.graphs_sets_merger, abstract.graphs_sets_updater)
     rootTubeGraphsSet = graphsTree.root
     selectedTubeGraphs = rootGraphsSet.selectedGraphs

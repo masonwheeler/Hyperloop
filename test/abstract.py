@@ -43,7 +43,7 @@ class AbstractEdge:
 class AbstractEdgesSets:  
     @staticmethod
     def is_edge_pair_compatible(edgeA, edgeB, degreeConstraint):
-        edgePairCompatible = (edgeA.endId = edgeB.startId and
+        edgePairCompatible = (edgeA.endId == edgeB.startId and
              abs(edgeA.angle - edgeB.angle) < degreeConstraint)
         return edgePairCompatible                   
 
@@ -180,7 +180,7 @@ class AbstractGraphsSet:
                 return False
 
     @staticmethod
-    def merge_two_graphs_sets(self, graphsSetA, graphsSetB)
+    def merge_two_graphs_sets(self, graphsSetA, graphsSetB):
         mergedGraphs = []
         selectedA = graphsSetsA.selectedGraphs
         selectedB = graphsSetsB.selectedGraphs

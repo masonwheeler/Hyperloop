@@ -208,7 +208,7 @@ def compute_curvature_array_3d(xFirstDerivValues, xSecondDerivValues,
                                 np.square(yFirstDerivValues)
                             ),
                             np.square(zFirstDerivValues)
-                        )
+                        ),
                     powers
                     )                                         
                 )
@@ -276,8 +276,8 @@ def curvature_array_3d_to_max_allowed_vels(curvatureArray3d):
 
 def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
     verticalCurvatureArray, lateralCurvatureArray = \
-        parametic_splines_vertical_and_lateral_curvature(xSpline, ySpline
-                                                         zSpline, sValues):
+        parametic_splines_vertical_and_lateral_curvature(xSpline, ySpline,
+                                                         zSpline, sValues)
     maxAllowedVels_vertical = \
         vertical_curvature_array_to_max_allowed_vels(
                                     verticalCurvatureArray) 

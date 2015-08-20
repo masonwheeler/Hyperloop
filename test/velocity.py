@@ -119,7 +119,7 @@ def global_max_allowed_velocities(localMaxAllowedVelocities,
                                            localMaxEndVelocities)
     globalMaxAllowedVelocities = localMaxAllowedVelocities
     globalMaxAllowedVelocities[:endpointVelocitiesLength] = \
-         effectiveMaxStartVelocities
+        effectiveMaxStartVelocities
     globalMaxAllowedVelocities[-endpointVelocitiesLength:] = \
          effectiveMaxEndVelocities
     return globalMaxAllowedVelocities       
@@ -150,7 +150,7 @@ class VelocitiesSlice(abstract.AbstractSlice):
 
     def __init__(self, velocitiesSliceBounds, lowestVelocityId):
         abstract.AbstractSlice.__init__(velocitiesSliceBounds,
-                   lowestVelocityId, self.velocities_builder):
+                   lowestVelocityId, self.velocities_builder)
 
 
 class VelocitiesLattice(abstract.AbstractLattice):
@@ -181,7 +181,7 @@ class VelocitiesLattice(abstract.AbstractLattice):
                                                  VelocitiesSlice)
 
 
-class VelocityProfileEdge(abstract.AbstractEdge);
+class VelocityProfileEdge(abstract.AbstractEdge):
     def __init__(self, startVelocity, endVelocity):
         abstract.AbstractEdge.__init__(startVelocity, endVelocity) 
 
@@ -200,7 +200,7 @@ class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
                         velocityProfileEdgeA, velocityProfileEdgeB,     
                           self.velocityProfileEdgeDegreeConstraint)
 
-    def __init__(self, velocitiesLattice)
+    def __init__(self, velocitiesLattice):
         abstract.AbstractEdgesSets.__init__(velocitiesLattice,
                            self.velocity_profile_edge_builder,
                self.is_velocity_profile_edge_pair_compataible)
@@ -279,7 +279,7 @@ class VelocityProfileGraphsSet(abstract.AbstractGraphsSet):
 def max_allowed_velocities_to_velocity_profile_graphs(maxAllowedVelocities):
     velocitiesLattice = VelocitiesLattice(maxAllowedVelocities)
     velocityProfileEdgesSets = VelocityProfileEdgesSets(velocitiesLattice)
-    velocityProfileGraphsSet =
+    velocityProfileGraphsSet = \
          VelocityProfileGraphsSet.init_from_velocity_profile_edges_sets(
             velocityProfileEdgesSets)
     velocityProfileGraphsSetsTree = mergeTree.MasterTree(
