@@ -14,25 +14,23 @@ import interpolate
 import velocity
 
 class Pylon(abstract.AbstractPoint):
-    def construction_cost(self, pylonHeight):
-        cost = config.pylonBaseCost + pylonHeight * config.pylonCostPerMeter
-        return cost
+    def pylon_construction_cost(self, pylonHeight):
+        pylonCost = config.pylonBaseCost + \
+                    pylonHeight * config.pylonCostPerMeter
+        return pylonCost
 
-    def __init__(self, pylonId, latticeXCoord, latticeYCoord,
-                          geospatial, latlng, landElevation, pylonHeight):
+    def __init__(self, pylonId, latticeXCoord, latticeYCoord, distanceAlongPath,
+                       geospatial, latlng, landElevation, pylonHeight):    
+        self.pylonHeight = pylonHeight
+        self.landElevation = landElevation
+        self.latlng = latlng
         tubeElevation = landElevation + pylonHeight
         xValue, yValue = geospatials
         zValue = tubeElevation
         self.tubeCoords = [xValue, yValue, zValue]
-        self.pylonHeight
-        self.landElevation = 
-        coords = {"geospatials" : geospatials,
-                  "latlngs" : latlngs,
-                  "landElevation" : landElevation,
-                  "pylonHeight" : pylonHeight,
-                  "tubeElevation": tubeElevation,
-                  "tubeCoords": tubeCoords}
-        self.cost = self.construction_cost(pylonHeight)
+        self.pylonCost = self.pylon_construction_cost(pylonHeight)
+        spatialXCoord = distanceAlongPath
+        spatialYCoord = tubeElevation
         abstract.AbstractPoint.__init__(self, pylonId, latticeXCoord,
                          latticeYCoord, spatialXCoord, spatialYCoord)
 
