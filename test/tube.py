@@ -18,12 +18,14 @@ class Pylon(abstract.AbstractPoint):
         cost = config.pylonBaseCost + pylonHeight * config.pylonCostPerMeter
         return cost
 
-    def __init__(self, geospatials, latlngs, landElevation, pylonHeight,
-                                                tubeElevation, pylonId):
+    def __init__(self, pylonId, latticeXCoord, latticeYCoord,
+                          geospatial, latlng, landElevation, pylonHeight):
         tubeElevation = landElevation + pylonHeight
         xValue, yValue = geospatials
         zValue = tubeElevation
-        tubeCoords = [xValue, yValue, zValue]
+        self.tubeCoords = [xValue, yValue, zValue]
+        self.pylonHeight
+        self.landElevation = 
         coords = {"geospatials" : geospatials,
                   "latlngs" : latlngs,
                   "landElevation" : landElevation,
@@ -31,7 +33,8 @@ class Pylon(abstract.AbstractPoint):
                   "tubeElevation": tubeElevation,
                   "tubeCoords": tubeCoords}
         self.cost = self.construction_cost(pylonHeight)
-        abstract.AbstractPoint.__init__(self, coords, pylonId)
+        abstract.AbstractPoint.__init__(self, pylonId, latticeXCoord,
+                         latticeYCoord, spatialXCoord, spatialYCoord)
 
         
 class PylonsSlice(abstract.AbstractSlice):   
@@ -39,17 +42,17 @@ class PylonsSlice(abstract.AbstractSlice):
 
     def pylons_builder(self, latticeXCoord, pylonSliceBounds, shortestPylonId):       
         pylonHeightDifference = pylonSliceBounds["pylonHeightDifference"]
-        geospatials = pylonSliceBounds["geospatial"]
-        latlngs = pylonSliceBounds["latlng"]
+        geospatial = pylonSliceBounds["geospatial"]
+        latlng = pylonSliceBounds["latlng"]
         landElevation = pylonSliceBounds["landElevation"]
         shortestPylonHeight = 0
-        pylonHeightOptions = util.build_grid2(pylonHeightDifference,
+        pylonHeightOptions = util.build_grid_1d(pylonHeightDifference,
                  self.pylonHeightStepSize, shortestPylonHeight)    
         tubeElevationOptions = [pylonHeightOption + landElevation 
                                 for pylonHeightOption in pylonHeightOptions]
         pylonIds = [index + shortestPylonId for index
                     in range(len(pylonHeightOptions))]
-        pylonOptions = [Pylon(geospatials, latlng, landElevation,
+        pylonOptions = [Pylon(geospatial, latlng, landElevation,
             pylonHeightOptions[i], tubeElevationOptions[i], pylonIds[i])
             for i in range(len(pylonIds))]
         return pylonOptions        
