@@ -42,10 +42,10 @@ class Edge:
 
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
-        pylonSlicesGeospatials = util.build_grid(self.geospatialVector,
-                                config.pylonSpacing, startGeospatial)
+        pylonSlicesGeospatials, pylonSliceDistances = util.build_grid(
+          self.geospatialVector, config.pylonSpacing, startGeospatial)
         elevationProfile = elevation.get_elevation_profile(
-                                    pylonSlicesGeospatials)
+                           pylonSlicesGeospatials, pylonSliceDistances)
         tubeGraphs = tube.elevation_profile_to_tube_graphs(elevationProfile) 
         for tubeGraph in tubeGraphs:
             print("pylon cost :" + tubeGraph.pylonCost)
@@ -70,8 +70,8 @@ class Edge:
             self.landCost = config.rightOfWayLandCost          
         else:
             startGeospatial, endGeospatial = self.geospatials
-            landcoverGeospatials = util.build_grid(self.geospatialVector,
-                                    config.landPointSpacing, startGeospatial)
+            landcoverGeospatials, distances = util.build_grid(
+              self.geospatialVector, config.landPointSpacing, startGeospatial)
             landcoverLatLngs = proj.geospatials_to_latlngs(landcoverGeospatials,
                                                                     config.proj)
             landcoverCostDensities = landcover.landcover_cost_densities(

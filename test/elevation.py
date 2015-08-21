@@ -38,13 +38,17 @@ def usgs_elevation(latlngs):
     elevations = [usgs.get_elevation(latlng) for latlng in latlngs]
     return elevations
 
-def get_elevation_profile(geospatials):
+def get_elevation_profile(geospatials, distances):
     latlngs = proj.geospatials_to_latlngs(geospatials, config.proj)
     elevations = usgs_elevation(latlngs)
-    elevationProfile = [{"latlng" : latlngs[i],
-                         "geospatial" : geospatials[i],
-                         "landElevation" : elevations[i]}
-                        for i in range(len(latlngs))]
+    elevationProfile = []
+    distanceAlongPath = 0
+    for i in range(len(geospatials)):
+        elevationPoint = {"latlng" : latlngs[i],
+                          "geospatial" : geospatials[i],
+                          "landElevation" : elevations[i],
+                          "distanceAlongPath" : distances[i]}
+        elevationProfile.append(elevationPoint)                        
     return elevationProfile
         
         

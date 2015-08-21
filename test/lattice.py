@@ -49,9 +49,9 @@ class Slice:
 
     def build_slice(self, idIndex, directionsPoint, splinePoint):              
         """Constructs each SlicePoint in the Slice and its idIndex"""
-        sliceVector = util.subtract(directionsPoint, splinePoint)        
-        sliceGrid = util.build_grid(sliceVector, self.pointSpacing,
-                                                 splinePoint)
+        sliceVector = util.subtract(directionsPoint, splinePoint)       
+        sliceGrid, distances = util.build_grid(sliceVector, self.pointSpacing,
+                                                                  splinePoint)
         sliceSplinePoint = SlicePoint(idIndex,splinePoint, False).as_dict()
         idIndex += 1
         if sliceGrid == None:            
@@ -123,8 +123,8 @@ def curvature_test(xSpline, ySpline, sValues):
                                             config.curvatureThreshhold)
     return isCurvatureValid
 
-def iterativelybuild_directionsspline(directionsPoints):
-    xCoordsList, yCoordsList = zip(*directionsPoints)
+def iteratively_build_directions_spline(sampledDirectionsPoints):
+    xCoordsList, yCoordsList = zip(*sampledDirectionsPoints)
     xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
     numPoints = len(directionsPoints)
     sValues = np.arange(numPoints)
@@ -152,9 +152,10 @@ def iterativelybuild_directionsspline(directionsPoints):
             isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
         return [xSpline, ySpline]
     
-def get_directionsspline(directionsPoints):
-    directionsSpline = cacher.get_object("spline", iterativelybuild_directionsspline,
-       [directionsPoints], cacher.save_spline, config.splineFlag)
+def get_directionsspline(sampledDirectionsPoints):
+    directionsSpline = cacher.get_object("spline",
+              iteratively_build_directions_spline, [sampledDirectionsPoints],
+                                       cacher.save_spline, config.splineFlag)
     return directionsSpline
 
 def get_lattice(sliceSValues, directionsPoints, xSpline, ySpline):

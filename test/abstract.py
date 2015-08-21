@@ -22,8 +22,9 @@ class AbstractPoint:
         
 class AbstractSlice:
     def __init__(self, latticeXCoord, sliceBounds, startId, points_builder):
-        self.points = points_builder(latticeXCoord, sliceBounds, startId)
-        self.endId = startId + len(self.points)
+        self.points, numPoints = points_builder(latticeXCoord, sliceBounds,
+                                                                   startId)
+        self.endId = startId + numPoints
 
         
 class AbstractLattice:

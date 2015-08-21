@@ -25,7 +25,7 @@ class Pylon(abstract.AbstractPoint):
         self.landElevation = landElevation
         self.latlng = latlng
         tubeElevation = landElevation + pylonHeight
-        xValue, yValue = geospatials
+        xValue, yValue = geospatial
         zValue = tubeElevation
         self.tubeCoords = [xValue, yValue, zValue]
         self.pylonCost = self.pylon_construction_cost(pylonHeight)
@@ -39,21 +39,33 @@ class PylonsSlice(abstract.AbstractSlice):
     pylonHeightStepSize = config.pylonHeightStepSize
 
     def pylons_builder(self, latticeXCoord, pylonSliceBounds, shortestPylonId):       
-        pylonHeightDifference = pylonSliceBounds["pylonHeightDifference"]
+        tallestPylonHeight = pylonSliceBounds["tallestPylonHeight"]
+        shortestPylonHeight = pylonSliceBounds["shortestPylonHeight"]
+        pylonHeightDifference = tallestPylonHeight - shortestPylonHeight
+        distanceAlongPath = pylonSliceBounds["distanceAlongPath"] 
         geospatial = pylonSliceBounds["geospatial"]
         latlng = pylonSliceBounds["latlng"]
         landElevation = pylonSliceBounds["landElevation"]
         shortestPylonHeight = 0
         pylonHeightOptions = util.build_grid_1d(pylonHeightDifference,
                  self.pylonHeightStepSize, shortestPylonHeight)    
-        tubeElevationOptions = [pylonHeightOption + landElevation 
-                                for pylonHeightOption in pylonHeightOptions]
         pylonIds = [index + shortestPylonId for index
                     in range(len(pylonHeightOptions))]
-        pylonOptions = [Pylon(geospatial, latlng, landElevation,
-            pylonHeightOptions[i], tubeElevationOptions[i], pylonIds[i])
-            for i in range(len(pylonIds))]
-        return pylonOptions        
+        pylons = []
+        for i in range(len(pylonIds)):
+            pylonId = pylonIds[i]
+            pylonLatticeXCoord = latticeXCoord
+            pylonLatticeYCoord = i
+            pylonDistanceAlongPath = distanceAlongPath
+            pylonGeospatial = geospatial
+            pylonLatLng = latlng
+            pylonLandElevation = landElevation
+            pylonHeight = pylonHeightOptions[i]
+            newPylon = Pylon(pylonId, pylonLatticeXCoord, pylonLatticeYCoord,
+                        pylonDistanceAlongPath, pylonGeospatial, pylonLatLng,
+                                             pylonLandElevation, pylonHeight)
+            pylons.append(newPylon)
+        return [pylons, len(pylons)]
 
     def __init__(self, latticeXCoord, pylonsSliceBounds, shortestPylonId):
         abstract.AbstractSlice.__init__(self, latticeXCoord, pylonsSliceBounds,
@@ -63,11 +75,15 @@ class PylonsSlice(abstract.AbstractSlice):
 class PylonsLattice(abstract.AbstractLattice):
     def elevation_point_to_pylons_slice_bounds(self, elevationPoint,
                                                   maxLandElevation):
+        distanceAlongPath = elevationPoint["distanceAlongPath"]
         latlng = elevationPoint["latlng"]
         geospatial = elevationPoint["geospatial"]
         landElevation = elevationPoint["landElevation"]
-        pylonHeightDifference = maxLandElevation - landElevation
-        pylonsSliceBounds = {"pylonHeightDifference" : pylonHeightDifference,
+        tallestPylonHeight = maxLandElevation - landElevation
+        shortestPylonHeight = 0        
+        pylonsSliceBounds = {"tallestPylonHeight" : tallestPylonHeight,
+                             "shortestPylonHeight" : shortestPylonHeight,
+                             "distanceAlongPath" : distanceAlongPath,
                              "geospatial" : geospatial,
                              "latlng" : latlng,
                              "landElevation" : landElevation}

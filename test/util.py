@@ -128,36 +128,36 @@ def vector_to_angle(vector):
     angle = math.degrees(math.atan2(yVal, xVal))
     return angle    
 
-def sample_vectorinterior(vector, spacing):
-    if norm(vector) < spacing:
-        return None
-    else:
-        effectiveScale = norm(vector) / spacing
-        unitVector = scale(1.0 / effectiveScale, vector)
-        numPoints = int(effectiveScale)
-        pointIndices = range(numPoints)
-        pointVectors = [scale(index, unitVector) for index in pointIndices]
-        return pointVectors
+#Sampling Operations:
+
+def sample_vector_interior(vector, spacing):
+    effectiveScale = norm(vector) / spacing
+    unitVector = scale(1.0 / effectiveScale, vector)
+    numPoints = int(effectiveScale)
+    pointIndices = range(numPoints)
+    pointDistances = [spacing * index for index in pointIndices]
+    pointVectors = [scale(index, unitVector) for index in pointIndices]
+    return [pointVectors, pointDistances]
 
 def build_grid(vector, spacing, startVector):
-    untranslatedGrid = sample_vectorinterior(vector, spacing)
-    if untranslatedGrid == None:
-        return None
+    if norm(vector) < spacing:
+        return [None, None]
     else:
-        grid = [add(point, startVector) for point in untranslatedGrid]
-        return grid
+        pointVectors, pointDistances = sample_vector_interior(vector, spacing)
+        grid = [add(pointVector, startVector) for pointVector in pointVectors]
+        return [grid, pointDistances]
 
 def sample_length(length, spacing):
     numPoints = int(length/spacing)
     grid = [index * spacing for index in range(numPoints)]
     return grid
 
-def build_grid_1d(length, spacing, startValue):
-    untranslatedGrid = sample_length(length, spacing)
-    if untranslatedGrid == None:
-        return []
+def build_grid_1d(length, spacing, startDistance):
+    distances = sample_length(length, spacing)
+    if distances == None:
+        return None
     else:
-        grid = [value + startValue for value in untranslatedGrid]
+        grid = [distance + startDistance for distance in distances]
         return grid
 
 #Edge Operations:
