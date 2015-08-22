@@ -14,7 +14,7 @@ Modes and settings.
 """
 testingMode = True
 visualMode = False
-verboseMode = True
+verboseMode = False
 timingMode = False
 useDropbox = False
 
@@ -48,6 +48,8 @@ numFronts = 12
 """
 Tube Generation Parameters
 """
+
+tubeTripTimeExcessMinNumEdges = 3
 pylonHeightStepSize = 10.0
 tubeDegreeConstraint = 30.0
 

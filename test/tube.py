@@ -122,6 +122,7 @@ class TubeEdge(abstract.AbstractEdge):
 
     def __init__(self, startPylon, endPylon):
         abstract.AbstractEdge.__init__(self, startPylon, endPylon)
+        self.tubeCoords = [startPylon.tubeCoords, endPylon.tubeCoords]
         self.tubeCost = self.tube_cost(startPylon, endPylon)
         self.pylonCost = self.pylon_cost(startPylon, endPylon)        
         
@@ -133,8 +134,9 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
     
     @staticmethod
     def is_tube_edge_pair_compatible(tubeEdgeA, tubeEdgeB):
-        return abstract.AbstractEdgesSets.is_edge_pair_compatible(tubeEdgeA,
-                                     tubeEdgeB, config.tubeDegreeConstraint)
+        edgePairCompatible = abstract.AbstractEdgesSets.is_edge_pair_compatible(
+                              tubeEdgeA, tubeEdgeB, config.tubeDegreeConstraint)
+        return edgePairCompatible
                                                                              
     def __init__(self, pylonsLattice):
         abstract.AbstractEdgesSets.__init__(self, pylonsLattice,
@@ -146,7 +148,7 @@ class TubeGraph(abstract.AbstractGraph):
     velocityArcLengthStepSize = config.velocityArcLengthStepSize
     
     def compute_triptime_excess(self, tubeCoords, numEdges):
-        if numEdges < config.minNumTubeEdges:
+        if numEdges < config.tubeTripTimeExcessMinNumEdges:
             return None    
         else:             
             maxAllowedVels = interpolate.points_3d_max_allowed_vels(tubeCoords)
@@ -172,13 +174,12 @@ class TubeGraph(abstract.AbstractGraph):
     def init_from_tube_edge(cls, tubeEdge):
         startId = tubeEdge.startId
         endId = tubeEdge.endId
-        startAngle = tubeEdge.startAngle
-        endAngle = tubeEdge.endAngle  
+        startAngle = tubeEdge.angle
+        endAngle = tubeEdge.angle  
         numEdges = 1        
         tubeCost = tubeEdge.tubeCost
         pylonCost = tubeEdge.pylonCost        
-        tubeCoords = [tubeEdge.startPoint.coords["tubeCoords"],
-                      tubeEdge.endPoint.coords["tubeCoords"]]        
+        tubeCoords = tubeEdge.tubeCoords
         data = cls(startId, endId, startAngle, endAngle, numEdges, tubeCost,
                    pylonCost, tubeCoords)
         return data
@@ -200,32 +201,48 @@ class TubeGraph(abstract.AbstractGraph):
 
 
 class TubeGraphsSet(abstract.AbstractGraphsSet):
-    
-    def tubegraphs_cost_triptime_excess(self, tubeGraphs):
-        graphsCostAndtriptimeExcess = [tubeGraph.tube_cost_trip_time_excess()
-                                       for tubeGraph in tubeElevationGraphs]
-        return graphsCostAndTriptimeExcess
 
-    def __init__(self, tubeGraphs):
+    @staticmethod
+    def is_graph_pair_compatible(graphA, graphB):
+        graphsCompatible = abstract.AbstractGraphsSet.is_graph_pair_compatible(
+                                   graphA, graphB, config.tubeDegreeConstraint)
+        return graphsCompatible
+
+    @staticmethod 
+    def tubegraphs_cost_triptime_excess(tubeGraphs, graphsNumEdges):
+        if graphsNumEdges < config.tubeTripTimeExcessMinNumEdges:
+            return None    
+        else: 
+            graphsCostTriptimeExcess = [tubeGraph.tube_cost_trip_time_excess()
+                                         for tubeGraph in tubeElevationGraphs]
+            return graphsCostTriptimeExcess
+
+    def __init__(self, tubeGraphs, graphsNumEdges):
         minimizeCost = True
         minimizeTriptimeExcess = True
         abstract.AbstractGraphsSet.__init__(self, tubeGraphs,
-                           self.tubegraphs_cost_triptime_excess,
-                           minimizeCost, minimizeTriptimeExcess)
+          self.tubegraphs_cost_triptime_excess, self.is_graph_pair_compatible,
+                         minimizeCost, minimizeTriptimeExcess, graphsNumEdges)
     
     @classmethod
-    def init_from_tube_edges_sets(cls, tubeEdgesSets):
-        tubeGraphs = [map(TubeGraph.init_from_tube_edge, tubeEdgesSet) for
-                      tubeEdgesSet in tubeEdgesSets]        
-        return cls(tubeGraphs)
+    def init_from_tube_edges_set(cls, tubeEdgesSet):
+        tubeGraphs = map(TubeGraph.init_from_tube_edge, tubeEdgesSet)        
+        graphsNumEdges = 1
+        return cls(tubeGraphs, graphsNumEdges)
+
+def tube_graphs_set_pair_merger(tubeGraphsSetA, tubeGraphsSetB):
+    mergedTubeGraphs = abstract.graphs_set_pair_merger(tubeGraphsSetA,
+                                        tubeGraphsSetB, TubeGraphsSet)
+    return mergedTubeGraphs
 
         
 def elevation_profile_to_tube_graphs(elevationProfile):
     pylonsLattice = PylonsLattice(elevationProfile)
     tubeEdgesSets = TubeEdgesSets(pylonsLattice)
-    tubeGraphsSet = TubeGraphsSet.init_from_tube_edges_sets(tubeEdgesSets)
-    tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSet,
-                abstract.graphs_sets_merger, abstract.graphs_sets_updater)
+    tubeGraphsSets = map(TubeGraphsSet.init_from_tube_edges_set,
+                                   tubeEdgesSets.finalEdgesSets)
+    tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSets,
+        tube_graphs_set_pair_merger, abstract.graphs_set_updater)
     rootTubeGraphsSet = graphsTree.root
     selectedTubeGraphs = rootGraphsSet.selectedGraphs
     return selectedTubeGraphs

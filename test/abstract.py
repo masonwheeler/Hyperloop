@@ -160,6 +160,13 @@ class AbstractGraph:
         
 
 class AbstractGraphsSet:
+
+    @staticmethod
+    def is_graph_pair_compatible(graphA, graphB, degreeConstraint):
+        graphPairCompatible = (graphA.endId == graphB.startId and
+             abs(graphA.angle - graphB.angle) < degreeConstraint)
+        return graphPairCompatible                   
+
     def select_graphs(self, minimizeAVals, minimizeBVals):
         if self.graphsABVals == None:
             self.selectedGraphs = self.unfilteredGraphs
@@ -181,9 +188,8 @@ class AbstractGraphsSet:
                 return False
 
     def __init__(self, graphs, graphs_evaluator, is_graph_pair_compatible,
-                       minimizeAVals, minimizeBVals):
+                       minimizeAVals, minimizeBVals, graphsNumEdges):
         self.unfilteredGraphs = graphs
-        graphsNumEdges = graphs[0].numEdges
         self.graphsABVals = graphs_evaluator(graphs, graphsNumEdges)
         self.select_graphs(minimizeAVals, minimizeBVals)
         self.minimizeAVals, self.minimizeBVals = minimizeAVals, minimizeBVals
@@ -212,25 +218,25 @@ class AbstractGraphsSet:
                 return False
 
     @staticmethod
-    def merge_two_graphs_sets(self, graphsSetA, graphsSetB):
+    def merge_two_graphs_sets(graphsSetA, graphsSetB):
         mergedGraphs = []
-        selectedA = graphsSetsA.selectedGraphs
-        selectedB = graphsSetsB.selectedGraphs
+        selectedA = graphsSetA.selectedGraphs
+        selectedB = graphsSetB.selectedGraphs
         for graphA in selectedA:
             for graphB in selectedB:
-                if self.is_graph_pair_compatible(graphA, graphB):
+                if AbstractGraphsSet.is_graph_pair_compatible(graphA, graphB):
                     mergedGraphs.append(merge_two_graphs(graphA, graphB))
         return mergedGraphs
 
-def graphs_sets_merger(graphsSetA, graphsSetB):
-    mergedGraphs = GraphsSets.merge_two_graphs_sets(graphsSetA, graphsSetB)
+def graphs_set_pair_merger(graphsSetA, graphsSetB, graphs_set_builder):
+    mergedGraphs = AbstractGraphsSet.merge_two_graphs_sets(graphsSetA, graphsSetB)
     if (len(mergedGraphs) == 0):
         return None
     else:
-        mergedGraphsSet = GraphsSets(mergedGraphs)
+        mergedGraphsSet = graphs_set_builder(mergedGraphs)
         return mergedGraphsSet
 
-def graphs_sets_updater(graphsSets):
+def graphs_set_updater(graphsSets):
     graphsSets.update_graphs()
     return graphsSets
 
