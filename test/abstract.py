@@ -6,9 +6,12 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Created Module
 """
 
-import paretofront
-import mergetree
+
 import math
+import mergetree
+import paretofront
+import util
+
 
 class AbstractPoint:
     def __init__(self, pointId, latticeXCoord, latticeYCoord,
@@ -59,6 +62,7 @@ class AbstractEdge:
 
 
 class AbstractEdgesSets:  
+
     @staticmethod
     def is_edge_pair_compatible(edgeA, edgeB, degreeConstraint):
         edgePairCompatible = (edgeA.endId == edgeB.startId and
@@ -91,7 +95,7 @@ class AbstractEdgesSets:
                 compatiblesC = [is_edge_pair_compatible(edgeB, edgeC)
                                 for edgeC in edgesSets[edgeSetIndex + 1]]
                 edgeB.isUseful = any(compatiblesA) and any(compatiblesC)
-        for edgeB in edgeSets[-1]:
+        for edgeB in edgesSets[-1]:
             compatibles = [is_edge_pair_compatible(edgeA, edgeB)
                            for edgeA in edgesSets[-2]]
             edgeB.isUseful = any(compatibles)
@@ -114,7 +118,7 @@ class AbstractEdgesSets:
                                     is_edge_pair_compatible)
         prefilterNumEdges = util.list_of_lists_len(unfilteredEdgesSets)
         util.smart_print("The original number of edges: " +
-                         str(prefilteredNumEdges))
+                         str(prefilterNumEdges))
         filteredEdgesSetsList = []
         while True:
             self.determine_useful_edges(unfilteredEdgesSets,
@@ -134,7 +138,7 @@ class AbstractEdgesSets:
         self.unfilteredEdgesSets = self.lattice_slices_to_unfiltered_edges_sets(
                                                     latticeSlices, edge_builder)
         self.filteredEdgesSetsList = self.iterative_filter(
-                             self.unfilteredEdgesSets, is_edge_pair_compatible)
+                         self.unfilteredEdgesSets, is_edge_pair_compatible)
         self.finalEdgesSets = self.filteredEdgesSetsList[-1]
          
 

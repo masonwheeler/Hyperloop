@@ -109,15 +109,15 @@ class PylonsLattice(abstract.AbstractLattice):
 
 class TubeEdge(abstract.AbstractEdge):    
     def tube_cost(self, startPylon, endPylon):
-        startTubeCoords = startPylon.coords["tubeCoords"]
-        endTubeCoords = endPylon.coords["tubeCoords"]
+        startTubeCoords = startPylon.tubeCoords
+        endTubeCoords = endPylon.tubeCoords
         tubeVector = util.edge_to_vector([startTubeCoords, endTubeCoords])
         tubeLength = util.norm(tubeVector)
         tubeCost = tubeLength * config.tubeCostPerMeter
         return tubeCost
 
     def pylon_cost(self, startPylon, endPylon):   
-        totalPylonCost =  startPylon.cost + endPylon.cost
+        totalPylonCost =  startPylon.pylonCost + endPylon.pylonCost
         return totalPylonCost
 
     def __init__(self, startPylon, endPylon):
@@ -127,20 +127,18 @@ class TubeEdge(abstract.AbstractEdge):
         
 
 class TubeEdgesSets(abstract.AbstractEdgesSets):
-    tubeEdgeDegreeConstraint = config.tubeDegreeConstraint    
-
     def tube_edge_builder(self, startPylon, endPylon):
         tubeEdge = TubeEdge(startPylon, endPylon)
         return tubeEdge
     
     @staticmethod
-    def is_tube_edge_pair_compatible(self, tubeEdgeA, tubeEdgeB):
+    def is_tube_edge_pair_compatible(tubeEdgeA, tubeEdgeB):
         return abstract.AbstractEdgesSets.is_edge_pair_compatible(tubeEdgeA,
-                                   tubeEdgeB, self.tubeEdgeDegreeConstraint)
+                                     tubeEdgeB, config.tubeDegreeConstraint)
                                                                              
     def __init__(self, pylonsLattice):
         abstract.AbstractEdgesSets.__init__(self, pylonsLattice,
-            self.tube_edge_builder, self.is_tube_edge_pair_compatible)
+          self.tube_edge_builder, self.is_tube_edge_pair_compatible)
                
 
 class TubeGraph(abstract.AbstractGraph):

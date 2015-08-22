@@ -95,6 +95,7 @@ rightOfWayLandCost = 0
 pylonCostPerMeter = 10000
 tunnelingCostPerMeter = 10000 # USD/m
 pylonBaseCost = 2000
+tubeCostPerMeter = 1000
 padding = 20   #padding (in meters)
 
 
