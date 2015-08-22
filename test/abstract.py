@@ -20,10 +20,10 @@ class AbstractPoint:
         self.spatialYcoord = spatialYCoord
 
         
-class AbstractSlice:
+class AbstractSlice(object):
     def __init__(self, latticeXCoord, sliceBounds, startId, points_builder):
-        self.points, numPoints = points_builder(latticeXCoord, sliceBounds,
-                                                                   startId)
+        self.points = points_builder(latticeXCoord, sliceBounds, startId)             
+        numPoints = len(self.points)
         self.endId = startId + numPoints
 
         
@@ -37,7 +37,7 @@ class AbstractLattice:
                                                           points_builder)
             self.slices.append(newSlice.points)
             startId = newSlice.endId
-            xCoord += 1
+            latticeXCoord += 1
 
 
 class AbstractEdge:
