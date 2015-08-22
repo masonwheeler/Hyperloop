@@ -29,10 +29,10 @@ class Pylon(abstract.AbstractPoint):
         zValue = tubeElevation
         self.tubeCoords = [xValue, yValue, zValue]
         self.pylonCost = self.pylon_construction_cost(pylonHeight)
-        spatialXCoord = distanceAlongPath
-        spatialYCoord = tubeElevation
+        self.spatialXCoord = distanceAlongPath
+        self.spatialYCoord = tubeElevation
         abstract.AbstractPoint.__init__(self, pylonId, latticeXCoord,
-                         latticeYCoord, spatialXCoord, spatialYCoord)
+                   latticeYCoord, self.spatialXCoord, self.spatialYCoord)
 
         
 class PylonsSlice(abstract.AbstractSlice):   
@@ -68,10 +68,8 @@ class PylonsSlice(abstract.AbstractSlice):
         return pylons
 
     def __init__(self, latticeXCoord, pylonsSliceBounds, shortestPylonId):
-        ##print("initialized pylonSlice")        
         abstract.AbstractSlice.__init__(self, latticeXCoord, pylonsSliceBounds,
                                           shortestPylon)
-        #print("points" + str(self.points))
 
 
 class PylonsLattice(abstract.AbstractLattice):
@@ -123,7 +121,7 @@ class TubeEdge(abstract.AbstractEdge):
         return totalPylonCost
 
     def __init__(self, startPylon, endPylon):
-        abstract.AbstractEdge.__init__(startPylon, endPylon)
+        abstract.AbstractEdge.__init__(self, startPylon, endPylon)
         self.tubeCost = self.tube_cost(startPylon, endPylon)
         self.pylonCost = self.pylon_cost(startPylon, endPylon)        
         

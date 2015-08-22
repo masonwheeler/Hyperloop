@@ -65,14 +65,15 @@ class AbstractEdgesSets:
              abs(edgeA.angle - edgeB.angle) < degreeConstraint)
         return edgePairCompatible                   
 
-    def lattice_to_unfiltered_edges_sets(self, lattice, edge_builder):
+    def lattice_slices_to_unfiltered_edges_sets(self, latticeSlices,
+                                                      edge_builder):
         unfilteredEdgesSets = []
-        for latticeSliceIndex in range(len(lattice) - 1):
-            latticeSliceA = lattice[latticeSliceIndex]
-            latticeSliceB = lattice[latticeSliceIndex + 1]
+        for latticeSliceIndex in range(len(latticeSlices) - 1):
+            latticeSliceA = latticeSlices[latticeSliceIndex]
+            latticeSliceB = latticeSlices[latticeSliceIndex + 1]
             edgesSet = []
-            for pointA in sliceA:
-                for pointB in sliceB:
+            for pointA in latticeSliceA:
+                for pointB in latticeSliceB:
                     edgesSet.append(edge_builder(pointA, pointB))
             unfilteredEdgesSets.append(edgesSet)
         return unfilteredEdgesSets    
@@ -129,8 +130,9 @@ class AbstractEdgesSets:
         return filteredEdgesSetsList
         
     def __init__(self, lattice, edge_builder, is_edge_pair_compatible):
-        self.unfilteredEdgesSets = self.lattice_to_unfiltered_edges_sets(
-                                                    lattice, edge_builder)
+        latticeSlices = lattice.slices
+        self.unfilteredEdgesSets = self.lattice_slices_to_unfiltered_edges_sets(
+                                                    latticeSlices, edge_builder)
         self.filteredEdgesSetsList = self.iterative_filter(
                              self.unfilteredEdgesSets, is_edge_pair_compatible)
         self.finalEdgesSets = self.filteredEdgesSetsList[-1]
