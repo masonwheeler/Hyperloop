@@ -176,7 +176,8 @@ class EdgesSets:
     
     def iterative_filter(self):
         oldNumEdges = util.list_of_lists_len(self.baseEdgesSets)        
-        util.smart_print("The original number of edges: " + str(oldNumEdges))
+        util.smart_print("The original number of spatial edges: " +
+                          str(oldNumEdges))
          
         filteredEdgesIndex = 0
 
@@ -190,7 +191,8 @@ class EdgesSets:
         newNumEdges = len(flattenedFilteredEdges)
 
         while newNumEdges != oldNumEdges:          
-            util.smart_print("The number of edges is now: " + str(newNumEdges))
+            util.smart_print("The number of spatial edges is now: " +
+                             str(newNumEdges))
             self.determine_useful_edges(
                             self.filteredEdgesSetsList[filteredEdgesIndex])
             filteredEdges = self.filter_edges(

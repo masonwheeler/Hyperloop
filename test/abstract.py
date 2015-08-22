@@ -1,9 +1,9 @@
 """
 Original Developer: Jonathan Ward
 Purpose of Module: To provide an interface for experimental Classes
-Last Modified: 8/12/15
+Last Modified: 8/21/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Created Module
+Last Modification Purpose: Debugging
 """
 
 
@@ -103,7 +103,10 @@ class AbstractEdgesSets:
     def filter_edges(self, edgesSets):
         filteredEdgesSets = []
         for edgesSet in edgesSets:
-            filteredEdgesSet = filter(lambda edge : edge.isUseful, edgesSets)
+            filteredEdgesSet = []
+            for edge in edgesSet:
+                if edge.isUseful:
+                    filteredEdgesSet.append(edge)
             filteredEdgesSets.append(filteredEdgesSet)
         return filteredEdgesSets
 
@@ -124,9 +127,12 @@ class AbstractEdgesSets:
             self.determine_useful_edges(unfilteredEdgesSets,
                                         is_edge_pair_compatible)
             filteredEdgesSets = self.filter_edges(unfilteredEdgesSets)
-            if self.check_empty(filteredEdgesSets):
+            anyEmptyEdgesSet = self.check_empty(filteredEdgesSets)
+            if anyEmptyEdgesSet:
                 raise ValueError("Encountered Empty EdgesSet")
             postfilterNumEdges = util.list_of_lists_len(filteredEdgesSets)
+            util.smart_print("The current number of edges: " +
+                                      str(postfilterNumEdges))
             if postfilterNumEdges == prefilterNumEdges:
                 break            
             prefilterNumEdges = postfilterNumEdges

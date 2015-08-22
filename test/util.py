@@ -149,7 +149,7 @@ def build_grid(vector, spacing, startVector):
 
 def sample_length(length, spacing):
     numPoints = int(length/spacing)
-    grid = [index * spacing for index in range(numPoints)]
+    grid = [index * spacing for index in range(numPoints + 1)]
     return grid
 
 def build_grid_1d(length, spacing, startDistance):

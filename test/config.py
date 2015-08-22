@@ -14,7 +14,7 @@ Modes and settings.
 """
 testingMode = True
 visualMode = False
-verboseMode = False
+verboseMode = True
 timingMode = False
 useDropbox = False
 
@@ -48,14 +48,14 @@ numFronts = 12
 """
 Tube Generation Parameters
 """
-pylonHeightStepSize = 10
-tubeDegreeConstraint = 30
+pylonHeightStepSize = 10.0
+tubeDegreeConstraint = 30.0
 
 """
 Velocity Profile Generation Parameters
 """
-velocityProfileDegreeConstraint = 30
-velocityArcLengthStepSize = 100 
+velocityProfileDegreeConstraint = 30.0
+velocityArcLengthStepSize = 100.0
 
 """
 Engineering constraints.
@@ -91,11 +91,11 @@ landPadding = 30
 Financial Parameters, all costs in dollars.
 """
 
-rightOfWayLandCost = 0
-pylonCostPerMeter = 10000
-tunnelingCostPerMeter = 10000 # USD/m
-pylonBaseCost = 2000
-tubeCostPerMeter = 1000
+rightOfWayLandCost = 0.0
+pylonCostPerMeter = 10000.0
+tunnelingCostPerMeter = 10000.0 # USD/m
+pylonBaseCost = 2000.0
+tubeCostPerMeter = 1000.0
 padding = 20   #padding (in meters)
 
 

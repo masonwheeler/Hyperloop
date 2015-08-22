@@ -46,9 +46,9 @@ class PylonsSlice(abstract.AbstractSlice):
         geospatial = pylonSliceBounds["geospatial"]
         latlng = pylonSliceBounds["latlng"]
         landElevation = pylonSliceBounds["landElevation"]
-        shortestPylonHeight = 0
+        shortestPylonHeight = 0         
         pylonHeightOptions = util.build_grid_1d(pylonHeightDifference,
-                 pylonHeightStepSize, shortestPylonHeight)    
+                             pylonHeightStepSize, shortestPylonHeight)    
         pylonIds = [index + shortestPylonId for index
                     in range(len(pylonHeightOptions))]
         pylons = []
