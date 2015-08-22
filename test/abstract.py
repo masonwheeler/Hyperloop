@@ -164,7 +164,7 @@ class AbstractGraphsSet:
     @staticmethod
     def is_graph_pair_compatible(graphA, graphB, degreeConstraint):
         graphPairCompatible = (graphA.endId == graphB.startId and
-             abs(graphA.angle - graphB.angle) < degreeConstraint)
+             abs(graphA.endAngle - graphB.startAngle) < degreeConstraint)
         return graphPairCompatible                   
 
     def select_graphs(self, minimizeAVals, minimizeBVals):
@@ -218,22 +218,28 @@ class AbstractGraphsSet:
                 return False
 
     @staticmethod
-    def merge_two_graphs_sets(graphsSetA, graphsSetB):
+    def merge_two_graphs_sets(graphsSetA, graphsSetB, is_graph_pair_compatible,
+                                                             merge_two_graphs):
         mergedGraphs = []
         selectedA = graphsSetA.selectedGraphs
         selectedB = graphsSetB.selectedGraphs
         for graphA in selectedA:
             for graphB in selectedB:
-                if AbstractGraphsSet.is_graph_pair_compatible(graphA, graphB):
+                if is_graph_pair_compatible(graphA, graphB):
                     mergedGraphs.append(merge_two_graphs(graphA, graphB))
         return mergedGraphs
 
-def graphs_set_pair_merger(graphsSetA, graphsSetB, graphs_set_builder):
-    mergedGraphs = AbstractGraphsSet.merge_two_graphs_sets(graphsSetA, graphsSetB)
+def graphs_set_pair_merger(graphsSetA, graphsSetB, graphs_set_builder,
+                          is_graph_pair_compatible, merge_two_graphs):
+    mergedGraphs = AbstractGraphsSet.merge_two_graphs_sets(graphsSetA,
+               graphsSetB, is_graph_pair_compatible, merge_two_graphs)
+    numEdgesA = graphsSetA.numEdges
+    numEdgesB = graphsSetB.numEdges
+    mergedNumEdges = numEdgesA + numEdgesB
     if (len(mergedGraphs) == 0):
         return None
     else:
-        mergedGraphsSet = graphs_set_builder(mergedGraphs)
+        mergedGraphsSet = graphs_set_builder(mergedGraphs, mergedNumEdges)
         return mergedGraphsSet
 
 def graphs_set_updater(graphsSets):

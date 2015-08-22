@@ -185,7 +185,7 @@ class TubeGraph(abstract.AbstractGraph):
         return data
     
     @classmethod
-    def merge_two_tubegraphs(cls, tubeGraphA, tubeGraphB):
+    def merge_two_tube_graphs(cls, tubeGraphA, tubeGraphB):
         startId = tubeGraphA.startId
         endId = tubeGraphB.endId
         startAngle = tubeGraphA.startAngle
@@ -232,7 +232,8 @@ class TubeGraphsSet(abstract.AbstractGraphsSet):
 
 def tube_graphs_set_pair_merger(tubeGraphsSetA, tubeGraphsSetB):
     mergedTubeGraphs = abstract.graphs_set_pair_merger(tubeGraphsSetA,
-                                        tubeGraphsSetB, TubeGraphsSet)
+        tubeGraphsSetB, TubeGraphsSet, TubeGraphsSet.is_graph_pair_compatible,
+                                              TubeGraph.merge_two_tube_graphs)
     return mergedTubeGraphs
 
         
