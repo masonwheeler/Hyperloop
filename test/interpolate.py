@@ -141,10 +141,13 @@ def compute_explicit_curvature(firstDerivValues, secondDerivValues):
     curvatureArray = np.divide(
                          np.absolute(secondDerivValues),
                          np.power(
-                             np.add(ones, firstDerivValues),
+                             np.add(
+                                 ones,
+                                 np.square(firstDerivValues)
+                                 ),
                              powers
+                             )
                          )
-                      )
     return curvatureArray
                                                        
 def compute_curvature_array_2d(xFirstDerivValues, xSecondDerivValues,
@@ -153,20 +156,22 @@ def compute_curvature_array_2d(xFirstDerivValues, xSecondDerivValues,
     powers = np.empty(sLength)
     powers.fill(1.5)
     curvatureArray2d = np.divide(
-                           np.subtract(
-                               np.multiply(xFirstDerivValues,
-                                           ySecondDerivValues),
-                               np.multiply(yFirstDerivValues,
-                                           xSecondDerivValues)
-                           ),
+                           np.absolute(
+                               np.subtract(
+                                   np.multiply(xFirstDerivValues,
+                                             ySecondDerivValues),
+                                   np.multiply(yFirstDerivValues,
+                                              xSecondDerivValues)
+                                   )
+                               ),
                            np.power(
                                np.add(
                                   np.square(xFirstDerivValues),
                                   np.square(yFirstDerivValues)
-                               ),
+                                  ),
                                powers
+                               )
                            )
-                       )
     return curvatureArray2d
 
 def compute_curvature_array_3d(xFirstDerivValues, xSecondDerivValues,
@@ -175,7 +180,6 @@ def compute_curvature_array_3d(xFirstDerivValues, xSecondDerivValues,
     sLength = xFirstDerivValues.size
     powers = np.empty(sLength)
     powers.fill(1.5)
-
     firstTerm = np.square(
                     np.subtract(
                         np.multiply(zSecondDerivValues, yFirstDerivValues),
@@ -245,7 +249,7 @@ def parametric_splines_vertical_and_lateral_curvatures(xSpline, ySpline,
                                                                   sValues)
     zFirstDerivValues, zSecondDerivValues = get_derivative_values(zSpline,
                                                                   sValues)    
-    verticalCurvatureARray = compute_explicit_curvature(zFirstDerivValues,
+    verticalCurvatureArray = compute_explicit_curvature(zFirstDerivValues,
                                                         zSecondDerivValues)
     lateralCurvatureArray = compute_curvature_array_2d(        
                  xFirstDerivValues, xSecondDerivValues,
@@ -253,6 +257,9 @@ def parametric_splines_vertical_and_lateral_curvatures(xSpline, ySpline,
     return [verticalCurvatureArray, lateralCurvatureArray]    
 
 def curvature_array_to_max_allowed_vels(curvatureArray, accelConstraint):
+    curvatureArrayLength = curvatureArray.size
+    accelConstraintArray = np.empty(curvatureArrayLength)
+    accelConstraintArray.fill(accelConstraint)
     maxAllowedVels = np.sqrt(
                             np.divide(accelConstraintArray,
                                             curvatureArray)
@@ -276,8 +283,8 @@ def curvature_array_3d_to_max_allowed_vels(curvatureArray3d):
 
 def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
     verticalCurvatureArray, lateralCurvatureArray = \
-        parametic_splines_vertical_and_lateral_curvature(xSpline, ySpline,
-                                                         zSpline, sValues)
+        parametric_splines_vertical_and_lateral_curvatures(xSpline, ySpline,
+                                                           zSpline, sValues)
     maxAllowedVels_vertical = \
         vertical_curvature_array_to_max_allowed_vels(
                                     verticalCurvatureArray) 

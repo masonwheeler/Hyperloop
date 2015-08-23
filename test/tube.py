@@ -151,9 +151,10 @@ class TubeGraph(abstract.AbstractGraph):
         if numEdges < config.tubeTripTimeExcessMinNumEdges:
             return None    
         else:             
-            maxAllowedVels = interpolate.points_3d_max_allowed_vels(tubeCoords)
+            localMaxAllowedVels = interpolate.points_3d_local_max_allowed_vels(
+                                                                    tubeCoords)
             triptimeExcess = velocity.compute_local_trip_time_excess(
-                      maxAllowedVels, self.velocityArcLengthStepSize)
+                      localMaxAllowedVels, self.velocityArcLengthStepSize)
             return triptimeExcess
 
     def __init__(self, startId, endId, startAngle, endAngle, numEdges,
@@ -168,6 +169,9 @@ class TubeGraph(abstract.AbstractGraph):
     def tube_cost_trip_time_excess(self):
         costTripTimeExcess = [self.tubeCost + self.pylonCost,
                                          self.triptimeExcess]
+        print("tube cost: " + str(self.tubeCost))
+        print("pylon cost: " + str(self.pylonCost))
+        print("trip time excess: " + str(self.triptimeExcess))
         return costTripTimeExcess
 
     @classmethod
@@ -214,7 +218,7 @@ class TubeGraphsSet(abstract.AbstractGraphsSet):
             return None    
         else: 
             graphsCostTriptimeExcess = [tubeGraph.tube_cost_trip_time_excess()
-                                         for tubeGraph in tubeElevationGraphs]
+                                                  for tubeGraph in tubeGraphs]
             return graphsCostTriptimeExcess
 
     def __init__(self, tubeGraphs, graphsNumEdges):

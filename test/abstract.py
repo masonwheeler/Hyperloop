@@ -190,6 +190,7 @@ class AbstractGraphsSet:
     def __init__(self, graphs, graphs_evaluator, is_graph_pair_compatible,
                        minimizeAVals, minimizeBVals, graphsNumEdges):
         self.unfilteredGraphs = graphs
+        self.numEdges = graphsNumEdges
         self.graphsABVals = graphs_evaluator(graphs, graphsNumEdges)
         self.select_graphs(minimizeAVals, minimizeBVals)
         self.minimizeAVals, self.minimizeBVals = minimizeAVals, minimizeBVals

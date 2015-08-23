@@ -55,22 +55,22 @@ def sample_velocities(velocitiesByTime, timeStepSize):
                    
 def velocities_by_arclength_to_time_checkpoints_array(velocitiesByArcLength, 
                                               velocityArcLengthStepSize):
-    numVelocities = velocitiesByArcLength.length
-    velocityArcLengthStepSizeArray = np.empty(numVelocities)
-    velocityArcLengthStepSizeArray = np.fill(velocityArcLengthStepSize)
-    paddedVelocities = np.append(velocitiesByArcLength, 0)
-    shiftedVelocities = np.insert(velocitiesByArcLength, 0, 0)    
+    numIntervals = velocitiesByArcLength.size - 1
+    velocityArcLengthStepSizeArray = np.empty(numIntervals)
+    velocityArcLengthStepSizeArray.fill(velocityArcLengthStepSize)
+    paddedVelocities = np.append(velocitiesByArcLength, 0.0)
+    shiftedVelocities = np.insert(velocitiesByArcLength, 0, 0.0)    
     paddedVelocitiesSums = np.add(paddedVelocities, shiftedVelocities)
-    velocitiesSums = paddedVelocitiesSums[1:-1]
+    velocitiesSums = paddedVelocitiesSums[1:-1]    
     meanVelocitiesByArcLength = np.divide(velocitiesSums, 2)
     times = np.divide(velocityArcLengthStepSizeArray,
                      meanVelocitiesByArcLength)
-    timeCheckpointsArray = np.insert(times, 0, 0)    
+    timeCheckPointsArray = np.insert(times, 0, 0)    
     return timeCheckPointsArray
     
 def compute_trip_time(velocitiesByArcLength, velocityArcLengthStepSize):
     timeCheckpointsArray = velocities_by_arclength_to_time_checkpoints_array(
-                            velocitiesByArcLength, velocityArclengthStepSize)
+                            velocitiesByArcLength, velocityArcLengthStepSize)
     tripTime = np.sum(timeCheckpointsArray)
     return tripTime    
 
@@ -84,14 +84,15 @@ def reparametrize_velocities(velocitiesByArcLength, velocityArclengthStepSize,
     return sampledVelocitiesByTime
     
 def compute_local_trip_time_excess(maxAllowedVelocities,
-                                     arclengthStepSize):
-    numVelocities = maxAllowedVelocities.length
-    maxPossibleVelocities.empty(numVelocities)
-    maxPossibleVelocities.fill(config.maxPossibleVelocity)
+                             velocityArcLengthStepSize):
+    numVelocities = maxAllowedVelocities.size
+    maxPossibleVelocities = np.empty(numVelocities)
+    maxPossibleVelocities.fill(config.maxSpeed)
     minimumPossibleTripTime = compute_trip_time(maxPossibleVelocities,
-                                                velocityArclengthStepSize)
+                                                velocityArcLengthStepSize)
+    ##print("max allowed velocities: " + str(maxAllowedVelocities))
     minimumAllowedTripTime = compute_trip_time(maxAllowedVelocities,
-                                              velocityArclengthStepSize)
+                                              velocityArcLengthStepSize)
     localTripTimeExcess = minimumAllowedTripTime - minimumPossibleTripTime
     return localTripTimeExcess
 
