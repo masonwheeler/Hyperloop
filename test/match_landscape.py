@@ -62,7 +62,7 @@ def matchLandscape(s, z, Type):
         x0, x1 = [s[i], s[j]]
         y0, y1 = [z[i], z[j]]
         tht0, tht1  = [0, 0]
-        k, K, L = clothoid.buildClothoid(x0, y0, theta0, x1, y1, theta1)
+        k, K, L = clothoid.buildClothoid(x0, y0, tht0, x1, y1, tht1)
         extremalCurvatures = [k + L*K, k]
         return max(np.absolute(extremalCurvatures))
 
