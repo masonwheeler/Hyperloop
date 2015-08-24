@@ -13,6 +13,24 @@ import comfort as cmft
 import util
 
 
+class Route:
+    def __init__(self, tube, velocityProfileGraph):
+
+    def as_dict(self):
+        routeDict = {
+                     "latlngs" : self.latlngs,
+                     "landCost" : self.landCost,
+                     "tubeCoords" : self.tubeElevations,
+                     "pylons" : self.pylons,
+                     "tubeCost" : self.tubeCost,
+                     "pylonCost" : self.pylonCost,
+                     "velocityProfile" : self.velocityProfile,
+                     "accelerationProfile" : self.accelerationProfile,
+                     "comfortRating" : self.comfortRating,
+                     "tripTime" : self.tripTime
+                     }
+
+
 def graph_to_2Droute(graph):
 	x = graph.geospatials
 	return interp.paraSuperQ(x, 25)
