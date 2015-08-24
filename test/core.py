@@ -22,8 +22,10 @@ import lattice
 import edges
 import graphs
 import interpolate
-import match_landscape as match
-import advanced_interpolate as interp
+# import match_landscape as match
+# import advanced_interpolate as interp
+import routes
+
 
 def build_directions(start, end):    
     directionsLatLng = directions.get_directions(start, end)
@@ -97,6 +99,10 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
+    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    _3Droute = routes._2Droute_to_3Droute(_2Droute)
+
+
     #Test genLandscape( , "elevation"):
 #    print "extracting geospatials of a single graph..."
 #    x = completeGraphs[0].geospatials
@@ -122,6 +128,7 @@ def pair_analysis(start,end):
     print "plotting the landscape..."
     visualize.scatter_plot(s, v)
     """
+
 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
