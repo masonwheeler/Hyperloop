@@ -88,10 +88,15 @@ def pair_analysis(start,end):
     completeGraphs = build_graphs(latticeSlices)
 
     #Test genLandscape():
+    print "extracting geospatials of a single graph..."
     x = completeGraphs[0].geospatials
+    print "converting geospatials from strings to floats..."
     x = [[float(p[0]),float(p[1])] for p in x]
-    x = interp.paraSuperQ(x, 200)
+    print "interpolating the geospatials..."
+    x = interp.paraSuperQ(x, 25)
+    print "generating the landscape..."
     s, z = match.genLandscape(x, "elevation")
+    print "plotting the landscape..."
     visualize.scatter_plot(s, z)
 
     t1 = time.time()
