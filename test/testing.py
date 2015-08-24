@@ -18,8 +18,8 @@ def random_subset_track( a, N, K ):
     return result
 
 
-s = sorted(list(set([random.uniform(0,100) for i in range(10)])))
-z = [random.uniform(0,150) for i in range(len(s))]
+# s = sorted(list(set([random.uniform(0,100) for i in range(10)])))
+# z = [random.uniform(0,150) for i in range(len(s))]
 
 
 def curvature(i, j):   #Computes the curvature of the clothoid 
@@ -42,7 +42,24 @@ def plot_clothoid(i, j):
     plt.plot(xVals, yVals, '.', s, z, 'o')
     plt.show()
 
-i, j = random_subset_track(s, len(s), 2)
-print "min radius of curvature is " + str(1./curvature(i, j))
-plot_clothoid(i, j)
+# i, j = sorted(random_subset_track(s, len(s), 2))
+# print "min radius of curvature is " + str(1./curvature(i, j))
+# plot_clothoid(i, j)
 
+
+C = 2.
+D = 5.
+
+def dzTol(s):
+    if s < 2*C/D:
+        return (s/2)**2*D
+    else:
+        return (s-C/D)*C
+
+print "2C/D is " + str(2*C/D)
+print "C^2/D is " + str(C**2/D)
+
+x = np.arange(0,2,.01)
+y = map(dzTol, x)
+plt.plot(x, y)
+plt.show()
