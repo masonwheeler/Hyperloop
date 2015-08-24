@@ -47,38 +47,43 @@ def genLandscape(x, Type):
 
 
 def matchLandscape(s, z, Type):
-  J = sortIndices(z, Type)
-  K = [0,len(z)-1]
+  #the profile initializes as delta-z.
+  K = [0, len(z)-1]
+
+  #we now sort the remaining landscape.
+  J = sortIndices(z[1:len(z)-1], Type)
+
   
   def bad(index, Type):
     new = util.placeIndexinList(index, K) # append newcomer to list; try it on for size
 
     if Type == "elevation":
-      def curvature(i, j, z):   #Computes the curvature of the clothoid 
+      def curvature(i, j):   #Computes the curvature of the clothoid 
         x0, x1 = [s[i], s[j]]
         y0, y1 = [z[i], z[j]]
         tht0, tht1  = [0, 0]
-        k, K, L = clothoid.buildClothoid(x0, y0, theta0, x1, y1, theta1)
+        k, K, L = clothoid.buildClothoid(x0, y0, tht0, x1, y1, tht1)
         extremalCurvatures = [k + L*K, k]
         return max(np.absolute(extremalCurvatures))
 
-      curvatures = [curvature(K[new], K[new+1], z), curvature(K[new-1], K[new], z)]
+      curvatures = [curvature(K[new], K[new+1]), curvature(K[new-1], K[new])]
       bools = [k > config.latAccelTol/config.maxSpeed**2 for curvature in curvatures]
 
     elif Type == "velocity":
+      dz = [np.absolute(z[K[new+1]]-z[K[new]]), np.absolute(z[K[new]]-z[K[new-1]])]
+      ds = [s[K[new+1]]-s[K[new]], s[K[new]]-z[K[new-1]]]
+      V = [(z[K[new+1]]+z[K[new]])/2, (z[K[new]]+z[K[new-1]])/2]
+
       C = [v * config.linearAccelTol for v in V]
       D = [v**2 * config.jerkTol for v in V]
+
       def dzTol(s):
         if s < 2*C/D:
           return (s/2)**2*D
         else:
           return (s-C/D)*C
 
-      dz = [np.absolute(z[K[new+1]]-z[K[new]]), np.absolute(z[K[new]]-z[K[new-1]])]
-      ds = [s[K[new+1]]-s[K[new]], s[K[new]]-z[K[new-1]]]
-      V = [(z[K[new+1]]+z[K[new]])/2, (z[K[new]]+z[K[new-1]])/2]
-
-      bools = [dz[i] > dzTol(ds[i]) for i in range(len(ds))]
+      bools = [dz[i] > dzTol(ds[i]) for i in [0,1]]
       
     K.pop(new) # return list back to normal
 
@@ -87,7 +92,7 @@ def matchLandscape(s, z, Type):
 
   def matchPoint():
     i = 0
-    while bad(J[i], Type) or i < len(J):
+    while bad(J[i], Type) and i < len(J):
       i += 1
     if i == len(J):
       return "Exhausted the landscape. Could not find a point to match."
@@ -95,7 +100,7 @@ def matchLandscape(s, z, Type):
       util.placeIndexinList(J.pop(i), K)
       return "Success! See if we can match another point."
 
-  while matchLandscape() == "Success! See if we can match another point.":
+  while matchPoint() == "Success! See if we can match another point.":
     pass
   return [[s[k] for k in K], [z[k] for k in K]]
 
