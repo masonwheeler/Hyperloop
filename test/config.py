@@ -33,7 +33,7 @@ Lattice Generation Parameters
 pointSpacing = 2000 # (in meters) spacing between points in the same slice
 directionsSampleSpacing = 10 # (in meters)
 degreeConstraint = 30 #the angular constraint between subsequent edges
-splineSampleSpacing = 1000 # (in units of directionsSampleSpacing) i.e.
+spatialSliceSValueStepSize = 1000 # (in units of directionsSampleSpacing) i.e.
                            # spacing between spline points in meters is given
                            # by directionsSampleSpacing * splineSampleSpacing
 ndigits = 6 #the number of digits used for rounding

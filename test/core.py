@@ -47,20 +47,26 @@ def build_lattice(directionsPoints):
     print("sampled points start: " + str(sampledPoints[0]))
     print("sampled points end: " + str(sampledPoints[-1]))
     sValues = interpolate.get_s_values(len(sampledPoints))
+    print("last s value: " + str(sValues[-1]))
     spatialXSpline, spatialYSpline = lattice.get_directionsspline(sampledPoints)
     spatialLatticeSlicesSValues = interpolate.get_slice_s_values(sValues,
-                                              config.splineSampleSpacing)       
+                                     config.spatialSliceSValueStepSize)       
+    print("last spline s value: " + str(spatialLatticeSlicesSValues[-1]))
     spatialLatticeSlicesXValues = interpolate.get_spline_values(spatialXSpline,
                                                    spatialLatticeSlicesSValues) 
     spatialLatticeSlicesYValues = interpolate.get_spline_values(spatialYSpline,
                                                    spatialLatticeSlicesSValues) 
     spatialLatticeSlicesSplinePoints = zip(spatialLatticeSlicesXValues,
                                            spatialLatticeSlicesYValues)
-    spatialLatticeSlicesDirectionsPoints = sampledPoints[
-                            ::config.splineSampleSpacing]
+    print("spatial lattice points start: " + 
+          str(spatialLatticeSlicesSplinePoints[0]))
+    print("spatial lattice points end: " +
+          str(spatialLatticeSlicesSplinePoints[-1]))
+    spatialLatticeSlicesDirectionsPoints = util.smart_sample_nth_points(
+                           sampledPoints, config.spatialSliceSValueStepSize)
     spatialSlicesBounds = zip(spatialLatticeSlicesDirectionsPoints,
                                   spatialLatticeSlicesSplinePoints)
-    print("spatial slice bounds" + str(len(spatialSlicesBounds)))
+    print("spatial slice bounds: " + str(len(spatialSlicesBounds)))
     #latticeSlices = lattice.get_lattice(sliceSValues, sampledPoints,
     #                                            xSpline, ySpline) 
     latticeSlices = lattice.get_lattice(spatialSlicesBounds) 
