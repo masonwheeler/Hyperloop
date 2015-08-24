@@ -22,6 +22,8 @@ import lattice
 import edges
 import graphs
 import interpolate
+import match_landscape as match
+import advanced_interpolate as interp
 
 def build_directions(start, end):    
     directionsLatLng = directions.get_directions(start, end)
@@ -84,6 +86,14 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
+
+    #Test genLandscape():
+    x = completeGraphs[0].geospatials
+    x = [[float(p[0]),float(p[1])] for p in x]
+    x = interp.paraSuperQ(x, 200)
+    s, z = match.genLandscape(x, "elevation")
+    visualize.scatter_plot(s, z)
+
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
     if config.visualMode:

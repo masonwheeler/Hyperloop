@@ -19,9 +19,6 @@ import proj
 import directions
 import elevation
 
-directionsLatLng = directions.get_directions("Dalls", "Austin")
-startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
-proj.set_projection(startLatLng, endLatLng)
  
 
 def sortIndices(z, Type):
