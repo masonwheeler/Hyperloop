@@ -77,7 +77,10 @@ def get_spline_values(spline, sValues):
     return splineValues
 
 def get_slice_s_values(sValues, nth):
+    lastSValue = sValues[-1]
+    print("lastSValue: " + str(lastSValue))
     sliceSValues = sValues[::nth]
+    sliceSValues = np.append(sliceSValues, lastSValue)
     return sliceSValues
 
 ########## For 2d Smoothing Splines ##########
