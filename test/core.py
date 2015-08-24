@@ -56,6 +56,10 @@ def build_lattice(directionsPoints):
                                                    spatialLatticeSlicesSValues) 
     spatialLatticeSlicesSplinePoints = zip(spatialLatticeSlicesXValues,
                                            spatialLatticeSlicesYValues)
+    print("spatial lattice points start: " +
+         str(spatialLatticeSlicesSplinePoints[0]))
+    print("spatial lattice points end: " +
+         str(spatialLatticeSlicesSplinePoints[-1]))
     spatialLatticeSlicesDirectionsPoints = sampledPoints[
                             ::config.splineSampleSpacing]
     spatialSlicesBounds = zip(spatialLatticeSlicesDirectionsPoints,
