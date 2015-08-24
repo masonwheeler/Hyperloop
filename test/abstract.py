@@ -7,6 +7,7 @@ Last Modification Purpose: Debugging
 """
 
 
+import config
 import math
 import mergetree
 import paretofront

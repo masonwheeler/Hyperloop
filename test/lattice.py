@@ -130,24 +130,24 @@ def iteratively_build_directions_spline(sampledDirectionsPoints):
     sValues = np.arange(numPoints)
     INITIAL_END_WEIGHTS = 100000
     INITIAL_SMOOTHING_FACTOR = 10**13    
-    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, sValues,
+    xSpline, ySpline = interpolate.smoothing_splines_2d(xArray, yArray, sValues,
                                INITIAL_END_WEIGHTS, INITIAL_SMOOTHING_FACTOR)
     isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
     if isCurvatureValid:
         testSmoothingFactor = INITIAL_SMOOTHING_FACTOR
         while isCurvatureValid:            
             testSmoothingFactor *= 0.5
-            interpolate.set_smoothing_factors(xSpline, ySpline,
+            interpolate.set_smoothing_factors_2d(xSpline, ySpline,
                                               testSmoothingFactor)                    
             isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
         testSmoothingFactor *= 2
-        interpolate.set_smoothing_factors(xSpline, ySpline,
+        interpolate.set_smoothing_factors_2d(xSpline, ySpline,
                                           testSmoothingFactor)
         return [xSpline, ySpline]
     else:
         while not isCurvatureValid:            
             testSmoothingFactor *= 2
-            interpolate.set_smoothing_factors(xSpline, ySpline,
+            interpolate.set_smoothing_factors_2d(xSpline, ySpline,
                                               testSmoothingValue)
             isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
         return [xSpline, ySpline]

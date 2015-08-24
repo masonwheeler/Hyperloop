@@ -147,12 +147,13 @@ def save_lattice(latticeObject, latticeName):
     pass
 
 def save_graphs(graphs, graphsName):
-    index = 0
-    for graph in graphs:
-        graphSaveName = "graph" + str(index).zfill(3)
-        graphSavePath = config.graphsDirectory + graphSaveName
-        save_list_csv(graph.geospatials, graphSaveName)
-        index += 1
+    pass
+    #index = 0
+    #for graph in graphs:
+    #    graphSaveName = "graph" + str(index).zfill(3)
+    #    graphSavePath = config.graphsDirectory + graphSaveName
+    #    save_list_csv(graph.geospatials, graphSaveName)
+    #    index += 1
 
 def save_edgessets(edgesSets, edgesName):
     flattenedEdges = util.fast_concat(edgesSets)

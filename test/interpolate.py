@@ -80,7 +80,7 @@ def get_slice_s_values(sValues, nth):
 
 ########## For 2d Smoothing Splines ##########
 
-def smoothing_splines(xArray, yArray, sValues, endWeights, smoothingFactor):
+def smoothing_splines_2d(xArray, yArray, sValues, endWeights, smoothingFactor):
     numPoints = sValues.size
     weights = np.ones(numPoints)
     weights[0] = weights[-1] = endWeights
@@ -91,7 +91,7 @@ def smoothing_splines(xArray, yArray, sValues, endWeights, smoothingFactor):
     ySpline.set_smoothing_factor(smoothingFactor)
     return [xSpline, ySpline]
 
-def set_smoothing_factors(xSpline, ySpline, smoothingFactor):
+def set_smoothing_factors_2d(xSpline, ySpline, smoothingFactor):
     xSpline.set_smoothing_factor(smoothingFactor)
     ySpline.set_smoothing_factor(smoothingFactor)
     return [xSpline, ySpline]
@@ -104,10 +104,10 @@ def interpolating_splines_2d(xArray, yArray, sValues):
     return [xSpline, ySpline]
 
 def interpolate_points_2d(points2d):
-    numPoints = len(points3d)
+    numPoints = len(points32d)
     sValues = get_s_values(numPoints)
     xArray, yArray = points_2d_to_arrays(points2d) 
-    xSpline, ySpline = interpolating_splines_3d(xArray, yArray, sValues)
+    xSpline, ySpline = interpolating_splines_2d(xArray, yArray, sValues)
     return [xSpline, ySpline]
 
 def interpolating_splines_3d(xArray, yArray, zArray, sValues):
@@ -301,6 +301,10 @@ def points_3d_local_max_allowed_vels(points3d):
                                                                        sValues)
     return localMaxAllowedVels
 
+def compute_curvature_threshold(speed, maxAcceleration):
+    curvatureThreshold = maxAcceleration / speed**2
+    return curvatureThreshold
+
 def is_curvature_valid(curvatureArray, curvatureThreshhold):
     curvatureSize = curvatureArray.size
     curvatureThreshholdArray = np.empty(curvatureSize)
@@ -313,7 +317,39 @@ def is_curvature_valid(curvatureArray, curvatureThreshhold):
     isCurvatureValid = (totalExcessCurvature == 0)
     return isCurvatureValid    
 
-"""
+def curvature_test_2d(xSpline, ySpline, sValues, curvatureThreshold):
+    splinesCurvature = parametric_splines_2d_curvature(xSpline, ySpline,
+                                                                sValues)
+    isCurvatureValid = is_curvature_valid(splinesCurvature, curvatureThreshold)
+    return isCurvatureValid
+
+def iterative_smooth_interpolate_2d(xArray, yArray, initialEndWeights,
+                          initialSmoothingFactor, curvatureThreshold):
+    numPoints = len(points2d)
+    sValues = np.arange(numPoints)
+    xSpline, ySpline = smoothing_splines_2d(xArray, yArray, sValues,
+                       initialEndWeights, initialSmoothingFactor)        
+    isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues,
+                                                curvatureThreshold)
+    if isCurvatureValid:
+        testSmoothingFactor = initialSmoothingFactor
+        while isCurvatureValid:
+            testSmoothingFactor *= 0.5
+            set_smoothing_factors_2d(xSpline, ySpline, testSmoothingFactor)
+            isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues,
+                                                        curvatureThreshold)
+        testSmoothingFactor *= 2
+        set_smoothing_factors_2d(xSpline, ySpline, testSmoothingFactor)
+        return [xSpline, ySpline]
+    else:
+        while not isCurvatureValid:
+            testSmoothingFactor *= 2
+            set_smoothing_factors_2d(xSpline, ySpline, testSmoothingFactor)
+            isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues)
+        return [xSpline, ySpline]
+
+
+
 def curvature_metric(graphCurvatureArray):
     curvatureSize = graphCurvatureArray.size
     curvatureThreshhold = np.empty(curvatureSize)
@@ -327,12 +363,13 @@ def curvature_metric(graphCurvatureArray):
 def graph_curvature(graphPoints, graphSampleSpacing):
     graphEdges = points_to_edges(graphPoints)
     sampledGraphPoints = sample_edges(graphEdges, graphSampleSpacing)
-    xArray, yArray = points_to_arrays(sampledGraphPoints)
+    xArray, yArray = points_2d_to_arrays(sampledGraphPoints)
     numPoints = xArray.size
-    sValues = get_sValues(numPoints)
-    xSpline, ySpline = interpolating_splines(xArray, yArray, sValues)
-    graphCurvatureArray = splines_curvature(xSpline, ySpline, sValues)
+    sValues = get_s_values(numPoints)
+    xSpline, ySpline = interpolating_splines_2d(xArray, yArray, sValues)
+    graphCurvatureArray = parametric_splines_2d_curvature(xSpline, ySpline,
+                                                                   sValues)
     graphCurvature = curvature_metric(graphCurvatureArray)
     return graphCurvature
-"""
+
      

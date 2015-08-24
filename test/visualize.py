@@ -7,11 +7,36 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To remove unnecessary functions and lines.
 """
 
-import numpy as np
+#Standard Modules
 import matplotlib.pyplot as plt
+import numpy as np
 
+#Our Modules
+import interpolate
 import util
 
+def visualize_elevation_profile(elevationProfile):
+    distances = []
+    elevations = []
+    numPoints = len(elevationProfile)
+    sValues = np.arange(numPoints)
+    for elevationPoint in elevationProfile:
+        distance = elevationPoint["distanceAlongPath"]
+        elevation = elevationPoint["landElevation"]
+        distances.append(distance)
+        elevations.append(elevation)
+    distancesArray = np.array(distances)  
+    elevationsArray = np.array(elevations)
+    #xSpline, ySpline = interpolate.interpolating_splines_2d(
+    #               distancesArray, elevationsArray, sValues)
+    xSpline, ySpline = interpolate.smoothing_splines_2d(distancesArray,
+        elevationsArray, sValues, 1, 10**5)      
+    xValues = interpolate.get_spline_values(xSpline, sValues)
+    yValues = interpolate.get_spline_values(ySpline, sValues)
+    plt.plot(distances, elevations)
+    plt.plot(xValues, yValues, 'r-')
+    ##plt.axis('equal')
+    plt.show()
 
 def plot_object(objectData, style):    
     xValues, yValues = objectData

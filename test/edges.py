@@ -11,15 +11,15 @@ Last Modification Purpose: To test out pylonsv2
 import math
 
 #Our Modules
-import util
-import config
-import proj
-import elevation
-import pylons
-import tube
-import landcover
 import cacher
-
+import config
+import elevation
+import landcover
+import pylons
+import proj
+#import tube
+import util
+import visualize
 
 class Edge:
     """
@@ -43,27 +43,31 @@ class Edge:
     def build_pylons(self):
         startGeospatial, endGeospatial = self.geospatials
         pylonSlicesGeospatials, pylonSliceDistances = util.build_grid(
-          self.geospatialVector, config.pylonSpacing, startGeospatial)
+          self.geospatialVector, config.pylonSpacing, startGeospatial)     
+        #print("pylon slice distances" + str(pylonSliceDistances))
         elevationProfile = elevation.get_elevation_profile(
                            pylonSlicesGeospatials, pylonSliceDistances)
-        tubeGraphs = tube.elevation_profile_to_tube_graphs(elevationProfile) 
-        for tubeGraph in tubeGraphs:
-            print("pylon cost :" + tubeGraph.pylonCost)
-            print("tube cost :" + tubeGraph.tubeCost)
-        """
-        pylonAttributes = zip(*[pylonSlicesGeospatials, pylonSlicesLatLngs,  
-                                pylonSlicesElevations])
-        newPylons = [{"geospatial" : pylonAttribute[0],
-                       "latlng" : pylonAttribute[1],
-                        "elevation" : pylonAttribute[2],
-                        "pylonHeight" : 0,
-                        "pylonCost" : 0}
-                       for pylonAttribute in pylonAttributes]      
+        #if config.visualMode:
+        #    visualize.visualize_elevation_profile(elevationProfile)
+        #print("started building tubegraphs")
+        #tubeGraphs = tube.elevation_profile_to_tube_graphs(elevationProfile)         
+        #print("finished building tubegraphs")
+        #for tubeGraph in tubeGraphs:
+        #    print("pylon cost :" + tubeGraph.pylonCost)
+        #    print("tube cost :" + tubeGraph.tubeCost)
+      
+        #pylonAttributes = zip(*[pylonSlicesGeospatials, pylonSlicesLatLngs,  
+        #                        pylonSlicesElevations])
+        newPylons = [{"geospatial" : elevationPoint["geospatial"],
+                       "latlng" : elevationPoint["latlng"],
+                       "elevation" : elevationPoint["landElevation"],
+                       "pylonHeight" : 0,
+                       "pylonCost" : 0}
+                       for elevationPoint in elevationProfile]      
+        #print("newPylons: " + str(newPylons))
         pylons.build_pylons(newPylons)
         pylons.get_pyloncosts(newPylons)        
-        self.pylonCost = pylons.edge_pyloncost(newPylons)               
-        """
-        self.pylonCost = 0
+        self.pylonCost = pylons.edge_pyloncost(newPylons)                       
 
     def build_landcost_samples(self):
         if self.isInRightOfWay:

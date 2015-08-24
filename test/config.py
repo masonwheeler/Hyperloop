@@ -23,9 +23,9 @@ Cache Overwriting Switches.
 """
 useCachedDirections = True
 useCachedSpline = True
-useCachedLattice = False
-useCachedEdges = False
-useCachedGraphs = True
+useCachedLattice = True
+useCachedEdges = True
+useCachedGraphs = False
 
 """
 Lattice Generation Parameters
@@ -43,7 +43,7 @@ Graph Generation Parameters
 """
 graphCurvatureMinNumEdges = 3
 graphSampleSpacing = 1000.0
-numFronts = 12
+numFronts = 4
 
 """
 Tube Generation Parameters
@@ -51,7 +51,7 @@ Tube Generation Parameters
 
 tubeTripTimeExcessMinNumEdges = 3
 pylonHeightStepSize = 10.0
-tubeDegreeConstraint = 30.0
+tubeDegreeConstraint = 5.0
 
 """
 Velocity Profile Generation Parameters

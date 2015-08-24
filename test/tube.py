@@ -169,9 +169,9 @@ class TubeGraph(abstract.AbstractGraph):
     def tube_cost_trip_time_excess(self):
         costTripTimeExcess = [self.tubeCost + self.pylonCost,
                                          self.triptimeExcess]
-        print("tube cost: " + str(self.tubeCost))
-        print("pylon cost: " + str(self.pylonCost))
-        print("trip time excess: " + str(self.triptimeExcess))
+        ##print("tube cost: " + str(self.tubeCost))
+        ##print("pylon cost: " + str(self.pylonCost))
+        ##print("trip time excess: " + str(self.triptimeExcess))
         return costTripTimeExcess
 
     @classmethod
@@ -248,7 +248,7 @@ def elevation_profile_to_tube_graphs(elevationProfile):
                                    tubeEdgesSets.finalEdgesSets)
     tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSets,
         tube_graphs_set_pair_merger, abstract.graphs_set_updater)
-    rootTubeGraphsSet = graphsTree.root
+    rootTubeGraphsSet = tubeGraphsSetsTree.root
     selectedTubeGraphs = rootGraphsSet.selectedGraphs
     return selectedTubeGraphs
     

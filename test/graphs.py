@@ -65,6 +65,8 @@ class GraphsSet:
         if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
             self.costCurvaturePoints = [graph.to_costcurvature_point()
                                         for graph in self.unfilteredGraphs]
+        else:
+            self.costCurvaturePoints = None
 
     def select_graphs(self):
         """
@@ -120,9 +122,9 @@ class GraphsSet:
         self.graphs_to_costcurvaturepoints()
         self.select_graphs()       
 
-def graphset_updater(graphset):
+def graphs_set_updater(graphsSet):
     """Wrapper function to update a graphset"""
-    isGraphSetUpdated = graphset.update_graphs()
+    isGraphSetUpdated = graphsSet.update_graphs()
     return isGraphSetUpdated
 
 def edge_to_graph(edge):
@@ -191,9 +193,11 @@ def merge_basegraphssets(baseGraphSets):
     
 def build_graphs(edgessets):
     baseGraphsSets = edgessets_to_basegraphssets(edgessets)
-    rootGraphSet = merge_basegraphssets(baseGraphsSets)
-    completeGraphs = rootGraphSet.data.selectedGraphs
-    return completeGraphs
+    graphsSetsTree = mergetree.MasterTree(baseGraphsSets, graphs_sets_merger,
+                                                          graphs_set_updater)
+    rootGraphsSet = graphsSetsTree.root
+    selectedGraphs = rootGraphsSet.selectedGraphs
+    return selectedGraphs
     
 def get_graphs(edgessets):
     graphs = cacher.get_object("graphs", build_graphs, [edgessets],

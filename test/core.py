@@ -60,7 +60,7 @@ def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
     #print(len(finishedEdgesSets))
-    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print(completeGraphs[0].numEdges)
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
@@ -76,7 +76,7 @@ def build_graphs(latticeSlices):
         #print(plottableCostCurvature)
         #config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
-    return 0 #completeGraphs
+    return completeGraphs
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
