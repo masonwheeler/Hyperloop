@@ -24,14 +24,14 @@ import graphs
 import interpolate
 # import match_landscape as match
 # import advanced_interpolate as interp
-import routes
+#import routes
 
 
 def build_directions(start, end):    
-    directionsLatLng = directions.get_directions(start, end)
-    startLatLng, endLatLng = util.get_firstlast(directionsLatLng)
+    directionsLatLngs = directions.get_directions(start, end)
+    startLatLng, endLatLng = util.get_firstlast(directionsLatLngs)
     proj.set_projection(startLatLng, endLatLng)
-    directionsPoints = proj.latlngs_to_geospatials(directionsLatLng,
+    directionsPoints = proj.latlngs_to_geospatials(directionsLatLngs,
                                                    config.proj)
     if config.visualMode:
         plottableDirections = [zip(*directionsPoints), 'y-'] 
@@ -47,17 +47,23 @@ def build_lattice(directionsPoints):
     print("sampled points start: " + str(sampledPoints[0]))
     print("sampled points end: " + str(sampledPoints[-1]))
     sValues = interpolate.get_s_values(len(sampledPoints))
-    xSpline, ySpline = lattice.get_directionsspline(sampledPoints)  
-    xValues = interpolate.get_spline_values(xSpline, sValues) 
-    yValues = interpolate.get_spline_values(ySpline, sValues) 
-    splinePoints = zip(xValues, yValues)
-    spatialSliceBounds = zip(directionsPoints, splinePoints)
-    sliceSValues = interpolate.get_slice_s_values(sValues,
-                                config.splineSampleSpacing)       
-    print("slice s values: " + str(len(sliceSValues)))
+    spatialXSpline, spatialYSpline = lattice.get_directionsspline(sampledPoints)
+    spatialLatticeSlicesSValues = interpolate.get_slice_s_values(sValues,
+                                              config.splineSampleSpacing)       
+    spatialLatticeSlicesXValues = interpolate.get_spline_values(spatialXSpline,
+                                                   spatialLatticeSlicesSValues) 
+    spatialLatticeSlicesYValues = interpolate.get_spline_values(spatialYSpline,
+                                                   spatialLatticeSlicesSValues) 
+    spatialLatticeSlicesSplinePoints = zip(spatialLatticeSlicesXValues,
+                                           spatialLatticeSlicesYValues)
+    spatialLatticeSlicesDirectionsPoints = sampledPoints[
+                            ::config.splineSampleSpacing]
+    spatialSlicesBounds = zip(spatialLatticeSlicesDirectionsPoints,
+                                  spatialLatticeSlicesSplinePoints)
+    print("spatial slice bounds" + str(len(spatialSlicesBounds)))
     #latticeSlices = lattice.get_lattice(sliceSValues, sampledPoints,
     #                                            xSpline, ySpline) 
-    latticeSlices = lattice.get_lattice(spatialSliceBounds) 
+    latticeSlices = lattice.get_lattice(spatialSlicesBounds) 
     print("num lattice slices: " + str(len(latticeSlices)))
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
@@ -99,8 +105,8 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
-    _3Droute = routes._2Droute_to_3Droute(_2Droute)
+    #_2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    #_3Droute = routes._2Droute_to_3Droute(_2Droute)
 
 
     #Test genLandscape( , "elevation"):
