@@ -48,7 +48,7 @@ def sample_edges(edges, sampleSpacing):
     return points
 
 def sample_path(pathPoints, pathSampleSpacing):
-    lastPoint = pathPoints[-1]    
+    lastPoint = pathPoints[-1]
     pathEdges = points_to_edges(pathPoints)
     sampledPathPoints = sample_edges(pathEdges, pathSampleSpacing)
     sampledPathPoints.append(lastPoint)
