@@ -250,7 +250,7 @@ def build_land_cost_samples(edgesSets):
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
-    finishedEdgesSets = edgesSets.finishedEdgesSets
+    finishedEdgesSets = edgesSets.filteredEdgesSets
     return finishedEdgesSets
 
 def get_edgessets(lattice):    
