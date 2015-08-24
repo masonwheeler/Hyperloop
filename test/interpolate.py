@@ -78,7 +78,6 @@ def get_spline_values(spline, sValues):
 
 def get_slice_s_values(sValues, nth):
     lastSValue = sValues[-1]
-    print("lastSValue: " + str(lastSValue))
     sliceSValues = sValues[::nth]
     sliceSValues = np.append(sliceSValues, lastSValue)
     return sliceSValues

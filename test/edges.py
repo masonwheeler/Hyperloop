@@ -9,6 +9,7 @@ Last Modification Purpose: To test out pylonsv2
 
 #Standard Modules:
 import math
+import time
 
 #Our Modules
 import cacher
@@ -40,13 +41,20 @@ class Edge:
     geospatials = []
     geospatialVector = []
 
-    def build_pylons(self):
+    def get_elevation_profile(self):        
         startGeospatial, endGeospatial = self.geospatials
         pylonSlicesGeospatials, pylonSliceDistances = util.build_grid(
           self.geospatialVector, config.pylonSpacing, startGeospatial)     
-        #print("pylon slice distances" + str(pylonSliceDistances))
-        elevationProfile = elevation.get_elevation_profile(
+        self.elevationProfile = elevation.get_elevation_profile(
                            pylonSlicesGeospatials, pylonSliceDistances)
+
+    def build_pylons(self):
+        #startGeospatial, endGeospatial = self.geospatials
+        #pylonSlicesGeospatials, pylonSliceDistances = util.build_grid(
+        #  self.geospatialVector, config.pylonSpacing, startGeospatial)     
+        #print("pylon slice distances" + str(pylonSliceDistances))
+        #elevationProfile = elevation.get_elevation_profile(
+        #                   pylonSlicesGeospatials, pylonSliceDistances)
         #if config.visualMode:
         #    visualize.visualize_elevation_profile(elevationProfile)
         #print("started building tubegraphs")
@@ -63,13 +71,13 @@ class Edge:
                        "elevation" : elevationPoint["landElevation"],
                        "pylonHeight" : 0,
                        "pylonCost" : 0}
-                       for elevationPoint in elevationProfile]      
+                       for elevationPoint in self.elevationProfile]      
         #print("newPylons: " + str(newPylons))
         pylons.build_pylons(newPylons)
         pylons.get_pyloncosts(newPylons)        
-        self.pylonCost = pylons.edge_pyloncost(newPylons)                       
+        self.pylonCost = pylons.edge_pyloncost(newPylons)                           
 
-    def build_landcost_samples(self):
+    def build_land_cost_samples(self):
         if self.isInRightOfWay:
             self.landCost = config.rightOfWayLandCost          
         else:
@@ -209,24 +217,45 @@ class EdgesSets:
                                 self.filteredEdgesSetsList[filteredEdgesIndex])
             oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
     
-    def build_landcost_samples(self, edgesSets):
+    def build_land_cost_samples(self, edgesSets):
         for edgesSet in edgesSets:
             for edge in edgesSet:
-                edge.build_landcost_samples()        
+                edge.build_land_cost_samples()        
 
     def build_pylons(self, edgesSets):
         for edgesSet in edgesSets:
             for edge in edgesSet:
-               edge.build_pylons()        
+               edge.build_pylons()       
+
+    def get_elevation_profiles(self, edgesSets):
+        for edgesSet in edgesSets:
+            for edge in edgesSet:
+                edge.get_elevation_profile()
 
     def __init__(self, lattice):
         self.baseEdgesSets = self.base_edgessets(lattice)
         flattenedBaseEdges = util.fast_concat(self.baseEdgesSets)
         self.iterative_filter()
-        self.finishedEdgesSets = self.filteredEdgesSetsList[-1]
-        self.build_landcost_samples(self.finishedEdgesSets)
-        self.build_pylons(self.finishedEdgesSets)
+        self.filteredEdgesSets = self.filteredEdgesSetsList[-1]        
+        print("finished building edges")
+        t0 = time.time()
+        self.get_elevation_profiles(self.filteredEdgesSets)  
+        t1 = time.time()
+        print("attaching elevations took " + str(t1 - t0) + " seconds.")
+        #self.build_landcost_samples(self.finishedEdgesSets)
+        #print("finished attaching landcost")
+        #self.build_pylons(self.finishedEdgesSets)
+        #print("finished attaching pylon cost")
 
+def build_pylons(edgesSets):
+    for edgesSet in edgesSets:
+        for edge in edgesSet:
+            edge.build_pylons()
+
+def build_land_cost_samples(edgesSets):
+    for edgesSet in edgesSets:
+        for edge in edgesSet:
+            edge.build_land_cost_samples()        
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
