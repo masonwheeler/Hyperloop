@@ -43,10 +43,12 @@ def build_lattice(directionsPoints):
     sValues = interpolate.get_s_values(len(sampledPoints))
     xSpline, ySpline = lattice.get_directionsspline(sampledPoints)    
     sliceSValues = interpolate.get_slice_s_values(sValues,
-                                config.splineSampleSpacing)   
+                                config.splineSampleSpacing)       
+    print("slice s values: " + str(len(sliceSValues)))
     newLattice = lattice.get_lattice(sliceSValues, sampledPoints,
                                                 xSpline, ySpline) 
     latticeSlices = newLattice.latticeSlices
+    print("num lattice slices: " + str(len(latticeSlices)))
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
     if config.visualMode:
@@ -63,20 +65,20 @@ def build_graphs(latticeSlices):
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
     #print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
-    #print(completeGraphs[0].numEdges)
+    print("graphs num edges: " + str(completeGraphs[0].numEdges))
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
     #    print("land cost: " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
     #t1 = time.time()
     #print("Building the graphs took " + str(t1-t0) + " seconds.")
-    #if config.visualMode:
-        #plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
+    if config.visualMode:
+        plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
         #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
         #costs, curvatures = zip(*costCurvature)
         #visualize.scatter_plot(costs, curvatures)
         #print(plottableCostCurvature)
-        #config.plotQueue += plottableGraphs
+        config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
     return completeGraphs
 
@@ -87,12 +89,30 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    #Test genLandscape():
+    #Test genLandscape( , "elevation"):
+#    print "extracting geospatials of a single graph..."
+#    x = completeGraphs[0].geospatials
+#    print "converting geospatials from strings to floats..."
+#    x = [[float(p[0]),float(p[1])] for p in x]
+#    print "interpolating the geospatials..."
+#    x = interp.paraSuperQ(x, 25)
+#    print "generating the landscape..."
+#    s, z = match.genLandscape(x, "elevation")
+#    print "plotting the landscape..."
+#    visualize.scatter_plot(s, z)
+
+    #Test genLandscape( , "velocity"):
+    print "extracting geospatials of a single graph..."
     x = completeGraphs[0].geospatials
+    print "converting geospatials from strings to floats..."
     x = [[float(p[0]),float(p[1])] for p in x]
-    x = interp.paraSuperQ(x, 200)
-    s, z = match.genLandscape(x, "elevation")
-    visualize.scatter_plot(s, z)
+    print "interpolating the geospatials..."
+    x = interp.paraSuperQ(x, 25)
+    print "generating the landscape..."
+    s, v = match.genLandscape(x, "velocity")
+    print "plotting the landscape..."
+    visualize.scatter_plot(s, v)
+
 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
