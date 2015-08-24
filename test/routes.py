@@ -1,105 +1,62 @@
 """
-Original Developer: Jonathan Ward
-Purpose of Module: To provide classes for final output
-Last Modified: 8/16/15
+Original Developer: David Roberts
+Purpose of Module: To generate a route from a graph.
+Last Modified: 7/25/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: Created Module
+Last Modification Purpose: To make compatible with graph modifications.
 """
 
-import interpolate
-import proj
-import landcover
-import elevation
-import velocity
+import advanced_interpolation as interp
+from scipy.interpolate import PchipInterpolator
+import match_landscape as landscape
+import comfort as cmft
+import util
 
-class SpatialPath2d:
-    def sample_geospatials(self, graphGeospatials, geospatialSampleDistance):
-        sampledGeospatials = interpolate.sample_path(graphGeospatials,
-                                             geospatialSampleDistance)
-        return sampledGeospatials
-        
-    def get_interpolating_geospatials(self, sampledGeospatials):
-        xArray, yArray = points_2d_to_arrays(sampledGeospatials)
-        numPoints = len(sampledGeospatials)
-        sValues = interpolate.get_s_values(numPoints)
-        xSpline, ySpline = interpolate.interpolating_splines_2d(xArray, yArray,
-                                                                       sValues)
-        xValues = interpolate.get_spline_values(xSpline, sValues)
-        yValues = interpolate.get_spline_values(ySpline, sValues)
-        interpolatingGeospatials = [xValues, yValues]
-        return interpolatingGeospatials
 
-    def get_interpolating_latlngs(self, interpolatingGeospatials):
-        interpolatingLatLngs = proj.geospatials_to_latlngs(
-                                           interpolatingGeospatials)
-        return interpolatingLatLngs
+def graph_to_2Droute(graph):
+	x = graph.geospatials
+	return interp.paraSuperQ(x, 25)
 
-    def compute_land_cost(self, interpolatingLatLngs):
-        landCost = landcover.get_land_cost(interpolatedLatLngs)
-        return landCost
+def _2Droute_to_3Droute(x):
+	s, z = landscape.genLandscape(x, "elevation")
+	sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
+	f = PchipInterpolator(sInterp, zInterp)
+	z = f(s)
+	visualize.scatter_plot(s, z)
+	x, y = np.transpose(x)
+	return np.transpose([x, y, z])
 
-    def get_elevation_profile(self, interpolatedLatLngs):
-        elevationProfile = elevation.get_elevation_profile(interpolatedLatLngs)
-        return elevationProfile
+def _3Droute_to_4Droute(x):
+	s, v = landscape.genLandscape(x, "velocity")
+	sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
+	f = PchipInterpolator(sInterp, vInterp)
+	v = f(s)
 
-    def get_tube_graphs(self, elevationProfile):
-        return tubeGraphs
+	t = [0] * len(v)
+    t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
+    for i in range(2, len(v)):
+        t[i] = t[i-1] + (s[i] - s[i-1]) / v[i-1]
+    t[-1] = (s[-1] - s[-2]) / util.mean(v[-2:len(v)])
     
-    def __init__(self, spatialGraph):
-        graphGeospatials = spatialGraph.geospatials
-        sampledGeospatials = self.sample_geospatials(graphGeospatials)
-        interpolatingGeospatials = self.get_interpolating_geospatials(
-                                                       sampledGeospatials)
-        interpolatingLatLngs = self.get_interpolating_lat_lngs(
-                                           interpolatingGeospatials)
-        elevationProfile = elevation.get_elevation_profile(
-                                       interpolatingGeospatials)
-        self.landCost = self.compute_land_cost(interpolatingLatLngs)
-        self.tubeGraphs = self.get_tube_graphs(self.elevationProfile)
+    x, y, z = np.transpose(x)
+	return np.transpose([x, y, z, t])
 
+def comfortanalysisOf_4Droute(x):
+	x, y, z, t = np.transpose(x)
+	vx, vy, vz, t = [util.numericalDerivative(x, t), util.numericalDerivative(y, t), util.numericalDerivative(z, t), t]
+	ax, ay, az, t = [util.numericalDerivative(vx, t), util.numericalDerivative(vy, t), util.numericalDerivative(vz, t), t]
+	
+	#breakUp data into chunks for comfort evaluation:
+	vxChunks, vyChunks, vzChunks = [util.breakUp(vx, 500), util.breakUp(vy, 500), util.breakUp(vz, 500)]
+	axChunks, ayChunks, azChunks = [util.breakUp(ax, 500), util.breakUp(ay, 500), util.breakUp(az, 500)]
 
-class SpatialPath3d:
-    def get_velocity_profile_graphs(self, tubeCoords):
-        localMaxAllowedVelocities = \
-             interpolate.points_3d_local_max_allowed_velocities(tubeCoords)
-        maxEndPointVelocities = velocity.compute_max_endpoint_velocities(
-                           config.maxLinearAccel, config.maxPossibleVelocity,
-                                            config.velocityArcLengthStepSize)
-        globalMaxAllowedVelocities = velocity.global_max_allowed_velocities(
-                           localMaxAllowedVelocities, maxEndPointVelocities)
-        selectedVelocityProfileGraphs = \
-            velocity.max_allowed_velocities_to_velocity_profile_graphs(
-                                            globalMaxAllowedVelocities)
-        return selectedVelocityProfileGraphs
-         
+	vChunks = np.transpose([vxChunks, vyChunks, vzChunks])
+	aChunks = np.transpose([axChunks, ayChunks, azChunks])
+	tChunks = util.breakUp(t, 500)
 
-    def __init__(self, landCost, tubeGraph):
-        self.landCost = landCost
-        self.tubeCost = tubeGraph.tubeCost
-        self.pylonCost = tubeGraph.pylonCost
-        self.tubeCoords = tubeGraph.tubeCoords
-        self.pylons = tubeGraph.pylons     
-        self.velocityProfileGraphs = get_velocity_profile_graphs(
-                                                    self.tubeCoords)
-
-         
-class Route:
-    def __init__(self, tube, velocityProfileGraph):
-
-    def as_dict(self):
-        routeDict = {
-                     "latlngs" : self.latlngs,
-                     "landCost" : self.landCost,
-                     "tubeCoords" : self.tubeElevations,
-                     "pylons" : self.pylons,
-                     "tubeCost" : self.tubeCost,
-                     "pylonCost" : self.pylonCost,
-                     "velocityProfile" : self.velocityProfile,
-                     "accelerationProfile" : self.accelerationProfile,
-                     "comfortRating" : self.comfortRating,
-                     "tripTime" : self.tripTime
-                     }
-
+    mu = 1
+    comfort = [cmft.comfort(vChunks[i], aChunks[i], tChunks[i][-1]-tChunks[i][0], mu) for i in range(len(tChunks))]
+    return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
 
 
 

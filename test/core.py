@@ -22,8 +22,10 @@ import lattice
 import edges
 import graphs
 import interpolate
-import match_landscape as match
-import advanced_interpolate as interp
+# import match_landscape as match
+# import advanced_interpolate as interp
+import routes
+
 
 def build_directions(start, end):    
     directionsLatLng = directions.get_directions(start, end)
@@ -89,6 +91,10 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
+    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    _3Droute = routes._2Droute_to_3Droute(_2Droute)
+
+
     #Test genLandscape( , "elevation"):
 #    print "extracting geospatials of a single graph..."
 #    x = completeGraphs[0].geospatials
@@ -102,16 +108,16 @@ def pair_analysis(start,end):
 #    visualize.scatter_plot(s, z)
 
     #Test genLandscape( , "velocity"):
-    print "extracting geospatials of a single graph..."
-    x = completeGraphs[0].geospatials
-    print "converting geospatials from strings to floats..."
-    x = [[float(p[0]),float(p[1])] for p in x]
-    print "interpolating the geospatials..."
-    x = interp.paraSuperQ(x, 25)
-    print "generating the landscape..."
-    s, v = match.genLandscape(x, "velocity")
-    print "plotting the landscape..."
-    visualize.scatter_plot(s, v)
+    # print "extracting geospatials of a single graph..."
+    # x = completeGraphs[0].geospatials
+    # print "converting geospatials from strings to floats..."
+    # x = [[float(p[0]),float(p[1])] for p in x]
+    # print "interpolating the geospatials..."
+    # x = interp.paraSuperQ(x, 25)
+    # print "generating the landscape..."
+    # s, v = match.genLandscape(x, "velocity")
+    # print "plotting the landscape..."
+    # visualize.scatter_plot(s, v)
 
 
     t1 = time.time()
