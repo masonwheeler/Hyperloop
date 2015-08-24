@@ -24,7 +24,7 @@ import graphs
 import interpolate
 # import match_landscape as match
 # import advanced_interpolate as interp
-#import routes
+import routes
 
 
 def build_directions(start, end):    
@@ -68,9 +68,9 @@ def build_lattice(directionsPoints):
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
     if config.visualMode:
-        xValues = interpolate.get_spline_values(xSpline, sValues)
-        yValues = interpolate.get_spline_values(ySpline, sValues)
-        plottableSpline = [[xValues, yValues], 'r-']
+        splineXValues = interpolate.get_spline_values(spatialXSpline, sValues)
+        splineYValues = interpolate.get_spline_values(spatialYSpline, sValues)
+        plottableSpline = [[splineXValues, splineYValues], 'r-']
         config.plotQueue.append(plottableSpline)
     return latticeSlices
 

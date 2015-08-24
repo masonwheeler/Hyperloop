@@ -47,7 +47,7 @@ def genLandscape(x, Type):
 
 
 def matchLandscape(s, z, Type):
-  #the profile initializes as ∂z.
+  #the profile initializes as delta-z.
   K = [0, len(z)-1]
 
   #we now sort the remaining landscape.
