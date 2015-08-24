@@ -66,9 +66,9 @@ def build_lattice(directionsPoints):
                            sampledPoints, config.spatialSliceSValueStepSize)
     spatialSlicesBounds = zip(spatialLatticeSlicesDirectionsPoints,
                                   spatialLatticeSlicesSplinePoints)
-    ##print("spatial slice bounds: " + str(len(spatialSlicesBounds)))
+    print("spatial slice bounds: " + str(len(spatialSlicesBounds)))
     latticeSlices = lattice.get_lattice(spatialSlicesBounds) 
-    ##print("num lattice slices: " + str(len(latticeSlices)))
+    print("num lattice slices: " + str(len(latticeSlices)))
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
     if config.visualMode:
@@ -83,6 +83,7 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
+    print(finishedEdgesSets)
     t2 = time.time()
     edges.build_pylons(finishedEdgesSets)
     t3 = time.time()
@@ -91,8 +92,8 @@ def build_graphs(latticeSlices):
     edges.build_land_cost_samples(finishedEdgesSets)
     t5 = time.time()
     print("Building the land cost samples took " + str(t5 - t4) + " seconds.")
-    #print(len(finishedEdgesSets))
-    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    ##print(len(finishedEdgesSets))
+    completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
@@ -100,13 +101,13 @@ def build_graphs(latticeSlices):
     #    print("curvature: " + str(graph.curvatureMetric))
     #t1 = time.time()
     #print("Building the graphs took " + str(t1-t0) + " seconds.")
-    #if config.visualMode:
-        #plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
+    if config.visualMode:
+        plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
         #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
         #costs, curvatures = zip(*costCurvature)
         #visualize.scatter_plot(costs, curvatures)
         #print(plottableCostCurvature)
-        #config.plotQueue += plottableGraphs
+        config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
     return 0 #completeGraphs
 

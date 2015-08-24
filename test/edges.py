@@ -49,12 +49,6 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
-        #startGeospatial, endGeospatial = self.geospatials
-        #pylonSlicesGeospatials, pylonSliceDistances = util.build_grid(
-        #  self.geospatialVector, config.pylonSpacing, startGeospatial)     
-        #print("pylon slice distances" + str(pylonSliceDistances))
-        #elevationProfile = elevation.get_elevation_profile(
-        #                   pylonSlicesGeospatials, pylonSliceDistances)
         #if config.visualMode:
         #    visualize.visualize_elevation_profile(elevationProfile)
         #print("started building tubegraphs")
@@ -64,15 +58,12 @@ class Edge:
         #    print("pylon cost :" + tubeGraph.pylonCost)
         #    print("tube cost :" + tubeGraph.tubeCost)
       
-        #pylonAttributes = zip(*[pylonSlicesGeospatials, pylonSlicesLatLngs,  
-        #                        pylonSlicesElevations])
         newPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
                        "elevation" : elevationPoint["landElevation"],
                        "pylonHeight" : 0,
                        "pylonCost" : 0}
                        for elevationPoint in self.elevationProfile]      
-        #print("newPylons: " + str(newPylons))
         pylons.build_pylons(newPylons)
         pylons.get_pyloncosts(newPylons)        
         self.pylonCost = pylons.edge_pyloncost(newPylons)                           
