@@ -66,12 +66,9 @@ class Slice:
             idIndex += 1
             slicePoints = [sliceSplinePoint] + sliceGridPoints + \
                           [sliceDirectionsPoint]   
-        ##print("slice points: " + str(slicePoints))
         return [slicePoints, idIndex]
 
     def __init__(self, idIndex, directionsPoint, splinePoint):   
-        ##print("directions point: " + str(directionsPoint))
-        ##print("spline point: " + str(splinePoint))
         self.directionsPoint = directionsPoint    
         self.splinePoint = splinePoint
         self.slicePoints, self.idIndex = self.build_slice(idIndex, 
@@ -90,45 +87,11 @@ class Slice:
         print("Spline Point: " + str(self.splinePoint))
         print("Directions Point: " + str(self.directionsPoint))
 
-"""
-class Lattice:
-    #Builds Lattice from the directions, the splines and the arc-parameter
-    latticeSlices = []
-    plottableSlices = []
-
-    def get_sliceendpoints(self, sliceSValue, sampledDirections, xSpline,
-                                                                 ySpline):          
-        rawDirectionsPoint = sampledDirections[int(sliceSValue.tolist())]    
-        rawSplinePoint = [xSpline(sliceSValue), ySpline(sliceSValue)]
-        fixedDirectionsPoint = list(rawDirectionsPoint)
-        fixedSplinePoint = [point.tolist() for point in rawSplinePoint]
-        return [fixedDirectionsPoint, fixedSplinePoint]
-
-    def __init__(self, sliceSValues, directionsPoints, xSpline, ySpline):
-        slices = []
-        idIndex = 1
-        for sliceSValue in np.nditer(sliceSValues):
-            directionsPoint, splinePoint = self.get_sliceendpoints(sliceSValue,
-                                            directionsPoints, xSpline, ySpline)
-            newSlice = Slice(idIndex, directionsPoint, splinePoint)
-            idIndex = newSlice.idIndex
-            self.latticeSlices.append(newSlice.as_list())
-            self.plottableSlices.append(newSlice.plottable_slice())
-"""
 
 class Lattice:
     """Builds Lattice from the directions, the splines and the arc-parameter"""
     latticeSlices = []
     plottableSlices = []
-    """
-    def get_sliceendpoints(self, sliceSValue, sampledDirections, xSpline,
-                                                                 ySpline):          
-        rawDirectionsPoint = sampledDirections[int(sliceSValue.tolist())]    
-        rawSplinePoint = [xSpline(sliceSValue), ySpline(sliceSValue)]
-        fixedDirectionsPoint = list(rawDirectionsPoint)
-        fixedSplinePoint = [point.tolist() for point in rawSplinePoint]
-        return [fixedDirectionsPoint, fixedSplinePoint]
-    """
 
     def __init__(self, spatialSliceBounds):
         slices = []
@@ -138,13 +101,7 @@ class Lattice:
             newSlice = Slice(idIndex, directionsPoint, splinePoint)
             idIndex = newSlice.idIndex
             self.latticeSlices.append(newSlice.as_list())
-            #self.plottableSlices.append(newSlice.plottable_slice())
 
-"""
-def build_lattice_slices(sliceSValues, directionsPoints, xSpline, ySpline):
-    lattice = Lattice(sliceSValues, directionsPoints, xSpline, ySpline)
-    return lattice.latticeSlices
-"""
 
 def build_lattice_slices(spatialSliceBounds):
     lattice = Lattice(spatialSliceBounds)
@@ -194,28 +151,8 @@ def get_directionsspline(sampledDirectionsPoints):
                                        cacher.save_spline, config.splineFlag)
     return directionsSpline
 
-"""
-def get_lattice(sliceSValues, directionsPoints, xSpline, ySpline):
-    lattice = cacher.get_object("lattice", build_lattice_slices,
-              [sliceSValues, directionsPoints, xSpline, ySpline],
-              cacher.save_lattice, config.latticeFlag)
-    return lattice
-"""
-
 def get_lattice(spatialSliceBounds):
     lattice = cacher.get_object("lattice", build_lattice_slices,
               [spatialSliceBounds], cacher.save_lattice, config.latticeFlag)
     return lattice
 
-"""    
-def build_directionsspline(directionsPoints):
-    xCoordsList, yCoordsList = zip(*directionsPoints)
-    xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
-    numPoints = len(directionsPoints)
-    tValues = np.arange(numPoints)
-    endWeights = 100000
-    smoothingFactor = 10**13
-    xSpline, ySpline = interpolate.smoothing_splines(xArray, yArray, tValues,
-                                                 endWeights, smoothingFactor)
-    return [xSpline, ySpline]
-"""
