@@ -87,7 +87,19 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    #Test genLandscape():
+    #Test genLandscape( , "elevation"):
+#    print "extracting geospatials of a single graph..."
+#    x = completeGraphs[0].geospatials
+#    print "converting geospatials from strings to floats..."
+#    x = [[float(p[0]),float(p[1])] for p in x]
+#    print "interpolating the geospatials..."
+#    x = interp.paraSuperQ(x, 25)
+#    print "generating the landscape..."
+#    s, z = match.genLandscape(x, "elevation")
+#    print "plotting the landscape..."
+#    visualize.scatter_plot(s, z)
+
+    #Test genLandscape( , "velocity"):
     print "extracting geospatials of a single graph..."
     x = completeGraphs[0].geospatials
     print "converting geospatials from strings to floats..."
@@ -95,9 +107,10 @@ def pair_analysis(start,end):
     print "interpolating the geospatials..."
     x = interp.paraSuperQ(x, 25)
     print "generating the landscape..."
-    s, z = match.genLandscape(x, "elevation")
+    s, v = match.genLandscape(x, "velocity")
     print "plotting the landscape..."
-    visualize.scatter_plot(s, z)
+    visualize.scatter_plot(s, v)
+
 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
