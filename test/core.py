@@ -38,16 +38,24 @@ def build_directions(start, end):
 
 def build_lattice(directionsPoints):
     t0 = time.time()
+    print("directions points start: " + str(directionsPoints[0]))
+    print("directions points end: " + str(directionsPoints[-1]))
     sampledPoints = interpolate.sample_path(directionsPoints,
                               config.directionsSampleSpacing)
+    print("sampled points start: " + str(sampledPoints[0]))
+    print("sampled points end: " + str(sampledPoints[-1]))
     sValues = interpolate.get_s_values(len(sampledPoints))
-    xSpline, ySpline = lattice.get_directionsspline(sampledPoints)    
+    xSpline, ySpline = lattice.get_directionsspline(sampledPoints)  
+    xValues = interpolate.get_spline_values(xSpline, sValues) 
+    yValues = interpolate.get_spline_values(ySpline, sValues) 
+    splinePoints = zip(xValues, yValues)
+    spatialSliceBounds = zip(directionsPoints, splinePoints)
     sliceSValues = interpolate.get_slice_s_values(sValues,
                                 config.splineSampleSpacing)       
     print("slice s values: " + str(len(sliceSValues)))
-    newLattice = lattice.get_lattice(sliceSValues, sampledPoints,
-                                                xSpline, ySpline) 
-    latticeSlices = newLattice.latticeSlices
+    #latticeSlices = lattice.get_lattice(sliceSValues, sampledPoints,
+    #                                            xSpline, ySpline) 
+    latticeSlices = lattice.get_lattice(spatialSliceBounds) 
     print("num lattice slices: " + str(len(latticeSlices)))
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
