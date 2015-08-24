@@ -107,18 +107,6 @@ def matchLandscape(s, z, Type):
 # print sortIndices(z, "velocity")
 
 
-# Test genLandscape(x, Type):
- 
-
-with open('/Users/Droberts/Dropbox/save/Dallas_to_Austin/Dallas_to_Austin_graphs/Dallas_to_Austin_graph003.csv', 'rb') as f:
-    reader = csv.reader(f)
-    x = list(reader)
-x = [[float(p[0]),float(p[1])] for p in x]
-x = interp.paraSuperQ(x, 200)
-s, z = genLandscape(x, "elevation")
-
-plt.plot(s, z)
-plt.show()
 
 
 
