@@ -40,7 +40,10 @@ def _2Droute_to_3Droute(x):
 	sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
 	f = PchipInterpolator(sInterp, zInterp)
 	z = f(s)
+
+	#for testing only:
 	visualize.scatter_plot(s, z)
+	
 	x, y = np.transpose(x)
 	return np.transpose([x, y, z])
 
@@ -50,6 +53,7 @@ def _3Droute_to_4Droute(x):
 	f = PchipInterpolator(sInterp, vInterp)
 	v = f(s)
 
+	#Reparametrize the route according to the velocity profile.
 	t = [0] * len(v)
     t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
     for i in range(2, len(v)):
