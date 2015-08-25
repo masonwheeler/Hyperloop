@@ -35,7 +35,7 @@ def graph_to_2Droute(graph):
 	x = graph.geospatials
 	return interp.paraSuperQ(x, 25)
 
-def _2Droute_to_3Droute(x):
+def f2Droute_to_3Droute(x):
 	s, z = landscape.genLandscape(x, "elevation")
 	sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
 	f = PchipInterpolator(sInterp, zInterp)
@@ -47,7 +47,7 @@ def _2Droute_to_3Droute(x):
 	x, y = np.transpose(x)
 	return np.transpose([x, y, z])
 
-def _3Droute_to_4Droute(x):
+def f3Droute_to_4Droute(x):
 	s, v = landscape.genLandscape(x, "velocity")
 	sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
 	f = PchipInterpolator(sInterp, vInterp)
