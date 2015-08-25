@@ -36,6 +36,17 @@ def round_points(points):
     """
     return [_round_nums(point) for point in points]
 
+def smart_sample_nth_points(points, n):
+    """
+    Takes every nth point in a list as well as the last point.
+  
+    Used in core.build_lattice()
+    """
+    endPoint = points[-1]
+    sampledPoints = points[::n]
+    sampledPoints.append(endPoint)
+    return sampledPoints
+
 def to_pairs(points):
     """
     Converts a list of points to a list of pairs of points

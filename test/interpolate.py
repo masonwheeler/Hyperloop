@@ -48,8 +48,10 @@ def sample_edges(edges, sampleSpacing):
     return points
 
 def sample_path(pathPoints, pathSampleSpacing):
+    lastPoint = pathPoints[-1]
     pathEdges = points_to_edges(pathPoints)
     sampledPathPoints = sample_edges(pathEdges, pathSampleSpacing)
+    sampledPathPoints.append(lastPoint)
     return sampledPathPoints
 
 ########## Auxilary Functions ##########
@@ -75,7 +77,9 @@ def get_spline_values(spline, sValues):
     return splineValues
 
 def get_slice_s_values(sValues, nth):
+    lastSValue = sValues[-1]
     sliceSValues = sValues[::nth]
+    sliceSValues = np.append(sliceSValues, lastSValue)
     return sliceSValues
 
 ########## For 2d Smoothing Splines ##########

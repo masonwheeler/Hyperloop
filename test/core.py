@@ -24,7 +24,7 @@ import graphs
 import interpolate
 # import match_landscape as match
 # import advanced_interpolate as interp
-#import routes
+import routes
 
 
 def build_directions(start, end):    
@@ -40,37 +40,41 @@ def build_directions(start, end):
 
 def build_lattice(directionsPoints):
     t0 = time.time()
-    print("directions points start: " + str(directionsPoints[0]))
-    print("directions points end: " + str(directionsPoints[-1]))
+    ##print("directions points start: " + str(directionsPoints[0]))
+    ##print("directions points end: " + str(directionsPoints[-1]))
     sampledPoints = interpolate.sample_path(directionsPoints,
                               config.directionsSampleSpacing)
-    print("sampled points start: " + str(sampledPoints[0]))
-    print("sampled points end: " + str(sampledPoints[-1]))
+    ##print("sampled points start: " + str(sampledPoints[0]))
+    #3print("sampled points end: " + str(sampledPoints[-1]))
     sValues = interpolate.get_s_values(len(sampledPoints))
+    ##print("last s value: " + str(sValues[-1]))
     spatialXSpline, spatialYSpline = lattice.get_directionsspline(sampledPoints)
     spatialLatticeSlicesSValues = interpolate.get_slice_s_values(sValues,
-                                              config.splineSampleSpacing)       
+                                     config.spatialSliceSValueStepSize)       
+    ##print("last spline s value: " + str(spatialLatticeSlicesSValues[-1]))
     spatialLatticeSlicesXValues = interpolate.get_spline_values(spatialXSpline,
                                                    spatialLatticeSlicesSValues) 
     spatialLatticeSlicesYValues = interpolate.get_spline_values(spatialYSpline,
                                                    spatialLatticeSlicesSValues) 
     spatialLatticeSlicesSplinePoints = zip(spatialLatticeSlicesXValues,
                                            spatialLatticeSlicesYValues)
-    spatialLatticeSlicesDirectionsPoints = sampledPoints[
-                            ::config.splineSampleSpacing]
+    ##print("spatial lattice points start: " + 
+    ##      str(spatialLatticeSlicesSplinePoints[0]))
+    ##print("spatial lattice points end: " +
+    ##      str(spatialLatticeSlicesSplinePoints[-1]))
+    spatialLatticeSlicesDirectionsPoints = util.smart_sample_nth_points(
+                           sampledPoints, config.spatialSliceSValueStepSize)
     spatialSlicesBounds = zip(spatialLatticeSlicesDirectionsPoints,
                                   spatialLatticeSlicesSplinePoints)
-    print("spatial slice bounds" + str(len(spatialSlicesBounds)))
-    #latticeSlices = lattice.get_lattice(sliceSValues, sampledPoints,
-    #                                            xSpline, ySpline) 
+    print("spatial slice bounds: " + str(len(spatialSlicesBounds)))
     latticeSlices = lattice.get_lattice(spatialSlicesBounds) 
     print("num lattice slices: " + str(len(latticeSlices)))
     t1 = time.time()
     print("Building the lattice took " + str(t1-t0) + " seconds.")
     if config.visualMode:
-        xValues = interpolate.get_spline_values(xSpline, sValues)
-        yValues = interpolate.get_spline_values(ySpline, sValues)
-        plottableSpline = [[xValues, yValues], 'r-']
+        splineXValues = interpolate.get_spline_values(spatialXSpline, sValues)
+        splineYValues = interpolate.get_spline_values(spatialYSpline, sValues)
+        plottableSpline = [[splineXValues, splineYValues], 'r-']
         config.plotQueue.append(plottableSpline)
     return latticeSlices
 
@@ -79,9 +83,17 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
-    #print(len(finishedEdgesSets))
+    t2 = time.time()
+    edges.build_pylons(finishedEdgesSets)
+    t3 = time.time()
+    print("Building the pylons took " + str(t3 - t2) + " seconds.")
+    t4 = time.time()
+    edges.build_land_cost_samples(finishedEdgesSets)
+    t5 = time.time()
+    print("Building the land cost samples took " + str(t5 - t4) + " seconds.")
+    ##print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
-    print("graphs num edges: " + str(completeGraphs[0].numEdges))
+    #print("graphs num edges: " + str(completeGraphs[0].numEdges))
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
     #    print("land cost: " + str(graph.landCost))
@@ -96,7 +108,7 @@ def build_graphs(latticeSlices):
         #print(plottableCostCurvature)
         config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
-    return completeGraphs
+    return 0 #completeGraphs
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
@@ -105,8 +117,8 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
-    _3Droute = routes._2Droute_to_3Droute(_2Droute)
+    #_2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    #_3Droute = routes._2Droute_to_3Droute(_2Droute)
 
 
     #Test genLandscape( , "elevation"):
