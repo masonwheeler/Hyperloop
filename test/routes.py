@@ -47,19 +47,13 @@ def f2Droute_to_3Droute(x):
 	x, y = np.transpose(x)
 	return np.transpose([x, y, z])
 
-<<<<<<< HEAD
+
 def f3Droute_to_4Droute(x):
 	s, v = landscape.genLandscape(x, "velocity")
 	sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
 	f = PchipInterpolator(sInterp, vInterp)
 	v = f(s)
-=======
-def _3Droute_to_4Droute(x):
-    s, v = landscape.genLandscape(x, "velocity")
-    sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
-    f = PchipInterpolator(sInterp, vInterp)
-    v = f(s)
->>>>>>> d1f8e542b81fa9d22be4e63f1c44c347f8e1a6c2
+
 
     #Reparametrize the route according to the velocity profile.
     t = [0] * len(v)
