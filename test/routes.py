@@ -12,6 +12,9 @@ import match_landscape as landscape
 import comfort as cmft
 import util
 import visualize
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 class Route:
   #def __init__(self, tube, velocityProfileGraph):
@@ -36,13 +39,15 @@ def graphtotwoDroute(graph):
   return interp.paraSuperQ(x, 25)
 
 def twoDroutetothreeDroute(x):
-  s, z = landscape.genLandscape(x, "elevation")
-  sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
+  s, zland = landscape.genLandscape(x, "elevation")
+  sInterp, zInterp = landscape.matchLandscape(s, zland, "elevation")
   f = PchipInterpolator(sInterp, zInterp)
   z = f(s)
 
   #for testing only:
-  visualize.scatter_plot(s, z)
+  plt.plot(s, z, 'b.', s, zland, 'r.')
+  plt.show()
+
   
   x, y = np.transpose(x)
   return np.transpose([x, y, z])
