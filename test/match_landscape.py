@@ -67,7 +67,7 @@ def matchLandscape(s, z, Type):
         return max(np.absolute(extremalCurvatures))
 
       curvatures = [curvature(K[new], K[new+1]), curvature(K[new-1], K[new])]
-      bools = [k > config.latAccelTol/config.maxSpeed**2 for curvature in curvatures]
+      bools = [curvature > config.latAccelTol/config.maxSpeed**2 for curvature in curvatures]
 
     elif Type == "velocity":
       dz = [np.absolute(z[K[new+1]]-z[K[new]]), np.absolute(z[K[new]]-z[K[new-1]])]
