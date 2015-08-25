@@ -14,21 +14,21 @@ import util
 
 
 class Route:
-    #def __init__(self, tube, velocityProfileGraph):
+  #def __init__(self, tube, velocityProfileGraph):
     
-    def as_dict(self):
-        routeDict = {
-                     "latlngs" : self.latlngs,
-                     "landCost" : self.landCost,
-                     "tubeCoords" : self.tubeElevations,
-                     "pylons" : self.pylons,
-                     "tubeCost" : self.tubeCost,
-                     "pylonCost" : self.pylonCost,
-                     "velocityProfile" : self.velocityProfile,
-                     "accelerationProfile" : self.accelerationProfile,
-                     "comfortRating" : self.comfortRating,
-                     "tripTime" : self.tripTime
-                     }
+  def as_dict(self):
+    routeDict = {
+                  "latlngs" : self.latlngs,
+                  "landCost" : self.landCost,
+                  "tubeCoords" : self.tubeElevations,
+                  "pylons" : self.pylons,
+                  "tubeCost" : self.tubeCost,
+                  "pylonCost" : self.pylonCost,
+                  "velocityProfile" : self.velocityProfile,
+                  "accelerationProfile" : self.accelerationProfile,
+                  "comfortRating" : self.comfortRating,
+                  "tripTime" : self.tripTime
+                }
 
 
 def graph_to_2Droute(graph):
@@ -67,20 +67,20 @@ def f3Droute_to_4Droute(x):
 
 
 def comfortanalysisOf_4Droute(x):
-    x, y, z, t = np.transpose(x)
-    vx, vy, vz, t = [util.numericalDerivative(x, t), util.numericalDerivative(y, t), util.numericalDerivative(z, t), t]
-    ax, ay, az, t = [util.numericalDerivative(vx, t), util.numericalDerivative(vy, t), util.numericalDerivative(vz, t), t]
+  x, y, z, t = np.transpose(x)
+  vx, vy, vz, t = [util.numericalDerivative(x, t), util.numericalDerivative(y, t), util.numericalDerivative(z, t), t]
+  ax, ay, az, t = [util.numericalDerivative(vx, t), util.numericalDerivative(vy, t), util.numericalDerivative(vz, t), t]
     
-    #breakUp data into chunks for comfort evaluation:
-    vxChunks, vyChunks, vzChunks = [util.breakUp(vx, 500), util.breakUp(vy, 500), util.breakUp(vz, 500)]
-    axChunks, ayChunks, azChunks = [util.breakUp(ax, 500), util.breakUp(ay, 500), util.breakUp(az, 500)]
+  #breakUp data into chunks for comfort evaluation:
+  vxChunks, vyChunks, vzChunks = [util.breakUp(vx, 500), util.breakUp(vy, 500), util.breakUp(vz, 500)]
+  axChunks, ayChunks, azChunks = [util.breakUp(ax, 500), util.breakUp(ay, 500), util.breakUp(az, 500)]
 
-    vChunks = np.transpose([vxChunks, vyChunks, vzChunks])
-    aChunks = np.transpose([axChunks, ayChunks, azChunks])
-    tChunks = util.breakUp(t, 500)
-    mu = 1
-    comfort = [cmft.comfort(vChunks[i], aChunks[i], tChunks[i][-1]-tChunks[i][0], mu) for i in range(len(tChunks))]
-    return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
+  vChunks = np.transpose([vxChunks, vyChunks, vzChunks])
+  aChunks = np.transpose([axChunks, ayChunks, azChunks])
+  tChunks = util.breakUp(t, 500)
+  mu = 1
+  comfort = [cmft.comfort(vChunks[i], aChunks[i], tChunks[i][-1]-tChunks[i][0], mu) for i in range(len(tChunks))]
+  return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
 
 
 
