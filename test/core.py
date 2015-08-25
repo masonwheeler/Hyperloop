@@ -117,8 +117,8 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    #_2Droute = routes.graph_to_2Droute(completeGraphs[0])
-    #_3Droute = routes._2Droute_to_3Droute(_2Droute)
+    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    _3Droute = routes._2Droute_to_3Droute(_2Droute)
 
 
     #Test genLandscape( , "elevation"):

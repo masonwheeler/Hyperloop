@@ -24,8 +24,8 @@ Cache Overwriting Switches.
 useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
-useCachedEdges = False
-useCachedGraphs = False
+useCachedEdges = True
+useCachedGraphs = True
 
 """
 Lattice Generation Parameters
