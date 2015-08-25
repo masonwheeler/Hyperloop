@@ -32,30 +32,27 @@ class Route:
 
 
 def graph_to_2Droute(graph):
-	x = graph.geospatials
-	return interp.paraSuperQ(x, 25)
+  x = graph.geospatials
+  return interp.paraSuperQ(x, 25)
 
 def f2Droute_to_3Droute(x):
-	s, z = landscape.genLandscape(x, "elevation")
-	sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
-	f = PchipInterpolator(sInterp, zInterp)
-	z = f(s)
+  s, z = landscape.genLandscape(x, "elevation")
+  sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
+  f = PchipInterpolator(sInterp, zInterp)
+  z = f(s)
 
-	#for testing only:
-	visualize.scatter_plot(s, z)
-	
-	x, y = np.transpose(x)
-	return np.transpose([x, y, z])
+  #for testing only:
+  visualize.scatter_plot(s, z)
+  
+  x, y = np.transpose(x)
+  return np.transpose([x, y, z])
 
 
 def f3Droute_to_4Droute(x):
-	s, v = landscape.genLandscape(x, "velocity")
-	sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
-	f = PchipInterpolator(sInterp, vInterp)
-	v = f(s)
-
-
-  #Reparametrize the route according to the velocity profile.
+  s, v = landscape.genLandscape(x, "velocity")
+  sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
+  f = PchipInterpolator(sInterp, vInterp)
+  v = f(s)
   t = [0] * len(v)
   t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
   for i in range(2, len(v)):
