@@ -52,7 +52,8 @@ def matchLandscape(s, z, Type):
 
   #we now sort the remaining landscape.
   J = sortIndices(z[1:len(z)-1], Type)
-  cached = ([False]*len(z))*len(z)
+  J = [j+1 for j in J]
+  cached = [[0 for i in range(len(z))] for i in range(len(z))]
 
   def bad(index, Type):
     new = util.placeIndexinList(index, K) # append newcomer to list; try it on for size
@@ -65,7 +66,7 @@ def matchLandscape(s, z, Type):
       return True
     elif Type == "elevation":
       cached[i][j] = cached[j][i] = True
-      curvatureTol = config.latAccelTol/config.maxSpeed**2
+      curvatureTol = config.linearAccelConstraint/config.maxSpeed**2
       def curvature(i, j):   #Computes the curvature of the clothoid 
         x0, x1 = [s[i], s[j]]
         y0, y1 = [z[i], z[j]]
@@ -78,11 +79,11 @@ def matchLandscape(s, z, Type):
 
     elif Type == "velocity":
       cached[i][j] = cached[j][i] = True
-      dz = [np.absolute(z[j]-z[j])
-      ds = s[j]]-s[i]
+      dz = np.absolute(z[j]-z[j])
+      ds = s[j]-s[i]
       v = (z[j]+z[i])/2
 
-      C = v * config.linearAccelTol
+      C = v * config.linearAccelConstraint
       D = v**2 * config.jerkTol
 
       def dzTol(s):
@@ -95,10 +96,10 @@ def matchLandscape(s, z, Type):
 
   def matchPoint():
     i = 0
-    while bad(J[i], Type) and i < len(J):
-      print J[i]
+    while bad(J[i], Type) and i < len(J) - 1:
       i += 1
-    if i == len(J):
+    if i == len(J) - 1:
+      print "Exhausted the landscape. Could not find a point to match."
       return "Exhausted the landscape. Could not find a point to match."
     else:
       util.placeIndexinList(J.pop(i), K)
@@ -107,7 +108,6 @@ def matchLandscape(s, z, Type):
   l = 0
   while matchPoint() == "Success! See if we can match another point.":
     l += 1
-    print K
     print "matched the "+ str(l)+ "th point."
     pass
   return [[s[k] for k in K], [z[k] for k in K]]

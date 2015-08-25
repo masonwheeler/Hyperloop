@@ -11,7 +11,7 @@ from scipy.interpolate import PchipInterpolator
 import match_landscape as landscape
 import comfort as cmft
 import util
-
+import visualize
 
 class Route:
   #def __init__(self, tube, velocityProfileGraph):
