@@ -233,8 +233,10 @@ class EdgesSets:
         self.get_elevation_profiles(self.filteredEdgesSets)  
         t1 = time.time()
         print("attaching elevations took " + str(t1 - t0) + " seconds.")
-        #self.build_landcost_samples(self.finishedEdgesSets)
-        #print("finished attaching landcost")
+        t0 = time.time()
+        self.build_land_cost_samples(self.finishedEdgesSets)
+        t1 = time.time()
+        print("attaching land cost took " + str(t1 - t0) + " seconds.")
         #self.build_pylons(self.finishedEdgesSets)
         #print("finished attaching pylon cost")
 

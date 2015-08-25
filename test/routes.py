@@ -31,11 +31,11 @@ class Route:
                 }
 
 
-def graph_to_2Droute(graph):
+def graphtotwoDroute(graph):
   x = graph.geospatials
   return interp.paraSuperQ(x, 25)
 
-def f2Droute_to_3Droute(x):
+def twoDroutetothreeDroute(x):
   s, z = landscape.genLandscape(x, "elevation")
   sInterp, zInterp = landscape.matchLandscape(s, z, "elevation")
   f = PchipInterpolator(sInterp, zInterp)
@@ -48,7 +48,7 @@ def f2Droute_to_3Droute(x):
   return np.transpose([x, y, z])
 
 
-def f3Droute_to_4Droute(x):
+def threeDroutetofourDroute(x):
   s, v = landscape.genLandscape(x, "velocity")
   sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
   f = PchipInterpolator(sInterp, vInterp)
@@ -63,7 +63,7 @@ def f3Droute_to_4Droute(x):
   return np.transpose([x, y, z, t])
 
 
-def comfortanalysisOf_4Droute(x):
+def comfortanalysisOffourDroute(x):
   x, y, z, t = np.transpose(x)
   vx, vy, vz, t = [util.numericalDerivative(x, t), util.numericalDerivative(y, t), util.numericalDerivative(z, t), t]
   ax, ay, az, t = [util.numericalDerivative(vx, t), util.numericalDerivative(vy, t), util.numericalDerivative(vz, t), t]

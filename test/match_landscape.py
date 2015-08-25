@@ -67,14 +67,15 @@ def matchLandscape(s, z, Type):
         return max(np.absolute(extremalCurvatures))
 
       curvatures = [curvature(K[new], K[new+1]), curvature(K[new-1], K[new])]
-      bools = [curvature > config.latAccelTol/config.maxSpeed**2 for curvature in curvatures]
+      bools = [curvature > config.lateralAccelTol/config.maxSpeed**2
+                                         for curvature in curvatures]
 
     elif Type == "velocity":
       dz = [np.absolute(z[K[new+1]]-z[K[new]]), np.absolute(z[K[new]]-z[K[new-1]])]
       ds = [s[K[new+1]]-s[K[new]], s[K[new]]-z[K[new-1]]]
       V = [(z[K[new+1]]+z[K[new]])/2, (z[K[new]]+z[K[new-1]])/2]
 
-      C = [v * config.linearAccelTol for v in V]
+      C = [v * config.linearAccelConstraint for v in V]
       D = [v**2 * config.jerkTol for v in V]
 
       def dzTol(s):
@@ -93,15 +94,19 @@ def matchLandscape(s, z, Type):
   def matchPoint():
     i = 0
     while bad(J[i], Type) and i < len(J):
+      print J[i]
       i += 1
     if i == len(J):
       return "Exhausted the landscape. Could not find a point to match."
     else:
       util.placeIndexinList(J.pop(i), K)
       return "Success! See if we can match another point."
-
+  
+  l = 0
   while matchPoint() == "Success! See if we can match another point.":
-    print "matched a point."
+    l += 1
+    print K
+    print "matched the "+ str(l)+ "th point."
     pass
   return [[s[k] for k in K], [z[k] for k in K]]
 
