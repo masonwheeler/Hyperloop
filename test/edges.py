@@ -18,6 +18,7 @@ import elevation
 import landcover
 import pylons
 import proj
+import tube
 import util
 import visualize
 
@@ -48,6 +49,8 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
+        tubeProfile = tube.build_tube_profile(self.elevationProfile)
+        print(tubeProfile)
         newPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
                        "elevation" : elevationPoint["landElevation"],
