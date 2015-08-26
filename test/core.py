@@ -80,6 +80,8 @@ def build_graphs(latticeSlices):
     #t5 = time.time()
     #print("Building the land cost samples took " + str(t5 - t4) + " seconds.")
     #completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    ##print(len(finishedEdgesSets))
+    completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
@@ -95,7 +97,7 @@ def build_graphs(latticeSlices):
         #print(plottableCostCurvature)
         #config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
-    return 0 #completeGraphs
+    return completeGraphs
 
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
@@ -104,9 +106,9 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    #_2Droute = routes.graph_to_2Droute(completeGraphs[0])
-    #_3Droute = routes._2Droute_to_3Droute(_2Droute)
 
+    obj2Droute = routes.graphtotwoDroute(completeGraphs[0])
+    obj3Droute = routes.twoDroutetothreeDroute(obj2Droute)
 
     #Test genLandscape( , "elevation"):
 #    print "extracting geospatials of a single graph..."
