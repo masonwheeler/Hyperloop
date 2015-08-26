@@ -1,7 +1,10 @@
 """
 Original Developer: David Roberts
-Purpose of Module: To house an important algorithm which extracts
-as many features of the route geometry as permitted by comfort constraints.
+Purpose of Module: To build height/velocity profiles satisfying comfort,
+                    and volatility constraints.
+Last Modified: 8/25/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and add docstrings
 """
 
 #Standard Modules

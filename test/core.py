@@ -71,20 +71,14 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
-    #t4 = time.time()
-    #edges.build_land_cost_samples(finishedEdgesSets)
-    #t5 = time.time()
-    #print("Building the land cost samples took " + str(t5 - t4) + " seconds.")
-    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
-    ##print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
     #for graph in completeGraphs:
     #    print("pylon cost: " + str(graph.pylonCost))
     #    print("land cost: " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
-    #t1 = time.time()
-    #print("Building the graphs took " + str(t1-t0) + " seconds.")
+    t1 = time.time()
+    print("Building the graphs took " + str(t1-t0) + " seconds.")
     #if config.visualMode:
     #    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
         #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
@@ -95,12 +89,18 @@ def build_graphs(latticeSlices):
         #config.plotQueue += plottableCostCurvature
     return completeGraphs
 
+#def build_routes(completeGraphs):
+    
+
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
+
+    testGraph = completeGraphs[0]
+    testSpatialPath2d = routes.SpatialPath2d(testGraph)
 
 
     _2Droute = routes.graph_to_2Droute(completeGraphs[0])
