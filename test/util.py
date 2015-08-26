@@ -226,6 +226,12 @@ def placeIndexinList(index, orderedList_of_integers):
     orderedList_of_integers.insert(k, index) 
     return k
 
+def sorted_insert(value, orderedValues):
+    for i in range(len(orderedValues)):
+        if value <= orderedValues[i]:
+            orderedValues.insert(i, value)
+            return i
+
 def breakUp(data, n):
     n = max(1, n)
     chunks = [data[i:i + n] for i in range(0, len(data), n)]

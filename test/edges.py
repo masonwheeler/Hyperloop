@@ -49,7 +49,7 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
-        tubeProfile = tube.build_tube_profile(self.elevationProfile)
+        tubeProfile = tube.build_tube_profile_v2(self.elevationProfile)
         print(tubeProfile)
         newPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
@@ -231,7 +231,7 @@ class EdgesSets:
         util.smart_print("Retrieved land cost in " + str(t1-t0) + " seconds.")
         #self.build_pylons(self.filteredEdgesSets)
 
-def build_pylons( edgesSets):
+def build_pylons(edgesSets):
     for edgesSet in edgesSets:
         for edge in edgesSet:
            edge.build_pylons()       

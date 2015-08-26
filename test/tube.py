@@ -7,15 +7,20 @@ Last Modification Purpose: To implement a non naive tube/pylon cost method.
 """
 #Standard Modules
 import numpy as np
-from scipy.interpolate import PchipInterpolator
 
 #Our Modules
-import util
-import config
 import abstract
-import mergetree
+import clothoid
+import config
 import interpolate
+import mergetree
 import velocity
+import util
+
+#Experimental Modules
+from scipy.interpolate import PchipInterpolator
+import routes
+import match_landscape as landscape
 
 class Pylon(abstract.AbstractPoint):
     def pylon_construction_cost(self, pylonHeight):
@@ -316,64 +321,74 @@ def build_tube_graphs(elevationProfile):
     return selectedTubeGraphs
    
 
-########## Alternative Tube Profile Method ##########
+########## Alternative Tube Profile Method - Modified ##########
 
-def curvature(i, j):
+def curvature(i, j, arcLengths, elevations):
     """
     Computes the curvature of the clothoid 
     """
-    x0, x1 = [s[i], s[j]]
-    y0, y1 = [z[i], z[j]]
+    x0, x1 = [arcLengths[i], arcLengths[j]]
+    y0, y1 = [elevations[i], elevations[j]]
     tht0, tht1  = [0, 0]
     k, K, L = clothoid.buildClothoid(x0, y0, tht0, x1, y1, tht1)
     extremalCurvatures = [k + L*K, k]
     return max(np.absolute(extremalCurvatures))
 
-def test(i, j, cached):
+def test(i, j, arcLengths, elevations, cached):
     if cached[i][j]:
         return True
     else:
         cached[i][j] = cached[j][i] = True
         curvatureTol = config.linearAccelConstraint/config.maxSpeed**2
-        return curvature(i, j) > curvatureTol
+        return curvature(i, j, arcLengths, elevations) > curvatureTol
 
-def bad(index, tubeProfile, cached):       
+def bad(index, tubeProfile, arcLengths, elevations, cached):       
     indexInsertedAt = util.sorted_insert(index, tubeProfile)
-    backwardsValid = test(tubeProfile[indexInsertedAt-1],
-                          tubeProfile[indexInsertedAt], cached) 
+    backwardValid = test(tubeProfile[indexInsertedAt-1],
+                          tubeProfile[indexInsertedAt],
+                          arcLengths, elevations, cached) 
     forwardValid = test(tubeProfile[indexInsertedAt],
-                        tubeProfile[indexInsertedAt+1], cached)
-    indexValid = backwardsValid or forwardsValid
-    tubeProfile.pop(new)
+                        tubeProfile[indexInsertedAt+1],
+                        arcLengths, elevations, cached)
+    indexValid = backwardValid or forwardValid
+    tubeProfile.pop(indexInsertedAt)
     return indexValid
 
-def matchPoint(sortedElevationIndices, tubeProfile, cached):
+def match_point(elevationIndices, tubeProfileIndices,
+                     arcLengths, elevations, cached):
     i = 0
-    while (bad(sortedElevationIndices[i], tubeProfile, cached) and
-           i < len(sortedElevationIndices) - 1):
+    while (bad(elevationIndices[i], tubeProfileIndices,
+                        arcLengths, elevations, cached) and
+                        i < len(elevationIndices) - 1):
         i += 1
-    if i == len(sortedElevationIndices) - 1:
+    if i == len(elevationIndices) - 1:
         print "Exhausted the landscape. Could not find a point to match."
         return False
     else:
-        util.sorted_insert(sortedElevationIndices.pop(i), tubeProfile)
+        util.sorted_insert(elevationIndices.pop(i), tubeProfileIndices)
         return True
 
+def reverse_sort_indices(aList):
+    listIndices = range(len(aList))
+    sortedIndices = sorted(listIndices, key = lambda i: aList[i], reverse=True)
+    return sortedIndices
+
 def get_selected_tube_points(elevationProfile):
-    tubeProfile = [0, len(elevationProfile)-1]
+    #Add the endpoint indices to the tube profile
+    tubeProfileIndices = [0, len(elevationProfile)-1]
     elevations = [elevationPoint["landElevation"] for elevationPoint
                                                  in elevationProfile]
     arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
                                                      in elevationProfile]
     #we now sort the remaining landscape.
-    sortedElevations, sortedElevationIndices = sorted(
-                  enumerate(elevations[1 : len(elevations) - 1]),
-                                key=lambda p: p[0], reverse=True)
-    shiftedSortedElevationIndices = [index + 1 for index
-                                     in sortedElevationIndices]
-    cached = [[0 for i in range(len(z))] for i in range(len(z))]
+    truncatedElevations = elevations[1 : len(elevations)]
+    sortedElevationIndices = reverse_sort_indices(truncatedElevations)
+    elevationIndices = [index + 1 for index in sortedElevationIndices]
+    cached = [[0 for i in range(len(elevations))]
+                 for i in range(len(elevations))]
     #l = 0
-    while matchPoint():
+    while match_point(elevationIndices, tubeProfileIndices,
+                      arcLengths, elevations, cached):
         pass
         #l += 1
         #print "matched the "+ str(l)+ "th point."
@@ -389,5 +404,25 @@ def build_tube_profile(elevationProfile):
     tubeSpline = PchipInterpolator(selectedArcLengths, selectedElevations)
     tubeElevations = tubeSpline(arcLengths)
     return tubeElevations
-    
- 
+   
+########## Alternative Tube Profile Method - Unmodified ##########
+
+def build_tube_profile_v2(elevationProfile):
+    geospatials = [elevationPoint["geospatial"] for elevationPoint
+                                                in elevationProfile]
+    landElevations = [elevationPoint["landElevation"] for elevationPoint
+                                                     in elevationProfile]
+    arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
+                                                     in elevationProfile]
+    sInterp, zInterp = landscape.matchLandscape(arcLengths,
+                               landElevations, "elevation")
+    tubeSpline = PchipInterpolator(sInterp, zInterp)
+    tubeElevations = tubeSpline(arcLengths)
+    #  plt.plot(arcLengths, tubeElevations, 'b.',
+    #            arcLengths, landElevations, 'r.')
+    #  plt.show()  
+    spatialXValues, spatialYValues = zip(*geospatials)
+    tubeGraph = zip(spatialXValues, spatialYValues, tubeElevations)
+    tubeGraphs = [tubeGraph]
+    return tubeGraphs
+
