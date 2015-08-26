@@ -7,6 +7,7 @@ Last Modification Purpose: To implement a non naive tube/pylon cost method.
 """
 #Standard Modules
 import numpy as np
+from scipy.interpolate import PchipInterpolator
 
 #Our Modules
 import util
@@ -313,6 +314,80 @@ def build_tube_graphs(elevationProfile):
     rootTubeGraphsSet = tubeGraphsSetsTree.root
     selectedTubeGraphs = rootTubeGraphsSet.selectedGraphs
     return selectedTubeGraphs
+   
+
+########## Alternative Tube Profile Method ##########
+
+def curvature(i, j):
+    """
+    Computes the curvature of the clothoid 
+    """
+    x0, x1 = [s[i], s[j]]
+    y0, y1 = [z[i], z[j]]
+    tht0, tht1  = [0, 0]
+    k, K, L = clothoid.buildClothoid(x0, y0, tht0, x1, y1, tht1)
+    extremalCurvatures = [k + L*K, k]
+    return max(np.absolute(extremalCurvatures))
+
+def test(i, j, cached):
+    if cached[i][j]:
+        return True
+    else:
+        cached[i][j] = cached[j][i] = True
+        curvatureTol = config.linearAccelConstraint/config.maxSpeed**2
+        return curvature(i, j) > curvatureTol
+
+def bad(index, tubeProfile, cached):       
+    indexInsertedAt = util.sorted_insert(index, tubeProfile)
+    backwardsValid = test(tubeProfile[indexInsertedAt-1],
+                          tubeProfile[indexInsertedAt], cached) 
+    forwardValid = test(tubeProfile[indexInsertedAt],
+                        tubeProfile[indexInsertedAt+1], cached)
+    indexValid = backwardsValid or forwardsValid
+    tubeProfile.pop(new)
+    return indexValid
+
+def matchPoint(sortedElevationIndices, tubeProfile, cached):
+    i = 0
+    while (bad(sortedElevationIndices[i], tubeProfile, cached) and
+           i < len(sortedElevationIndices) - 1):
+        i += 1
+    if i == len(sortedElevationIndices) - 1:
+        print "Exhausted the landscape. Could not find a point to match."
+        return False
+    else:
+        util.sorted_insert(sortedElevationIndices.pop(i), tubeProfile)
+        return True
+
+def get_selected_tube_points(elevationProfile):
+    tubeProfile = [0, len(elevationProfile)-1]
+    elevations = [elevationPoint["landElevation"] for elevationPoint
+                                                 in elevationProfile]
+    arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
+                                                     in elevationProfile]
+    #we now sort the remaining landscape.
+    sortedElevations, sortedElevationIndices = sorted(
+                  enumerate(elevations[1 : len(elevations) - 1]),
+                                key=lambda p: p[0], reverse=True)
+    shiftedSortedElevationIndices = [index + 1 for index
+                                     in sortedElevationIndices]
+    cached = [[0 for i in range(len(z))] for i in range(len(z))]
+    #l = 0
+    while matchPoint():
+        pass
+        #l += 1
+        #print "matched the "+ str(l)+ "th point."
+    selectedElevations = [elevations[index] for index in tubeProfile]
+    selectedArcLengths = [arcLengths[index] for index in tubeProfile]
+    return [selectedArcLengths, selectedElevations]
+
+def build_tube_profile(elevationProfile):    
+    arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
+                                                     in elevationProfile]
+    selectedArcLengths, selectedElevations = get_selected_tube_points(
+                                                         elevationProfile)
+    tubeSpline = PchipInterpolator(selectedArcLengths, selectedElevations)
+    tubeElevations = tubeSpline(arcLengths)
+    return tubeElevations
     
-    
-                                      
+ 

@@ -11,8 +11,6 @@ Last Modification Purpose: To clarify naming and add docstrings
 import numpy as np
 import random
 import advanced_interpolate as interp
-import matplotlib.pyplot as plt
-import csv
 
 #Our Modules
 import util
@@ -114,7 +112,6 @@ def matchLandscape(s, z, Type):
     print "matched the "+ str(l)+ "th point."
     pass
   return [[s[k] for k in K], [z[k] for k in K]]
-
 
 
 # Test sortIndices(z, Type):

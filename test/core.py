@@ -103,9 +103,9 @@ def pair_analysis(start,end):
     testSpatialPath2d = routes.get_spatial_paths_2d(testGraphs)
 
 
-    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
-    _3Droute = routes._2Droute_to_3Droute(_2Droute)
-    _4Droute = routes._3Droute_to_4Droute(_3Droute)
+    #_2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    #_3Droute = routes._2Droute_to_3Droute(_2Droute)
+    #_4Droute = routes._3Droute_to_4Droute(_3Droute)
    
 
     #Test genLandscape( , "elevation"):
