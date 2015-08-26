@@ -15,6 +15,7 @@ import math
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+from scipy.interpolate import UnivariateSpline
 import csv
 
 """
@@ -110,6 +111,23 @@ def paraSuperQ(x, M):
     tM, xM = superQuint(t, xPoints, M)
     tM, yM = superQuint(t, yPoints, M)
     return np.transpose([xM, yM])
+
+
+
+# Standard interpolate function from scipy is imported here as a benchmark.
+
+def scipyQ(x, M):
+    t = [15*n for n in range(len(x))]
+    tM = sum([[t[i]+(m*1./M)*(t[i+1]-t[i]) for m in range(M)] for i in range(len(t)-1)], [])
+
+    xPoints, yPoints = np.transpose(x)
+    xFunc = UnivariateSpline(t, xPoints, k=5)
+    yFunc = UnivariateSpline(t, yPoints, k=5)
+    
+    xM = xFunc(tM)
+    yM = yFunc(tM)
+    return np.transpose([xM, yM])
+
 
 
 # Test quint(t, x, v1, v2):
