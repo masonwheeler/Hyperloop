@@ -102,13 +102,20 @@ def set_smoothing_factors_2d(xSpline, ySpline, smoothingFactor):
 
 ########## For Interpolating Splines ##########
 
+def interpolate_points_1d(points1d):
+    numPoints = len(points1d)
+    sValues = get_s_values(numPoints)
+    zArray = np.array(points1d) 
+    zSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, zArray)
+    return [zSpline, sValues]
+
 def interpolating_splines_2d(xArray, yArray, sValues):
     xSpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, xArray)
     ySpline = scipy.interpolate.InterpolatedUnivariateSpline(sValues, yArray)
     return [xSpline, ySpline]
 
 def interpolate_points_2d(points2d):
-    numPoints = len(points32d)
+    numPoints = len(points2d)
     sValues = get_s_values(numPoints)
     xArray, yArray = points_2d_to_arrays(points2d) 
     xSpline, ySpline = interpolating_splines_2d(xArray, yArray, sValues)
@@ -299,7 +306,21 @@ def effective_max_allowed_vels(xSpline, ySpline, zSpline, sValues):
                                          maxAllowedVels_lateral) 
     return effectiveMaxAllowedVels
 
-def points_3d_local_max_allowed_vels(points3d):
+def effective_max_allowed_vels_1d(zSpline, sValues):
+    zFirstDerivValues, zSecondDerivValues = get_derivative_values(zSpline,
+                                                                  sValues)    
+    verticalCurvatureArray = compute_explicit_curvature(zFirstDerivValues,
+                                                        zSecondDerivValues)
+    maxAllowedVels =  vertical_curvature_array_to_max_allowed_vels(
+                                                verticalCurvatureArray)
+    return maxAllowedVels
+
+def points_1d_local_max_allowed_vels(points1d):    
+    zSpline, sValues = interpolate_points_1d(points1d)
+    localMaxAllowedVels1d = effective_max_allowed_vels_1d(zSpline, sValues)
+    return localMaxAllowedVels1d
+
+def points_3d_local_max_allowed_vels(points3d):    
     xSpline, ySpline, zSpline, sValues = interpolate_points_3d(points3d)
     localMaxAllowedVels = effective_max_allowed_vels(xSpline, ySpline, zSpline,
                                                                        sValues)
@@ -329,27 +350,31 @@ def curvature_test_2d(xSpline, ySpline, sValues, curvatureThreshold):
 
 def iterative_smooth_interpolate_2d(xArray, yArray, initialEndWeights,
                           initialSmoothingFactor, curvatureThreshold):
-    numPoints = len(points2d)
+    numPoints = xArray.size
     sValues = np.arange(numPoints)
     xSpline, ySpline = smoothing_splines_2d(xArray, yArray, sValues,
                        initialEndWeights, initialSmoothingFactor)        
     isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues,
                                                 curvatureThreshold)
+    testSmoothingFactor = initialSmoothingFactor
     if isCurvatureValid:
-        testSmoothingFactor = initialSmoothingFactor
         while isCurvatureValid:
             testSmoothingFactor *= 0.5
+            print("testSmoothingFactor: " + str(testSmoothingFactor))
             set_smoothing_factors_2d(xSpline, ySpline, testSmoothingFactor)
             isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues,
                                                         curvatureThreshold)
-        testSmoothingFactor *= 2
+        testSmoothingFactor *= 2.0
         set_smoothing_factors_2d(xSpline, ySpline, testSmoothingFactor)
         return [xSpline, ySpline]
     else:
         while not isCurvatureValid:
-            testSmoothingFactor *= 2
+            testSmoothingFactor *= 2.0
+            print("testSmoothingFactor: " + str(testSmoothingFactor))
             set_smoothing_factors_2d(xSpline, ySpline, testSmoothingFactor)
-            isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues)
+            isCurvatureValid = curvature_test_2d(xSpline, ySpline, sValues,
+                                                        curvatureThreshold)
+            print(isCurvatureValid)
         return [xSpline, ySpline]
 
 

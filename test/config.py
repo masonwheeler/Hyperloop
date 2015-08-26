@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = False
+visualMode = True
 verboseMode = True
 timingMode = False
 useDropbox = False
@@ -51,7 +51,7 @@ Tube Generation Parameters
 
 tubeTripTimeExcessMinNumEdges = 3
 pylonHeightStepSize = 10.0
-tubeDegreeConstraint = 5.0
+tubeDegreeConstraint = 60.0
 
 """
 Velocity Profile Generation Parameters
@@ -101,7 +101,7 @@ rightOfWayLandCost = 0.0
 pylonCostPerMeter = 10000.0
 tunnelingCostPerMeter = 10000.0 # USD/m
 pylonBaseCost = 2000.0
-tubeCostPerMeter = 1000.0
+tubeCostPerMeter = 0.0 #1000.0
 padding = 20   #padding (in meters)
 
 

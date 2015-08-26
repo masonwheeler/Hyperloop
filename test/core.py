@@ -75,6 +75,11 @@ def build_graphs(latticeSlices):
     edges.build_pylons(finishedEdgesSets)
     t3 = time.time()
     print("Building the pylons took " + str(t3 - t2) + " seconds.")
+    #t4 = time.time()
+    #edges.build_land_cost_samples(finishedEdgesSets)
+    #t5 = time.time()
+    #print("Building the land cost samples took " + str(t5 - t4) + " seconds.")
+    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
     ##print(len(finishedEdgesSets))
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
@@ -84,13 +89,13 @@ def build_graphs(latticeSlices):
     #    print("curvature: " + str(graph.curvatureMetric))
     #t1 = time.time()
     #print("Building the graphs took " + str(t1-t0) + " seconds.")
-    if config.visualMode:
-        plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
+    #if config.visualMode:
+    #    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
         #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
         #costs, curvatures = zip(*costCurvature)
         #visualize.scatter_plot(costs, curvatures)
         #print(plottableCostCurvature)
-        config.plotQueue += plottableGraphs
+        #config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
     return completeGraphs
 
