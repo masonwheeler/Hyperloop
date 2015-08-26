@@ -18,7 +18,6 @@ import elevation
 import landcover
 import pylons
 import proj
-import tube
 import util
 import visualize
 
@@ -49,17 +48,6 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
-        #if config.visualMode:
-        #    visualize.visualize_elevation_profile(self.elevationProfile)
-        #print("started building tubegraphs")
-        #tubeGraphs = tube.build_tube_graphs(self.elevationProfile)         
-        #print("finished building tubegraphs")
-        #for tubeGraph in tubeGraphs:
-        #    print("pylon cost :" + str(tubeGraph.pylonCost))
-        #    print("tube cost :" + str(tubeGraph.tubeCost))
-        #pylonCosts = [tubeGraph.pylonCost for tubeGraph in tubeGraphs]
-        #print("advanced pylon cost: " + str(int(min(pylonCosts))))
-      
         newPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
                        "elevation" : elevationPoint["landElevation"],
@@ -69,7 +57,6 @@ class Edge:
         pylons.build_pylons(newPylons)
         pylons.get_pyloncosts(newPylons)                
         self.pylonCost = pylons.edge_pyloncost(newPylons)
-        print("naive pylon cost: " + str(int(self.pylonCost)))
 
     def build_land_cost_samples(self):
         if self.isInRightOfWay:
@@ -231,27 +218,9 @@ class EdgesSets:
         flattenedBaseEdges = util.fast_concat(self.baseEdgesSets)
         self.iterative_filter()
         self.filteredEdgesSets = self.filteredEdgesSetsList[-1]        
-        print("finished building edges")
-        t0 = time.time()
         self.get_elevation_profiles(self.filteredEdgesSets)  
-        t1 = time.time()
-        print("attaching elevations took " + str(t1 - t0) + " seconds.")
-        t0 = time.time()
-        self.build_land_cost_samples(self.finishedEdgesSets)
-        t1 = time.time()
-        print("attaching land cost took " + str(t1 - t0) + " seconds.")
-        #self.build_pylons(self.finishedEdgesSets)
-        #print("finished attaching pylon cost")
-
-def build_pylons(edgesSets):
-    for edgesSet in edgesSets:
-        for edge in edgesSet:
-            edge.build_pylons()
-
-def build_land_cost_samples(edgesSets):
-    for edgesSet in edgesSets:
-        for edge in edgesSet:
-            edge.build_land_cost_samples()        
+        self.build_land_cost_samples(self.filteredEdgesSets)
+        self.build_pylons(self.filteredEdgesSets)
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)

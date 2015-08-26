@@ -119,7 +119,7 @@ def curvature_test(xSpline, ySpline, sValues):
 def iteratively_build_directions_spline(sampledDirectionsPoints):
     xCoordsList, yCoordsList = zip(*sampledDirectionsPoints)
     xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
-    numPoints = len(directionsPoints)
+    numPoints = len(sampledDirectionsPoints)
     sValues = np.arange(numPoints)
     INITIAL_END_WEIGHTS = 100000
     INITIAL_SMOOTHING_FACTOR = 10**13    
