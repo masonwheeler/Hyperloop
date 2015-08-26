@@ -71,9 +71,9 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
-    t2 = time.time()
-    edges.build_pylons(finishedEdgesSets)
-    t3 = time.time()
+    #t2 = time.time()
+    #edges.build_pylons(finishedEdgesSets)
+    #t3 = time.time()
     print("Building the pylons took " + str(t3 - t2) + " seconds.")
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))

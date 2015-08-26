@@ -238,7 +238,7 @@ class EdgesSets:
         self.build_land_cost_samples(self.filteredEdgesSets)
         t1 = time.time()
         util.smart_print("Retrieved land cost in " + str(t1-t0) + " seconds.")
-        #self.build_pylons(self.filteredEdgesSets)
+        self.build_pylons(self.filteredEdgesSets)
 
 def build_pylons(edgesSets):
     for edgesSet in edgesSets:
