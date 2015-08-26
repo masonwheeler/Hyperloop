@@ -100,16 +100,16 @@ def matchLandscape(s, z, Type):
     while bad(J[i], Type) and i < len(J) - 1:
       i += 1
     if i == len(J) - 1:
-      print "Exhausted the landscape. Could not find a point to match."
+      #print "Exhausted the landscape. Could not find a point to match."
       return "Exhausted the landscape. Could not find a point to match."
     else:
       util.placeIndexinList(J.pop(i), K)
       return "Success! See if we can match another point."
   
-  l = 0
+  #l = 0
   while matchPoint() == "Success! See if we can match another point.":
-    l += 1
-    print "matched the "+ str(l)+ "th point."
+    #l += 1
+    #print "matched the "+ str(l)+ "th point."
     pass
   return [[s[k] for k in K], [z[k] for k in K]]
 
