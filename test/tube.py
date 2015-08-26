@@ -319,14 +319,43 @@ def build_tube_graphs(elevationProfile):
     rootTubeGraphsSet = tubeGraphsSetsTree.root
     selectedTubeGraphs = rootTubeGraphsSet.selectedGraphs
     return selectedTubeGraphs
-   
+  
 
-########## Alternative Tube Profile Method - Modified ##########
 
+ 
+def compute_pylon_cost(pylonHeight):    
+    if pylonHeight >= 0:
+        heightCost = pylonHeight * config.pylonCostPerMeter
+    else:
+        heightCost = -pylonHeight * 5 * config.pylonCostPerMeter
+    pylonCost = config.pylonBaseCost + heightCost
+    return pylonCost
+
+def compute_tube_cost(tubeLength):
+    tubeCost = config.tubeCostPerMeter * tubeLength
+    return tubeCost
+
+def build_tube_profile_v2(elevationProfile):
+    geospatials = [elevationPoint["geospatial"] for elevationPoint
+                                                in elevationProfile]
+    landElevations = [elevationPoint["landElevation"] for elevationPoint
+                                                     in elevationProfile]
+    arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
+                                                     in elevationProfile]
+    sInterp, zInterp = landscape.matchLandscape(arcLengths,
+                               landElevations, "elevation")
+    tubeSpline = PchipInterpolator(sInterp, zInterp)
+    tubeElevations = tubeSpline(arcLengths)
+    spatialXValues, spatialYValues = zip(*geospatials)
+    pylonHeights = util.subtract(tubeElevations, landElevations)    
+    tubeCoords = zip(spatialXValues, spatialYValues, tubeElevations)
+    tubeLength = util.compute_total_arc_length(tubeCoords)
+    totalPylonCost = sum(map(compute_pylon_cost, pylonHeights))    
+    totalTubeCost = compute_tube_cost(tubeLength)
+    return [totalTubeCost, totalPylonCost, tubeElevations]
+
+"""
 def curvature(i, j, arcLengths, elevations):
-    """
-    Computes the curvature of the clothoid 
-    """
     x0, x1 = [arcLengths[i], arcLengths[j]]
     y0, y1 = [elevations[i], elevations[j]]
     tht0, tht1  = [0, 0]
@@ -404,25 +433,4 @@ def build_tube_profile(elevationProfile):
     tubeSpline = PchipInterpolator(selectedArcLengths, selectedElevations)
     tubeElevations = tubeSpline(arcLengths)
     return tubeElevations
-   
-########## Alternative Tube Profile Method - Unmodified ##########
-
-def build_tube_profile_v2(elevationProfile):
-    geospatials = [elevationPoint["geospatial"] for elevationPoint
-                                                in elevationProfile]
-    landElevations = [elevationPoint["landElevation"] for elevationPoint
-                                                     in elevationProfile]
-    arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
-                                                     in elevationProfile]
-    sInterp, zInterp = landscape.matchLandscape(arcLengths,
-                               landElevations, "elevation")
-    tubeSpline = PchipInterpolator(sInterp, zInterp)
-    tubeElevations = tubeSpline(arcLengths)
-    #  plt.plot(arcLengths, tubeElevations, 'b.',
-    #            arcLengths, landElevations, 'r.')
-    #  plt.show()  
-    spatialXValues, spatialYValues = zip(*geospatials)
-    tubeGraph = zip(spatialXValues, spatialYValues, tubeElevations)
-    tubeGraphs = [tubeGraph]
-    return tubeGraphs
-
+"""   

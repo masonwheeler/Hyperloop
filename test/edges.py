@@ -49,8 +49,9 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
-        tubeProfile = tube.build_tube_profile_v2(self.elevationProfile)
-        print(tubeProfile)
+        tubeCost, pylonCost, tubeElevations = tube.build_tube_profile_v2(
+                                                        self.elevationProfile)
+            
         newPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
                        "elevation" : elevationPoint["landElevation"],
@@ -60,6 +61,13 @@ class Edge:
         pylons.build_pylons(newPylons)
         pylons.get_pyloncosts(newPylons)                
         self.pylonCost = pylons.edge_pyloncost(newPylons)
+        
+        #print("tube cost: " + str(tubeCost))
+        print("new pylon cost: " + str(pylonCost))
+        print("old pylon cost: " + str(self.pylonCost))
+        if config.visualMode:
+            visualize.visualize_elevation_profile_v2(self.elevationProfile,
+                                                            tubeElevations)
 
     def build_land_cost_samples(self):
         if self.isInRightOfWay:

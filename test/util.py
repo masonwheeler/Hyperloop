@@ -191,10 +191,19 @@ def edge_to_vector(edge):
 
 #Path Operations:
 
-def compute_arc_lengths(points):
+def compute_arc_length_steps(points):   
     pairs = to_pairs(points)
     vectors = map(edge_to_vector, pairs)
     arcLengthSteps = map(np.linalg.norm, vectors)
+    return arcLengthSteps
+
+def compute_total_arc_length(points):
+    arcLengthSteps = compute_arc_length_steps(points)
+    totalArcLength = np.sum(arcLengthSteps)
+    return totalArcLength
+
+def compute_arc_lengths(points):
+    arcLenthSteps = compute_arc_length_steps(points)
     arcLengthStepsArray = np.array(arcLengthSteps)
     arcLengths = np.cumsum(arcLengthStepsArray)
     paddedArcLengths = np.insert(arcLengths, 0, 0)

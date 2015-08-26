@@ -84,6 +84,21 @@ def visualize_elevation_profile(elevationProfile):
     #plt.axis('equal')
     plt.show()
 
+def visualize_elevation_profile_v2(elevationProfile, tubeElevations):
+    distances = []
+    landElevations = []
+    numPoints = len(elevationProfile)
+    sValues = np.arange(numPoints)
+    for elevationPoint in elevationProfile:
+        distance = elevationPoint["distanceAlongPath"]
+        landElevation = elevationPoint["landElevation"]
+        distances.append(distance)
+        landElevations.append(landElevation)
+    plt.plot(distances, landElevations)
+    plt.plot(distances, tubeElevations, 'r-')
+    #plt.axis('equal')
+    plt.show()
+
 def plot_object(objectData, style):    
     xValues, yValues = objectData
     #print(xValues, yValues, style)
