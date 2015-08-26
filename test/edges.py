@@ -49,25 +49,26 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
-        tubeCost, pylonCost, tubeElevations = tube.build_tube_profile_v2(
+        tubeCost, newPylonCost, tubeElevations = tube.build_tube_profile_v2(
                                                         self.elevationProfile)
             
-        newPylons = [{"geospatial" : elevationPoint["geospatial"],
+        oldPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
                        "elevation" : elevationPoint["landElevation"],
                        "pylonHeight" : 0,
                        "pylonCost" : 0}
                        for elevationPoint in self.elevationProfile]      
-        pylons.build_pylons(newPylons)
-        pylons.get_pyloncosts(newPylons)                
-        self.pylonCost = pylons.edge_pyloncost(newPylons)
-        
+        pylons.build_pylons(oldPylons)
+        pylons.get_pyloncosts(oldPylons)                
+        oldPylonCost = pylons.edge_pyloncost(oldPylons)
+        self.pylonCost = newPylonCost
+        #self.pylonCost = oldPylonCost
         #print("tube cost: " + str(tubeCost))
-        print("new pylon cost: " + str(pylonCost))
-        print("old pylon cost: " + str(self.pylonCost))
-        if config.visualMode:
-            visualize.visualize_elevation_profile_v2(self.elevationProfile,
-                                                            tubeElevations)
+        #print("new pylon cost: " + str(newPylonCost))
+        #print("old pylon cost: " + str(oldPylonCost))
+        #if config.visualMode:
+        #    visualize.visualize_elevation_profile_v2(self.elevationProfile,
+        #                                                    tubeElevations)
 
     def build_land_cost_samples(self):
         if self.isInRightOfWay:
@@ -237,7 +238,7 @@ class EdgesSets:
         self.build_land_cost_samples(self.filteredEdgesSets)
         t1 = time.time()
         util.smart_print("Retrieved land cost in " + str(t1-t0) + " seconds.")
-        #self.build_pylons(self.filteredEdgesSets)
+        self.build_pylons(self.filteredEdgesSets)
 
 def build_pylons(edgesSets):
     for edgesSet in edgesSets:

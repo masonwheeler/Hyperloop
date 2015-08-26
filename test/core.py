@@ -71,25 +71,25 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
-    t2 = time.time()
-    edges.build_pylons(finishedEdgesSets)
-    t3 = time.time()
+    #t2 = time.time()
+    #edges.build_pylons(finishedEdgesSets)
+    #t3 = time.time()
     print("Building the pylons took " + str(t3 - t2) + " seconds.")
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
-    #for graph in completeGraphs:
-    #    print("pylon cost: " + str(graph.pylonCost))
-    #    print("land cost: " + str(graph.landCost))
+    for graph in completeGraphs:
+        print("pylon cost: " + str(graph.pylonCost))
+        print("land cost : " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
-    #if config.visualMode:
-    #    plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
+    if config.visualMode:
+        plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
         #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
         #costs, curvatures = zip(*costCurvature)
         #visualize.scatter_plot(costs, curvatures)
         #print(plottableCostCurvature)
-        #config.plotQueue += plottableGraphs
+        config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
     return completeGraphs
 
@@ -102,8 +102,47 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
+<<<<<<< HEAD
     completeRoutes = [routes.graph_to_route(graph) for graph in completeGraphs]
     
+=======
+
+    #testGraphs = completeGraphs[0:1]
+    #testSpatialPath2d = routes.get_spatial_paths_2d(testGraphs)
+
+
+    #_2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    #_3Droute = routes._2Droute_to_3Droute(_2Droute)
+    #_4Droute = routes._3Droute_to_4Droute(_3Droute)
+   
+
+    #Test genLandscape( , "elevation"):
+#    print "extracting geospatials of a single graph..."
+#    x = completeGraphs[0].geospatials
+#    print "converting geospatials from strings to floats..."
+#    x = [[float(p[0]),float(p[1])] for p in x]
+#    print "interpolating the geospatials..."
+#    x = interp.paraSuperQ(x, 25)
+#    print "generating the landscape..."
+#    s, z = match.genLandscape(x, "elevation")
+#    print "plotting the landscape..."
+#    visualize.scatter_plot(s, z)
+
+    """
+    #Test genLandscape( , "velocity"):
+    print "extracting geospatials of a single graph..."
+    x = completeGraphs[0].geospatials
+    print "converting geospatials from strings to floats..."
+    x = [[float(p[0]),float(p[1])] for p in x]
+    print "interpolating the geospatials..."
+    x = interp.paraSuperQ(x, 25)
+    print "generating the landscape..."
+    s, v = match.genLandscape(x, "velocity")
+    print "plotting the landscape..."
+    visualize.scatter_plot(s, v)
+    """
+
+>>>>>>> 274cd5b929541a4bef043514bd02570585ec8d11
 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
