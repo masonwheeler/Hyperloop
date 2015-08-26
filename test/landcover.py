@@ -20,7 +20,7 @@ def cost_density_to_local_cost(costDensity):
     length = config.landPointSpacing 
     width = 2.0 * config.landPadding
     area = length * width
-    localCost = costDensity * area
+    localCost = costDensity * area * 10
     return localCost
 
 def landcover_cost_densities(landcoverLatLngs):
