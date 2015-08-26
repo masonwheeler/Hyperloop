@@ -108,8 +108,6 @@ def matchLandscape(s, z, Type):
   
   l = 0
   while matchPoint() == "Success! See if we can match another point.":
-    l += 1
-    print "matched the "+ str(l)+ "th point."
     pass
   return [[s[k] for k in K], [z[k] for k in K]]
 

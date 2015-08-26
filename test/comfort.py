@@ -40,6 +40,8 @@ def accel_passenger(vel, accel, component):
     Find acceleration in passenger frame:
        {t_i}, {v_i}, {a_i}  -->  {T_i}, {N_i}, {B_i} -->  {ap_i}
     """
+    print vel
+    print accel
     tangentVector = [vel[i] / np.linalg.norm(vel[i]) for i in range(len(vel))]
     normalVector = [np.cross(vel[i], np.cross(accel[i], vel[i]))/
                    np.linalg.norm(np.cross(vel[i], np.cross(accel[i], vel[i])))
