@@ -221,9 +221,20 @@ class EdgesSets:
         flattenedBaseEdges = util.fast_concat(self.baseEdgesSets)
         self.iterative_filter()
         self.filteredEdgesSets = self.filteredEdgesSetsList[-1]        
+        t0 = time.time()
         self.get_elevation_profiles(self.filteredEdgesSets)  
+        t1 = time.time()
+        util.smart_print("Retrieved elevation in " + str(t1-t0) + " seconds.")
+        t0 = time.time()
         self.build_land_cost_samples(self.filteredEdgesSets)
-        self.build_pylons(self.filteredEdgesSets)
+        t1 = time.time()
+        util.smart_print("Retrieved land cost in " + str(t1-t0) + " seconds.")
+        #self.build_pylons(self.filteredEdgesSets)
+
+def build_pylons( edgesSets):
+    for edgesSet in edgesSets:
+        for edge in edgesSet:
+           edge.build_pylons()       
 
 def build_edgessets(lattice):
     edgesSets = EdgesSets(lattice)
