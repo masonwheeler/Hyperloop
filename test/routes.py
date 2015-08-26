@@ -13,6 +13,7 @@ from scipy.interpolate import PchipInterpolator
 
 #Our Modules
 import advanced_interpolate as interp
+import cacher
 import comfort as cmft
 import config
 import elevation
@@ -40,25 +41,19 @@ class SpatialPath2d:
         interpolatingGeospatials = [xValues, yValues]
         return interpolatingGeospatials
 
-    def get_interpolating_latlngs(self, interpolatingGeospatials):
-        interpolatingLatLngs = proj.geospatials_to_latlngs(
-                         interpolatingGeospatials, config.proj)
-        return interpolatingLatLngs
-
-    def compute_land_cost(self, interpolatingLatLngs):
-        landCost = landcover.get_land_cost(interpolatingLatLngs)
-        return landCost
-
-    def get_elevation_profile(self, interpolatedLatLngs):
-        elevationProfile = elevation.get_elevation_profile(interpolatedLatLngs)
-        return elevationProfile
-    
     def get_interpolating_geospatials_v2(self, geospatials):
         interpolatingGeospatialsArray = interp.paraSuperQ(geospatials, 25)
         interpolatingGeospatials = interpolatingGeospatialsArray.tolist()
         arcLengths = util.compute_arc_lengths(interpolatingGeospatials)
         return [interpolatingGeospatials, arcLengths]
 
+    def get_interpolating_latlngs(self, interpolatingGeospatials):
+        interpolatingLatLngs = proj.geospatials_to_latlngs(
+                         interpolatingGeospatials, config.proj)
+        return interpolatingLatLngs
+
+    #def get_tube_graphs(self, elevationProfile):
+    
     def get_tube_graphs_v2(self, elevationProfile):                     
         geospatials = [elevationPoint["geospatial"] for elevationPoint
                                                     in elevationProfile]
@@ -89,9 +84,18 @@ class SpatialPath2d:
                                            interpolatingGeospatials)
         self.elevationProfile = elevation.get_elevation_profile(
                             interpolatingGeospatials, arcLengths)
-        self.landCost = self.compute_land_cost(interpolatingLatLngs)
-        self.tubeGraphs = self.get_tube_graphs_v2(self.elevationProfile)
+        self.landCost = landcover.get_land_cost(interpolatingLatLngs)
+        #self.tubeGraphs = self.get_tube_graphs_v2(self.elevationProfile)
 
+def build_spatial_paths_2d(completeSpatialGraphs):
+    spatialPaths2d = map(SpatialPath2d, completeSpatialGraphs)
+    return spatialPaths2d
+
+def get_spatial_paths_2d(completeSpatialGraphs):
+    spatialPaths2d = cacher.get_object("spatialpaths2d", build_spatial_paths_2d,
+                          [completeSpatialGraphs], cacher.save_spatial_paths_2d,
+                                                      config.spatialPaths2dFlag)
+    return spatialPaths2d
 
 class Route:
   #def __init__(self, tube, velocityProfileGraph):

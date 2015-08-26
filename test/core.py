@@ -99,8 +99,8 @@ def pair_analysis(start,end):
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
 
-    testGraph = completeGraphs[0]
-    testSpatialPath2d = routes.SpatialPath2d(testGraph)
+    testGraphs = completeGraphs[0:1]
+    testSpatialPath2d = routes.get_spatial_paths_2d(testGraphs)
 
 
     _2Droute = routes.graph_to_2Droute(completeGraphs[0])

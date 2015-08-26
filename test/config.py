@@ -26,6 +26,7 @@ useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
 useCachedGraphs = True
+useCachedSpatialPaths2d = True
 
 """
 Lattice Generation Parameters
@@ -134,8 +135,8 @@ directionsBools = [useCachedDirections]
 splineBools = directionsBools + [useCachedSpline]
 latticeBools = splineBools + [useCachedLattice]
 edgesBools = latticeBools + [useCachedEdges]
-
 graphsBools = edgesBools + [useCachedGraphs]
+spatialPaths2dBools = graphsBools + [useCachedSpatialPaths2d]
 
 """
 Overwriting Flags.
@@ -145,6 +146,7 @@ splineFlag = all(splineBools)
 latticeFlag = all(latticeBools)
 edgesFlag = all(edgesBools)
 graphsFlag = all(graphsBools)
+spatialPaths2dFlag = all(spatialPaths2dBools)
 
 """
 Uninitialized Directory Paths.
