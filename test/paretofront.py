@@ -143,7 +143,7 @@ class ParetoFront:
                 raise ValueError("No Points passed to Pareto Front")
             else:   
                 #if there are 1 or 2 points, add these to the fronts
-                print("added last points")
+                #print("added last points")
                 frontIndices = self.prunedPointsIndices
                 self.frontsIndices.append(frontIndices.tolist())
                 self.remove_frontindices(frontIndices)

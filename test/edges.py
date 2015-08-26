@@ -18,7 +18,7 @@ import elevation
 import landcover
 import pylons
 import proj
-#import tube
+import tube
 import util
 import visualize
 
@@ -50,13 +50,15 @@ class Edge:
 
     def build_pylons(self):
         #if config.visualMode:
-        #    visualize.visualize_elevation_profile(elevationProfile)
+        #    visualize.visualize_elevation_profile(self.elevationProfile)
         #print("started building tubegraphs")
-        #tubeGraphs = tube.elevation_profile_to_tube_graphs(elevationProfile)         
+        #tubeGraphs = tube.build_tube_graphs(self.elevationProfile)         
         #print("finished building tubegraphs")
         #for tubeGraph in tubeGraphs:
-        #    print("pylon cost :" + tubeGraph.pylonCost)
-        #    print("tube cost :" + tubeGraph.tubeCost)
+        #    print("pylon cost :" + str(tubeGraph.pylonCost))
+        #    print("tube cost :" + str(tubeGraph.tubeCost))
+        #pylonCosts = [tubeGraph.pylonCost for tubeGraph in tubeGraphs]
+        #print("advanced pylon cost: " + str(int(min(pylonCosts))))
       
         newPylons = [{"geospatial" : elevationPoint["geospatial"],
                        "latlng" : elevationPoint["latlng"],
@@ -65,8 +67,9 @@ class Edge:
                        "pylonCost" : 0}
                        for elevationPoint in self.elevationProfile]      
         pylons.build_pylons(newPylons)
-        pylons.get_pyloncosts(newPylons)        
-        self.pylonCost = pylons.edge_pyloncost(newPylons)                           
+        pylons.get_pyloncosts(newPylons)                
+        self.pylonCost = pylons.edge_pyloncost(newPylons)
+        print("naive pylon cost: " + str(int(self.pylonCost)))
 
     def build_land_cost_samples(self):
         if self.isInRightOfWay:

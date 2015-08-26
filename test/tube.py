@@ -5,7 +5,10 @@ Last Modified: 8/15/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: To implement a non naive tube/pylon cost method.
 """
+#Standard Modules
+import numpy as np
 
+#Our Modules
 import util
 import config
 import abstract
@@ -73,36 +76,94 @@ class PylonsSlice(abstract.AbstractSlice):
 
 
 class PylonsLattice(abstract.AbstractLattice):
-    def elevation_point_to_pylons_slice_bounds(self, elevationPoint,
-                                                  maxLandElevation):
-        distanceAlongPath = elevationPoint["distanceAlongPath"]
-        latlng = elevationPoint["latlng"]
-        geospatial = elevationPoint["geospatial"]
+
+    def circle_function(self, x, r):
+        if x > r:
+            return -float("Inf")
+        else:
+            y = np.sqrt(np.square(r) - np.square(x)) - r
+            return y
+
+    def build_window(self, leftBound, rightBound, radius):
+        relativeIndices = range(-leftBound, rightBound + 1)
+        window = [{"relativeIndex" : relativeIndex,
+                   "relativeElevation" : self.circle_function(
+                   abs(relativeIndex * config.pylonSpacing), radius)}
+                   for relativeIndex in relativeIndices]
+        return window                    
+
+    def add_current_window(self, envelope, currentWindow):
+        for point in currentWindow:
+            currentIndex = point["index"]
+            envelope[currentIndex].append(point["elevation"])
+
+    def build_envelope(self, elevations, radius):
+        windowSize = int(radius / config.pylonSpacing)
+        envelopeLists = [[] for i in xrange(len(elevations))]
+        for currentIndex in range(0, len(elevations)):
+            if currentIndex < windowSize:
+                leftBound = currentIndex
+            else:
+                leftBound = windowSize
+            if currentIndex > (len(elevations) - 1) - windowSize:
+                rightBound = (len(elevations) - 1) - currentIndex
+            else:
+                rightBound = windowSize
+            relativeWindow = self.build_window(leftBound, rightBound, radius)
+            currentElevation = elevations[currentIndex]
+            currentWindow = [{
+                "index" : point["relativeIndex"] + currentIndex,
+                "elevation" : point["relativeElevation"] + currentElevation}
+                for point in relativeWindow]
+            self.add_current_window(envelopeLists, currentWindow)
+        envelope = map(max, envelopeLists)
+        return envelope
+
+    def build_pylons_envelopes(self, elevationProfile):
+        distances = []
+        elevations = []
+        for elevationPoint in elevationProfile:
+            distances.append(elevationPoint["distanceAlongPath"])
+            elevations.append(elevationPoint["landElevation"])
+        upperSpeed = config.maxSpeed
+        curvatureThresholdUpper = interpolate.compute_curvature_threshold(
+                        upperSpeed, config.verticalAccelConstraint)
+        radiusUpper = 1.0 / curvatureThresholdUpper
+        envelopeUpper = self.build_envelope(elevations, radiusUpper)
+        lowerSpeed = config.maxSpeed/1.2
+        curvatureThresholdLower = interpolate.compute_curvature_threshold(
+                        lowerSpeed, config.verticalAccelConstraint)
+        radiusLower = 1.0 / curvatureThresholdLower
+        envelopeLower = self.build_envelope(elevations, radiusLower)
+        return [envelopeUpper, envelopeLower]
+    
+    def envelope_point_to_bounds(self, dataPoint):
+        elevationPoint, envelopePointUpper, envelopePointLower = dataPoint
         landElevation = elevationPoint["landElevation"]
-        pylonHeightStepSize = config.pylonHeightStepSize
-        tallestPylonHeight = maxLandElevation - landElevation
-        shortestPylonHeight = 0        
-        pylonsSliceBounds = {"tallestPylonHeight" : tallestPylonHeight,
-                             "shortestPylonHeight" : shortestPylonHeight,
-                             "distanceAlongPath" : distanceAlongPath,
-                             "geospatial" : geospatial,
-                             "latlng" : latlng,
-                             "landElevation" : landElevation,
-                             "pylonHeightStepSize" : pylonHeightStepSize}
+        pylonsSliceBounds = {
+            "tallestPylonHeight" : envelopePointUpper - landElevation,
+            "shortestPylonHeight" : envelopePointLower - landElevation,
+            "distanceAlongPath" : elevationPoint["distanceAlongPath"],
+            "geospatial" : elevationPoint["geospatial"],
+            "latlng" : elevationPoint["latlng"],
+            "landElevation" : landElevation,
+            "pylonHeightStepSize" : config.pylonHeightStepSize
+            }
         return pylonsSliceBounds
 
-    def elevation_profile_to_pylons_slices_bounds(self, elevationProfile):
-        landElevations = [elevationPoint["landElevation"] for elevationPoint
-                                                        in elevationProfile]
-        maxLandElevation = max(landElevations)
-        pylonsSlicesBounds = [self.elevation_point_to_pylons_slice_bounds(
-                      elevationPoint, maxLandElevation) for elevationPoint
-                                                       in elevationProfile]
+    def build_pylons_slices_bounds(self, elevationProfile, pylonsEnvelopeUpper,
+                                                           pylonsEnvelopeLower):
+        pylonsData = zip(elevationProfile, pylonsEnvelopeUpper,
+                                           pylonsEnvelopeLower)
+        pylonsSlicesBounds = [self.envelope_point_to_bounds(dataPoint)
+                                      for dataPoint in pylonsData]
         return pylonsSlicesBounds   
 
     def __init__(self, elevationProfile):    
-        pylonsSlicesBounds = self.elevation_profile_to_pylons_slices_bounds(
-                                                           elevationProfile)
+        pylonsEnvelopeUpper, pylonsEnvelopeLower = \
+             self.build_pylons_envelopes(elevationProfile)
+        pylonsSlicesBounds = self.build_pylons_slices_bounds(elevationProfile,
+                                     pylonsEnvelopeUpper, pylonsEnvelopeLower)
         abstract.AbstractLattice.__init__(self, pylonsSlicesBounds,
                                             PylonsSlice.pylons_builder)
 
@@ -151,8 +212,9 @@ class TubeGraph(abstract.AbstractGraph):
         if numEdges < config.tubeTripTimeExcessMinNumEdges:
             return None    
         else:             
-            localMaxAllowedVels = interpolate.points_3d_local_max_allowed_vels(
-                                                                    tubeCoords)
+            zValues = [tubeCoord[2] for tubeCoord in tubeCoords]
+            localMaxAllowedVels = interpolate.points_1d_local_max_allowed_vels(
+                                                                       zValues)
             triptimeExcess = velocity.compute_local_trip_time_excess(
                       localMaxAllowedVels, self.velocityArcLengthStepSize)
             return triptimeExcess
@@ -169,9 +231,9 @@ class TubeGraph(abstract.AbstractGraph):
     def tube_cost_trip_time_excess(self):
         costTripTimeExcess = [self.tubeCost + self.pylonCost,
                                          self.triptimeExcess]
-        ##print("tube cost: " + str(self.tubeCost))
-        ##print("pylon cost: " + str(self.pylonCost))
-        ##print("trip time excess: " + str(self.triptimeExcess))
+        #print("tube cost: " + str(self.tubeCost))
+        #print("pylon cost: " + str(self.pylonCost))
+        #print("trip time excess: " + str(self.triptimeExcess))
         return costTripTimeExcess
 
     @classmethod
@@ -241,7 +303,7 @@ def tube_graphs_set_pair_merger(tubeGraphsSetA, tubeGraphsSetB):
     return mergedTubeGraphs
 
         
-def elevation_profile_to_tube_graphs(elevationProfile):
+def build_tube_graphs(elevationProfile):
     pylonsLattice = PylonsLattice(elevationProfile)
     tubeEdgesSets = TubeEdgesSets(pylonsLattice)
     tubeGraphsSets = map(TubeGraphsSet.init_from_tube_edges_set,
@@ -249,7 +311,7 @@ def elevation_profile_to_tube_graphs(elevationProfile):
     tubeGraphsSetsTree = mergetree.MasterTree(tubeGraphsSets,
         tube_graphs_set_pair_merger, abstract.graphs_set_updater)
     rootTubeGraphsSet = tubeGraphsSetsTree.root
-    selectedTubeGraphs = rootGraphsSet.selectedGraphs
+    selectedTubeGraphs = rootTubeGraphsSet.selectedGraphs
     return selectedTubeGraphs
     
     

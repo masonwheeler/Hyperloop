@@ -134,10 +134,10 @@ class AbstractEdgesSets:
             postfilterNumEdges = util.list_of_lists_len(filteredEdgesSets)
             util.smart_print("The current number of edges: " +
                                       str(postfilterNumEdges))
+            filteredEdgesSetsList.append(filteredEdgesSets)            
             if postfilterNumEdges == prefilterNumEdges:
                 break            
             prefilterNumEdges = postfilterNumEdges
-            filteredEdgesSetsList.append(filteredEdgesSets)            
         return filteredEdgesSetsList
         
     def __init__(self, lattice, edge_builder, is_edge_pair_compatible):
