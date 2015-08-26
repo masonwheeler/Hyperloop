@@ -39,7 +39,9 @@ class Route:
         self.velocityProfile = self.compute_velocityProfile(vx, vy, vz)
         self.accelerationProfile = self.compute_accelerationProfile(ax, ay, az)
         self.tripTime = t[-1]
-        self.comfortRating = util.LpNorm(t, comfort, 2)
+        tChunks = util.breakUp(t, 500)
+        tComfort = [tChunks[i][-1]-tChunks[i][0] for i in range(len(tChunks))]
+        self.comfortRating = util.LpNorm(tComfort, comfort, 2)
 
 
   def compute_latlngs(self, x, y):
@@ -148,8 +150,11 @@ def comfortanalysis_Of_4Droute(x):
   vChunks = np.transpose([vxChunks, vyChunks, vzChunks])
   aChunks = np.transpose([axChunks, ayChunks, azChunks])
   tChunks = util.breakUp(t, 500)
+
+  print vxChunks
+  print vChunks
   mu = 1
-  comfort = [cmft.comfort(vChunks[i], aChunks[i], tChunks[i][-1]-tChunks[i][0], mu) for i in range(len(tChunks))]
+  comfort = [cmft.sperling_comfort_index(vChunks[i], aChunks[i], tChunks[i][-1]-tChunks[i][0], mu) for i in range(len(tChunks))]
   return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
 
 

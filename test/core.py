@@ -102,6 +102,10 @@ def pair_analysis(start,end):
     directionsPoints = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
+<<<<<<< HEAD
+    completeRoutes = [routes.graph_to_route(graph) for graph in completeGraphs]
+    
+=======
 
     #testGraphs = completeGraphs[0:1]
     #testSpatialPath2d = routes.get_spatial_paths_2d(testGraphs)
@@ -138,6 +142,7 @@ def pair_analysis(start,end):
     visualize.scatter_plot(s, v)
     """
 
+>>>>>>> 274cd5b929541a4bef043514bd02570585ec8d11
 
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")

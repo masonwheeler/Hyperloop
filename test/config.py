@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = True
 timingMode = False
 useDropbox = False
@@ -25,8 +25,8 @@ useCachedDirections = True
 useCachedSpline = True
 useCachedLattice = True
 useCachedEdges = True
-useCachedGraphs = False
-useCachedSpatialPaths2d = True
+useCachedGraphs = True
+useCachedSpatialPaths2d = False
 
 """
 Lattice Generation Parameters
