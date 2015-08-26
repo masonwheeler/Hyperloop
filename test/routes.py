@@ -1,20 +1,101 @@
 """
 Original Developer: David Roberts
 Purpose of Module: To generate a route from a graph.
-Last Modified: 7/25/15
+Last Modified: 8/25/15
 Last Modified By: Jonathan Ward
-Last Modification Purpose: To make compatible with graph modifications.
+Last Modification Purpose: To add classes providing useful structure.
 """
 
-import advanced_interpolate as interp
+#Standard Modules:
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy.interpolate import PchipInterpolator
-import match_landscape as landscape
+
+#Our Modules
+import advanced_interpolate as interp
+import cacher
 import comfort as cmft
+import config
+import elevation
+import landcover
+import match_landscape as landscape
+import proj
 import util
 import visualize
-import numpy as np
-import matplotlib.pyplot as plt
 
+
+class SpatialPath2d:
+    def sample_geospatials(self, graphGeospatials, geospatialSampleDistance):
+        sampledGeospatials = interpolate.sample_path(graphGeospatials,
+                                             geospatialSampleDistance)
+        return sampledGeospatials
+        
+    def get_interpolating_geospatials(self, sampledGeospatials):
+        xArray, yArray = points_2d_to_arrays(sampledGeospatials)
+        numPoints = len(sampledGeospatials)
+        sValues = interpolate.get_s_values(numPoints)
+        xSpline, ySpline = interpolate.interpolating_splines_2d(xArray, yArray,
+                                                                       sValues)
+        xValues = interpolate.get_spline_values(xSpline, sValues)
+        yValues = interpolate.get_spline_values(ySpline, sValues)
+        interpolatingGeospatials = [xValues, yValues]
+        return interpolatingGeospatials
+
+    def get_interpolating_geospatials_v2(self, geospatials):
+        interpolatingGeospatialsArray = interp.paraSuperQ(geospatials, 25)
+        interpolatingGeospatials = interpolatingGeospatialsArray.tolist()
+        arcLengths = util.compute_arc_lengths(interpolatingGeospatials)
+        return [interpolatingGeospatials, arcLengths]
+
+    def get_interpolating_latlngs(self, interpolatingGeospatials):
+        interpolatingLatLngs = proj.geospatials_to_latlngs(
+                         interpolatingGeospatials, config.proj)
+        return interpolatingLatLngs
+
+    #def get_tube_graphs(self, elevationProfile):
+    
+    def get_tube_graphs_v2(self, elevationProfile):                     
+        geospatials = [elevationPoint["geospatial"] for elevationPoint
+                                                    in elevationProfile]
+        landElevations = [elevationPoint["landElevation"] for elevationPoint
+                                                         in elevationProfile]
+        arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
+                                                         in elevationProfile]
+        sInterp, zInterp = landscape.matchLandscape(arcLengths,
+                                   landElevations, "elevation")
+        tubeSpline = PchipInterpolator(sInterp, zInterp)
+        tubeElevations = tubeSpline(arcLengths)
+        #  plt.plot(arcLengths, tubeElevations, 'b.',
+        #            arcLengths, landElevations, 'r.')
+        #  plt.show()  
+        spatialXValues, spatialYValues = zip(*geospatials)
+        tubeGraph = zip(spatialXValues, spatialYValues, tubeElevations)
+        tubeGraphs = [tubeGraph]
+        return tubeGraphs
+    
+    def __init__(self, spatialGraph):
+        graphGeospatials = spatialGraph.geospatials
+        #sampledGeospatials = self.sample_geospatials(graphGeospatials)
+        #interpolatingGeospatials = self.get_interpolating_geospatials(
+        #                                               sampledGeospatials)
+        interpolatingGeospatials, arcLengths = \
+          self.get_interpolating_geospatials_v2(graphGeospatials)
+        interpolatingLatLngs = self.get_interpolating_latlngs(
+                                           interpolatingGeospatials)
+        self.elevationProfile = elevation.get_elevation_profile(
+                            interpolatingGeospatials, arcLengths)
+        self.landCost = landcover.get_land_cost(interpolatingLatLngs)
+        #self.tubeGraphs = self.get_tube_graphs_v2(self.elevationProfile)
+
+def build_spatial_paths_2d(completeSpatialGraphs):
+    spatialPaths2d = map(SpatialPath2d, completeSpatialGraphs)
+    return spatialPaths2d
+
+def get_spatial_paths_2d(completeSpatialGraphs):
+    spatialPaths2d = cacher.get_object("spatialpaths2d", build_spatial_paths_2d,
+                          [completeSpatialGraphs], cacher.save_spatial_paths_2d,
+                                                      config.spatialPaths2dFlag)
+    return spatialPaths2d
 
 class Route:
   #def __init__(self, tube, velocityProfileGraph):
@@ -61,8 +142,8 @@ def _3Droute_to_4Droute(x):
 
 
 # for testing only:
-  plt.plot(s, v, 'b.', s, vland, 'r.')
-  plt.show()
+#  plt.plot(s, v, 'b.', s, vland, 'r.')
+#  plt.show()
 
   t = [0] * len(v)
   t[1] = (s[1] - s[0]) / util.mean(v[0:2])

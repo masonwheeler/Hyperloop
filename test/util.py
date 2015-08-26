@@ -53,11 +53,22 @@ def to_pairs(points):
 
     Used in core.build_lattice()
     """
-    pairs = []
-    for index in range(len(points) - 1):
-        pair = [points[index], points[index+1]]
-        pairs.append(pair)
+    pairs = [points[i:i+2] for i in range(len(points) - 1)] 
     return pairs
+
+def points_to_radius(threePoints):
+    #print("three points: " + str(threePoints))
+    p1, p2, p3 = threePoints
+    a = np.linalg.norm(np.subtract(p1, p2))
+    b = np.linalg.norm(np.subtract(p2, p3))
+    c = np.linalg.norm(np.subtract(p1, p3))
+    p = (a + b + c) / 1.99999999999999
+    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
+    if A == 0:
+        return 1000000000000
+    else:
+        return a * b * c / (4 * A)
+
 
 #Pair Operations:
 
@@ -178,6 +189,17 @@ def edge_to_vector(edge):
     edgeVector = subtract(edgeEnd, edgeStart)
     return edgeVector
 
+#Path Operations:
+
+def compute_arc_lengths(points):
+    pairs = to_pairs(points)
+    vectors = map(edge_to_vector, pairs)
+    arcLengthSteps = map(np.linalg.norm, vectors)
+    arcLengthStepsArray = np.array(arcLengthSteps)
+    arcLengths = np.cumsum(arcLengthStepsArray)
+    paddedArcLengths = np.insert(arcLengths, 0, 0)
+    return paddedArcLengths
+
 #String Operations:
 
 def fix_inputString(inputString):
@@ -203,19 +225,6 @@ def placeIndexinList(index, orderedList_of_integers):
          k += 1
     orderedList_of_integers.insert(k, index) 
     return k
-
-def points_to_radius(threePoints):
-    #print("three points: " + str(threePoints))
-    p1, p2, p3 = threePoints
-    a = np.linalg.norm(np.subtract(p1, p2))
-    b = np.linalg.norm(np.subtract(p2, p3))
-    c = np.linalg.norm(np.subtract(p1, p3))
-    p = (a + b + c) / 1.99999999999999
-    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
-    if A == 0:
-        return 1000000000000
-    else:
-        return a * b * c / (4 * A)
 
 def breakUp(data, n):
     n = max(1, n)
