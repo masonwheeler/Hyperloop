@@ -230,3 +230,8 @@ def numericalDerivative(f, t):
     df[0] = (f[1]-f[0])/(t[1]-t[0])
     df[N-1] = (f[N-1]-f[N-2])/(t[N-1]-t[N-2])
     return df
+
+def mean(vector):
+    return sum(vector)/len(vector)
+
+

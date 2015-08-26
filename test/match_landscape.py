@@ -79,12 +79,12 @@ def matchLandscape(s, z, Type):
 
     elif Type == "velocity":
       cached[i][j] = cached[j][i] = True
-      dz = np.absolute(z[j]-z[j])
+      dz = np.absolute(z[j]-z[i])
       ds = s[j]-s[i]
       v = (z[j]+z[i])/2
 
-      C = v * config.linearAccelConstraint
-      D = v**2 * config.jerkTol
+      C = config.linearAccelConstraint/v
+      D = config.jerkTol/v**2
 
       def dzTol(s):
         if s < 2*C/D:

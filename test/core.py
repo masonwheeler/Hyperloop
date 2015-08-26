@@ -102,8 +102,10 @@ def pair_analysis(start,end):
     completeGraphs = build_graphs(latticeSlices)
 
 
-    obj2Droute = routes.graphtotwoDroute(completeGraphs[0])
-    obj3Droute = routes.twoDroutetothreeDroute(obj2Droute)
+    _2Droute = routes.graph_to_2Droute(completeGraphs[0])
+    _3Droute = routes._2Droute_to_3Droute(_2Droute)
+    _4Droute = routes._3Droute_to_4Droute(_3Droute)
+   
 
     #Test genLandscape( , "elevation"):
 #    print "extracting geospatials of a single graph..."

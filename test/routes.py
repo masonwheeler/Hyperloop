@@ -34,32 +34,38 @@ class Route:
                 }
 
 
-def graphtotwoDroute(graph):
+def graph_to_2Droute(graph):
   x = graph.geospatials
   return interp.paraSuperQ(x, 25)
 
-def twoDroutetothreeDroute(x):
+def _2Droute_to_3Droute(x):
   s, zland = landscape.genLandscape(x, "elevation")
   sInterp, zInterp = landscape.matchLandscape(s, zland, "elevation")
   f = PchipInterpolator(sInterp, zInterp)
   z = f(s)
 
   #for testing only:
-  plt.plot(s, z, 'b.', s, zland, 'r.')
-  plt.show()
+#  plt.plot(s, z, 'b.', s, zland, 'r.')
+#  plt.show()
 
   
   x, y = np.transpose(x)
   return np.transpose([x, y, z])
 
 
-def threeDroutetofourDroute(x):
-  s, v = landscape.genLandscape(x, "velocity")
-  sInterp, vInterp = landscape.matchLandscape(s, v, "velocity")
+def _3Droute_to_4Droute(x):
+  s, vland = landscape.genLandscape(x, "velocity")
+  sInterp, vInterp = landscape.matchLandscape(s, vland, "velocity")
   f = PchipInterpolator(sInterp, vInterp)
   v = f(s)
+
+
+# for testing only:
+  plt.plot(s, v, 'b.', s, vland, 'r.')
+  plt.show()
+
   t = [0] * len(v)
-  t[1] = (s[1] - s[0]) / gen.mean(v[0:2])
+  t[1] = (s[1] - s[0]) / util.mean(v[0:2])
   for i in range(2, len(v)):
     t[i] = t[i-1] + (s[i] - s[i-1]) / v[i-1]
   t[-1] = (s[-1] - s[-2]) / util.mean(v[-2:len(v)])
@@ -68,7 +74,7 @@ def threeDroutetofourDroute(x):
   return np.transpose([x, y, z, t])
 
 
-def comfortanalysisOffourDroute(x):
+def comfortanalysis_Of_4Droute(x):
   x, y, z, t = np.transpose(x)
   vx, vy, vz, t = [util.numericalDerivative(x, t), util.numericalDerivative(y, t), util.numericalDerivative(z, t), t]
   ax, ay, az, t = [util.numericalDerivative(vx, t), util.numericalDerivative(vy, t), util.numericalDerivative(vz, t), t]
