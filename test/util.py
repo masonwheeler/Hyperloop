@@ -259,3 +259,8 @@ def mean(vector):
     return sum(vector)/len(vector)
 
 
+def LpNorm(t, x, p):
+    summand = [(x[i]**p)*(t[i]-t[i-1]) for i in range(1,len(t))]
+    riemannSum = sum(summand)
+    return (riemannSum**(1./p))/t[-1]
+
