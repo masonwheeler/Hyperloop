@@ -144,15 +144,12 @@ def comfortanalysis_Of_4Droute(x):
   ax, ay, az, t = [util.numericalDerivative(vx, t), util.numericalDerivative(vy, t), util.numericalDerivative(vz, t), t]
     
   #breakUp data into chunks for comfort evaluation:
-  vxChunks, vyChunks, vzChunks = [util.breakUp(vx, 500), util.breakUp(vy, 500), util.breakUp(vz, 500)]
-  axChunks, ayChunks, azChunks = [util.breakUp(ax, 500), util.breakUp(ay, 500), util.breakUp(az, 500)]
-
-  vChunks = np.transpose([vxChunks, vyChunks, vzChunks])
-  aChunks = np.transpose([axChunks, ayChunks, azChunks])
+  v = np.transpose([vx, vy, vz])
+  a = np.transpose([ax, ay, az])
+  vChunks = util.breakUp(v, 500)
+  aChunks = util.breakUp(a, 500)
   tChunks = util.breakUp(t, 500)
-
-  print vxChunks
-  print vChunks
+  
   mu = 1
   comfort = [cmft.sperling_comfort_index(vChunks[i], aChunks[i], tChunks[i][-1]-tChunks[i][0], mu) for i in range(len(tChunks))]
   return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]

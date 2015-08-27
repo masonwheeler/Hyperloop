@@ -40,8 +40,6 @@ def accel_passenger(vel, accel, component):
     Find acceleration in passenger frame:
        {t_i}, {v_i}, {a_i}  -->  {T_i}, {N_i}, {B_i} -->  {ap_i}
     """
-    print vel
-    print accel
     tangentVector = [vel[i] / np.linalg.norm(vel[i]) for i in range(len(vel))]
     normalVector = [np.cross(vel[i], np.cross(accel[i], vel[i]))/
                    np.linalg.norm(np.cross(vel[i], np.cross(accel[i], vel[i])))
@@ -62,33 +60,16 @@ def accel_passenger(vel, accel, component):
                                 accelPassengerVal in accelPassenger]
     return accelPassengerComponents
 
-# UNIT TEST (script #1):
-
-"""
-v = [[11.5554, 3.12132, 0.854199], 
-     [3.56488, -8.25572, 7.94574], 
-     [-10.4556, -5.66823, 1.59708], 
-     [-6.79048, 6.50705, -7.45303], 
-     [8.36076, 7.67568, -3.89636]]
-
-a = [[-5.41209, 26.5291, -23.7259],
-     [33.4165, 13.344, -1.12782], 
-     [15.7212, -22.4124, 23.3779], 
-     [-28.5665, -20.2583, 8.33999], 
-     [-24.534, 16.1627, -20.805]]
-
-assert(aPassenger(v, a, 1) == [36, 36, 36, 36, 36])
-"""
 
 """
 2. Take Fast Fourier Transform of psnger accel:
       {ap_i}  -->  {ap_f}
 3. Apply weighting filter and sum results
-      {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)*ap_f|^2
+      {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)|^2
 """
 
 """
-See (Gangadharan) equations (7) and (8) for weighting factors.
+See (Gangadharan) equations (7) and (8) for weighting factors
 """
 
 def vertical_weighting_factor(frequency):
@@ -126,7 +107,7 @@ def sperling_comfort_index(vel, accel, timeInterval, component):
     numTimePoints = len(vel)
     accelPassengerComponents = accel_passenger(vel, accel, component)
     accelPassengerFrequency = np.fft.fft(accelPassengerComponents) / numTimePoints
-    accelFrequencyWeightedRMS = frequencyWeightedRMS(accelPassengerFrequency,
+    accelFrequencyWeightedRMS = frequency_weighted_rms(accelPassengerFrequency,
                                                      timeInterval, component)
     sperlingComfortIndex =  4.42*(accelFrequencyWeightedRMS)**0.3
     return sperlingComfortIndex

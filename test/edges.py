@@ -49,23 +49,20 @@ class Edge:
                            pylonSlicesGeospatials, pylonSliceDistances)
 
     def build_pylons(self):
-        tubeCost, newPylonCost, tubeElevations = tube.build_tube_profile_v2(
-                                                        self.elevationProfile)
-            
-        oldPylons = [{"geospatial" : elevationPoint["geospatial"],
-                       "latlng" : elevationPoint["latlng"],
-                       "elevation" : elevationPoint["landElevation"],
-                       "pylonHeight" : 0,
-                       "pylonCost" : 0}
-                       for elevationPoint in self.elevationProfile]      
-        pylons.build_pylons(oldPylons)
-        pylons.get_pyloncosts(oldPylons)                
-        oldPylonCost = pylons.edge_pyloncost(oldPylons)
-        self.pylonCost = newPylonCost
-        #self.pylonCost = oldPylonCost
-        #print("tube cost: " + str(tubeCost))
-        #print("new pylon cost: " + str(newPylonCost))
+        tubeCost, pylonCost, tubeElevations = tube.build_tube_profile_v2(
+                                                        self.elevationProfile)           
+        #oldPylons = [{"geospatial" : elevationPoint["geospatial"],
+        #               "latlng" : elevationPoint["latlng"],
+        #               "elevation" : elevationPoint["landElevation"],
+        #               "pylonHeight" : 0,
+        #               "pylonCost" : 0}
+        #               for elevationPoint in self.elevationProfile]      
+        #pylons.build_pylons(oldPylons)
+        #pylons.get_pyloncosts(oldPylons)                
+        #oldPylonCost = pylons.edge_pyloncost(oldPylons)
         #print("old pylon cost: " + str(oldPylonCost))
+        self.pylonCost = pylonCost
+        print("pylon cost: " + str(pylonCost))
         #if config.visualMode:
         #    visualize.visualize_elevation_profile_v2(self.elevationProfile,
         #                                                    tubeElevations)
