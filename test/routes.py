@@ -42,7 +42,7 @@ class Route:
         print "tripTime is: "+str(self.tripTime)
         tChunks = util.breakUp(t, 500)
         tComfort = [tChunks[i][-1] for i in range(len(tChunks))]
-        self.comfortRating = util.LpNorm(tComfort, comfort, 2)
+        self.comfortRating = util.LpNorm(tComfort, comfort, 10)
         print "comfortRating is: "+str(self.comfortRating)
         print "cost is: "+str((self.pylonCost + self.tubeCost + self.landCost)/1000000000.0)+ " billion USD."
 
@@ -110,9 +110,9 @@ def graph_to_2Droutev2(graph, M):
   x = graph.geospatials
   return interp.scipyQ(x, M)
 
-def _2Droute_to_3Droute(x):
+def _2Droute_to_3Droute(x, elevationTradeoff):
   s, zland = landscape.genLandscape(x, "elevation")
-  sInterp, zInterp = landscape.matchLandscape(s, zland, "elevation")
+  sInterp, zInterp = landscape.matchLandscape(s, zland, "elevation", elevationTradeoff)
   f = PchipInterpolator(sInterp, zInterp)
   z = f(s)
 
@@ -123,9 +123,9 @@ def _2Droute_to_3Droute(x):
   return np.transpose([x, y, z])
 
 
-def _3Droute_to_4Droute(x):
+def _3Droute_to_4Droute(x, comfortTradeoff1, comfortTradeoff2):
   s, vland = landscape.genLandscape(x, "velocity")
-  sInterp, vInterp = landscape.matchLandscape(s, vland, "velocity")
+  sInterp, vInterp = landscape.matchLandscape(s, vland, "velocity", [comfortTradeoff1, comfortTradeoff2])
   f = PchipInterpolator(sInterp, vInterp)
   v = [max(10 ,f(sVal)) for sVal in s]
 
@@ -156,14 +156,14 @@ def comfortanalysis_Of_4Droute(x):
   return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
 
 
-def graph_to_route(graph):
+def graph_to_route(graph, elevationTradeoff, comfortTradeoff1, comfortTradeoff2):
   start = time.time()
   print  "computing data for a new route..."
   x = graph.geospatials
   graphSpacing = np.linalg.norm([x[2][0]-x[1][0], x[2][1]-x[1][1]])
   M = int(graphSpacing/config.pylonSpacing)
   print "interpolation sampling per edge is "+str(M)
-  routeData = comfortanalysis_Of_4Droute(_3Droute_to_4Droute(_2Droute_to_3Droute(graph_to_2Droute(graph, M))))
+  routeData = comfortanalysis_Of_4Droute(_3Droute_to_4Droute(_2Droute_to_3Droute(graph_to_2Droute(graph, M), elevationTradeoff), comfortTradeoff1, comfortTradeoff2))
   print "attaching data to new route..."
   print "done: process took " +str(time.time()-start)+" seconds."
   return Route(*routeData)

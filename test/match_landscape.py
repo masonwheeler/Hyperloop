@@ -47,7 +47,7 @@ def genLandscape(x, Type):
 
 
 
-def matchLandscape(s, z, Type):
+def matchLandscape(s, z, Type, tradeoffs):
   #the profile initializes as delta-z.
   K = [0, len(z)-1]
 
@@ -67,7 +67,7 @@ def matchLandscape(s, z, Type):
       return True
     elif Type == "elevation":
       cached[i][j] = cached[j][i] = True
-      curvatureTol = config.linearAccelConstraint/config.maxSpeed**2
+      curvatureTol = tradeoffs
       def curvature(i, j):   #Computes the curvature of the clothoid 
         x0, x1 = [s[i], s[j]]
         y0, y1 = [z[i], z[j]]
@@ -84,8 +84,8 @@ def matchLandscape(s, z, Type):
       ds = s[j]-s[i]
       v = (z[j]+z[i])/2
 
-      C = config.linearAccelConstraint/v
-      D = config.jerkTol/v**2
+      C = tradeoffs[0]/v
+      D = tradeoffs[1]/v**2
 
       def dzTol(s):
         if s < 2*C/D:
