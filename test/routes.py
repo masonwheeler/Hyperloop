@@ -39,10 +39,12 @@ class Route:
         self.velocityProfile = self.compute_velocityProfile(vx, vy, vz)
         self.accelerationProfile = self.compute_accelerationProfile(ax, ay, az)
         self.tripTime = t[-1]
+        print "tripTime is: "+str(self.tripTime)
         tChunks = util.breakUp(t, 500)
         tComfort = [tChunks[i][-1] for i in range(len(tChunks))]
         self.comfortRating = util.LpNorm(tComfort, comfort, 2)
-
+        print "comfortRating is: "+str(self.comfortRating)
+        print "cost is: "+str((self.pylonCost + self.tubeCost + self.landCost)/1000000000.0)+ " billion USD."
 
   def compute_latlngs(self, x, y):
     geospatials = np.transpose([x, y])
@@ -160,8 +162,8 @@ def graph_to_route(graph):
   x = graph.geospatials
   graphSpacing = np.linalg.norm([x[2][0]-x[1][0], x[2][1]-x[1][1]])
   M = int(graphSpacing/config.pylonSpacing)
-  print M
-  routeData = comfortanalysis_Of_4Droute(_3Droute_to_4Droute(_2Droute_to_3Droute(graph_to_2Droutev2(graph, 25))))
+  print "interpolation sampling per edge is "+str(M)
+  routeData = comfortanalysis_Of_4Droute(_3Droute_to_4Droute(_2Droute_to_3Droute(graph_to_2Droute(graph, M))))
   print "attaching data to new route..."
   print "done: process took " +str(time.time()-start)+" seconds."
   return Route(*routeData)

@@ -175,9 +175,9 @@ def scipyQ(x, M):
 
 
 # Test paraSuperQ(x, M):
-xPoints = [random.uniform(-100,100) for i in range(40)]
-yPoints = [random.uniform(-100,100) for i in range(40)]
-x = np.transpose([xPoints, yPoints])
+#xPoints = [random.uniform(-100,100) for i in range(40)]
+#yPoints = [random.uniform(-100,100) for i in range(40)]
+#x = np.transpose([xPoints, yPoints])
 
 
 # with open('/Users/Droberts/Dropbox/save/Dallas_to_Austin/Dallas_to_Austin_graphs/Dallas_to_Austin_graph003.csv', 'rb') as f:
@@ -186,11 +186,11 @@ x = np.transpose([xPoints, yPoints])
 # x = [[float(p[0]),float(p[1])] for p in x]
 # xPoints, yPoints = np.transpose(x)
 
-xVals = scipyQ(x, 100)
-xVals, yVals = np.transpose(xVals)
+#xVals = scipyQ(x, 100)
+#xVals, yVals = np.transpose(xVals)
 
-plt.plot(xVals, yVals, '.', xPoints, yPoints, 'o')
-plt.show()
+#plt.plot(xVals, yVals, '.', xPoints, yPoints, 'o')
+#plt.show()
 
 
 
