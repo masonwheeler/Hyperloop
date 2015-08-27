@@ -186,7 +186,7 @@ x = np.transpose([xPoints, yPoints])
 # x = [[float(p[0]),float(p[1])] for p in x]
 # xPoints, yPoints = np.transpose(x)
 
-xVals = scipyQ(x, 10)
+xVals = scipyQ(x, 100)
 xVals, yVals = np.transpose(xVals)
 
 plt.plot(xVals, yVals, '.', xPoints, yPoints, 'o')
