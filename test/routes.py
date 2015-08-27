@@ -22,7 +22,7 @@ import match_landscape as landscape
 import proj
 import util
 import visualize
-
+import time
 
 
 # The Route Class.
@@ -100,13 +100,13 @@ class Route:
 
 #Ancillary Functions:
 
-def graph_to_2Droute(graph):
+def graph_to_2Droute(graph, M):
   x = graph.geospatials
-  return interp.paraSuperQ(x, 25)
+  return interp.paraSuperQ(x, M)
 
-def graph_to_2Droutev2(graph):
+def graph_to_2Droutev2(graph, M):
   x = graph.geospatials
-  return interp.scipyQ(x, 25)
+  return interp.scipyQ(x, M)
 
 def _2Droute_to_3Droute(x):
   s, zland = landscape.genLandscape(x, "elevation")
@@ -155,9 +155,15 @@ def comfortanalysis_Of_4Droute(x):
 
 
 def graph_to_route(graph):
+  start = time.time()
   print  "computing data for a new route..."
-  routeData = comfortanalysis_Of_4Droute(_3Droute_to_4Droute(_2Droute_to_3Droute(graph_to_2Droute(graph))))
+  x = graph.geospatials
+  graphSpacing = np.linalg.norm([x[2][0]-x[1][0], x[2][1]-x[1][1]])
+  M = int(graphSpacing/config.pylonSpacing)
+  print M
+  routeData = comfortanalysis_Of_4Droute(_3Droute_to_4Droute(_2Droute_to_3Droute(graph_to_2Droutev2(graph, 25))))
   print "attaching data to new route..."
+  print "done: process took " +str(time.time()-start)+" seconds."
   return Route(*routeData)
 
 
