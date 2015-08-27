@@ -69,7 +69,7 @@ def accel_passenger(vel, accel, component):
 """
 
 """
-See (Gangadharan) equations (7) and (8) for weighting factors
+See (Gangadharan) equations (7) and (8) for weighting factors.
 """
 
 def vertical_weighting_factor(frequency):
@@ -83,8 +83,8 @@ def horizontal_weighting_factor(frequency):
     return 1.25 * vertical_weighting_factor(frequency)
 
 def weighting_factors(frequency):
-    weightingFactors = [0, vertical_weighing_factor(frequency),
-                        horizontal_weighing_factor(frequency)]
+    weightingFactors = [0, vertical_weighting_factor(frequency),
+                        horizontal_weighting_factor(frequency)]
     return weightingFactors
 
 """
@@ -96,10 +96,10 @@ def frequency_weighted_rms(accelFrequency, timeInterval, component):
     timeInterval = float(timeInterval)
     frequencyHalfWidth = int(math.floor(frequencyWidth/2.0))
     accelFrequencyWeighted = [
-        (weighting_factors(frequencyIndex/timeInterval)[accelComponent]
+        (weighting_factors(frequencyIndex/timeInterval)[component]
         * accelFrequency[frequencyIndex]) for frequencyIndex
         in range(-frequencyHalfWidth, frequencyHalfWidth+1)]
-    sfrequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
+    frequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
                                     for accelVal in accelFrequencyWeighted]))
     return frequencyWeightedRMS
 
