@@ -66,10 +66,6 @@ Engineering constraints.
 pylonSpacing = 100.0 #maximum distance between subsequent pylons (in meters)
 maxSpeed = 330.0 #maximum speed of the capsule (in m/s)
 
-"""
-Pylon Cost parameters
-"""
-numHeights = 127
 
 """
 Land Cost parameters
@@ -175,7 +171,7 @@ plotQueue = []
 For File Saving.
 """
 cwd = ""
-dropboxDirectory = "/home/ubuntu/Dropbox"
+dropboxDirectory = "/home/ubuntu/Dropbox/save"
 
 """
 For USGS-Elevation.

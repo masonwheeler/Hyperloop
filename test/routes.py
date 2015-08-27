@@ -40,7 +40,7 @@ class Route:
         self.accelerationProfile = self.compute_accelerationProfile(ax, ay, az)
         self.tripTime = t[-1]
         tChunks = util.breakUp(t, 500)
-        tComfort = [tChunks[i][-1]-tChunks[i][0] for i in range(len(tChunks))]
+        tComfort = [tChunks[i][-1] for i in range(len(tChunks))]
         self.comfortRating = util.LpNorm(tComfort, comfort, 2)
 
 

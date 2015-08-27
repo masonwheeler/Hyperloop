@@ -260,11 +260,7 @@ def mean(vector):
 
 
 def LpNorm(t, x, p):
-    print t[-1]
-    print x
     summand = [(x[i]**p)*(t[i]-t[i-1]) for i in range(1,len(t))]
-    riemannSum = sum(summand)
-    print riemannSum
-    print (riemannSum**(1./p))/t[-1]
-    return (riemannSum**(1./p))/t[-1]
+    riemannSum = sum(summand)/t[-1]
+    return riemannSum**(1./p)
 

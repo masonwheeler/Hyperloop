@@ -36,7 +36,7 @@ def build_directions(start, end):
     if config.visualMode:
         plottableDirections = [zip(*directionsPoints), 'y-'] 
         config.plotQueue.append(plottableDirections)
-    return directionsPoints
+    return [directionsPoints, startLatLng, endLatLng]
 
 def build_lattice(directionsPoints):
     t0 = time.time()
@@ -99,11 +99,11 @@ def build_graphs(latticeSlices):
 def pair_analysis(start,end):
     cacher.create_necessaryfolders(start, end)
     t0 = time.time()
-    directionsPoints = build_directions(start, end)
+    directionsPoints, startLatLng, endLatLng = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
     completeRoutes = [routes.graph_to_route(graph) for graph in completeGraphs]
-    cacher.save_routes(completeRoutes)
+    cacher.save_routes(completeRoutes, start, end, startLatLng, endLatLng)
     for i in range(len(completeRoutes)):
       print "(triptime, comfort rating, pylon cost, tube cost, land cost) of route "+ str(i) +" is:" +str([completeRoutes[i].tripTime, completeRoutes[i].comfortRating, completeRoutes[i].pylonCost, completeRoutes[i].tubeCost, completeRoutes[i].landCost])
     t1 = time.time()

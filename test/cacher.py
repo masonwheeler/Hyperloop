@@ -155,12 +155,28 @@ def save_graphs(graphs, graphsName):
 def save_spatial_paths_2d(spatialPaths2d, spatialPaths2dName):
     pass
 
-def save_routes(routes):
-    routesDicts = [route.as_dict() for route in routes]
-    routesList = {"routes" :  routesDicts}
-    savePath = config.dropboxDirectory + "/routes.json"
+def save_routes(routes, start, end, startLatLng, endLatLng):
+    routesDicts = []
+    routeIndex = 0
+    for route in routes:
+        routeDict = route.as_dict()
+        routeDict["index"] = routeIndex
+        routeIndex += 1
+        routesDicts.append(routeDict)
+    cityPair = {
+                  "startCity": {
+                      "name" : start,
+                      "coordinates" : startLatLng
+                      },
+                  "endCity": {
+                      "name" : end,
+                      "coordinates" : endLatLng
+                      },
+                  "routes" :  routesDicts
+                }
+    savePath = config.dropboxDirectory + "/exampleCityPair.json"
     with open(savePath, 'w') as filePath:
-        json.dump(routesList, filePath)
+        json.dump(cityPair, filePath)
 
 
 
