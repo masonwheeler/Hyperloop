@@ -30,13 +30,24 @@ class ParetoFront:
         If yReverse is set to True then the Pareto front minimizes y-values.
         """
         xMax, yMax = np.amax(vertices, axis = 0)
+        ##print("x Max: " + str(xMax))        
+        ##print("y Max: " + str(yMax))
         xMin, yMin = np.amin(vertices, axis = 0)
+        ##print("x Min: " + str(xMin))        
+        ##print("y Min: " + str(yMin))
+        #The vertices with x-values equal to x-max
+        xMaxVertices = vertices[np.where(vertices[:,0] == xMax)]   
+        ##print("x max vertices: " + str(xMaxVertices))
+        #The vertices with y-values equal to y-max
+        yMaxVertices = vertices[np.where(vertices[:,1] == yMax)]           
+        #The vertices with x-values equal to x-min
+        xMinVertices = vertices[np.where(vertices[:,0] == xMin)]
+        print("x min vertices: " + str(xMinVertices))
+        #The vertices with y-values equal to y-min
+        yMinVertices = vertices[np.where(vertices[:,1] == yMin)]           
+        print("y min vertices: " + str(yMinVertices))
          
         if (not xReverse and not yReverse): #Taking the top-right vertices
-            #The vertices with x-values equal to x-max
-            xMaxVertices = vertices[np.where(vertices[:,0] == xMax)]
-            #The vertices with y-values equal to y-max
-            yMaxVertices = vertices[np.where(vertices[:,1] == yMax)]           
             #To find the maximum y-value of the vertices with maximal x-values
             xMax, xMaxVerticesYMax = np.amax(xMaxVertices, axis=0)
             #To find the maximum x-value of the vertices with maximal y-values
@@ -52,10 +63,6 @@ class ParetoFront:
             return frontIndices                    
          
         if (not xReverse and yReverse): #Taking the bottom-right vertices
-            #The vertices with x-values equal to x-max
-            xMaxVertices = vertices[np.where(vertices[:,0] == xMax)]
-            #The vertices with y-values equal to y-min
-            yMinVertices = vertices[np.where(vertices[:,1] == yMin)]           
             #To find the minimum y-value of the vertices with maximal x-values
             xMax, xMaxVerticesYMin = np.amin(xMaxVertices, axis=0)
             #To find the maximum x-value of the vertices with minimal y-values
@@ -71,10 +78,6 @@ class ParetoFront:
             return frontIndices                   
         
         if (xReverse and not yReverse): #Taking the top-left vertices
-            #The vertices with x-values equal to x-min
-            xMinVertices = vertices[np.where(vertices[:,0] == xMin)]
-            #The vertices with y-values equal to y-max
-            yMaxVertices = vertices[np.where(vertices[:,1] == yMax)]           
             #To find the maximum y-value of the vertices with minimal x-values
             xMin, xMinVerticesYMax = np.amax(xMinVertices, axis=0)
             #To find the minimum x-value of the vertices with maximal y-values
@@ -90,22 +93,24 @@ class ParetoFront:
             return frontIndices                    
          
         if (xReverse and yReverse): #Taking the bottom-left vertices
-            #The vertices with x-values equal to x-min
-            xMinVertices = vertices[np.where(vertices[:,0] == xMin)]
-            #The vertices with y-values equal to y-min
-            yMinVertices = vertices[np.where(vertices[:,1] == yMin)]           
+            print("minimizing x and y")
             #To find the minimum y-value of the vertices with minimal x-values
             xMin, xMinVerticesYMin = np.amin(xMinVertices, axis=0)
             #To find the minimum x-value of the vertices with minimal y-values
             yMinVerticesXMin, yMin = np.amin(yMinVertices, axis=0)
             #Set the maximum acceptable x-value for x-value filter
             xMaxFilter = yMinVerticesXMin
+            print("x max filter: " + str(xMaxFilter))
             #Set the maximum acceptable y-value for y-value filter
-            yMaxFilter = xMinVerticesYMin
+            yMaxFilter = xMinVerticesYMin            
+            print("y max filter: " + str(yMaxFilter))
             #Take the vertices which pass the x-value and y-value filters.
             frontIndices = np.where(np.logical_and(
                              vertices[:,0] <= xMaxFilter,
                              vertices[:,1] <= yMaxFilter))
+            selectedVertices = vertices[frontIndices]
+            print("selected vertices: ")
+            print(str(selectedVertices))
             return frontIndices      
 
     def remove_frontindices(self, frontIndicesRelPoints):
@@ -120,16 +125,18 @@ class ParetoFront:
         np.dtype((np.void, pointsArray.dtype.itemsize * pointsArray.shape[1])))        
         #selects the indices of the unique tuples.
         _, uniqueIndices = np.unique(tuplesArray, return_index=True)
+        print("original number: " + str(pointsArray.size))
+        print("new number: " + str(uniqueIndices.size))
         return uniqueIndices
 
     def __init__(self, points, xReverse, yReverse):
         self.frontsIndices = []
-        print("created new pareto front with points: ")
-        print(points)
+        ##print("created new pareto front with points: ")
+        ##print(points)
         self.xReverse, self.yReverse = xReverse, yReverse
         #Raw points array may contain duplicates
         rawPointsArray = np.array(map(np.array, points))
-        #The indices of the unique points in the raw points array.
+        #The indices of the unique points in the raw points array.        
         uniqueIndices = self.remove_duplicates(rawPointsArray)
         #The unique points in the raw points array.
         self.pointsArray = rawPointsArray[uniqueIndices]
@@ -170,13 +177,18 @@ class ParetoFront:
                                                 self.xReverse, self.yReverse)
             #The indices of the points in the pareto front in the points array.
             frontIndicesRelPoints = hullIndices[frontIndicesRelHull]
+            selectedPoints = self.pointsArray[frontIndicesRelPoints]
+            #print("selected points: ")
+            #print(str(selectedPoints))
+            #print("selected points indices: ")
+            print(str(frontIndicesRelPoints))
             #Add the indices of the points in the pareto front to list.
             self.frontsIndices.append(frontIndicesRelPoints.tolist())
             #Remove the indices of the points in the pareto front from list.
             self.remove_frontindices(frontIndicesRelPoints)
-        print("the selected points are: ")
-        selectedPoints = [points[i] for i in frontIndicesRelPoints]
-        print(selectedPoints)
+        ##print("the selected points are: ")
+        ##selectedPoints = [points[i] for i in frontIndicesRelPoints]
+        ##print(selectedPoints)
 
     def build_nextfront(self):
         """
@@ -186,7 +198,7 @@ class ParetoFront:
         Since points array does not have duplicates,
         the pruned points array does not have duplicates.
         """
-        print("build next front")
+        ##print("build next front")
         #Initialize the points which have not been in a front yet
         prunedPoints = self.pointsArray[self.prunedPointsIndices]
         #The number of rows in the pruned points array
