@@ -57,7 +57,8 @@ class Slice:
         #sliceSplinePoint = SlicePoint(idIndex, splinePoint, False).as_dict()
         idIndex += 1
         sliceGridPoints = []
-        for point in sliceGrid:
+        #do not add the slice point
+        for point in sliceGrid[:-1]:
             sliceGridPoints.append(SlicePoint(idIndex, point,
                                                 False).as_dict())
             idIndex += 1

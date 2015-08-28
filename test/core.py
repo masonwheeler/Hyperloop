@@ -87,8 +87,8 @@ def build_graphs(latticeSlices):
     #print(graphGeospatials[0])
     #print(len(graphGeospatials))
     #print(len(set(graphGeospatials)))
-    for graph in completeGraphs:
-        print("geospatials: " + str(graph.geospatials))
+    #for graph in completeGraphs:
+    #    print("geospatials: " + str(graph.geospatials))
     #    print("pylon cost: " + str(graph.pylonCost))
     #    print("land cost : " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
@@ -115,11 +115,12 @@ def pair_analysis(start,end):
     directionsPoints, startLatLng, endLatLng = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
-    
+    """ 
     completeRoutes = [routes.graph_to_route(graph, config.linearAccelConstraint/config.maxSpeed**2, config.linearAccelConstraint, config.jerkTol) for graph in completeGraphs]
     cacher.save_routes(completeRoutes, start, end, startLatLng, endLatLng)
     for i in range(len(completeRoutes)):
       print "(triptime, comfort rating, pylon cost, tube cost, land cost) of route "+ str(i) +" is:" +str([completeRoutes[i].tripTime, completeRoutes[i].comfortRating, completeRoutes[i].pylonCost, completeRoutes[i].tubeCost, completeRoutes[i].landCost])
+    """
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")    
     if config.visualMode:

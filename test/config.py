@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = True
 timingMode = False
 useDropbox = False

@@ -62,7 +62,7 @@ class Edge:
         #oldPylonCost = pylons.edge_pyloncost(oldPylons)
         #print("old pylon cost: " + str(oldPylonCost))
         self.pylonCost = pylonCost
-        print("pylon cost: " + str(pylonCost))
+        #print("pylon cost: " + str(pylonCost))
         #if config.visualMode:
         #    visualize.visualize_elevation_profile_v2(self.elevationProfile,
         #                                                    tubeElevations)

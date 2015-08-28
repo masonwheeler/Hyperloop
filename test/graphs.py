@@ -80,6 +80,9 @@ class GraphsSet:
         """
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs            
+            #for graph in self.selectedGraphs:
+            #    print(graph.geospatials)
+            #    time.sleep(3)
         else:
             """
             landCosts = [graph.landCost for graph in self.unfilteredGraphs]
@@ -119,12 +122,18 @@ class GraphsSet:
             #plt.scatter(originalCosts, originalCurvatures)
             #plt.show()
             try:
+                """
+                print("unsorted cost curvature points: ")
+                for costCurvaturePoint in self.costCurvaturePoints:
+                    print(costCurvaturePoint)
+                    time.sleep(3)
                 print("sorted cost curvature points: ")
                 sortedCostCurvaturePoints = sorted(self.costCurvaturePoints,
                                                    key=lambda pair: pair[0])
                 for costCurvaturePoint in sortedCostCurvaturePoints:
                     print(costCurvaturePoint)
                     time.sleep(3)
+                """
                        
                 self.front = paretofront.ParetoFront(
                                   self.costCurvaturePoints,
@@ -133,7 +142,10 @@ class GraphsSet:
                 print("selected graphs indices: " + str(selectedGraphsIndices))
                 values = [self.costCurvaturePoints[i] for i
                                    in selectedGraphsIndices]
-                print(values)
+                print("selected graph cost curvatures")
+                for value in values:
+                    print(value)
+                    time.sleep(3)
                 numFronts = 1
                 #while (self.front.build_nextfront() and
                 #       numFronts <= config.numFronts):
@@ -150,22 +162,23 @@ class GraphsSet:
                                  in self.selectedGraphs]
                 selectedCurvatures = [graph.curvatureMetric for graph
                                       in self.selectedGraphs]
-                fig = plt.figure()
-                fig.suptitle('cost vs curvature tradeoff')
-                ax = fig.add_subplot(111)
-                ax.set_xlabel('cost in dollars')
-                ax.set_ylabel('curvature metric')
-                ax.plot(allCosts, allCurvatures, 'b.')
-                plt.show()
-                fig = plt.figure()
-                fig.suptitle('cost vs curvature tradeoff')
-                ax = fig.add_subplot(111)
-                ax.set_xlabel('cost in dollars')
-                ax.set_ylabel('curvature metric')
-                ax.plot(allCosts, allCurvatures, 'b.')
-                ax.plot(allCosts, allCurvatures, 'b.',
-                         selectedCosts, selectedCurvatures, 'r.')
-                plt.show()
+                if config.visualMode:
+                    fig = plt.figure()
+                    fig.suptitle('cost vs curvature tradeoff')
+                    ax = fig.add_subplot(111)
+                    ax.set_xlabel('cost in dollars')
+                    ax.set_ylabel('curvature metric')
+                    ax.plot(allCosts, allCurvatures, 'b.')
+                    plt.show()
+                    fig = plt.figure()
+                    fig.suptitle('cost vs curvature tradeoff')
+                    ax = fig.add_subplot(111)
+                    ax.set_xlabel('cost in dollars')
+                    ax.set_ylabel('curvature metric')
+                    ax.plot(allCosts, allCurvatures, 'b.')
+                    ax.plot(allCosts, allCurvatures, 'b.',
+                             selectedCosts, selectedCurvatures, 'r.')
+                    plt.show()
             except ValueError:
                 print("encountered ValueError")
                 self.selectedGraphs = self.unfilteredGraphs
