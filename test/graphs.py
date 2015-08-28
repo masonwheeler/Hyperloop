@@ -139,18 +139,18 @@ class GraphsSet:
                                   self.costCurvaturePoints,
                                   self.minimizeCost, self.minimizeCurvature)
                 selectedGraphsIndices = self.front.frontsIndices[-1]                
-                print("selected graphs indices: " + str(selectedGraphsIndices))
+                #print("selected graphs indices: " + str(selectedGraphsIndices))
                 values = [self.costCurvaturePoints[i] for i
                                    in selectedGraphsIndices]
-                print("selected graph cost curvatures")
-                for value in values:
-                    print(value)
-                    time.sleep(3)
+                #print("selected graph cost curvatures")
+                #for value in values:
+                #    print(value)
+                #    time.sleep(3)
                 numFronts = 1
-                #while (self.front.build_nextfront() and
-                #       numFronts <= config.numFronts):
-                #    numFronts += 1
-                #    selectedGraphsIndices += self.front.frontsIndices[-1]
+                while (self.front.build_nextfront() and
+                       numFronts <= config.numFronts):
+                    numFronts += 1
+                    selectedGraphsIndices += self.front.frontsIndices[-1]
                 self.selectedGraphs = [self.unfilteredGraphs[i] for i in
                                        selectedGraphsIndices]
  
@@ -162,6 +162,7 @@ class GraphsSet:
                                  in self.selectedGraphs]
                 selectedCurvatures = [graph.curvatureMetric for graph
                                       in self.selectedGraphs]
+                """
                 if config.visualMode:
                     fig = plt.figure()
                     fig.suptitle('cost vs curvature tradeoff')
@@ -179,6 +180,7 @@ class GraphsSet:
                     ax.plot(allCosts, allCurvatures, 'b.',
                              selectedCosts, selectedCurvatures, 'r.')
                     plt.show()
+                """
             except ValueError:
                 print("encountered ValueError")
                 self.selectedGraphs = self.unfilteredGraphs
@@ -191,10 +193,6 @@ class GraphsSet:
 
         If the graphs are successfully updated return True, else return False.
         Update the graphs by adding the next front from the Pareto Frontier
-        """
-        print("tried to update the graphs")
-        #self.selectedGraphs = self.sortedGraphs[:10]
-        #self.sortedGraphs = self.sortedGraphs[10:]
         """
         if self.front == None:
             return False
@@ -210,10 +208,9 @@ class GraphsSet:
                 return True                
             else:
                 return False       
-        """
 
     def __init__(self, graphs):              
-        self.sortedGraphs = []
+        self.front = None
         self.unfilteredGraphs = graphs
         self.graphsNumEdges = self.unfilteredGraphs[0].numEdges
         self.graphs_to_costcurvaturepoints()

@@ -109,8 +109,8 @@ class ParetoFront:
                              vertices[:,0] <= xMaxFilter,
                              vertices[:,1] <= yMaxFilter))
             selectedVertices = vertices[frontIndices]
-            print("selected vertices: ")
-            print(str(selectedVertices))
+            ##print("selected vertices: ")
+            ##print(str(selectedVertices))
             return frontIndices      
 
     def remove_frontindices(self, frontIndicesRelPoints):
@@ -192,9 +192,9 @@ class ParetoFront:
             self.frontsIndices.append(frontIndicesRelPoints.tolist())
             #Remove the indices of the points in the pareto front from list.
             self.remove_frontindices(frontIndicesRelPoints)
-        print("the selected points are: ")
-        selectedPoints = [points[i] for i in self.frontsIndices[-1]]
-        print(selectedPoints)
+        ##print("the selected points are: ")
+        ##selectedPoints = [points[i] for i in self.frontsIndices[-1]]
+        ##print(selectedPoints)
 
     def build_nextfront(self):
         """
