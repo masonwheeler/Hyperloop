@@ -23,8 +23,8 @@ Cache Overwriting Switches.
 """
 useCachedDirections = True
 useCachedSpline = True
-useCachedLattice = False
-useCachedEdges = False
+useCachedLattice = True
+useCachedEdges = True
 useCachedGraphs = False
 useCachedSpatialPaths2d = False
 

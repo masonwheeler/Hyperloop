@@ -80,7 +80,7 @@ def build_graphs(latticeSlices):
     #edges.build_pylons(finishedEdgesSets)
     #t3 = time.time()
     #print("Building the pylons took " + str(t3 - t2) + " seconds.")
-    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("len complete graphs: " + str(len(completeGraphs)))    
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
     #for graph in completeGraphs:

@@ -342,7 +342,7 @@ def build_tube_profile_v2(elevationProfile):
                                                      in elevationProfile]
     arcLengths = [elevationPoint["distanceAlongPath"] for elevationPoint
                                                      in elevationProfile]
-    sInterp, zInterp = landscape.matchLandscape(arcLengths,
+    sInterp, zInterp = landscape.matchLandscape_v1(arcLengths,
                                landElevations, "elevation")
     tubeSpline = PchipInterpolator(sInterp, zInterp)
     tubeElevations = tubeSpline(arcLengths)

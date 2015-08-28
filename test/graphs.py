@@ -89,10 +89,10 @@ class GraphsSet:
             evaluationMetrics = [(graph.landCost) *
                                   graph.curvatureMetric for graph
                                   in self.unfilteredGraphs]
-            graphsByQuality = [graph for (metric, graph) in
+            self.sortedGraphs = [graph for (metric, graph) in
                     sorted(zip(evaluationMetrics, self.unfilteredGraphs),
-                           key = lambda pair: pair[0])]
-            self.selectedGraphs = graphsByQuality[:10]
+                           key = lambda pair: pair[0])]            
+            self.selectedGraphs = self.sortedGraphs[:100]
             allCosts = [graph.pylonCost + graph.landCost for graph
                         in self.unfilteredGraphs]
             allCurvatures = [graph.curvatureMetric for graph 
@@ -222,10 +222,10 @@ def graphs_sets_merger(graphsSetA, graphsSetB):
         for graphB in selectedB:
             if is_graph_pair_compatible(graphA, graphB):           
                 mergedGraph = merge_two_graphs(graphA, graphB)
-                print("graph A geospatials: " + str(graphA.geospatials))
-                print("graph B geospatials: " + str(graphB.geospatials))
-                print("merged graph geospatials: " + str(mergedGraph.geospatials))
-                time.sleep(3) 
+                #print("graph A geospatials: " + str(graphA.geospatials))
+                #print("graph B geospatials: " + str(graphB.geospatials))
+                #print("merged graph geospatials: " + str(mergedGraph.geospatials))
+                #time.sleep(3) 
                 mergedGraphs.append(mergedGraph)
     if (len(mergedGraphs) == 0):
         return None
