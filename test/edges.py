@@ -123,7 +123,8 @@ class EdgesSets:
             edgesSet = []
             for startPoint in sliceA:
                 for endPoint in sliceB:
-                    edgesSet.append(Edge(startPoint,endPoint))
+                    newEdge = Edge(startPoint, endPoint)
+                    edgesSet.append(newEdge)                    
             edgesSets.append(edgesSet)
         return edgesSets    
     

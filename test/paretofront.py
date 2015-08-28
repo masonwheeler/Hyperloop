@@ -124,7 +124,8 @@ class ParetoFront:
 
     def __init__(self, points, xReverse, yReverse):
         self.frontsIndices = []
-        ##print("created new pareto front with fronts indices: " + str(self.frontsIndices))
+        print("created new pareto front with points: ")
+        print(points)
         self.xReverse, self.yReverse = xReverse, yReverse
         #Raw points array may contain duplicates
         rawPointsArray = np.array(map(np.array, points))
@@ -140,6 +141,7 @@ class ParetoFront:
         if numPoints < 3:                     
             #if there are no points, raise a value error.
             if numPoints == 0:
+                print("No points passed to Pareto Front")
                 raise ValueError("No Points passed to Pareto Front")
             else:   
                 #if there are 1 or 2 points, add these to the fronts
@@ -172,6 +174,9 @@ class ParetoFront:
             self.frontsIndices.append(frontIndicesRelPoints.tolist())
             #Remove the indices of the points in the pareto front from list.
             self.remove_frontindices(frontIndicesRelPoints)
+        print("the selected points are: ")
+        selectedPoints = [points[i] for i in frontIndicesRelPoints]
+        print(selectedPoints)
 
     def build_nextfront(self):
         """
@@ -181,6 +186,7 @@ class ParetoFront:
         Since points array does not have duplicates,
         the pruned points array does not have duplicates.
         """
+        print("build next front")
         #Initialize the points which have not been in a front yet
         prunedPoints = self.pointsArray[self.prunedPointsIndices]
         #The number of rows in the pruned points array

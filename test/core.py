@@ -71,27 +71,35 @@ def build_lattice(directionsPoints):
 def build_graphs(latticeSlices):
     t0 = time.time()
     finishedEdgesSets = edges.get_edgessets(latticeSlices)
+    #for edgesSet in finishedEdgesSets:
+    #    for edge in edgesSet:
+    #        print("edge geospatials: " + str(edge.geospatials))
+    #        time.sleep(10)
     #t2 = time.time()
     #edges.build_pylons(finishedEdgesSets)
     #t3 = time.time()
     #print("Building the pylons took " + str(t3 - t2) + " seconds.")
-    completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    #completeGraphs = graphs.get_graphs(finishedEdgesSets)
+    #print("len complete graphs: " + str(len(completeGraphs)))    
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
-    for graph in completeGraphs:
-        print("pylon cost: " + str(graph.pylonCost))
-        print("land cost : " + str(graph.landCost))
+    #for graph in completeGraphs:
+    #    print("geospatials: " + str(graph.geospatials))
+    #    print("pylon cost: " + str(graph.pylonCost))
+    #    print("land cost : " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
     t1 = time.time()
     print("Building the graphs took " + str(t1-t0) + " seconds.")
     if config.visualMode:
         plottableGraphs = [graph.to_plottable('b-') for graph in completeGraphs]    
+        #costs = [graph.pylonCost + graph.landCost for graph in completeGraphs]
+        #curvatures = [graph.curvatureMetric for graph in completeGraphs]
         #costCurvature = [graph.plot_costcurvature() for graph in completeGraphs]
         #costs, curvatures = zip(*costCurvature)
         #visualize.scatter_plot(costs, curvatures)
         #print(plottableCostCurvature)
         config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
-    return completeGraphs
+    return 0 #completeGraphs
 
 #def build_routes(completeGraphs):
     
@@ -102,12 +110,14 @@ def pair_analysis(start,end):
     directionsPoints, startLatLng, endLatLng = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
+    """
     completeRoutes = [routes.graph_to_route(graph, config.linearAccelConstraint/config.maxSpeed**2, config.linearAccelConstraint, config.jerkTol) for graph in completeGraphs]
     cacher.save_routes(completeRoutes, start, end, startLatLng, endLatLng)
     for i in range(len(completeRoutes)):
       print "(triptime, comfort rating, pylon cost, tube cost, land cost) of route "+ str(i) +" is:" +str([completeRoutes[i].tripTime, completeRoutes[i].comfortRating, completeRoutes[i].pylonCost, completeRoutes[i].tubeCost, completeRoutes[i].landCost])
     t1 = time.time()
     print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
+    """
     if config.visualMode:
-        visualize.plot_objects(config.plotQueue)
+        visualize.plot_objects(config.plotQueue)    
     return 0

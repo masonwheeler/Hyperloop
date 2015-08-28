@@ -6,6 +6,9 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Changed Class attributes to Instance attributes.
 """
 
+import matplotlib.pyplot as plt
+import time
+
 import config
 import util
 import cacher
@@ -75,9 +78,38 @@ class GraphsSet:
         If the cost and curvature of the graphs have not been computed,
         then return all of the graphs.
         """
+        #print("num unfiltered graphs: " + str(len(self.unfilteredGraphs)))
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs
+            landCosts = [graph.landCost for graph in self.unfilteredGraphs]
+            #print("min land cost: " + str(min(landCosts)))
         else:
+            landCosts = [graph.landCost for graph in self.unfilteredGraphs]
+            #print("min land cost: " + str(min(landCosts)))
+            evaluationMetrics = [(graph.landCost) *
+                                  graph.curvatureMetric for graph
+                                  in self.unfilteredGraphs]
+            graphsByQuality = [graph for (metric, graph) in
+                    sorted(zip(evaluationMetrics, self.unfilteredGraphs),
+                           key = lambda pair: pair[0])]
+            self.selectedGraphs = graphsByQuality[:10]
+            allCosts = [graph.pylonCost + graph.landCost for graph
+                        in self.unfilteredGraphs]
+            allCurvatures = [graph.curvatureMetric for graph 
+                             in self.unfilteredGraphs]
+            selectedCosts = [ graph.landCost for graph
+                             in self.selectedGraphs]
+            selectedCurvatures = [graph.curvatureMetric for graph
+                                  in self.selectedGraphs]
+            #plt.scatter(allCosts, allCurvatures)
+            #plt.show()
+            #plt.scatter(selectedCosts, selectedCurvatures)
+            #plt.show()
+        """
+            print("before selection")
+            originalCosts, originalCurvatures = zip(*self.costCurvaturePoints)
+            plt.scatter(originalCosts, originalCurvatures)
+            plt.show()
             try:
                 self.front = paretofront.ParetoFront(
                                   self.costCurvaturePoints,
@@ -90,9 +122,19 @@ class GraphsSet:
                     selectedGraphsIndices += self.front.frontsIndices[-1]
                 self.selectedGraphs = [self.unfilteredGraphs[i] for i in
                                        selectedGraphsIndices] 
+                print("after selection")
+                costs = [graph.pylonCost + graph.landCost for graph
+                                             in self.selectedGraphs]
+                curvatures = [graph.curvatureMetric for graph
+                                             in self.selectedGraphs]
+                plt.scatter(originalCosts, originalCurvatures, 'b',
+                                       costs, curvatures, 'r')
+                plt.show()
             except ValueError:
+                print("encountered ValueError")
                 self.selectedGraphs = self.unfilteredGraphs
                 return 0
+            """
     
     def update_graphs(self):
         """
@@ -178,8 +220,13 @@ def graphs_sets_merger(graphsSetA, graphsSetB):
     selectedB = graphsSetB.selectedGraphs
     for graphA in selectedA:
         for graphB in selectedB:
-            if is_graph_pair_compatible(graphA, graphB):            
-                mergedGraphs.append(merge_two_graphs(graphA, graphB))
+            if is_graph_pair_compatible(graphA, graphB):           
+                mergedGraph = merge_two_graphs(graphA, graphB)
+                print("graph A geospatials: " + str(graphA.geospatials))
+                print("graph B geospatials: " + str(graphB.geospatials))
+                print("merged graph geospatials: " + str(mergedGraph.geospatials))
+                time.sleep(3) 
+                mergedGraphs.append(mergedGraph)
     if (len(mergedGraphs) == 0):
         return None
     else:              
