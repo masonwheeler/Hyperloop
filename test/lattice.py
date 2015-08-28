@@ -8,6 +8,7 @@ Last Modification Purpose: Added Iteratively Spline construction
 
 #Standard Modules:
 import numpy as np
+import time
 
 #Our Modules:
 import config
@@ -46,33 +47,27 @@ class Slice:
     def build_slice(self, idIndex, directionsPoint, splinePoint):              
         """Constructs each SlicePoint in the Slice and its idIndex"""
         sliceVector = util.subtract(directionsPoint, splinePoint)       
-        sliceGrid, distances = util.build_grid(sliceVector, self.pointSpacing,
-                                                                  splinePoint)
-        sliceSplinePoint = SlicePoint(idIndex,splinePoint, False).as_dict()
+        #print("slice length: " + str(util.norm(sliceVector)))
+        #print("point spacing: " + str(self.pointSpacing))
+        sliceGrid, distances = util.build_grid_v2(directionsPoint, splinePoint,
+                                                  self.pointSpacing)
+        #print("directions point: " + str(directionsPoint))
+        #print("spline point: " + str(splinePoint))
+        #print("slice grid: " + str(sliceGrid))
+        #sliceSplinePoint = SlicePoint(idIndex, splinePoint, False).as_dict()
         idIndex += 1
-        if sliceGrid == None:            
-            sliceDirectionsPoint = SlicePoint(idIndex, 
-                                     directionsPoint, True).as_dict()
+        sliceGridPoints = []
+        for point in sliceGrid:
+            sliceGridPoints.append(SlicePoint(idIndex, point,
+                                                False).as_dict())
             idIndex += 1
-            slicePoints = [sliceSplinePoint, sliceDirectionsPoint]
-        else:
-            sliceGridPoints = []
-            for point in sliceGrid:
-                sliceGridPoints.append(SlicePoint(idIndex, point,
-                                                  False).as_dict())
-                idIndex += 1
-            sliceDirectionsPoint = SlicePoint(idIndex, directionsPoint,
-                                              True).as_dict()
-            idIndex += 1
-            slicePoints = [sliceSplinePoint] + sliceGridPoints + \
-                          [sliceDirectionsPoint]   
+        slicePoints = sliceGridPoints
+        #time.sleep(5)
         return [slicePoints, idIndex]
 
     def __init__(self, idIndex, directionsPoint, splinePoint):   
-        self.directionsPoint = directionsPoint    
-        self.splinePoint = splinePoint
         self.slicePoints, self.idIndex = self.build_slice(idIndex, 
-                                      directionsPoint, splinePoint)
+                                  directionsPoint, splinePoint)
 
     def as_list(self):
         return self.slicePoints
@@ -82,10 +77,6 @@ class Slice:
                                  for point in self.slicePoints]
         plottableSlice = zip(*sliceGeospatialCoords)
         return plottableSlice
-
-    def display(self):
-        print("Spline Point: " + str(self.splinePoint))
-        print("Directions Point: " + str(self.directionsPoint))
 
 
 class Lattice:

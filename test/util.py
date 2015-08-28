@@ -163,10 +163,31 @@ def sample_vector_interior(vector, spacing):
 
 def build_grid(vector, spacing, startVector):
     if norm(vector) < spacing:
-        return [None, None]
+        return [[], []]
     else:
         pointVectors, pointDistances = sample_vector_interior(vector, spacing)
         grid = [add(pointVector, startVector) for pointVector in pointVectors]
+        return [grid, pointDistances]
+
+def sample_vector(vector, spacing):
+    effectiveScale = norm(vector) / spacing
+    unitVector = scale(1.0 / effectiveScale, vector)
+    numPoints = int(math.ceil(effectiveScale))
+    pointIndices = range(numPoints)
+    pointDistances = [spacing * index for index in pointIndices]
+    pointVectors = [scale(index, unitVector) for index in pointIndices]
+    return [pointVectors, pointDistances]
+
+def build_grid_v2(startPoint, endPoint, spacing):
+    vector = subtract(endPoint, startPoint)
+    length = norm(vector)
+    if length < spacing:
+        return [[startPoint, endPoint], [0, length]]
+    else:
+        pointVectors, pointDistances = sample_vector(vector, spacing)
+        pointVectors.append(vector)
+        pointDistances.append(length)
+        grid = [add(pointVector, startPoint) for pointVector in pointVectors]
         return [grid, pointDistances]
 
 def sample_length(length, spacing):

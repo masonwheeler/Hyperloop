@@ -121,9 +121,15 @@ class EdgesSets:
             sliceA = lattice[sliceIndex]
             sliceB = lattice[sliceIndex + 1]
             edgesSet = []
+            #print("points in slice")
+            #for point in sliceA:
+            #    print(str(point["geospatialCoords"]))
+            #time.sleep(5)
             for startPoint in sliceA:
-                for endPoint in sliceB:
+                for endPoint in sliceB:                    
                     newEdge = Edge(startPoint, endPoint)
+                    #print(newEdge.geospatials)
+                    #time.sleep(5)
                     edgesSet.append(newEdge)                    
             edgesSets.append(edgesSet)
         return edgesSets    

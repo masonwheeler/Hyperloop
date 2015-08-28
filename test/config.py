@@ -13,7 +13,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 testingMode = True
-visualMode = True
+visualMode = False
 verboseMode = True
 timingMode = False
 useDropbox = False
@@ -23,15 +23,15 @@ Cache Overwriting Switches.
 """
 useCachedDirections = True
 useCachedSpline = True
-useCachedLattice = True
-useCachedEdges = True
+useCachedLattice = False
+useCachedEdges = False
 useCachedGraphs = False
 useCachedSpatialPaths2d = False
 
 """
 Lattice Generation Parameters
 """
-pointSpacing = 2000 # (in meters) spacing between points in the same slice
+pointSpacing = 2000.0 # (in meters) spacing between points in the same slice
 directionsSampleSpacing = 10 # (in meters)
 degreeConstraint = 30 #the angular constraint between subsequent edges
 spatialSliceSValueStepSize = 1000 # (in units of directionsSampleSpacing) i.e.

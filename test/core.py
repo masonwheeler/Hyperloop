@@ -50,8 +50,9 @@ def build_lattice(directionsPoints):
                                                    spatialLatticeSlicesSValues) 
     spatialLatticeSlicesYValues = interpolate.get_spline_values(spatialYSpline,
                                                    spatialLatticeSlicesSValues) 
-    spatialLatticeSlicesSplinePoints = zip(spatialLatticeSlicesXValues,
+    spatialLatticeSlicesSplineTuples = zip(spatialLatticeSlicesXValues,
                                            spatialLatticeSlicesYValues)
+    spatialLatticeSlicesSplinePoints = map(list, spatialLatticeSlicesSplineTuples)
     spatialLatticeSlicesDirectionsPoints = util.smart_sample_nth_points(
                            sampledPoints, config.spatialSliceSValueStepSize)
     spatialSlicesBounds = zip(spatialLatticeSlicesDirectionsPoints,
