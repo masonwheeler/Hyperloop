@@ -83,8 +83,12 @@ def build_graphs(latticeSlices):
     completeGraphs = graphs.get_graphs(finishedEdgesSets)
     #print("len complete graphs: " + str(len(completeGraphs)))    
     #print("graphs num edges: " + str(completeGraphs[0].numEdges))
-    #for graph in completeGraphs:
-    #    print("geospatials: " + str(graph.geospatials))
+    #graphGeospatials = [tuple(map(tuple, graph.geospatials[:-1])) for graph in completeGraphs]
+    #print(graphGeospatials[0])
+    #print(len(graphGeospatials))
+    #print(len(set(graphGeospatials)))
+    for graph in completeGraphs:
+        print("geospatials: " + str(graph.geospatials))
     #    print("pylon cost: " + str(graph.pylonCost))
     #    print("land cost : " + str(graph.landCost))
     #    print("curvature: " + str(graph.curvatureMetric))
