@@ -100,7 +100,7 @@ def build_graphs(latticeSlices):
         #print(plottableCostCurvature)
         config.plotQueue += plottableGraphs
         #config.plotQueue += plottableCostCurvature
-    return 0 #completeGraphs
+    return completeGraphs
 
 #def build_routes(completeGraphs):
     
@@ -111,14 +111,13 @@ def pair_analysis(start,end):
     directionsPoints, startLatLng, endLatLng = build_directions(start, end)
     latticeSlices = build_lattice(directionsPoints)
     completeGraphs = build_graphs(latticeSlices)
-    """
+    
     completeRoutes = [routes.graph_to_route(graph, config.linearAccelConstraint/config.maxSpeed**2, config.linearAccelConstraint, config.jerkTol) for graph in completeGraphs]
     cacher.save_routes(completeRoutes, start, end, startLatLng, endLatLng)
     for i in range(len(completeRoutes)):
       print "(triptime, comfort rating, pylon cost, tube cost, land cost) of route "+ str(i) +" is:" +str([completeRoutes[i].tripTime, completeRoutes[i].comfortRating, completeRoutes[i].pylonCost, completeRoutes[i].tubeCost, completeRoutes[i].landCost])
     t1 = time.time()
-    print("Analysis of this city pair took " + str(t1-t0) + " seconds.")
-    """
+    print("Analysis of this city pair took " + str(t1-t0) + " seconds.")    
     if config.visualMode:
         visualize.plot_objects(config.plotQueue)    
     return 0
