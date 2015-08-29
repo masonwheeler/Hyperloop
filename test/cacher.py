@@ -18,13 +18,13 @@ import util
 
 def create_basefolders():
     """Creates the cache and save folders"""
-    cache_directory = config.cwd + "/cache/"
-    config.cache_directory = cache_directory
-    if config.use_dropbox:
-        save_directory = config.dropbox_directory + "/save/"
+    cache_directory = config.CWD + "/cache/"
+    config.CACHE_DIRECTORY = cache_directory
+    if config.USE_DROPBOX:
+        save_directory = config.DROPBOX_DIRECTORY + "/save/"
     else:
-        save_directory = config.cwd + "/save/"
-    config.save_directory = save_directory
+        save_directory = config.CWD + "/save/"
+    config.SAVE_DIRECTORY = save_directory
     if not os.path.exists(cache_directory):
         os.makedirs(cache_directory)
     if not os.path.exists(save_directory):
@@ -34,21 +34,21 @@ def create_basefolders():
 def create_workingcachename(start, end):
     """Names the cache folder for a given city pair"""
     working_cache_name = "_".join([start, "to", end])
-    config.working_cache_name = working_cache_name
+    config.WORKING_CACHE_NAME = working_cache_name
     return working_cache_name
 
 
 def create_workingsavedirname(start, end):
     """Names the save folder for a given city pair"""
     working_save_dir_name = "_".join([start, "to", end])
-    config.working_save_dir_name = working_save_dir_name
+    config.WORKING_SAVE_DIR_NAME = working_save_dir_name
     return working_save_dir_name
 
 
 def create_workingcachedirectory(working_cache_name):
     """Creates the cache folder for a given city pair"""
-    working_cache_directory = config.cache_directory + working_cache_name + "/"
-    config.working_cache_directory = working_cache_directory
+    working_cache_directory = config.CACHE_DIRECTORY + working_cache_name + "/"
+    config.WORKING_CACHE_DIRECTORY = working_cache_directory
     if not os.path.exists(working_cache_directory):
         os.makedirs(working_cache_directory)
     return working_cache_directory
@@ -57,7 +57,7 @@ def create_workingcachedirectory(working_cache_name):
 def create_graphsdirectory(working_save_directory):
     """Creates the folder used to save completed routes"""
     graphs_directory = working_save_directory + "graphs/"
-    config.working_graphs_directory = graphs_directory
+    config.WORKING_GRAPHS_DIRECTORY = graphs_directory
     if not os.path.exists(graphs_directory):
         os.makedirs(graphs_directory)
     return graphs_directory
@@ -65,10 +65,10 @@ def create_graphsdirectory(working_save_directory):
 
 def create_workingsavedirectory(working_save_dir_name):
     """Creates the save directory for a given city pair"""
-    working_save_directory = config.save_directory + working_save_dir_name + "/"
+    working_save_directory = config.SAVE_DIRECTORY + working_save_dir_name + "/"
     create_graphsdirectory(working_save_directory +
                            working_save_dir_name + "_")
-    config.working_save_directory = working_save_directory
+    config.WORKING_SAVE_DIRECTORY = working_save_directory
     if not os.path.exists(working_save_directory):
         os.makedirs(working_save_directory)
     return working_save_directory
@@ -85,16 +85,16 @@ def create_necessaryfolders(start, end):
 
 def get_object_cachepath(object_name):
     """Gets the path where the object will be cached"""
-    object_file_base = "_".join([config.working_cache_name, object_name])
+    object_file_base = "_".join([config.WORKING_CACHE_NAME, object_name])
     object_file_name = object_file_base + ".p"
-    object_path = config.working_cache_directory + object_file_name
+    object_path = config.WORKING_CACHE_DIRECTORY + object_file_name
     return object_path
 
 
 def get_object_savepath(object_name):
     """Gets the path where the object will be saved"""
-    object_file_base = "_".join([config.working_save_dir_name, object_name])
-    object_path = config.working_save_directory + object_file_base
+    object_file_base = "_".join([config.WORKING_SAVE_DIR_NAME, object_name])
+    object_path = config.WORKING_SAVE_DIRECTORY + object_file_base
     return object_path
 
 
@@ -189,6 +189,6 @@ def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
         },
         "routes":  routes_dicts
     }
-    save_path = config.dropbox_directory + "/example_city_pair.json"
+    save_path = config.DROPBOX_DIRECTORY + "/example_city_pair.json"
     with open(save_path, 'w') as file_path:
         json.dump(city_pair, file_path)

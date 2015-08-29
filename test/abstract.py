@@ -224,7 +224,7 @@ class AbstractGraphsSet:
                 selected_graphs_indices = self.front.fronts_indices[-1]
                 num_fronts = 1
                 while (self.front.build_nextfront() and
-                       num_fronts <= config.num_fronts):
+                       num_fronts <= config.NUM_FRONTS):
                     num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
                 self.selected_graphs = [self.unfiltered_graphs[i] for i in

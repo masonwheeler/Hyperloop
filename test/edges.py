@@ -45,7 +45,7 @@ class Edge:
     def get_elevation_profile(self):
         start_geospatial, end_geospatial = self.geospatials
         pylon_slices_geospatials, pylon_slice_distances = util.build_grid(
-            self.geospatial_vector, config.pylon_spacing, start_geospatial)
+            self.geospatial_vector, config.PYLON_SPACING, start_geospatial)
         self.elevation_profile = elevation.get_elevation_profile(
             pylon_slices_geospatials, pylon_slice_distances)
 
@@ -64,19 +64,19 @@ class Edge:
         #print("old pylon cost: " + str(old_pylon_cost))
         self.pylon_cost = pylon_cost
         #print("pylon cost: " + str(pylon_cost))
-        # if config.visual_mode:
+        # if config.VISUAL_MODE:
         #    visualize.visualize_elevation_profile_v2(self.elevation_profile,
         #                                                    tube_elevations)
 
     def build_land_cost_samples(self):
         if self.is_in_right_of_way:
-            self.land_cost = config.right_of_way_land_cost
+            self.land_cost = config.RIGHT_OF_WAY_LAND_COST
         else:
             start_geospatial, end_geospatial = self.geospatials
             landcover_geospatials, distances = util.build_grid(
-                self.geospatial_vector, config.land_point_spacing, start_geospatial)
+                self.geospatial_vector, config.LAND_POINT_SPACING, start_geospatial)
             landcover_lat_lngs = proj.geospatials_to_latlngs(landcover_geospatials,
-                                                             config.proj)
+                                                             config.PROJ)
             landcover_cost_densities = landcover.landcover_cost_densities(
                 landcover_lat_lngs)
             self.land_cost = landcover.cost_densities_to_landcost(
@@ -139,7 +139,7 @@ class EdgesSets:
 
     def edge_pair_compatible(self, edge_a, edge_b):
         if edge_a.end_id == edge_b.start_id:
-            if abs(edge_a.angle - edge_b.angle) < config.degree_constraint:
+            if abs(edge_a.angle - edge_b.angle) < config.DEGREE_CONSTRAINT:
                 return True
         return False
 
@@ -265,5 +265,5 @@ def build_edgessets(lattice):
 
 def get_edgessets(lattice):
     finished_edges_sets = cacher.get_object("edgessets", build_edgessets,
-                                            [lattice], cacher.save_edgessets, config.edges_flag)
+                                            [lattice], cacher.save_edgessets, config.EDGES_FLAG)
     return finished_edges_sets

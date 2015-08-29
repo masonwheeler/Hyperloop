@@ -116,5 +116,5 @@ def get_directions(start, end):
     """
     directions = cacher.get_object("directions", build_coordinate_list,
                                    [start, end], cacher.save_directions,
-                                   config.directions_flag)
+                                   config.DIRECTIONS_FLAG)
     return directions

@@ -49,7 +49,7 @@ class Route:
 
     def compute_latlngs(self, x, y):
         geospatials = np.transpose([x, y])
-        return proj.geospatials_to_latlngs(geospatials, config.proj)
+        return proj.geospatials_to_latlngs(geospatials, config.PROJ)
 
     def compute_pylons(self, x, y, z):
         geospatials = np.transpose([x, y])
@@ -57,12 +57,12 @@ class Route:
 
         def pylon_cost(pylon_height):
             if pylon_height > 0:
-                return config.pylon_base_cost + pylon_height * config.pylon_cost_per_meter
+                return config.pylon_base_cost + pylon_height * config.PYLON_COST_PER_METER
             else:
-                return - pylon_height * config.tunneling_cost_per_meter
+                return - pylon_height * config.TUNNELING_COST_PER_METER
         geospatials = [geospatial.tolist() for geospatial in geospatials]
         Pylons = [{"geospatial": geospatials[i],
-                   "latlng": proj.geospatial_to_latlng(geospatials[i], config.proj),
+                   "latlng": proj.geospatial_to_latlng(geospatials[i], config.PROJ),
                    "land_elevation": zland[i],
                    "pylon_height": (z[i] - zland[i]),
                    "pylon_cost": pylon_cost(z[i] - zland[i])}
@@ -73,7 +73,7 @@ class Route:
         geospatials = np.transpose([x, y, z])
         tube_length = sum([np.linalg.norm(geospatials[i + 1] - geospatials[i])
                            for i in range(len(geospatials) - 1)])
-        return tube_length * config.tube_cost_per_meter
+        return tube_length * config.TUBE_COST_PER_METER
 
     def compute_velocity_profile(self, vx, vy, vz):
         velocity_vectors = np.transpose([vx, vy, vz])
@@ -167,7 +167,7 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
     print "computing data for a new route..."
     x = graph.geospatials
     graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
-    M = int(graph_spacing / config.pylon_spacing)
+    M = int(graph_spacing / config.PYLON_SPACING)
     print "interpolation sampling per edge is " + str(M)
     route_data = comfortanalysis__of_4_droute(_3_droute_to_4_droute(_2_droute_to_3_droute(
         graph_to_2_droute(graph, M), elevation_tradeoff), comfort_tradeoff1, comfort_tradeoff2))
@@ -201,7 +201,7 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
 
 #     def get_interpolating_latlngs(self, interpolating_geospatials):
 #         interpolating_lat_lngs = proj.geospatials_to_latlngs(
-#                          interpolating_geospatials, config.proj)
+#                          interpolating_geospatials, config.PROJ)
 #         return interpolating_lat_lngs
 
 #     #def get_tube_graphs(self, elevation_profile):
@@ -246,5 +246,5 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
 # def get_spatial_paths_2d(complete_spatial_graphs):
 #     spatial_paths2d = cacher.get_object("spatialpaths2d", build_spatial_paths_2d,
 #                           [complete_spatial_graphs], cacher.save_spatial_paths_2d,
-#                                                       config.spatial_paths2d_flag)
+#                                                       config.SPATIAL_PATHS2d_flag)
 #     return spatial_paths2d

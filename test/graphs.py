@@ -24,9 +24,9 @@ class Graph:
 
     def compute_curvature(self):
         """Compute the curvature of an interpolation of the graph"""
-        if self.num_edges > config.graph_curvature_min_num_edges:
+        if self.num_edges > config.GRAPH_CURVATURE_MIN_NUM_EDGES:
             self.curvature_metric = interpolate.graph_curvature(
-                self.geospatials, config.graph_sample_spacing)
+                self.geospatials, config.GRAPH_SAMPLE_SPACING)
 
     def __init__(self, num_edges, pylon_cost, land_cost, start_id, end_id,
                  start_angle, end_angle, latlngs, geospatials):
@@ -43,7 +43,7 @@ class Graph:
 
     def to_costcurvature_point(self):
         """Return the cost and curvature of the graph"""
-        if self.num_edges > config.graph_curvature_min_num_edges:
+        if self.num_edges > config.GRAPH_CURVATURE_MIN_NUM_EDGES:
             cost = self.pylon_cost + self.land_cost
             curvature = self.curvature_metric
             return [cost, curvature]
@@ -65,9 +65,9 @@ class GraphV2(abstract.AbstractGraph):
 
     def get_time(self, geospatials, ):
         """Compute the curvature of an interpolation of the graph"""
-        if self.num_edges > config.graph_filter_min_num_edges:
+        if self.num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
             self.curvature_metric = interpolate.graph_curvature(
-                self.geospatials, config.graph_sample_spacing)
+                self.geospatials, config.GRAPH_SAMPLE_SPACING)
             return time
 
     def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
@@ -97,7 +97,7 @@ class GraphsSet:
 
     def graphs_to_costcurvaturepoints(self):
         """Compute cost and curvature of each graph with min number of edges"""
-        if self.graphs_num_edges > config.graph_curvature_min_num_edges:
+        if self.graphs_num_edges > config.GRAPH_CURVATURE_MIN_NUM_EDGES:
             self.cost_curvature_points = [graph.to_costcurvature_point()
                                           for graph in self.unfiltered_graphs]
         else:
@@ -122,7 +122,7 @@ class GraphsSet:
                           in selected_graphs_indices]
                 num_fronts = 1
                 while (self.front.build_nextfront() and
-                       num_fronts <= config.num_fronts):
+                       num_fronts <= config.NUM_FRONTS):
                     num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
                 self.selected_graphs = [self.unfiltered_graphs[i] for i in
@@ -137,7 +137,7 @@ class GraphsSet:
                 selected_curvatures = [graph.curvature_metric for graph
                                        in self.selected_graphs]
                 """
-                if config.visual_mode:
+                if config.VISUAL_MODE:
                     fig = plt.figure()
                     fig.suptitle('cost vs curvature tradeoff')
                     ax = fig.add_subplot(111)
@@ -226,7 +226,7 @@ def edgessets_to_basegraphssets(edgessets):
 def is_graph_pair_compatible(graph_a, graph_b):
     if (graph_a.end_id == graph_b.start_id):
         angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
-        if angle_difference < config.degree_constraint:
+        if angle_difference < config.DEGREE_CONSTRAINT:
             return True
     return False
 
@@ -279,5 +279,5 @@ def build_graphs(edgessets):
 
 def get_graphs(edgessets):
     graphs = cacher.get_object("graphs", build_graphs, [edgessets],
-                               cacher.save_graphs, config.graphs_flag)
+                               cacher.save_graphs, config.GRAPHS_FLAG)
     return graphs

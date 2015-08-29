@@ -29,7 +29,7 @@ def build_window(left_bound, right_bound, radius):
     relative_indices = range(-left_bound, right_bound + 1)
     window = [{"relative_index": relative_index,
                "relative_elevation":
-               circle_function(abs(relative_index * config.pylon_spacing), radius)}
+               circle_function(abs(relative_index * config.PYLON_SPACING), radius)}
               for relative_index in relative_indices]
     return window
 
@@ -41,7 +41,7 @@ def add_current_window(envelope, current_window):
 
 
 def build_envelope(elevations, radius):
-    window_size = int(radius / config.pylon_spacing)
+    window_size = int(radius / config.PYLON_SPACING)
     envelope_lists = [[] for i in xrange(len(elevations))]
     for current_index in range(0, len(elevations)):
         if current_index < window_size:
@@ -75,11 +75,11 @@ def visualize_elevation_profile(elevation_profile):
         distances.append(distance)
         elevations.append(elevation)
     curvature_threshold_a = interpolate.compute_curvature_threshold(
-        config.max_speed, config.vertical_accel_constraint)
+        config.max_speed, config.VERTICAL_ACCEL_CONSTRAINT)
     radius_a = 1.0 / curvature_threshold_a
     envelope_a = build_envelope(elevations, radius_a)
     curvature_threshold_b = interpolate.compute_curvature_threshold(
-        config.max_speed / 1.2, config.vertical_accel_constraint)
+        config.max_speed / 1.2, config.VERTICAL_ACCEL_CONSTRAINT)
     radius_b = 1.0 / curvature_threshold_b
     envelope_b = build_envelope(elevations, radius_b)
     plt.plot(distances, elevations)

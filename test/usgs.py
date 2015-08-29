@@ -50,14 +50,14 @@ def unzip_zipfile(zip_file_path, out_path, img_file_name):
     img_file_path = out_path + img_file_name
     img_exists = file_exists(img_file_path)
     if img_exists:
-        if config.verbose_mode:
+        if config.VERBOSE_MODE:
             print(".img file already exists")
     else:
-        if config.verbose_mode:
+        if config.VERBOSE_MODE:
             print("Unzipping folder...")
         for file_name in zip_file_data.namelist():
             if (file_name == img_file_name):
-                if config.verbose_mode:
+                if config.VERBOSE_MODE:
                     print(file_name + " extracted.")
                 zip_file_data.extract(file_name, out_path)
         file_handle.close()
@@ -92,8 +92,8 @@ def get_elevation(latlng_coord):
     coord_zipfile = coordstring + ".zip"
     coord_folder_name = coordstring + "/"
 
-    url = config.usgs_ftp_path + coord_zipfile
-    download_directory = config.cwd + config.usgs_folder
+    url = config.USGS_FTP_PATH + coord_zipfile
+    download_directory = config.CWD + config.USGS_FOLDER
     zip_file_path = download_directory + coord_zipfile
     unzip_directory = download_directory + coord_folder_name
     img_file_name = img_filename(coordstring)

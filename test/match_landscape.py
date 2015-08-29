@@ -35,14 +35,14 @@ def gen_landscape(x, Type):
         s[i + 1] = s[i] + np.linalg.norm(x[i + 1] - x[i])
 
     if Type == "elevation":
-        xlnglat = proj.geospatials_to_latlngs(x, config.proj)
+        xlnglat = proj.geospatials_to_latlngs(x, config.PROJ)
         z = elevation.usgs_elevation(xlnglat)
 
     elif Type == "velocity":
         R = [util.points_to_radius(x[i - 1:i + 2])
              for i in range(1, len(x) - 1)]
-        z = [0] + [min(np.sqrt(r * config.lateral_accel_tol),
-                       config.max_speed) for r in R] + [0]
+        z = [0] + [min(np.sqrt(r * config.LATERAL_ACCEL_TOL),
+                       config.MAX_SPEED) for r in R] + [0]
 
     return [s, z]
 
@@ -137,7 +137,7 @@ def match_landscape_v1(s, z, Type):
             return True
         elif Type == "elevation":
             cached[i][j] = cached[j][i] = True
-            curvature_tol = config.linear_accel_constraint / config.max_speed**2
+            curvature_tol = config.linear_accel_constraint / config.MAX_SPEED**2
 
             def curvature(i, j):  # Computes the curvature of the clothoid
                 x0, x1 = [s[i], s[j]]
@@ -154,8 +154,8 @@ def match_landscape_v1(s, z, Type):
             ds = s[j] - s[i]
             v = (z[j] + z[i]) / 2
 
-            C = config.linear_accel_constraint / v
-            D = config.jerk_tol / v**2
+            C = config.LINEAR_ACCEL_CONSTRAINT / v
+            D = config.JERK_TOL / v**2
 
             def dz_tol(s):
                 if s < 2 * C / D:

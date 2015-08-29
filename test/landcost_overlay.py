@@ -12,11 +12,11 @@ import lattice
 import cacher
 import core
 
-config.use_cached_lattice = False
-config.point_spacing = 30
-config.spline_sample_spacing = 3
-config.cwd = os.getcwd()
-config.lattice_flag = False
+config.USE_CACHED_LATTICE = False
+config.POINT_SPACING = 30
+config.SPLINE_SAMPLE_SPACING = 3
+config.CWD = os.getcwd()
+config.LATTICE_FLAG = False
 
 start = "Los_Angeles"
 end = "San_Francisco"

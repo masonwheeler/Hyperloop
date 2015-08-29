@@ -22,7 +22,7 @@ import config
 
 def _round_num(num):
     """Rounds number to predefined number of places"""
-    return round(num, config.ndigits)
+    return round(num, config.NDIGITS)
 
 
 def _round_nums(nums):
@@ -268,7 +268,7 @@ def fix_input_string(input_string):
 
 
 def smart_print(string):
-    if config.verbose_mode:
+    if config.VERBOSE_MODE:
         print(string)
 
 # Other Operations:

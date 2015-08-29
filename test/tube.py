@@ -26,8 +26,8 @@ import match_landscape as landscape
 class Pylon(abstract.AbstractPoint):
 
     def pylon_construction_cost(self, pylon_height):
-        pylon_cost = config.pylon_base_cost + \
-            pylon_height * config.pylon_cost_per_meter
+        pylon_cost = config.PYLON_BASE_COST + \
+            pylon_height * config.PYLON_COST_PER_METER
         return pylon_cost
 
     def __init__(self, pylon_id, lattice_x_coord, lattice_y_coord, distance_along_path,
@@ -97,7 +97,7 @@ class PylonsLattice(abstract.AbstractLattice):
         relative_indices = range(-left_bound, right_bound + 1)
         window = [{"relative_index": relative_index,
                    "relative_elevation": self.circle_function(
-                       abs(relative_index * config.pylon_spacing), radius)}
+                       abs(relative_index * config.PYLON_SPACING), radius)}
                   for relative_index in relative_indices]
         return window
 
@@ -107,7 +107,7 @@ class PylonsLattice(abstract.AbstractLattice):
             envelope[current_index].append(point["elevation"])
 
     def build_envelope(self, elevations, radius):
-        window_size = int(radius / config.pylon_spacing)
+        window_size = int(radius / config.PYLON_SPACING)
         envelope_lists = [[] for i in xrange(len(elevations))]
         for current_index in range(0, len(elevations)):
             if current_index < window_size:
@@ -135,14 +135,14 @@ class PylonsLattice(abstract.AbstractLattice):
         for elevation_point in elevation_profile:
             distances.append(elevation_point["distance_along_path"])
             elevations.append(elevation_point["land_elevation"])
-        upper_speed = config.max_speed
+        upper_speed = config.MAX_SPEED
         curvature_threshold_upper = interpolate.compute_curvature_threshold(
-            upper_speed, config.vertical_accel_constraint)
+            upper_speed, config.VERTICAL_ACCEL_CONSTRAINT)
         radius_upper = 1.0 / curvature_threshold_upper
         envelope_upper = self.build_envelope(elevations, radius_upper)
-        lower_speed = config.max_speed / 1.2
+        lower_speed = config.MAX_SPEED / 1.2
         curvature_threshold_lower = interpolate.compute_curvature_threshold(
-            lower_speed, config.vertical_accel_constraint)
+            lower_speed, config.VERTICAL_ACCEL_CONSTRAINT)
         radius_lower = 1.0 / curvature_threshold_lower
         envelope_lower = self.build_envelope(elevations, radius_lower)
         return [envelope_upper, envelope_lower]
@@ -157,7 +157,7 @@ class PylonsLattice(abstract.AbstractLattice):
             "geospatial": elevation_point["geospatial"],
             "latlng": elevation_point["latlng"],
             "land_elevation": land_elevation,
-            "pylon_height_step_size": config.pylon_height_step_size
+            "pylon_height_step_size": config.PYLON_HEIGHT_STEP_SIZE
         }
         return pylons_slice_bounds
 
@@ -185,7 +185,7 @@ class TubeEdge(abstract.AbstractEdge):
         end_tube_coords = end_pylon.tube_coords
         tube_vector = util.edge_to_vector([start_tube_coords, end_tube_coords])
         tube_length = util.norm(tube_vector)
-        tube_cost = tube_length * config.tube_cost_per_meter
+        tube_cost = tube_length * config.TUBE_COST_PER_METER
         return tube_cost
 
     def pylon_cost(self, start_pylon, end_pylon):
@@ -208,7 +208,7 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
     @staticmethod
     def is_tube_edge_pair_compatible(tube_edge_a, tube_edge_b):
         edge_pair_compatible = abstract.AbstractEdgesSets.is_edge_pair_compatible(
-            tube_edge_a, tube_edge_b, config.tube_degree_constraint)
+            tube_edge_a, tube_edge_b, config.TUBE_DEGREE_CONSTRAINT)
         return edge_pair_compatible
 
     def __init__(self, pylons_lattice):
@@ -218,10 +218,10 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
 
 class TubeGraph(abstract.AbstractGraph):
 
-    velocity_arc_length_step_size = config.velocity_arc_length_step_size
+    velocity_arc_length_step_size = config.VELOCITY_ARC_LENGTH_STEP_SIZE
 
     def compute_triptime_excess(self, tube_coords, num_edges):
-        if num_edges < config.tube_trip_time_excess_min_num_edges:
+        if num_edges < config.TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES:
             return None
         else:
             z_values = [tube_coord[2] for tube_coord in tube_coords]
@@ -284,12 +284,12 @@ class TubeGraphsSet(abstract.AbstractGraphsSet):
     @staticmethod
     def is_graph_pair_compatible(graph_a, graph_b):
         graphs_compatible = abstract.AbstractGraphsSet.is_graph_pair_compatible(
-            graph_a, graph_b, config.tube_degree_constraint)
+            graph_a, graph_b, config.TUBE_DEGREE_CONSTRAINT)
         return graphs_compatible
 
     @staticmethod
     def tubegraphs_cost_triptime_excess(tube_graphs, graphs_num_edges):
-        if graphs_num_edges < config.tube_trip_time_excess_min_num_edges:
+        if graphs_num_edges < config.TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES:
             return None
         else:
             graphs_cost_triptime_excess = [tube_graph.tube_cost_trip_time_excess()
@@ -331,15 +331,15 @@ def build_tube_graphs(elevation_profile):
 
 def compute_pylon_cost(pylon_height):
     if pylon_height >= 0:
-        height_cost = pylon_height * config.pylon_cost_per_meter
+        height_cost = pylon_height * config.PYLON_COST_PER_METER
     else:
-        height_cost = -pylon_height * 5 * config.pylon_cost_per_meter
-    pylon_cost = config.pylon_base_cost + height_cost
+        height_cost = -pylon_height * 5 * config.PYLON_COST_PER_METER
+    pylon_cost = config.PYLON_BASE_COST + height_cost
     return pylon_cost
 
 
 def compute_tube_cost(tube_length):
-    tube_cost = config.tube_cost_per_meter * tube_length
+    tube_cost = config.TUBE_COST_PER_METER * tube_length
     return tube_cost
 
 
@@ -376,7 +376,7 @@ def test(i, j, arc_lengths, elevations, cached):
         return True
     else:
         cached[i][j] = cached[j][i] = True
-        curvature_tol = config.linear_accel_constraint/config.max_speed**2
+        curvature_tol = config.linear_accel_constraint/config.MAX_SPEED**2
         return curvature(i, j, arc_lengths, elevations) > curvature_tol
 
 def bad(index, tube_profile, arc_lengths, elevations, cached):       

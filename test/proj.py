@@ -24,7 +24,7 @@ def omerc_proj(start_lon_lat, end_lon_lat):
         + ' +lon_0=' + str(center_lon) + ' +lat_0=' + str(center_lat) \
         + ' +lon_2=' + str(end_lon) + ' +lat_2=' + str(end_lat) \
         + ' +lon_1=' + str(start_lon) + ' +lat_1=' + str(start_lat)
-    if config.verbose_mode:
+    if config.VERBOSE_MODE:
         print("The Parameters of the projection are:")
         print(parameter_string)
     omerc_proj = pyproj.Proj(parameter_string)
@@ -79,5 +79,5 @@ def set_projection(start_lat_lng, end_lat_lng):
     """Sets the projection used for converting lat-lngs to geospatials"""
     start_lon_lat, end_lon_lat = map(
         util.swap_pair, [start_lat_lng, end_lat_lng])
-    #config.proj = omerc_proj(start_lon_lat, end_lon_lat)
-    config.proj = albers_proj()
+    #config.PROJ = omerc_proj(start_lon_lat, end_lon_lat)
+    config.PROJ = albers_proj()

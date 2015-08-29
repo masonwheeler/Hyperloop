@@ -31,7 +31,7 @@ class SlicePoint:
         self.geospatial_coords = geospatial_coords
         self.is_in_right_of_way = is_in_right_of_way
         self.latlng_coords = proj.geospatial_to_latlng(geospatial_coords,
-                                                       config.proj)
+                                                       config.PROJ)
 
     def as_dict(self):
         """Returns the SlicePoint data as a dictionary"""
@@ -44,7 +44,7 @@ class SlicePoint:
 
 class Slice:
     """Builds Lattice Slice from a directions point and a spline point."""
-    point_spacing = config.point_spacing  # Sets the spacing between Slice points
+    point_spacing = config.POINT_SPACING  # Sets the spacing between Slice points
 
     def build_slice(self, id_index, directions_point, spline_point):
         """Constructs each SlicePoint in the Slice and its id_index"""
@@ -107,7 +107,7 @@ def curvature_test(x_spline, y_spline, s_values):
     splines_curvature = interpolate.parametric_splines_2d_curvature(
         x_spline, y_spline, s_values)
     is_curvature_valid = interpolate.is_curvature_valid(splines_curvature,
-                                                        config.curvature_threshhold)
+                                                        config.CURVATURE_THRESHHOLD)
     return is_curvature_valid
 
 
@@ -145,11 +145,11 @@ def get_directionsspline(sampled_directions_points):
     directions_spline = cacher.get_object("spline",
                                           iteratively_build_directions_spline, [
                                               sampled_directions_points],
-                                          cacher.save_spline, config.spline_flag)
+                                          cacher.save_spline, config.SPLINE_FLAG)
     return directions_spline
 
 
 def get_lattice(spatial_slice_bounds):
     lattice = cacher.get_object("lattice", build_lattice_slices,
-                                [spatial_slice_bounds], cacher.save_lattice, config.lattice_flag)
+                                [spatial_slice_bounds], cacher.save_lattice, config.LATTICE_FLAG)
     return lattice

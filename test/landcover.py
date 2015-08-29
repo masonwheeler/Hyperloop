@@ -18,15 +18,15 @@ import geotiff
 
 
 def cost_density_to_local_cost(cost_density):
-    length = config.land_point_spacing
-    width = 2.0 * config.land_padding
+    length = config.LAND_POINT_SPACING
+    width = 2.0 * config.LAND_PADDING
     area = length * width
     local_cost = cost_density * area * 10
     return local_cost
 
 
 def landcover_cost_densities(landcover_lat_lngs):
-    geotiff_file_path = config.cwd + config.geotiff_file_path
+    geotiff_file_path = config.cwd + config.GEOTIFF_FILE_PATH
     file_handle = gdal.Open(geotiff_file_path)
     geo_transform = file_handle.GetGeoTransform()
     raster_band = file_handle.GetRasterBand(1)
@@ -38,7 +38,7 @@ def landcover_cost_densities(landcover_lat_lngs):
     landcover_pixel_values = [geotiff.pixel_val(coord_trans, geo_transform,
                                                 raster_band, util.swap_pair(landcover_lat_lng))
                               for landcover_lat_lng in landcover_lat_lngs]
-    landcover_cost_densities = [config.cost_table[pixel_val] for pixel_val
+    landcover_cost_densities = [config.COST_TABLE[pixel_val] for pixel_val
                                 in landcover_pixel_values]
     return landcover_cost_densities
 

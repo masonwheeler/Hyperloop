@@ -95,7 +95,7 @@ def compute_local_trip_time_excess(max_allowed_velocities,
                                    velocity_arc_length_step_size):
     num_velocities = max_allowed_velocities.size
     max_possible_velocities = np.empty(num_velocities)
-    max_possible_velocities.fill(config.max_speed)
+    max_possible_velocities.fill(config.MAX_SPEED)
     minimum_possible_trip_time = compute_trip_time(max_possible_velocities,
                                                    velocity_arc_length_step_size)
     ##print("max allowed velocities: " + str(max_allowed_velocities))
@@ -170,14 +170,14 @@ class VelocitiesLattice(abstract.AbstractLattice):
     def max_allowed_velocities_to_velocity_slice_bounds(max_allowed_velocities):
         num_arc_length_steps = max_allowed_velocities.length - 1
         arc_length_steps_array = np.empty(num_arc_length_points)
-        arc_length_steps_array = np.fill(config.arclength_step_size)
+        arc_length_steps_array = np.fill(config.ARCLENGTH_STEP_SIZE)
         partial_arc_length_array = np.cumsum(arc_length_steps_array)
         arc_length_array = np.insert(partial_arc_length_array, 0, 0)
         velocity_slices_bounds = []
         for i in range(len(max_allowed_velocities.length)):
             max_speed = max_allowed_velocities[i]
-            min_speed = config.speed_step_size
-            speed_step_size = config.speed_step_size
+            min_speed = config.SPEED_STEP_SIZE
+            speed_step_size = config.SPEED_STEP_SIZE
             distance_along_path = arc_length_array[i]
             velocity_slice_bounds = {"max_speed": max_speed,
                                      "min_speed": min_speed,
@@ -199,7 +199,7 @@ class VelocityProfileEdge(abstract.AbstractEdge):
 
 
 class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
-    velocity_profile_edge_degree_constraint = config.velocity_profile_degree_constraint
+    velocity_profile_edge_degree_constraint = config.VELOCITY_PROFILE_DEGREE_CONSTRAINT
 
     def velocity_profile_edge_builder(self, start_velocity, end_velocity):
         velocity_profile_edge = VelocityProfileEdge(
@@ -220,7 +220,7 @@ class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
 
 
 class VelocityProfileGraph(abstract.AbstractGraph):
-    velocity_arc_length_step_size = config.velocity_arc_length_step_size
+    velocity_arc_length_step_size = config.VELOCITY_ARC_LENGTH_STEP_SIZE
 
     def reparametrize_velocities(self, velocities_by_arclength):
         velocities_by_time = reparametrize_velocities(velocities_by_arc_length,

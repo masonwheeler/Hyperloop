@@ -25,8 +25,8 @@ def build_pylons(pylon_locations):
 
 def get_pyloncosts(pylon_locations):
     for pylon_location in pylon_locations:
-        pylon_location["pylon_cost"] = (config.pylon_base_cost +
-                                        pylon_location["pylon_height"] * config.pylon_cost_per_meter)
+        pylon_location["pylon_cost"] = (config.PYLON_BASE_COST +
+                                        pylon_location["pylon_height"] * config.PYLON_COST_PER_METER)
     return pylon_locations
 
 

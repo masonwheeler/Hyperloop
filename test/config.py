@@ -12,101 +12,101 @@ Last Modification Purpose: Changed from routes to graphs
 """
 Modes and settings.
 """
-testing_mode = True
-visual_mode = True
-verbose_mode = True
-timing_mode = False
-use_dropbox = False
+TESTING_MODE = True
+VISUAL_MODE = True
+VERBOSE_MODE = True
+TIMING_MODE = False
+USE_DROPBOX = False
 
 """
 Cache Overwriting Switches.
 """
-use_cached_directions = True
-use_cached_spline = True
-use_cached_lattice = True
-use_cached_edges = True
-use_cached_graphs = True
-use_cached_spatial_paths2d = False
+USE_CACHED_DIRECTIONS = False
+USE_CACHED_SPLINE = False
+USE_CACHED_LATTICE = False
+USE_CACHED_EDGES = True
+USE_CACHED_GRAPHS = True
+USE_CACHED_SPATIAL_PATHS2D = False
 
 """
 Lattice Generation Parameters
 """
-point_spacing = 2000.0  # (in meters) spacing between points in the same slice
-directions_sample_spacing = 10  # (in meters)
-degree_constraint = 30  # the angular constraint between subsequent edges
+POINT_SPACING = 2000.0  # (in meters) spacing between points in the same slice
+DIRECTIONS_SAMPLE_SPACING = 10  # (in meters)
+DEGREE_CONSTRAINT = 30  # the angular constraint between subsequent edges
 # (in units of directions_sample_spacing) i.e.
-spatial_slice_s_value_step_size = 1000
+SPATIAL_SLICE_S_VALUE_STEP_SIZE = 1000
 # spacing between spline points in meters is given
 # by directions_sample_spacing * spline_sample_spacing
-ndigits = 6  # the number of digits used for rounding
+NDIGITS = 6  # the number of digits used for rounding
 
 """
 Graph Generation Parameters
 """
-graph_curvature_min_num_edges = 3
-graph_sample_spacing = 1000.0
-num_fronts = 4
+GRAPH_CURVATURE_MIN_NUM_EDGES = 3
+GRAPH_SAMPLE_SPACING = 1000.0
+NUM_FRONTS = 4
 
 """
 Tube Generation Parameters
 """
 
-tube_trip_time_excess_min_num_edges = 3
-pylon_height_step_size = 10.0
-tube_degree_constraint = 60.0
+TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES = 3
+PYLON_HEIGHT_STEP_SIZE = 10.0
+TUBE_DEGREE_CONSTRAINT = 60.0
 
 """
 Velocity Profile Generation Parameters
 """
-velocity_profile_degree_constraint = 30.0
-velocity_arc_length_step_size = 100.0
+VELOCITY_PROFILE_DEGREE_CONSTRAINT = 30.0
+VELOCITY_ARC_LENGTH_STEP_SIZE = 100.0
 
 """
 Engineering constraints.
 """
-pylon_spacing = 100.0  # maximum distance between subsequent pylons (in meters)
-max_speed = 330.0  # maximum speed of the capsule (in m/s)
+PYLON_SPACING = 100.0  # maximum distance between subsequent pylons (in meters)
+MAX_SPEED = 330.0  # maximum speed of the capsule (in m/s)
 
 
 """
 Land Cost parameters
 """
-land_point_spacing = 30.0  # spacing between points for land cost sampling in meters
+LAND_POINT_SPACING = 30.0  # spacing between points for land cost sampling in meters
 
 """
 Comfort parameters.
 """
-linear_accel_constraint = 0.5 * 9.81
-lateral_accel_constraint = 0.3 * 9.81
-vertical_accel_constraint = 0.3 * 9.81
+LINEAR_ACCEL_CONSTRAINT = 0.5 * 9.81
+LATERAL_ACCEL_CONSTRAINT = 0.3 * 9.81
+VERTICAL_ACCEL_CONSTRAINT = 0.3 * 9.81
 
-linear_accel_tol = 0.5 * 9.81
-lateral_accel_tol = 0.3 * 9.81
-jerk_tol = 2
-curvature_threshhold = (lateral_accel_tol / max_speed**2)
+LINEAR_ACCEL_TOL = 0.5 * 9.81
+LATERAL_ACCEL_TOL = 0.3 * 9.81
+JERK_TOL = 2
+CURVATURE_THRESHHOLD = (LATERAL_ACCEL_TOL / MAX_SPEED**2)
 
 """
 Legal Parameters
 """
 
-land_padding = 30
+LAND_PADDING = 30
 
 """
 Financial Parameters, all costs in dollars.
 """
 
-right_of_way_land_cost = 0.0
-pylon_cost_per_meter = 10000.0
-tunneling_cost_per_meter = 10000.0  # USD/m
-pylon_base_cost = 2000.0
-tube_cost_per_meter = 1000.0
-padding = 20  # padding (in meters)
+RIGHT_OF_WAY_LAND_COST = 0.0
+PYLON_COST_PER_METER = 10000.0
+TUNNELING_COST_PER_METER = 10000.0  # USD/m
+PYLON_BASE_COST = 2000.0
+TUBE_COST_PER_METER = 1000.0
+PADDING = 20  # padding (in meters)
 
 
 # See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 # Note the omission of Alaska only values (please enter values in USD/
 # meter^2.)
-cost_table = {11: 300,  # Open Water (Source: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf)
+COST_TABLE = {11: 300,  # Open Water (Source: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf)
               12: 4,  # Perennial Ice/Snow
               21: 10,  # Developed, Open Space
               22: 20,  # Developed, Low Intensity
@@ -129,42 +129,42 @@ cost_table = {11: 300,  # Open Water (Source: http://www.dot.state.fl.us/plannin
 """
 Overwriting Bools.
 """
-directions_bools = [use_cached_directions]
-spline_bools = directions_bools + [use_cached_spline]
-lattice_bools = spline_bools + [use_cached_lattice]
-edges_bools = lattice_bools + [use_cached_edges]
-graphs_bools = edges_bools + [use_cached_graphs]
-spatial_paths2d_bools = graphs_bools + [use_cached_spatial_paths2d]
+DIRECTIONS_BOOLS = [USE_CACHED_DIRECTIONS]
+SPLINE_BOOLS = DIRECTIONS_BOOLS + [USE_CACHED_SPLINE]
+LATTICE_BOOLS = SPLINE_BOOLS + [USE_CACHED_LATTICE]
+EDGES_BOOLS = LATTICE_BOOLS + [USE_CACHED_EDGES]
+GRAPHS_BOOLS = EDGES_BOOLS + [USE_CACHED_GRAPHS]
+SPATIAL_PATHS2D_BOOLS = GRAPHS_BOOLS + [USE_CACHED_SPATIAL_PATHS2D]
 
 """
 Overwriting Flags.
 """
-directions_flag = all(directions_bools)
-spline_flag = all(spline_bools)
-lattice_flag = all(lattice_bools)
-edges_flag = all(edges_bools)
-graphs_flag = all(graphs_bools)
-spatial_paths2d_flag = all(spatial_paths2d_bools)
+DIRECTIONS_FLAG = all(DIRECTIONS_BOOLS)
+SPLINE_FLAG = all(SPLINE_BOOLS)
+LATTICE_FLAG = all(LATTICE_BOOLS)
+EDGES_FLAG = all(EDGES_BOOLS)
+GRAPHS_FLAG = all(GRAPHS_BOOLS)
+SPATIAL_PATHS2D_FLAG = all(SPATIAL_PATHS2D_BOOLS)
 
 """
 Uninitialized Directory Paths.
 """
-cache_directory = ""
-save_directory = ""
-working_cache_name = ""
-working_save_dir_name = ""
-working_cache_directory = ""
-working_save_directory = ""
-working_graphs_directory = ""
+CACHE_DIRECTORY = ""
+SAVE_DIRECTORY = ""
+WORKING_CACHE_NAME = ""
+WORKING_SAVE_DIR_NAME = ""
+WORKING_CACHE_DIRECTORY = ""
+WORKING_SAVE_DIRECTORY = ""
+WORKING_GRAPHS_DIRECTORY = ""
 
 """
 Unitialized Global variables.
 """
 
-holder = 0
-proj = 0
-directions_coords = 0
-plot_queue = []
+HOLDER = 0
+PROJ = 0
+DIRECTIONS_COORDS = 0
+PLOT_QUEUE = []
 
 
 ########## API-Specific and System-Specific Settings ##########
@@ -172,26 +172,26 @@ plot_queue = []
 """
 For File Saving.
 """
-cwd = ""
-dropbox_directory = "/home/ubuntu/Dropbox/save"
+CWD = ""
+DROPBOX_DIRECTORY = "/home/ubuntu/Dropbox/save"
 
 """
 For USGS-Elevation.
 """
 
-usgs_ftp_path = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
-usgs_folder = "/usgs/"
+USGS_FTP_PATH = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
+USGS_FOLDER = "/usgs/"
 
 """
 For NLCD (National Landcover Dataset).
 """
 
-geotiff_file_path = "/nlcd/us.tif"
+GEOTIFF_FILE_PATH = "/nlcd/us.tif"
 
 """
 For Google-Elevation
 """
 
 # Constraint on number of simultaneous api calls.
-get_elevation_piece_size = 512
-elevation_base_url = 'https://maps.googleapis.com/maps/api/elevation/json'
+GET_ELEVATION_PIECE_SIZE = 512
+ELEVATION_BASE_URL = 'https://maps.googleapis.com/maps/api/elevation/json'

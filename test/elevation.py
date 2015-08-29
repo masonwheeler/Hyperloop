@@ -22,7 +22,7 @@ def google_elevation(coords):
         'locations': '|'.join([str(coord[0]) + ',' + str(coord[1]) for coord in coords])
     }
 
-    url = config.elevation_base_url + '?' + urllib.urlencode(args)
+    url = config.ELEVATION_BASE_URL + '?' + urllib.urlencode(args)
     response = simplejson.load(urllib.urlopen(url))
 
     elevation_array = []
@@ -42,7 +42,7 @@ def usgs_elevation(latlngs):
 
 
 def get_elevation_profile(geospatials, distances):
-    latlngs = proj.geospatials_to_latlngs(geospatials, config.proj)
+    latlngs = proj.geospatials_to_latlngs(geospatials, config.PROJ)
     elevations = usgs_elevation(latlngs)
     elevation_profile = []
     distance_along_path = 0

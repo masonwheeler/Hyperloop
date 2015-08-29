@@ -34,10 +34,10 @@ def build_directions(start, end):
     start_lat_lng, end_lat_lng = util.get_firstlast(directions_lat_lngs)
     proj.set_projection(start_lat_lng, end_lat_lng)
     directions_points = proj.latlngs_to_geospatials(directions_lat_lngs,
-                                                    config.proj)
-    if config.visual_mode:
+                                                    config.PROJ)
+    if config.VISUAL_MODE:
         plottable_directions = [zip(*directions_points), 'y-']
-        config.plot_queue.append(plottable_directions)
+        config.PLOT_QUEUE.append(plottable_directions)
     return [directions_points, start_lat_lng, end_lat_lng]
 
 def build_lattice(directions_points):
@@ -45,12 +45,12 @@ def build_lattice(directions_points):
     """
     #time_a = time.time()
     sampled_points = interpolate.sample_path(directions_points,
-                                             config.directions_sample_spacing)
+                                             config.DIRECTIONS_SAMPLE_SPACING)
     s_values = interpolate.get_s_values(len(sampled_points))
     spatial_x_spline, spatial_y_spline = lattice.get_directionsspline(
         sampled_points)
     spatial_lattice_slices_s_values = interpolate.get_slice_s_values(s_values,
-                                       config.spatial_slice_s_value_step_size)
+                                       config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
     spatial_slices_x_values = interpolate.get_spline_values(
         spatial_x_spline, spatial_lattice_slices_s_values)
     spatial_slices_y_values = interpolate.get_spline_values(
@@ -60,23 +60,23 @@ def build_lattice(directions_points):
     spatial_spline_points = [list(eachTuple) for eachTuple in
                              spatial_spline_tuples]
     slices_directions_points = util.smart_sample_nth_points(
-        sampled_points, config.spatial_slice_s_value_step_size)
+        sampled_points, config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
     spatial_slices_bounds = zip(slices_directions_points,
                                 spatial_spline_points)
     lattice_slices = lattice.get_lattice(spatial_slices_bounds)
     #time_b = time.time()
     #print "Building the lattice took " + str(time_b - time_a) + " seconds."
-    #if config.visual_mode:
+    #if config.VISUAL_MODE:
     #    spline_x_values = interpolate.get_spline_values(spatial_x_spline,
     #                                                    s_values)
     #    spline_y_values = interpolate.get_spline_values(spatial_y_spline,
     #                                                    s_values)
     #    plottable_spline = [[spline_x_values, spline_y_values], 'r-']
-    #    config.plot_queue.append(plottable_spline)
+    #    config.PLOT_QUEUE.append(plottable_spline)
     return lattice_slices
 
-# config.degree_constraint = min(math.fabs(math.pi - math.acos(min((
-# config.distance_btwn_slices*(config.g_tolerance/330**2))**2/2-1,1))),
+# config.DEGREE_CONSTRAINT = min(math.fabs(math.pi - math.acos(min((
+# config.distance_btwn_slices*(config.G_TOLERANCE/330**2))**2/2-1,1))),
 # math.pi)*(180./math.pi)
 
 
@@ -108,7 +108,7 @@ def build_graphs(lattice_slices):
     #    print("curvature: " + str(graph.curvature_metric))
     time_b = time.time()
     print "Building the graphs took " + str(time_b - time_a) + " seconds."
-    if config.visual_mode:
+    if config.VISUAL_MODE:
         plottable_graphs = [graph.to_plottable(
             'b-') for graph in complete_graphs]
         #costs = [graph.pylon_cost + graph.land_cost for graph
@@ -119,8 +119,8 @@ def build_graphs(lattice_slices):
         #costs, curvatures = zip(*cost_curvature)
         #visualize.scatter_plot(costs, curvatures)
         # print(plottable_cost_curvature)
-        config.plot_queue += plottable_graphs
-        #config.plot_queue += plottable_cost_curvature
+        config.PLOT_QUEUE += plottable_graphs
+        #config.PLOT_QUEUE += plottable_cost_curvature
     return complete_graphs
 
 
@@ -135,8 +135,8 @@ def pair_analysis(start, end):
     complete_graphs = build_graphs(lattice_slices)
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
-                      config.linear_accel_constraint/config.max_speed**2,
-                      config.linear_accel_constraint, config.jerk_tol)
+                      config.linear_accel_constraint/config.MAX_SPEED**2,
+                      config.linear_accel_constraint, config.JERK_TOL)
                       for graph in test_graphs]
     cacher.save_routes(complete_routes, start, end, start_lat_lng, end_lat_lng)
     for i in range(len(complete_routes)):
@@ -149,6 +149,6 @@ def pair_analysis(start, end):
                      complete_routes[i].land_cost]))
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
-    if config.visual_mode:
-        visualize.plot_objects(config.plot_queue)
+    if config.VISUAL_MODE:
+        visualize.plot_objects(config.PLOT_QUEUE)
     return 0

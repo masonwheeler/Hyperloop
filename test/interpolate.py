@@ -311,19 +311,19 @@ def curvature_array_to_max_allowed_vels(curvature_array, accel_constraint):
 
 def vertical_curvature_array_to_max_allowed_vels(vertical_curvature_array):
     max_allowed_vels = curvature_array_to_max_allowed_vels(
-        vertical_curvature_array, config.vertical_accel_constraint)
+        vertical_curvature_array, config.VERTICAL_ACCEL_CONSTRAINT)
     return max_allowed_vels
 
 
 def lateral_curvature_array_to_max_allowed_vels(lateral_curvature_array):
     max_allowed_vels = curvature_array_to_max_allowed_vels(
-        lateral_curvature_array, config.lateral_accel_constraint)
+        lateral_curvature_array, config.LATERAL_ACCEL_CONSTRAINT)
     return max_allowed_vels
 
 
 def curvature_array_3d_to_max_allowed_vels(curvature_array3d):
     max_allowedvels = curvature_array_to_max_allowed_vels(
-        curvature_array3d, config.total_accel_constraint)
+        curvature_array3d, config.TOTAL_ACCEL_CONSTRAINT)
     return max_allowedvels
 
 
@@ -425,7 +425,7 @@ def iterative_smooth_interpolate_2d(x_array, y_array, initial_end_weights,
 def curvature_metric(graph_curvature_array):
     curvature_size = graph_curvature_array.size
     curvature_threshhold = np.empty(curvature_size)
-    curvature_threshhold.fill(config.curvature_threshhold)
+    curvature_threshhold.fill(config.CURVATURE_THRESHHOLD)
     absolute_curvature = np.absolute(graph_curvature_array)
     relative_curvature = np.subtract(absolute_curvature, curvature_threshhold)
     excess_curvature = relative_curvature.clip(min=0)
