@@ -134,7 +134,6 @@ def pair_analysis(start, end):
     lattice_slices = build_lattice(directions_points)
     complete_graphs = build_graphs(lattice_slices)
     test_graphs = complete_graphs[:3]
-    """
     complete_routes = [routes.graph_to_route(graph,
                       config.linear_accel_constraint/config.max_speed**2,
                       config.linear_accel_constraint, config.jerk_tol)
@@ -150,7 +149,6 @@ def pair_analysis(start, end):
                      complete_routes[i].land_cost]))
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
-    """
     if config.visual_mode:
         visualize.plot_objects(config.plot_queue)
     return 0
