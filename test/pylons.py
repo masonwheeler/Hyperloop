@@ -9,27 +9,28 @@ Last Modification Purpose: To add support for tube heights.
 import util
 import config
 
-def build_pylons(pylonLocations):
-    pylonLocationsByElevation = sorted(pylonLocations,
-        key=lambda pylonLocation : pylonLocation["elevation"])
-    highestPylonLocation = pylonLocationsByElevation[-1]
-    highestElevation = highestPylonLocation["elevation"]
 
-    for pylonLocation in pylonLocations:
-        pylonLocation["pylonHeight"] = \
-          highestElevation - pylonLocation["elevation"]
-        
-    return pylonLocations
-        
-def get_pyloncosts(pylonLocations):
-    for pylonLocation in pylonLocations:
-        pylonLocation["pylonCost"] = (config.pylonBaseCost + 
-            pylonLocation["pylonHeight"] * config.pylonCostPerMeter)
-    return pylonLocations
+def build_pylons(pylon_locations):
+    pylon_locations_by_elevation = sorted(pylon_locations,
+                                          key=lambda pylon_location: pylon_location["elevation"])
+    highest_pylon_location = pylon_locations_by_elevation[-1]
+    highest_elevation = highest_pylon_location["elevation"]
 
-def edge_pyloncost(pylonLocations):
-    edgePylonCost = sum([pylonLocation["pylonCost"] for pylonLocation
-                         in pylonLocations])
-    return edgePylonCost
+    for pylon_location in pylon_locations:
+        pylon_location["pylon_height"] = \
+            highest_elevation - pylon_location["elevation"]
+
+    return pylon_locations
 
 
+def get_pyloncosts(pylon_locations):
+    for pylon_location in pylon_locations:
+        pylon_location["pylon_cost"] = (config.pylon_base_cost +
+                                        pylon_location["pylon_height"] * config.pylon_cost_per_meter)
+    return pylon_locations
+
+
+def edge_pyloncost(pylon_locations):
+    edge_pylon_cost = sum([pylon_location["pylon_cost"] for pylon_location
+                           in pylon_locations])
+    return edge_pylon_cost

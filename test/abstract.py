@@ -6,7 +6,7 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Debugging
 """
 
-#Custom Modules
+# Custom Modules
 import config
 import math
 import mergetree
@@ -18,224 +18,229 @@ class AbstractPoint:
     """Abstract object that represents a point.
 
     Attributes:
-        pointId (int): Unique identifier for each point.
-        latticeXCoord (int): The x coordinate of the point with
+        point_id (int): Unique identifier for each point.
+        lattice_x_coord (int): The x coordinate of the point with
                                relative to the lattice of points.
-        latticeYCoord (int): The y coordinate of the point with
+        lattice_y_coord (int): The y coordinate of the point with
                                relative to the lattice of points.
-        spatialXCoord (float): The x coordinate of the point in physical units.
-        spatialYCoord (float): The y coordinate of the point in physical units.
+        spatial_x_coord (float): The x coordinate of the point in physical units.
+        spatial_y_coord (float): The y coordinate of the point in physical units.
 
     """
-    def __init__(self, pointId, latticeXCoord, latticeYCoord,
-                                spatialXCoord, spatialYCoord):
+
+    def __init__(self, point_id, lattice_x_coord, lattice_y_coord,
+                 spatial_x_coord, spatial_y_coord):
         """
         Args:
-            pointId (int): Unique identifier for each point.
-            latticeXCoord (int): The x coordinate of the point with
+            point_id (int): Unique identifier for each point.
+            lattice_x_coord (int): The x coordinate of the point with
                                    relative to the lattice of points.
-            latticeYCoord (int): The y coordinate of the point with
+            lattice_y_coord (int): The y coordinate of the point with
                                    relative to the lattice of points.
-            spatialXCoord (float): The x coordinate of the point
+            spatial_x_coord (float): The x coordinate of the point
                                     in physical units.
-            spatialYCoord (float): The y coordinate of the point
+            spatial_y_coord (float): The y coordinate of the point
                                     in physical units.
 
         """
-        self.pointId = pointId
-        self.latticeXCoord = latticeXCoord
-        self.latticeYCoord = latticeYCoord
-        self.spatialXCoord = spatialXCoord
-        self.spatialYcoord = spatialYCoord
+        self.point_id = point_id
+        self.lattice_x_coord = lattice_x_coord
+        self.lattice_y_coord = lattice_y_coord
+        self.spatial_x_coord = spatial_x_coord
+        self.spatial_ycoord = spatial_y_coord
 
-        
+
 class AbstractSlice(object):
-    def __init__(self, latticeXCoord, sliceBounds, startId, points_builder):
-        self.points = points_builder(latticeXCoord, sliceBounds, startId)             
-        numPoints = len(self.points)
-        self.endId = startId + numPoints
 
-        
+    def __init__(self, lattice_x_coord, slice_bounds, start_id, points_builder):
+        self.points = points_builder(lattice_x_coord, slice_bounds, start_id)
+        num_points = len(self.points)
+        self.end_id = start_id + num_points
+
+
 class AbstractLattice:
-    def __init__(self, slicesBounds, points_builder):
+
+    def __init__(self, slices_bounds, points_builder):
         self.slices = []
-        startId = 0
-        latticeXCoord = 0
-        for sliceBounds in slicesBounds:
-            newSlice = AbstractSlice(latticeXCoord, sliceBounds, startId,
-                                                          points_builder)
-            self.slices.append(newSlice.points)
-            startId = newSlice.endId
-            latticeXCoord += 1
+        start_id = 0
+        lattice_x_coord = 0
+        for slice_bounds in slices_bounds:
+            new_slice = AbstractSlice(lattice_x_coord, slice_bounds, start_id,
+                                      points_builder)
+            self.slices.append(new_slice.points)
+            start_id = new_slice.end_id
+            lattice_x_coord += 1
 
 
 class AbstractEdge:
-    def __init__(self, startPoint, endPoint):
-        self.startId = startPoint.pointId
-        self.endId = endPoint.pointId
-        self.startLatticeCoords = [startPoint.latticeXCoord,
-                                   startPoint.latticeYCoord]
-        self.endLatticeCoords = [endPoint.latticeXCoord,
-                                 endPoint.latticeYCoord]
-        self.startSpatialCoords = [startPoint.spatialXCoord,
-                                   startPoint.spatialYCoord]
-        self.endSpatialCoords = [endPoint.spatialXCoord,
-                                 endPoint.spatialYCoord]
+
+    def __init__(self, start_point, end_point):
+        self.start_id = start_point.point_id
+        self.end_id = end_point.point_id
+        self.start_lattice_coords = [start_point.lattice_x_coord,
+                                     start_point.lattice_y_coord]
+        self.end_lattice_coords = [end_point.lattice_x_coord,
+                                   end_point.lattice_y_coord]
+        self.start_spatial_coords = [start_point.spatial_x_coord,
+                                     start_point.spatial_y_coord]
+        self.end_spatial_coords = [end_point.spatial_x_coord,
+                                   end_point.spatial_y_coord]
         self.angle = math.degrees(math.atan2(
-                       endPoint.spatialYCoord - startPoint.spatialYCoord,
-                       endPoint.spatialXCoord - startPoint.spatialXCoord))
-        self.isUseful = True
+            end_point.spatial_y_coord - start_point.spatial_y_coord,
+            end_point.spatial_x_coord - start_point.spatial_x_coord))
+        self.is_useful = True
 
 
-class AbstractEdgesSets:  
+class AbstractEdgesSets:
 
     @staticmethod
-    def is_edge_pair_compatible(edgeA, edgeB, degreeConstraint):
-        edgePairCompatible = (edgeA.endId == edgeB.startId and
-             abs(edgeA.angle - edgeB.angle) < degreeConstraint)
-        return edgePairCompatible                   
+    def is_edge_pair_compatible(edge_a, edge_b, degree_constraint):
+        edge_pair_compatible = (edge_a.end_id == edge_b.start_id and
+                                abs(edge_a.angle - edge_b.angle) < degree_constraint)
+        return edge_pair_compatible
 
-    def lattice_slices_to_unfiltered_edges_sets(self, latticeSlices,
-                                                      edge_builder):
-        unfilteredEdgesSets = []
-        for latticeSliceIndex in range(len(latticeSlices) - 1):
-            latticeSliceA = latticeSlices[latticeSliceIndex]
-            latticeSliceB = latticeSlices[latticeSliceIndex + 1]
-            edgesSet = []
-            for pointA in latticeSliceA:
-                for pointB in latticeSliceB:
-                    edgesSet.append(edge_builder(pointA, pointB))
-            unfilteredEdgesSets.append(edgesSet)
-        return unfilteredEdgesSets    
+    def lattice_slices_to_unfiltered_edges_sets(self, lattice_slices,
+                                                edge_builder):
+        unfiltered_edges_sets = []
+        for lattice_slice_index in range(len(lattice_slices) - 1):
+            lattice_slice_a = lattice_slices[lattice_slice_index]
+            lattice_slice_b = lattice_slices[lattice_slice_index + 1]
+            edges_set = []
+            for point_a in lattice_slice_a:
+                for point_b in lattice_slice_b:
+                    edges_set.append(edge_builder(point_a, point_b))
+            unfiltered_edges_sets.append(edges_set)
+        return unfiltered_edges_sets
 
-    def determine_useful_edges(self, edgesSets, is_edge_pair_compatible):
+    def determine_useful_edges(self, edges_sets, is_edge_pair_compatible):
         """Edge is useful if there are compatible adjacent edges"""
-        for edgeA in edgesSets[0]:
-            compatibles = [is_edge_pair_compatible(edgeA, edgeB)
-                           for edgeB in edgesSets[1]]
-            edgeA.isUseful = any(compatibles)
-        for edgeSetIndex in range(1, len(edgesSets) - 1):
-            for edgeB in edgesSets[edgeSetIndex]:
-                compatiblesA = [is_edge_pair_compatible(edgeA, edgeB)
-                                for edgeA in edgesSets[edgeSetIndex - 1]]
-                compatiblesC = [is_edge_pair_compatible(edgeB, edgeC)
-                                for edgeC in edgesSets[edgeSetIndex + 1]]
-                edgeB.isUseful = any(compatiblesA) and any(compatiblesC)
-        for edgeB in edgesSets[-1]:
-            compatibles = [is_edge_pair_compatible(edgeA, edgeB)
-                           for edgeA in edgesSets[-2]]
-            edgeB.isUseful = any(compatibles)
+        for edge_a in edges_sets[0]:
+            compatibles = [is_edge_pair_compatible(edge_a, edge_b)
+                           for edge_b in edges_sets[1]]
+            edge_a.is_useful = any(compatibles)
+        for edge_set_index in range(1, len(edges_sets) - 1):
+            for edge_b in edges_sets[edge_set_index]:
+                compatibles_a = [is_edge_pair_compatible(edge_a, edge_b)
+                                 for edge_a in edges_sets[edge_set_index - 1]]
+                compatibles_c = [is_edge_pair_compatible(edge_b, edge_c)
+                                 for edge_c in edges_sets[edge_set_index + 1]]
+                edge_b.is_useful = any(compatibles_a) and any(compatibles_c)
+        for edge_b in edges_sets[-1]:
+            compatibles = [is_edge_pair_compatible(edge_a, edge_b)
+                           for edge_a in edges_sets[-2]]
+            edge_b.is_useful = any(compatibles)
 
-    def filter_edges(self, edgesSets):
-        filteredEdgesSets = []
-        for edgesSet in edgesSets:
-            filteredEdgesSet = []
-            for edge in edgesSet:
-                if edge.isUseful:
-                    filteredEdgesSet.append(edge)
-            filteredEdgesSets.append(filteredEdgesSet)
-        return filteredEdgesSets
+    def filter_edges(self, edges_sets):
+        filtered_edges_sets = []
+        for edges_set in edges_sets:
+            filtered_edges_set = []
+            for edge in edges_set:
+                if edge.is_useful:
+                    filtered_edges_set.append(edge)
+            filtered_edges_sets.append(filtered_edges_set)
+        return filtered_edges_sets
 
-    def check_empty(self, edgesSets):
-        for edgesSet in edgesSets:
-            if len(edgesSet) == 0:
+    def check_empty(self, edges_sets):
+        for edges_set in edges_sets:
+            if len(edges_set) == 0:
                 return True
         return False
-        
-    def iterative_filter(self, unfilteredEdgesSets, is_edge_pair_compatible):
-        self.determine_useful_edges(unfilteredEdgesSets,
+
+    def iterative_filter(self, unfiltered_edges_sets, is_edge_pair_compatible):
+        self.determine_useful_edges(unfiltered_edges_sets,
                                     is_edge_pair_compatible)
-        prefilterNumEdges = util.list_of_lists_len(unfilteredEdgesSets)
+        prefilter_num_edges = util.list_of_lists_len(unfiltered_edges_sets)
         util.smart_print("The original number of edges: " +
-                         str(prefilterNumEdges))
-        filteredEdgesSetsList = []
+                         str(prefilter_num_edges))
+        filtered_edges_sets_list = []
         while True:
-            self.determine_useful_edges(unfilteredEdgesSets,
+            self.determine_useful_edges(unfiltered_edges_sets,
                                         is_edge_pair_compatible)
-            filteredEdgesSets = self.filter_edges(unfilteredEdgesSets)
-            anyEmptyEdgesSet = self.check_empty(filteredEdgesSets)
-            if anyEmptyEdgesSet:
+            filtered_edges_sets = self.filter_edges(unfiltered_edges_sets)
+            any_empty_edges_set = self.check_empty(filtered_edges_sets)
+            if any_empty_edges_set:
                 raise ValueError("Encountered Empty EdgesSet")
-            postfilterNumEdges = util.list_of_lists_len(filteredEdgesSets)
+            postfilter_num_edges = util.list_of_lists_len(filtered_edges_sets)
             util.smart_print("The current number of edges: " +
-                                      str(postfilterNumEdges))
-            filteredEdgesSetsList.append(filteredEdgesSets)            
-            if postfilterNumEdges == prefilterNumEdges:
-                break            
-            prefilterNumEdges = postfilterNumEdges
-        return filteredEdgesSetsList
-        
+                             str(postfilter_num_edges))
+            filtered_edges_sets_list.append(filtered_edges_sets)
+            if postfilter_num_edges == prefilter_num_edges:
+                break
+            prefilter_num_edges = postfilter_num_edges
+        return filtered_edges_sets_list
+
     def __init__(self, lattice, edge_builder, is_edge_pair_compatible):
-        latticeSlices = lattice.slices
-        self.unfilteredEdgesSets = self.lattice_slices_to_unfiltered_edges_sets(
-                                                    latticeSlices, edge_builder)
-        self.filteredEdgesSetsList = self.iterative_filter(
-                         self.unfilteredEdgesSets, is_edge_pair_compatible)
-        self.finalEdgesSets = self.filteredEdgesSetsList[-1]
-         
+        lattice_slices = lattice.slices
+        self.unfiltered_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
+            lattice_slices, edge_builder)
+        self.filtered_edges_sets_list = self.iterative_filter(
+            self.unfiltered_edges_sets, is_edge_pair_compatible)
+        self.final_edges_sets = self.filtered_edges_sets_list[-1]
+
 
 class AbstractGraph:
-    def __init__(self, startId, endId, startAngle, endAngle, numEdges,
-                                                       latticeCoords):
-        self.startId = startId
-        self.endId = endId
-        self.startAngle = startAngle
-        self.endAngle = endAngle
-        self.numEdges = numEdges
-        self.latticeCoords = latticeCoords        
-        
-    def build_local_lattice(self, latticeCoords, spacing):
-        coordPairs = util.to_pairs(latticeCoords)
-        midPoints = map(util.get_midpoint, coordPairs)
-        sliceCenters = [None]*(len(latticeCoords) + len(midPoints))
-        sliceCenters[::2] = latticeCoords
-        sliceCenters[1::2] = midPoints
-        
-        def slice_center_to_slice(sliceCenter):
-            newSlice = [[sliceCenter[0], sliceCenter[1] - spacing]
-                        [sliceCenter[0], sliceCenter[1]]
-                        [sliceCenter[0], sliceCenter[1] + spacing]]
-            return newSlice
-        
-        localLattice = map(slice_center_to_slice, sliceCenters)
-        return localLattice
+
+    def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
+                 lattice_coords):
+        self.start_id = start_id
+        self.end_id = end_id
+        self.start_angle = start_angle
+        self.end_angle = end_angle
+        self.num_edges = num_edges
+        self.lattice_coords = lattice_coords
+
+    def build_local_lattice(self, lattice_coords, spacing):
+        coord_pairs = util.to_pairs(lattice_coords)
+        mid_points = map(util.get_midpoint, coord_pairs)
+        slice_centers = [None] * (len(lattice_coords) + len(mid_points))
+        slice_centers[::2] = lattice_coords
+        slice_centers[1::2] = mid_points
+
+        def slice_center_to_slice(slice_center):
+            new_slice = [[slice_center[0], slice_center[1] - spacing]
+                         [slice_center[0], slice_center[1]]
+                         [slice_center[0], slice_center[1] + spacing]]
+            return new_slice
+
+        local_lattice = map(slice_center_to_slice, slice_centers)
+        return local_lattice
 
 
 class AbstractGraphsSet:
 
     @staticmethod
-    def is_graph_pair_compatible(graphA, graphB, degreeConstraint):
-        graphPairCompatible = (graphA.endId == graphB.startId and
-             abs(graphA.endAngle - graphB.startAngle) < degreeConstraint)
-        return graphPairCompatible                   
+    def is_graph_pair_compatible(graph_a, graph_b, degree_constraint):
+        graph_pair_compatible = (graph_a.end_id == graph_b.start_id and
+                                 abs(graph_a.end_angle - graph_b.start_angle) < degree_constraint)
+        return graph_pair_compatible
 
-    def select_graphs(self, minimizeAVals, minimizeBVals):
-        if self.graphsABVals == None:
-            self.selectedGraphs = self.unfilteredGraphs
+    def select_graphs(self, minimize_a_vals, minimize_b_vals):
+        if self.graphs_a_b_vals == None:
+            self.selected_graphs = self.unfiltered_graphs
         else:
             try:
-                self.front = paretofront.ParetoFront(self.graphsABVals,
-                                          minimizeAVals, minimizeBVals)
-                selectedGraphsIndices = self.front.frontsIndices[-1]
-                numFronts = 1
-                while (self.front.build_nextfront() and 
-                       numFronts <= config.numFronts):
-                    numFronts += 1
-                    selectedGraphsIndices += self.front.frontsIndices[-1]
-                self.selectedGraphs = [self.unfilteredGraphs[i] for i in
-                                       selectedGraphsIndices]
+                self.front = paretofront.ParetoFront(self.graphs_a_b_vals,
+                                                     minimize_a_vals, minimize_b_vals)
+                selected_graphs_indices = self.front.fronts_indices[-1]
+                num_fronts = 1
+                while (self.front.build_nextfront() and
+                       num_fronts <= config.num_fronts):
+                    num_fronts += 1
+                    selected_graphs_indices += self.front.fronts_indices[-1]
+                self.selected_graphs = [self.unfiltered_graphs[i] for i in
+                                        selected_graphs_indices]
                 return True
             except ValueError:
-                self.selectedGraphs = self.unfilteredGraphs
+                self.selected_graphs = self.unfiltered_graphs
                 return False
 
     def __init__(self, graphs, graphs_evaluator, is_graph_pair_compatible,
-                       minimizeAVals, minimizeBVals, graphsNumEdges):
-        self.unfilteredGraphs = graphs
-        self.numEdges = graphsNumEdges
-        self.graphsABVals = graphs_evaluator(graphs, graphsNumEdges)
-        self.select_graphs(minimizeAVals, minimizeBVals)
-        self.minimizeAVals, self.minimizeBVals = minimizeAVals, minimizeBVals
+                 minimize_a_vals, minimize_b_vals, graphs_num_edges):
+        self.unfiltered_graphs = graphs
+        self.num_edges = graphs_num_edges
+        self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges)
+        self.select_graphs(minimize_a_vals, minimize_b_vals)
+        self.minimize_a_vals, self.minimize_b_vals = minimize_a_vals, minimize_b_vals
         self.is_graph_pair_compatible = is_graph_pair_compatible
 
     def update_graphs(self):
@@ -249,43 +254,44 @@ class AbstractGraphsSet:
             return False
         else:
             try:
-                areGraphsUpdated = self.front.build_nextfront()
+                are_graphs_updated = self.front.build_nextfront()
             except ValueError:
                 return False
-            if areGraphsUpdated:
-                selectedGraphIndices = self.front.frontsIndices[-1]
-                for i in selectedGraphIndices:
-                    self.selectedGraphs.append(self.unfilteredGraphs[i])
+            if are_graphs_updated:
+                selected_graph_indices = self.front.fronts_indices[-1]
+                for i in selected_graph_indices:
+                    self.selected_graphs.append(self.unfiltered_graphs[i])
                 return True
             else:
                 return False
 
     @staticmethod
-    def merge_two_graphs_sets(graphsSetA, graphsSetB, is_graph_pair_compatible,
-                                                             merge_two_graphs):
-        mergedGraphs = []
-        selectedA = graphsSetA.selectedGraphs
-        selectedB = graphsSetB.selectedGraphs
-        for graphA in selectedA:
-            for graphB in selectedB:
-                if is_graph_pair_compatible(graphA, graphB):
-                    mergedGraphs.append(merge_two_graphs(graphA, graphB))
-        return mergedGraphs
+    def merge_two_graphs_sets(graphs_set_a, graphs_set_b, is_graph_pair_compatible,
+                              merge_two_graphs):
+        merged_graphs = []
+        selected_a = graphs_set_a.selected_graphs
+        selected_b = graphs_set_b.selected_graphs
+        for graph_a in selected_a:
+            for graph_b in selected_b:
+                if is_graph_pair_compatible(graph_a, graph_b):
+                    merged_graphs.append(merge_two_graphs(graph_a, graph_b))
+        return merged_graphs
 
-def graphs_set_pair_merger(graphsSetA, graphsSetB, graphs_set_builder,
-                          is_graph_pair_compatible, merge_two_graphs):
-    mergedGraphs = AbstractGraphsSet.merge_two_graphs_sets(graphsSetA,
-               graphsSetB, is_graph_pair_compatible, merge_two_graphs)
-    numEdgesA = graphsSetA.numEdges
-    numEdgesB = graphsSetB.numEdges
-    mergedNumEdges = numEdgesA + numEdgesB
-    if (len(mergedGraphs) == 0):
+
+def graphs_set_pair_merger(graphs_set_a, graphs_set_b, graphs_set_builder,
+                           is_graph_pair_compatible, merge_two_graphs):
+    merged_graphs = AbstractGraphsSet.merge_two_graphs_sets(graphs_set_a,
+                                                            graphs_set_b, is_graph_pair_compatible, merge_two_graphs)
+    num_edges_a = graphs_set_a.num_edges
+    num_edges_b = graphs_set_b.num_edges
+    merged_num_edges = num_edges_a + num_edges_b
+    if (len(merged_graphs) == 0):
         return None
     else:
-        mergedGraphsSet = graphs_set_builder(mergedGraphs, mergedNumEdges)
-        return mergedGraphsSet
+        merged_graphs_set = graphs_set_builder(merged_graphs, merged_num_edges)
+        return merged_graphs_set
 
-def graphs_set_updater(graphsSets):
-    graphsSets.update_graphs()
-    return graphsSets
 
+def graphs_set_updater(graphs_sets):
+    graphs_sets.update_graphs()
+    return graphs_sets

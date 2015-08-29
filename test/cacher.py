@@ -5,178 +5,190 @@ Last Modified: 7/16/15
 Last Modification Purpose: To clarify naming.
 """
 
-#Standard Modules:
+# Standard Modules:
 import os
 import csv
 import json
 import cPickle as pickle
 
-#Our Modules:
+# Our Modules:
 import config
 import util
 
 
 def create_basefolders():
-    """Creates the cache and save folders"""    
-    cacheDirectory = config.cwd + "/cache/"
-    config.cacheDirectory = cacheDirectory
-    if config.useDropbox:
-        saveDirectory = config.dropboxDirectory + "/save/"
+    """Creates the cache and save folders"""
+    cache_directory = config.cwd + "/cache/"
+    config.cache_directory = cache_directory
+    if config.use_dropbox:
+        save_directory = config.dropbox_directory + "/save/"
     else:
-        saveDirectory = config.cwd + "/save/"
-    config.saveDirectory = saveDirectory
-    if not os.path.exists(cacheDirectory):
-        os.makedirs(cacheDirectory)       
-    if not os.path.exists(saveDirectory):
-        os.makedirs(saveDirectory)
+        save_directory = config.cwd + "/save/"
+    config.save_directory = save_directory
+    if not os.path.exists(cache_directory):
+        os.makedirs(cache_directory)
+    if not os.path.exists(save_directory):
+        os.makedirs(save_directory)
 
-def create_workingcachename(start,end):
+
+def create_workingcachename(start, end):
     """Names the cache folder for a given city pair"""
-    workingCacheName = "_".join([start,"to",end])
-    config.workingCacheName = workingCacheName
-    return workingCacheName
+    working_cache_name = "_".join([start, "to", end])
+    config.working_cache_name = working_cache_name
+    return working_cache_name
 
-def create_workingsavedirname(start,end):
+
+def create_workingsavedirname(start, end):
     """Names the save folder for a given city pair"""
-    workingSaveDirName = "_".join([start,"to",end])
-    config.workingSaveDirName = workingSaveDirName
-    return workingSaveDirName
+    working_save_dir_name = "_".join([start, "to", end])
+    config.working_save_dir_name = working_save_dir_name
+    return working_save_dir_name
 
-def create_workingcachedirectory(workingCacheName):
+
+def create_workingcachedirectory(working_cache_name):
     """Creates the cache folder for a given city pair"""
-    workingCacheDirectory = config.cacheDirectory + workingCacheName + "/"
-    config.workingCacheDirectory = workingCacheDirectory
-    if not os.path.exists(workingCacheDirectory):
-        os.makedirs(workingCacheDirectory)
-    return workingCacheDirectory
+    working_cache_directory = config.cache_directory + working_cache_name + "/"
+    config.working_cache_directory = working_cache_directory
+    if not os.path.exists(working_cache_directory):
+        os.makedirs(working_cache_directory)
+    return working_cache_directory
 
-def create_graphsdirectory(workingSaveDirectory):
+
+def create_graphsdirectory(working_save_directory):
     """Creates the folder used to save completed routes"""
-    graphsDirectory = workingSaveDirectory + "graphs/"
-    config.workingGraphsDirectory = graphsDirectory 
-    if not os.path.exists(graphsDirectory):
-        os.makedirs(graphsDirectory)
-    return graphsDirectory
+    graphs_directory = working_save_directory + "graphs/"
+    config.working_graphs_directory = graphs_directory
+    if not os.path.exists(graphs_directory):
+        os.makedirs(graphs_directory)
+    return graphs_directory
 
-def create_workingsavedirectory(workingSaveDirName):
+
+def create_workingsavedirectory(working_save_dir_name):
     """Creates the save directory for a given city pair"""
-    workingSaveDirectory = config.saveDirectory + workingSaveDirName + "/"
-    create_graphsdirectory(workingSaveDirectory + workingSaveDirName + "_")
-    config.workingSaveDirectory = workingSaveDirectory
-    if not os.path.exists(workingSaveDirectory):
-        os.makedirs(workingSaveDirectory)
-    return workingSaveDirectory
+    working_save_directory = config.save_directory + working_save_dir_name + "/"
+    create_graphsdirectory(working_save_directory +
+                           working_save_dir_name + "_")
+    config.working_save_directory = working_save_directory
+    if not os.path.exists(working_save_directory):
+        os.makedirs(working_save_directory)
+    return working_save_directory
+
 
 def create_necessaryfolders(start, end):
     """Creates all of the cache and save folders"""
     create_basefolders()
-    workingCacheName = create_workingcachename(start,end)
-    workingSaveDirName = create_workingsavedirname(start,end)
-    create_workingcachedirectory(workingCacheName)
-    create_workingsavedirectory(workingSaveDirName)
+    working_cache_name = create_workingcachename(start, end)
+    working_save_dir_name = create_workingsavedirname(start, end)
+    create_workingcachedirectory(working_cache_name)
+    create_workingsavedirectory(working_save_dir_name)
 
-def get_object_cachepath(objectName):
+
+def get_object_cachepath(object_name):
     """Gets the path where the object will be cached"""
-    objectFileBase = "_".join([config.workingCacheName, objectName])
-    objectFileName = objectFileBase + ".p"
-    objectPath = config.workingCacheDirectory + objectFileName
-    return objectPath
+    object_file_base = "_".join([config.working_cache_name, object_name])
+    object_file_name = object_file_base + ".p"
+    object_path = config.working_cache_directory + object_file_name
+    return object_path
 
-def get_object_savepath(objectName):
+
+def get_object_savepath(object_name):
     """Gets the path where the object will be saved"""
-    objectFileBase = "_".join([config.workingSaveDirName, objectName])
-    objectPath = config.workingSaveDirectory + objectFileBase
-    return objectPath
+    object_file_base = "_".join([config.working_save_dir_name, object_name])
+    object_path = config.working_save_directory + object_file_base
+    return object_path
 
-def cache_object(inObject, objectName):
+
+def cache_object(in_object, object_name):
     """Caches the object for future use"""
-    objectCachePath = get_object_cachepath(objectName)
-    fileHandle = open(objectCachePath, "wb")
-    pickle.dump(inObject, fileHandle)
-    fileHandle.close()
+    object_cache_path = get_object_cachepath(object_name)
+    file_handle = open(object_cache_path, "wb")
+    pickle.dump(in_object, file_handle)
+    file_handle.close()
 
-def load_object(objectName):
+
+def load_object(object_name):
     """Loads the cached object"""
-    objectCachePath = get_object_cachepath(objectName)
-    fileHandle = open(objectCachePath, "rb")
-    loadedObject = pickle.load(fileHandle)
-    fileHandle.close()
-    return loadedObject
+    object_cache_path = get_object_cachepath(object_name)
+    file_handle = open(object_cache_path, "rb")
+    loaded_object = pickle.load(file_handle)
+    file_handle.close()
+    return loaded_object
 
-def is_object_cached(objectName):
+
+def is_object_cached(object_name):
     """Returns a boolean indicating whether the object is cached"""
-    objectCachePath = get_object_cachepath(objectName)
-    objectCached = os.path.isfile(objectCachePath)
-    return objectCached
+    object_cache_path = get_object_cachepath(object_name)
+    object_cached = os.path.isfile(object_cache_path)
+    return object_cached
 
-def is_object_saved(objectName):
+
+def is_object_saved(object_name):
     """Returns a boolean indicated whether the object is saved"""
-    objectSavePath = get_object_savepath(objectName)
-    objectSaved = os.path.isfile(objectSavePath)
-    return objectSaved
+    object_save_path = get_object_savepath(object_name)
+    object_saved = os.path.isfile(object_save_path)
+    return object_saved
 
-def get_object(objectName, computeFunction, computeArgs, saveFunction, flag):    
+
+def get_object(object_name, compute_function, compute_args, save_function, flag):
     """Either computes the object or loads a cached version"""
-    if (is_object_cached(objectName) and flag):
-        print(objectName + " exists.")
-        loadedObject = load_object(objectName)
-        print("Loaded " + objectName)
-        return loadedObject
+    if (is_object_cached(object_name) and flag):
+        print(object_name + " exists.")
+        loaded_object = load_object(object_name)
+        print("Loaded " + object_name)
+        return loaded_object
     else:
-        print("Computing " + objectName + "...")
-        computedObject = computeFunction(*computeArgs)
-        print(objectName + " computed.")
-        cache_object(computedObject, objectName)
-        saveFunction(computedObject, objectName)
-        return computedObject
+        print("Computing " + object_name + "...")
+        computed_object = compute_function(*compute_args)
+        print(object_name + " computed.")
+        cache_object(computed_object, object_name)
+        return computed_object
 
-########## Functions for saving specific datatypes ########## 
+########## Functions for saving specific datatypes ##########
 
-def save_list_csv(aList, savePath):        
-    with open(savepath + ".csv", 'wb') as listHandle:
-        writer = csv.writer(listHandle)
-        writer.writerows(aList)       
 
-def save_directions(directionsObject, directionsName):
+def save_directions(directions_object, directions_name):
     pass
 
-def save_spline(splineObject, splineName):
+
+def save_spline(spline_object, spline_name):
     pass
 
-def save_lattice(latticeObject, latticeName):
+
+def save_lattice(lattice_object, lattice_name):
     pass
 
-def save_edgessets(edgesSets, edgesName):
+
+def save_edgessets(edges_sets, edges_name):
     pass
 
-def save_graphs(graphs, graphsName):
+
+def save_graphs(graphs, graphs_name):
     pass
 
-def save_spatial_paths_2d(spatialPaths2d, spatialPaths2dName):
+
+def save_spatial_paths_2d(spatial_paths2d, spatial_paths2d_name):
     pass
 
-def save_routes(routes, start, end, startLatLng, endLatLng):
-    routesDicts = []
-    routeIndex = 0
+
+def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
+    routes_dicts = []
+    route_index = 0
     for route in routes:
-        routeDict = route.as_dict()
-        routeDict["index"] = routeIndex
-        routeIndex += 1
-        routesDicts.append(routeDict)
-    cityPair = {
-                  "startCity": {
-                      "name" : start,
-                      "coordinates" : startLatLng
-                      },
-                  "endCity": {
-                      "name" : end,
-                      "coordinates" : endLatLng
-                      },
-                  "routes" :  routesDicts
-                }
-    savePath = config.dropboxDirectory + "/exampleCityPair.json"
-    with open(savePath, 'w') as filePath:
-        json.dump(cityPair, filePath)
-
-
-
+        route_dict = route.as_dict()
+        route_dict["index"] = route_index
+        route_index += 1
+        routes_dicts.append(route_dict)
+    city_pair = {
+        "start_city": {
+            "name": start,
+            "coordinates": start_lat_lng
+        },
+        "end_city": {
+            "name": end,
+            "coordinates": end_lat_lng
+        },
+        "routes":  routes_dicts
+    }
+    save_path = config.dropbox_directory + "/example_city_pair.json"
+    with open(save_path, 'w') as file_path:
+        json.dump(city_pair, file_path)

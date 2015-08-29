@@ -14,7 +14,7 @@ Citations:
     - K. V. Gangadharan
 
 OUTLINE of SCRIPT (comfort.py):
-input vars: {t_i}, {x_i}, {v_i}, {a_i} (four lists of points in 3D space)
+input vars: {t_i}, {x_i}, {v_i}, {a_i} (four lists of points in 3_d space)
 output vars: c (comfort rating)
 
 SUB-SCRIPTS:
@@ -26,13 +26,12 @@ SUB-SCRIPTS:
       {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)*ap_f|^2
 """
 
-#Standard Modules:
+# Standard Modules:
 import math
 import numpy as np
 
-#Our Modules:
+# Our Modules:
 import config
-
 
 
 def accel_passenger(vel, accel, component):
@@ -40,25 +39,27 @@ def accel_passenger(vel, accel, component):
     Find acceleration in passenger frame:
        {t_i}, {v_i}, {a_i}  -->  {T_i}, {N_i}, {B_i} -->  {ap_i}
     """
-    tangentVector = [vel[i] / np.linalg.norm(vel[i]) for i in range(len(vel))]
-    normalVector = [np.cross(vel[i], np.cross(accel[i], vel[i]))/
-                   np.linalg.norm(np.cross(vel[i], np.cross(accel[i], vel[i])))
-                   for i in range(len(vel))]
-    binormalVector = [np.cross(tangentVector[i], normalVector[i])
-                      for i in range(len(vel))]
+    tangent_vector = [vel[i] / np.linalg.norm(vel[i]) for i in range(len(vel))]
+    normal_vector = [np.cross(vel[i], np.cross(accel[i], vel[i])) /
+                     np.linalg.norm(
+                         np.cross(vel[i], np.cross(accel[i], vel[i])))
+                     for i in range(len(vel))]
+    binormal_vector = [np.cross(tangent_vector[i], normal_vector[i])
+                       for i in range(len(vel))]
 
     # Change of basis matrix for transforming to the tangent, normal, binormal
     # (passenger) frame.
-    changeOfBasisMatrix = [np.linalg.inv(np.matrix.transpose(
-             np.array([tangentVector[i], normalVector[i], binormalVector[i]])))
-             for i in range(len(vel))]
+    change_of_basis_matrix = [np.linalg.inv(np.matrix.transpose(
+        np.array([tangent_vector[i], normal_vector[i], binormal_vector[i]])))
+        for i in range(len(vel))]
 
     # Apply change of basis to write the acceleration in tangent, normal, binormal
     # (passenger) frame.
-    accelPassenger = [np.dot(changeOfBasisMatrix[i], accel[i]) for i in range(len(vel))]
-    accelPassengerComponents = [accelPassengerVal[component] for
-                                accelPassengerVal in accelPassenger]
-    return accelPassengerComponents
+    accel_passenger = [np.dot(change_of_basis_matrix[i], accel[i])
+                       for i in range(len(vel))]
+    accel_passenger_components = [accel_passenger_val[component] for
+                                  accel_passenger_val in accel_passenger]
+    return accel_passenger_components
 
 
 """
@@ -72,46 +73,51 @@ def accel_passenger(vel, accel, component):
 See (Gangadharan) equations (7) and (8) for weighting factors.
 """
 
+
 def vertical_weighting_factor(frequency):
-    verticalWeightingFactor = 0.588 * math.sqrt(
-      (1.911 * frequency**2 + (.25 * frequency**2)**2) /
-      ((1 - 0.2777 * frequency**2)**2 + 
-       (1.563 * frequency - 0.0368 * frequency**3)**2))
-    return verticalWeightingFactor
+    vertical_weighting_factor = 0.588 * math.sqrt(
+        (1.911 * frequency**2 + (.25 * frequency**2)**2) /
+        ((1 - 0.2777 * frequency**2)**2 +
+            (1.563 * frequency - 0.0368 * frequency**3)**2))
+    return vertical_weighting_factor
+
 
 def horizontal_weighting_factor(frequency):
     return 1.25 * vertical_weighting_factor(frequency)
 
+
 def weighting_factors(frequency):
-    weightingFactors = [0, vertical_weighting_factor(frequency),
-                        horizontal_weighting_factor(frequency)]
-    return weightingFactors
+    weighting_factors = [0, vertical_weighting_factor(frequency),
+                         horizontal_weighting_factor(frequency)]
+    return weighting_factors
 
 """
 See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
 """
 
-def frequency_weighted_rms(accelFrequency, timeInterval, component):
-    frequencyWidth = float(len(accelFrequency))
-    timeInterval = float(timeInterval)
-    frequencyHalfWidth = int(math.floor(frequencyWidth/2.0))
-    accelFrequencyWeighted = [
-        (weighting_factors(frequencyIndex/timeInterval)[component]
-        * accelFrequency[frequencyIndex]) for frequencyIndex
-        in range(-frequencyHalfWidth, frequencyHalfWidth+1)]
-    frequencyWeightedRMS = np.sqrt(sum([np.absolute(accelVal)**2
-                                    for accelVal in accelFrequencyWeighted]))
-    return frequencyWeightedRMS
 
-def sperling_comfort_index(vel, accel, timeInterval, component):
-    numTimePoints = len(vel)
-    accelPassengerComponents = accel_passenger(vel, accel, component)
-    accelPassengerFrequency = np.fft.fft(accelPassengerComponents) / numTimePoints
-    accelFrequencyWeightedRMS = frequency_weighted_rms(accelPassengerFrequency,
-                                                     timeInterval, component)
-    sperlingComfortIndex =  4.42*(accelFrequencyWeightedRMS)**0.3
-    return sperlingComfortIndex
+def frequency_weighted_rms(accel_frequency, time_interval, component):
+    frequency_width = float(len(accel_frequency))
+    time_interval = float(time_interval)
+    frequency_half_width = int(math.floor(frequency_width / 2.0))
+    accel_frequency_weighted = [
+        (weighting_factors(frequency_index / time_interval)[component]
+         * accel_frequency[frequency_index]) for frequency_index
+        in range(-frequency_half_width, frequency_half_width + 1)]
+    frequency_weighted_r_m_s = np.sqrt(sum([np.absolute(accel_val)**2
+                                            for accel_val in accel_frequency_weighted]))
+    return frequency_weighted_r_m_s
 
+
+def sperling_comfort_index(vel, accel, time_interval, component):
+    num_time_points = len(vel)
+    accel_passenger_components = accel_passenger(vel, accel, component)
+    accel_passenger_frequency = np.fft.fft(
+        accel_passenger_components) / num_time_points
+    accel_frequency_weighted_r_m_s = frequency_weighted_rms(accel_passenger_frequency,
+                                                            time_interval, component)
+    sperling_comfort_index = 4.42 * (accel_frequency_weighted_r_m_s)**0.3
+    return sperling_comfort_index
 
 
 """
@@ -119,12 +125,12 @@ T = 300
 N = 10000
 al = [5*math.cos(2*math.pi*2*t/T) for t in np.linspace(0,T,N)]
 alf = np.fft.fft(al)/ N
-afw_RMS = fw_RMS(alf, T, 1)
-print 4.42*(afw_RMS)**0.3
+afw__r_m_s = fw__r_m_s(alf, T, 1)
+print 4.42*(afw__r_m_s)**0.3
 print 4.42*(w(2./T)[1]**2*(25/2.))**0.3
 """
 
-#UNIT TEST (script #2):
+# UNIT TEST (script #2):
 """
 v = [[-3.83292, 2.99503, -3.05167],
      [2.21044, -7.71139, 4.37497]]
@@ -134,4 +140,3 @@ a = [[-1.86223, -8.09352, 9.76449],
 
 print comfort(v, a, 500, 2)
 """
-

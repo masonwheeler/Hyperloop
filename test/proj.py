@@ -6,32 +6,34 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To add docstrings
 """
 
-#Standard Modules:
+# Standard Modules:
 import pyproj
 
-#Our Modules:
+# Our Modules:
 import util
 import config
 
-def omerc_proj(startLonLat, endLonLat):
+
+def omerc_proj(start_lon_lat, end_lon_lat):
     """Provides the Oblique Mercator Projection"""
-    startLon, startLat = startLonLat
-    endLon, endLat = endLonLat
-    centerLat = (startLat + endLat)/2.0
-    centerLon = (startLon + endLon)/2.0
-    parameterString = '+proj=omerc' \
-    + ' +lon_0=' + str(centerLon) + ' +lat_0=' + str(centerLat) \
-    + ' +lon_2=' + str(endLon) + ' +lat_2=' + str(endLat) \
-    + ' +lon_1=' + str(startLon) + ' +lat_1=' + str(startLat) 
-    if config.verboseMode:
+    start_lon, start_lat = start_lon_lat
+    end_lon, end_lat = end_lon_lat
+    center_lat = (start_lat + end_lat) / 2.0
+    center_lon = (start_lon + end_lon) / 2.0
+    parameter_string = '+proj=omerc' \
+        + ' +lon_0=' + str(center_lon) + ' +lat_0=' + str(center_lat) \
+        + ' +lon_2=' + str(end_lon) + ' +lat_2=' + str(end_lat) \
+        + ' +lon_1=' + str(start_lon) + ' +lat_1=' + str(start_lat)
+    if config.verbose_mode:
         print("The Parameters of the projection are:")
-        print(parameterString)
-    omercProj =  pyproj.Proj(parameterString)
-    return omercProj
+        print(parameter_string)
+    omerc_proj = pyproj.Proj(parameter_string)
+    return omerc_proj
+
 
 def albers_proj():
     """Provides the Albers Conical Projection"""
-    albersProj = pyproj.Proj("+proj=aea \
+    albers_proj = pyproj.Proj("+proj=aea \
                               +lat_1=29.5 \
                               +lat_2=45.5 \
                               +lat_0=23 \
@@ -41,25 +43,30 @@ def albers_proj():
                               +datum=NAD83 \
                               +units=m \
                               +no_defs")
-    return albersProj
+    return albers_proj
+
 
 def usgs_proj():
     """Provides the standard USGS projection"""
-    usgsProj = pyproj.Proj(init='epsg:3857')
-    return usgsProj
-    
-def latlng_to_geospatial(latlng, proj):    
+    usgs_proj = pyproj.Proj(init='epsg:3857')
+    return usgs_proj
+
+
+def latlng_to_geospatial(latlng, proj):
     """Converts latitude longitude coordinates to geospatial coordinates"""
     return proj(latlng[1], latlng[0])
+
 
 def geospatial_to_latlng(geospatial, proj):
     """Converts geospatial coordinates to latitude longitude coordinates"""
     lonlat = proj(geospatial[0], geospatial[1], inverse=True)
     return util.swap_pair(lonlat)
 
+
 def latlngs_to_geospatials(latlngs, proj):
     """Converts list of lat-lng coords to list of geospatial coords"""
     return [latlng_to_geospatial(latlng, proj) for latlng in latlngs]
+
 
 def geospatials_to_latlngs(geospatials, proj):
     """Converts list of geospatial coords to list of lat-lng coords"""
@@ -67,9 +74,10 @@ def geospatials_to_latlngs(geospatials, proj):
                for geospatial in geospatials]
     return latlngs
 
-def set_projection(startLatLng, endLatLng):
-    """Sets the projection used for converting lat-lngs to geospatials"""
-    startLonLat, endLonLat = map(util.swap_pair, [startLatLng, endLatLng])
-    #config.proj = omerc_proj(startLonLat, endLonLat)
-    config.proj = albers_proj()
 
+def set_projection(start_lat_lng, end_lat_lng):
+    """Sets the projection used for converting lat-lngs to geospatials"""
+    start_lon_lat, end_lon_lat = map(
+        util.swap_pair, [start_lat_lng, end_lat_lng])
+    #config.proj = omerc_proj(start_lon_lat, end_lon_lat)
+    config.proj = albers_proj()

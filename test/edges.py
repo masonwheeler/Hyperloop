@@ -7,11 +7,11 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To test out pylonsv2
 """
 
-#Standard Modules:
+# Standard Modules:
 import math
 import time
 
-#Our Modules
+# Our Modules
 import cacher
 import config
 import elevation
@@ -22,240 +22,248 @@ import tube
 import util
 import visualize
 
+
 class Edge:
     """
     Object that stores pairs of lattice points, the associated data
-    
+
     Stores whether the line between the pair of points is in the right of way.
     Stores whether the edge is compatible with any other edges.
     """
-    isInRightOfWay = False
-    isUseful = True
-    landCost = 0
-    pylonCost = 0
+    is_in_right_of_way = False
+    is_useful = True
+    land_cost = 0
+    pylon_cost = 0
     angle = 0
     length = 0
-    startId = 0
-    endId = 0
+    start_id = 0
+    end_id = 0
     latlngs = []
     geospatials = []
-    geospatialVector = []
+    geospatial_vector = []
 
-    def get_elevation_profile(self):        
-        startGeospatial, endGeospatial = self.geospatials
-        pylonSlicesGeospatials, pylonSliceDistances = util.build_grid(
-          self.geospatialVector, config.pylonSpacing, startGeospatial)     
-        self.elevationProfile = elevation.get_elevation_profile(
-                           pylonSlicesGeospatials, pylonSliceDistances)
+    def get_elevation_profile(self):
+        start_geospatial, end_geospatial = self.geospatials
+        pylon_slices_geospatials, pylon_slice_distances = util.build_grid(
+            self.geospatial_vector, config.pylon_spacing, start_geospatial)
+        self.elevation_profile = elevation.get_elevation_profile(
+            pylon_slices_geospatials, pylon_slice_distances)
 
     def build_pylons(self):
-        tubeCost, pylonCost, tubeElevations = tube.build_tube_profile_v2(
-                                                        self.elevationProfile)           
-        #oldPylons = [{"geospatial" : elevationPoint["geospatial"],
-        #               "latlng" : elevationPoint["latlng"],
-        #               "elevation" : elevationPoint["landElevation"],
-        #               "pylonHeight" : 0,
-        #               "pylonCost" : 0}
-        #               for elevationPoint in self.elevationProfile]      
-        #pylons.build_pylons(oldPylons)
-        #pylons.get_pyloncosts(oldPylons)                
-        #oldPylonCost = pylons.edge_pyloncost(oldPylons)
-        #print("old pylon cost: " + str(oldPylonCost))
-        self.pylonCost = pylonCost
-        #print("pylon cost: " + str(pylonCost))
-        #if config.visualMode:
-        #    visualize.visualize_elevation_profile_v2(self.elevationProfile,
-        #                                                    tubeElevations)
+        tube_cost, pylon_cost, tube_elevations = tube.build_tube_profile_v2(
+            self.elevation_profile)
+        # old_pylons = [{"geospatial" : elevation_point["geospatial"],
+        #               "latlng" : elevation_point["latlng"],
+        #               "elevation" : elevation_point["land_elevation"],
+        #               "pylon_height" : 0,
+        #               "pylon_cost" : 0}
+        #               for elevation_point in self.elevation_profile]
+        # pylons.build_pylons(old_pylons)
+        # pylons.get_pyloncosts(old_pylons)
+        #old_pylon_cost = pylons.edge_pyloncost(old_pylons)
+        #print("old pylon cost: " + str(old_pylon_cost))
+        self.pylon_cost = pylon_cost
+        #print("pylon cost: " + str(pylon_cost))
+        # if config.visual_mode:
+        #    visualize.visualize_elevation_profile_v2(self.elevation_profile,
+        #                                                    tube_elevations)
 
     def build_land_cost_samples(self):
-        if self.isInRightOfWay:
-            self.landCost = config.rightOfWayLandCost          
+        if self.is_in_right_of_way:
+            self.land_cost = config.right_of_way_land_cost
         else:
-            startGeospatial, endGeospatial = self.geospatials
-            landcoverGeospatials, distances = util.build_grid(
-              self.geospatialVector, config.landPointSpacing, startGeospatial)
-            landcoverLatLngs = proj.geospatials_to_latlngs(landcoverGeospatials,
-                                                                    config.proj)
-            landcoverCostDensities = landcover.landcover_cost_densities(
-                                                           landcoverLatLngs)
-            self.landCost = landcover.cost_densities_to_landcost(
-                                              landcoverCostDensities)
+            start_geospatial, end_geospatial = self.geospatials
+            landcover_geospatials, distances = util.build_grid(
+                self.geospatial_vector, config.land_point_spacing, start_geospatial)
+            landcover_lat_lngs = proj.geospatials_to_latlngs(landcover_geospatials,
+                                                             config.proj)
+            landcover_cost_densities = landcover.landcover_cost_densities(
+                landcover_lat_lngs)
+            self.land_cost = landcover.cost_densities_to_landcost(
+                landcover_cost_densities)
 
-    def __init__(self,startPoint,endPoint):        
-        self.isInRightOfWay = (startPoint["isInRightOfWay"]
-                               and endPoint["isInRightOfWay"])
-        self.latlngs = [startPoint["latlngCoords"],
-                        endPoint["latlngCoords"]]
-        self.geospatials = [startPoint["geospatialCoords"],
-                            endPoint["geospatialCoords"]]
-        self.geospatialVector = util.edge_to_vector(self.geospatials)
-        startGeospatial, endGeospatial = self.geospatials
-        startXVal, startYVal = startGeospatial
-        endXVal, endYVal = endGeospatial
-        self.startId = startPoint["pointId"]
-        self.endId = endPoint["pointId"]
-        self.angle = math.degrees(math.atan2(endYVal - startYVal,
-                                             endXVal - startXVal))
+    def __init__(self, start_point, end_point):
+        self.is_in_right_of_way = (start_point["is_in_right_of_way"]
+                                   and end_point["is_in_right_of_way"])
+        self.latlngs = [start_point["latlng_coords"],
+                        end_point["latlng_coords"]]
+        self.geospatials = [start_point["geospatial_coords"],
+                            end_point["geospatial_coords"]]
+        self.geospatial_vector = util.edge_to_vector(self.geospatials)
+        start_geospatial, end_geospatial = self.geospatials
+        start_x_val, start_y_val = start_geospatial
+        end_x_val, end_y_val = end_geospatial
+        self.start_id = start_point["point_id"]
+        self.end_id = end_point["point_id"]
+        self.angle = math.degrees(math.atan2(end_y_val - start_y_val,
+                                             end_x_val - start_x_val))
+
     def as_dict(self):
-        edgeDict = {"geospatials" : self.geospatials,
-                    "latlngs" : self.latlngs,
-                    "landCost" : self.landCost,
-                    "pylonCost" : self.pylonCost}
-        return edgeDict
+        edge_dict = {"geospatials": self.geospatials,
+                     "latlngs": self.latlngs,
+                     "land_cost": self.land_cost,
+                     "pylon_cost": self.pylon_cost}
+        return edge_dict
 
     def display(self):
         print("The edge's cost is: " + str(self.cost) + ".")
         print("The edge's length is: " + str(self.length) + ".")
-        print("The edge's lat-lng coords are: " + str(self.latlngCoords) + ".")        
-        print("The edge's xy coords are: " + str(self.geospatialCoords) + ".")
+        print("The edge's lat-lng coords are: " + str(self.latlng_coords) + ".")
+        print("The edge's xy coords are: " + str(self.geospatial_coords) + ".")
         print("The edge's angle is: " + str(self.angle) + " degrees.")
 
+
 class EdgesSets:
-    baseEdgesSets = []
-    filteredEdgesSetsList = []
-    finishedEdgesSets = []
-    
-    def base_edgessets(self,lattice):
-        edgesSets = []
-        for sliceIndex in range(len(lattice) - 1):
-            sliceA = lattice[sliceIndex]
-            sliceB = lattice[sliceIndex + 1]
-            edgesSet = []
+    base_edges_sets = []
+    filtered_edges_sets_list = []
+    finished_edges_sets = []
+
+    def base_edgessets(self, lattice):
+        edges_sets = []
+        for slice_index in range(len(lattice) - 1):
+            slice_a = lattice[slice_index]
+            slice_b = lattice[slice_index + 1]
+            edges_set = []
             #print("points in slice")
-            #for point in sliceA:
-            #    print(str(point["geospatialCoords"]))
-            #time.sleep(5)
-            for startPoint in sliceA:
-                for endPoint in sliceB:                    
-                    newEdge = Edge(startPoint, endPoint)
-                    #print(newEdge.geospatials)
-                    #time.sleep(5)
-                    edgesSet.append(newEdge)                    
-            edgesSets.append(edgesSet)
-        return edgesSets    
-    
-    def edge_pair_compatible(self, edgeA, edgeB):
-        if edgeA.endId == edgeB.startId:
-            if abs(edgeA.angle - edgeB.angle) < config.degreeConstraint:
+            # for point in slice_a:
+            #    print(str(point["geospatial_coords"]))
+            # time.sleep(5)
+            for start_point in slice_a:
+                for end_point in slice_b:
+                    new_edge = Edge(start_point, end_point)
+                    # print(new_edge.geospatials)
+                    # time.sleep(5)
+                    edges_set.append(new_edge)
+            edges_sets.append(edges_set)
+        return edges_sets
+
+    def edge_pair_compatible(self, edge_a, edge_b):
+        if edge_a.end_id == edge_b.start_id:
+            if abs(edge_a.angle - edge_b.angle) < config.degree_constraint:
                 return True
         return False
 
-    def determine_useful_edges(self, edgesSets):
+    def determine_useful_edges(self, edges_sets):
         "An edge is useful if it has compatible edges in the adjacent \
          edge sets."
 
         "For edges in the first edge set."
-        for edgeA in edgesSets[0]:
+        for edge_a in edges_sets[0]:
             "Check that each edge in the first edge set has an edge \
              which is compatible with it in the second edge set."
-            compatibles = [self.edge_pair_compatible(edgeA,edgeB)
-                           for edgeB in edgesSets[1]]
-            edgeA.isUseful = any(compatibles)
+            compatibles = [self.edge_pair_compatible(edge_a, edge_b)
+                           for edge_b in edges_sets[1]]
+            edge_a.is_useful = any(compatibles)
         "For edges in the second through second to last edge set."
-        for edgeSetIndex in range(1,len(edgesSets)-1):
-            for edgeB in edgesSets[edgeSetIndex]:
+        for edge_set_index in range(1, len(edges_sets) - 1):
+            for edge_b in edges_sets[edge_set_index]:
                 "Check that each edge in the ith edge set has an edge \
                  which is compatible with it in the (i-1)th edge set \
                  and in the (i+1)th edge set."
-                compatiblesA = [self.edge_pair_compatible(edgeA, edgeB)
-                              for edgeA in edgesSets[edgeSetIndex-1]]
-                compatiblesC = [self.edge_pair_compatible(edgeB, edgeC)
-                              for edgeC in edgesSets[edgeSetIndex+1]]
-                edgeB.isUseful = any(compatiblesA) and any(compatiblesC)
+                compatibles_a = [self.edge_pair_compatible(edge_a, edge_b)
+                                 for edge_a in edges_sets[edge_set_index - 1]]
+                compatibles_c = [self.edge_pair_compatible(edge_b, edge_c)
+                                 for edge_c in edges_sets[edge_set_index + 1]]
+                edge_b.is_useful = any(compatibles_a) and any(compatibles_c)
         "For edges in the last edge set."
-        for edgeB in edgesSets[-1]:
+        for edge_b in edges_sets[-1]:
             "Check that each edge in the last edge set has an edge which \
              is compatible with it in the second to last edge set."
-            compatibles = [self.edge_pair_compatible(edgeA, edgeB)
-                           for edgeA in edgesSets[-2]]
-            edgeB.isUseful = any(compatibles)                    
+            compatibles = [self.edge_pair_compatible(edge_a, edge_b)
+                           for edge_a in edges_sets[-2]]
+            edge_b.is_useful = any(compatibles)
 
-    def filter_edges(self, edgesSets):
-        filteredEdgesSets = []
-        for edgesSet in edgesSets:
-            filteredEdgesSet = filter(lambda edge : edge.isUseful, edgesSet)
-            filteredEdgesSets.append(filteredEdgesSet)
-        return filteredEdgesSets
+    def filter_edges(self, edges_sets):
+        filtered_edges_sets = []
+        for edges_set in edges_sets:
+            filtered_edges_set = filter(lambda edge: edge.is_useful, edges_set)
+            filtered_edges_sets.append(filtered_edges_set)
+        return filtered_edges_sets
 
-    def check_empty(self, edgesSets):
-        for edgesSet in edgesSets:
-            if len(edgesSet) == 0:
+    def check_empty(self, edges_sets):
+        for edges_set in edges_sets:
+            if len(edges_set) == 0:
                 return True
         return False
-    
+
     def iterative_filter(self):
-        oldNumEdges = util.list_of_lists_len(self.baseEdgesSets)        
+        old_num_edges = util.list_of_lists_len(self.base_edges_sets)
         util.smart_print("The original number of spatial edges: " +
-                          str(oldNumEdges))
-         
-        filteredEdgesIndex = 0
+                         str(old_num_edges))
 
-        self.determine_useful_edges(self.baseEdgesSets)      
-        filteredEdges = self.filter_edges(self.baseEdgesSets)
-        if self.check_empty(filteredEdges):
+        filtered_edges_index = 0
+
+        self.determine_useful_edges(self.base_edges_sets)
+        filtered_edges = self.filter_edges(self.base_edges_sets)
+        if self.check_empty(filtered_edges):
             raise ValueError("encountered empty edge")
-        self.filteredEdgesSetsList.append(filteredEdges)
-        flattenedFilteredEdges = util.fast_concat(
-                                self.filteredEdgesSetsList[filteredEdgesIndex])
-        newNumEdges = len(flattenedFilteredEdges)
+        self.filtered_edges_sets_list.append(filtered_edges)
+        flattened_filtered_edges = util.fast_concat(
+            self.filtered_edges_sets_list[filtered_edges_index])
+        new_num_edges = len(flattened_filtered_edges)
 
-        while newNumEdges != oldNumEdges:          
+        while new_num_edges != old_num_edges:
             util.smart_print("The number of spatial edges is now: " +
-                             str(newNumEdges))
+                             str(new_num_edges))
             self.determine_useful_edges(
-                            self.filteredEdgesSetsList[filteredEdgesIndex])
-            filteredEdges = self.filter_edges(
-                            self.filteredEdgesSetsList[filteredEdgesIndex])
-            if self.check_empty(filteredEdges):
+                self.filtered_edges_sets_list[filtered_edges_index])
+            filtered_edges = self.filter_edges(
+                self.filtered_edges_sets_list[filtered_edges_index])
+            if self.check_empty(filtered_edges):
                 raise ValueError("encountered empty edge")
-            self.filteredEdgesSetsList.append(filteredEdges)
-            filteredEdgesIndex += 1
-            flattenedFilteredEdges = util.fast_concat(
-                                self.filteredEdgesSetsList[filteredEdgesIndex])
-            oldNumEdges, newNumEdges = newNumEdges, len(flattenedFilteredEdges)
-    
-    def build_land_cost_samples(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-                edge.build_land_cost_samples()        
+            self.filtered_edges_sets_list.append(filtered_edges)
+            filtered_edges_index += 1
+            flattened_filtered_edges = util.fast_concat(
+                self.filtered_edges_sets_list[filtered_edges_index])
+            old_num_edges, new_num_edges = new_num_edges, len(
+                flattened_filtered_edges)
 
-    def build_pylons(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
-               edge.build_pylons()       
+    def build_land_cost_samples(self, edges_sets):
+        for edges_set in edges_sets:
+            for edge in edges_set:
+                edge.build_land_cost_samples()
 
-    def get_elevation_profiles(self, edgesSets):
-        for edgesSet in edgesSets:
-            for edge in edgesSet:
+    def build_pylons(self, edges_sets):
+        for edges_set in edges_sets:
+            for edge in edges_set:
+                edge.build_pylons()
+
+    def get_elevation_profiles(self, edges_sets):
+        for edges_set in edges_sets:
+            for edge in edges_set:
                 edge.get_elevation_profile()
 
     def __init__(self, lattice):
-        self.baseEdgesSets = self.base_edgessets(lattice)
-        flattenedBaseEdges = util.fast_concat(self.baseEdgesSets)
+        self.base_edges_sets = self.base_edgessets(lattice)
+        flattened_base_edges = util.fast_concat(self.base_edges_sets)
         self.iterative_filter()
-        self.filteredEdgesSets = self.filteredEdgesSetsList[-1]        
+        self.filtered_edges_sets = self.filtered_edges_sets_list[-1]
         t0 = time.time()
-        self.get_elevation_profiles(self.filteredEdgesSets)  
+        self.get_elevation_profiles(self.filtered_edges_sets)
         t1 = time.time()
-        util.smart_print("Retrieved elevation in " + str(t1-t0) + " seconds.")
+        util.smart_print("Retrieved elevation in " +
+                         str(t1 - t0) + " seconds.")
         t0 = time.time()
-        self.build_land_cost_samples(self.filteredEdgesSets)
+        self.build_land_cost_samples(self.filtered_edges_sets)
         t1 = time.time()
-        util.smart_print("Retrieved land cost in " + str(t1-t0) + " seconds.")
-        self.build_pylons(self.filteredEdgesSets)
+        util.smart_print("Retrieved land cost in " +
+                         str(t1 - t0) + " seconds.")
+        self.build_pylons(self.filtered_edges_sets)
 
-def build_pylons(edgesSets):
-    for edgesSet in edgesSets:
-        for edge in edgesSet:
-           edge.build_pylons()       
+
+def build_pylons(edges_sets):
+    for edges_set in edges_sets:
+        for edge in edges_set:
+            edge.build_pylons()
+
 
 def build_edgessets(lattice):
-    edgesSets = EdgesSets(lattice)
-    finishedEdgesSets = edgesSets.filteredEdgesSets
-    return finishedEdgesSets
+    edges_sets = EdgesSets(lattice)
+    finished_edges_sets = edges_sets.filtered_edges_sets
+    return finished_edges_sets
 
-def get_edgessets(lattice):    
-    finishedEdgesSets = cacher.get_object("edgessets", build_edgessets,
-                        [lattice], cacher.save_edgessets, config.edgesFlag)
-    return finishedEdgesSets
 
+def get_edgessets(lattice):
+    finished_edges_sets = cacher.get_object("edgessets", build_edgessets,
+                                            [lattice], cacher.save_edgessets, config.edges_flag)
+    return finished_edges_sets
