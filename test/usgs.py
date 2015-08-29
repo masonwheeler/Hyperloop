@@ -79,7 +79,7 @@ def geotiff_pixel_val(geotiff_file_path, lonlat_coord):
     srs.ImportFromWkt(ds.GetProjection())
     srs_lat_lon = srs.CloneGeogCS()
     ct = osr.CoordinateTransformation(srs_lat_lon, srs)
-    pixel_val = geotiff.pixel_val(ct, gt, rb, lonlat_coord)
+    pixel_val = geotiff.get_pixel_val(ct, gt, rb, lonlat_coord)
     return pixel_val
 
 
