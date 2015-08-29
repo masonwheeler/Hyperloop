@@ -6,7 +6,7 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Debugging
 """
 
-
+#Custom Modules
 import config
 import math
 import mergetree
@@ -15,8 +15,33 @@ import util
 
 
 class AbstractPoint:
+    """Abstract object that represents a point.
+
+    Attributes:
+        pointId (int): Unique identifier for each point.
+        latticeXCoord (int): The x coordinate of the point with
+                               relative to the lattice of points.
+        latticeYCoord (int): The y coordinate of the point with
+                               relative to the lattice of points.
+        spatialXCoord (float): The x coordinate of the point in physical units.
+        spatialYCoord (float): The y coordinate of the point in physical units.
+
+    """
     def __init__(self, pointId, latticeXCoord, latticeYCoord,
                                 spatialXCoord, spatialYCoord):
+        """
+        Args:
+            pointId (int): Unique identifier for each point.
+            latticeXCoord (int): The x coordinate of the point with
+                                   relative to the lattice of points.
+            latticeYCoord (int): The y coordinate of the point with
+                                   relative to the lattice of points.
+            spatialXCoord (float): The x coordinate of the point
+                                    in physical units.
+            spatialYCoord (float): The y coordinate of the point
+                                    in physical units.
+
+        """
         self.pointId = pointId
         self.latticeXCoord = latticeXCoord
         self.latticeYCoord = latticeYCoord
@@ -150,15 +175,31 @@ class AbstractEdgesSets:
          
 
 class AbstractGraph:
-    def __init__(self, startId, endId, startAngle, endAngle, numEdges):
+    def __init__(self, startId, endId, startAngle, endAngle, numEdges,
+                                                       latticeCoords):
         self.startId = startId
         self.endId = endId
         self.startAngle = startAngle
         self.endAngle = endAngle
         self.numEdges = numEdges
-
-    #def build_local_lattice(self): to be implemented
+        self.latticeCoords = latticeCoords        
         
+    def build_local_lattice(self, latticeCoords, spacing):
+        coordPairs = util.to_pairs(latticeCoords)
+        midPoints = map(util.get_midpoint, coordPairs)
+        sliceCenters = [None]*(len(latticeCoords) + len(midPoints))
+        sliceCenters[::2] = latticeCoords
+        sliceCenters[1::2] = midPoints
+        
+        def slice_center_to_slice(sliceCenter):
+            newSlice = [[sliceCenter[0], sliceCenter[1] - spacing]
+                        [sliceCenter[0], sliceCenter[1]]
+                        [sliceCenter[0], sliceCenter[1] + spacing]]
+            return newSlice
+        
+        localLattice = map(slice_center_to_slice, sliceCenters)
+        return localLattice
+
 
 class AbstractGraphsSet:
 
