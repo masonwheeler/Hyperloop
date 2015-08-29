@@ -6,145 +6,150 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Added Iteratively Spline construction
 """
 
-#Standard Modules:
+# Standard Modules:
 import numpy as np
 import time
 
-#Our Modules:
+# Our Modules:
 import config
 import util
 import cacher
 import proj
 import interpolate
 
+
 class SlicePoint:
     """Builds a point from geospatial coordinates, id, and a rightofway flag"""
-    pointId = 0 #Unique identifier used in merging process.
-    geospatialCoords = [] #
-    latlngCoords = []
-    isInRightOfWay = False #Denotes whether the point is on state property.
-    
-    def __init__(self, pointId, geospatialCoords, isInRightOfWay):
-        self.pointId = pointId
-        self.geospatialCoords = geospatialCoords
-        self.isInRightOfWay = isInRightOfWay
-        self.latlngCoords = proj.geospatial_to_latlng(geospatialCoords,
-                                                      config.proj)
-    
+    point_id = 0  # Unique identifier used in merging process.
+    geospatial_coords = []
+    latlng_coords = []
+    # Denotes whether the point is on state property.
+    is_in_right_of_way = False
+
+    def __init__(self, point_id, geospatial_coords, is_in_right_of_way):
+        self.point_id = point_id
+        self.geospatial_coords = geospatial_coords
+        self.is_in_right_of_way = is_in_right_of_way
+        self.latlng_coords = proj.geospatial_to_latlng(geospatial_coords,
+                                                       config.proj)
+
     def as_dict(self):
         """Returns the SlicePoint data as a dictionary"""
-        pointDict = {"pointId" : self.pointId,
-                     "geospatialCoords" : self.geospatialCoords,
-                     "latlngCoords" : self.latlngCoords,
-                     "isInRightOfWay" : self.isInRightOfWay}
-        return pointDict
+        point_dict = {"point_id": self.point_id,
+                      "geospatial_coords": self.geospatial_coords,
+                      "latlng_coords": self.latlng_coords,
+                      "is_in_right_of_way": self.is_in_right_of_way}
+        return point_dict
 
 
 class Slice:
     """Builds Lattice Slice from a directions point and a spline point."""
-    pointSpacing = config.pointSpacing #Sets the spacing between Slice points
+    point_spacing = config.point_spacing  # Sets the spacing between Slice points
 
-    def build_slice(self, idIndex, directionsPoint, splinePoint):              
-        """Constructs each SlicePoint in the Slice and its idIndex"""
-        sliceVector = util.subtract(directionsPoint, splinePoint)       
-        #print("slice length: " + str(util.norm(sliceVector)))
-        #print("point spacing: " + str(self.pointSpacing))
-        sliceGrid, distances = util.build_grid_v2(directionsPoint, splinePoint,
-                                                  self.pointSpacing)
-        #print("directions point: " + str(directionsPoint))
-        #print("spline point: " + str(splinePoint))
-        #print("slice grid: " + str(sliceGrid))
-        #sliceSplinePoint = SlicePoint(idIndex, splinePoint, False).as_dict()
-        idIndex += 1
-        sliceGridPoints = []
-        #do not add the slice point
-        for point in sliceGrid[:-1]:
-            sliceGridPoints.append(SlicePoint(idIndex, point,
+    def build_slice(self, id_index, directions_point, spline_point):
+        """Constructs each SlicePoint in the Slice and its id_index"""
+        slice_vector = util.subtract(directions_point, spline_point)
+        #print("slice length: " + str(util.norm(slice_vector)))
+        #print("point spacing: " + str(self.point_spacing))
+        slice_grid, distances = util.build_grid_v2(directions_point, spline_point,
+                                                   self.point_spacing)
+        #print("directions point: " + str(directions_point))
+        #print("spline point: " + str(spline_point))
+        #print("slice grid: " + str(slice_grid))
+        #slice_spline_point = SlicePoint(id_index, spline_point, False).as_dict()
+        id_index += 1
+        slice_grid_points = []
+        # do not add the slice point
+        for point in slice_grid[:-1]:
+            slice_grid_points.append(SlicePoint(id_index, point,
                                                 False).as_dict())
-            idIndex += 1
-        slicePoints = sliceGridPoints
-        #time.sleep(5)
-        return [slicePoints, idIndex]
+            id_index += 1
+        slice_points = slice_grid_points
+        # time.sleep(5)
+        return [slice_points, id_index]
 
-    def __init__(self, idIndex, directionsPoint, splinePoint):   
-        self.slicePoints, self.idIndex = self.build_slice(idIndex, 
-                                  directionsPoint, splinePoint)
+    def __init__(self, id_index, directions_point, spline_point):
+        self.slice_points, self.id_index = self.build_slice(id_index,
+                                                            directions_point, spline_point)
 
     def as_list(self):
-        return self.slicePoints
+        return self.slice_points
 
     def plottable_slice(self):
-        sliceGeospatialCoords = [point["geospatialCoords"]
-                                 for point in self.slicePoints]
-        plottableSlice = zip(*sliceGeospatialCoords)
-        return plottableSlice
+        slice_geospatial_coords = [point["geospatial_coords"]
+                                   for point in self.slice_points]
+        plottable_slice = zip(*slice_geospatial_coords)
+        return plottable_slice
 
 
 class Lattice:
     """Builds Lattice from the directions, the splines and the arc-parameter"""
-    latticeSlices = []
-    plottableSlices = []
+    lattice_slices = []
+    plottable_slices = []
 
-    def __init__(self, spatialSliceBounds):
+    def __init__(self, spatial_slice_bounds):
         slices = []
-        idIndex = 1
-        for spatialSliceBound in spatialSliceBounds:
-            directionsPoint, splinePoint = spatialSliceBound
-            newSlice = Slice(idIndex, directionsPoint, splinePoint)
-            idIndex = newSlice.idIndex
-            self.latticeSlices.append(newSlice.as_list())
+        id_index = 1
+        for spatial_slice_bound in spatial_slice_bounds:
+            directions_point, spline_point = spatial_slice_bound
+            new_slice = Slice(id_index, directions_point, spline_point)
+            id_index = new_slice.id_index
+            self.lattice_slices.append(new_slice.as_list())
 
 
-def build_lattice_slices(spatialSliceBounds):
-    lattice = Lattice(spatialSliceBounds)
-    latticeSlices = lattice.latticeSlices
-    return latticeSlices
+def build_lattice_slices(spatial_slice_bounds):
+    lattice = Lattice(spatial_slice_bounds)
+    lattice_slices = lattice.lattice_slices
+    return lattice_slices
 
 
-def curvature_test(xSpline, ySpline, sValues):
-    splinesCurvature = interpolate.parametric_splines_2d_curvature(
-                                            xSpline, ySpline, sValues)
-    isCurvatureValid = interpolate.is_curvature_valid(splinesCurvature,
-                                            config.curvatureThreshhold)
-    return isCurvatureValid
+def curvature_test(x_spline, y_spline, s_values):
+    splines_curvature = interpolate.parametric_splines_2d_curvature(
+        x_spline, y_spline, s_values)
+    is_curvature_valid = interpolate.is_curvature_valid(splines_curvature,
+                                                        config.curvature_threshhold)
+    return is_curvature_valid
 
-def iteratively_build_directions_spline(sampledDirectionsPoints):
-    xCoordsList, yCoordsList = zip(*sampledDirectionsPoints)
-    xArray, yArray = np.array(xCoordsList), np.array(yCoordsList)
-    numPoints = len(sampledDirectionsPoints)
-    sValues = np.arange(numPoints)
+
+def iteratively_build_directions_spline(sampled_directions_points):
+    x_coords_list, y_coords_list = zip(*sampled_directions_points)
+    x_array, y_array = np.array(x_coords_list), np.array(y_coords_list)
+    num_points = len(sampled_directions_points)
+    s_values = np.arange(num_points)
     INITIAL_END_WEIGHTS = 100000
-    INITIAL_SMOOTHING_FACTOR = 10**13    
-    xSpline, ySpline = interpolate.smoothing_splines_2d(xArray, yArray, sValues,
-                               INITIAL_END_WEIGHTS, INITIAL_SMOOTHING_FACTOR)
-    isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
-    if isCurvatureValid:
-        testSmoothingFactor = INITIAL_SMOOTHING_FACTOR
-        while isCurvatureValid:            
-            testSmoothingFactor *= 0.5
-            interpolate.set_smoothing_factors_2d(xSpline, ySpline,
-                                              testSmoothingFactor)                    
-            isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
-        testSmoothingFactor *= 2
-        interpolate.set_smoothing_factors_2d(xSpline, ySpline,
-                                          testSmoothingFactor)
-        return [xSpline, ySpline]
+    INITIAL_SMOOTHING_FACTOR = 10**13
+    x_spline, y_spline = interpolate.smoothing_splines_2d(x_array, y_array, s_values,
+                                                          INITIAL_END_WEIGHTS, INITIAL_SMOOTHING_FACTOR)
+    is_curvature_valid = curvature_test(x_spline, y_spline, s_values)
+    if is_curvature_valid:
+        test_smoothing_factor = INITIAL_SMOOTHING_FACTOR
+        while is_curvature_valid:
+            test_smoothing_factor *= 0.5
+            interpolate.set_smoothing_factors_2d(x_spline, y_spline,
+                                                 test_smoothing_factor)
+            is_curvature_valid = curvature_test(x_spline, y_spline, s_values)
+        test_smoothing_factor *= 2
+        interpolate.set_smoothing_factors_2d(x_spline, y_spline,
+                                             test_smoothing_factor)
+        return [x_spline, y_spline]
     else:
-        while not isCurvatureValid:            
-            testSmoothingFactor *= 2
-            interpolate.set_smoothing_factors_2d(xSpline, ySpline,
-                                              testSmoothingValue)
-            isCurvatureValid = curvature_test(xSpline, ySpline, sValues)
-        return [xSpline, ySpline]
-    
-def get_directionsspline(sampledDirectionsPoints):
-    directionsSpline = cacher.get_object("spline",
-              iteratively_build_directions_spline, [sampledDirectionsPoints],
-                                       cacher.save_spline, config.splineFlag)
-    return directionsSpline
+        while not is_curvature_valid:
+            test_smoothing_factor *= 2
+            interpolate.set_smoothing_factors_2d(x_spline, y_spline,
+                                                 test_smoothing_value)
+            is_curvature_valid = curvature_test(x_spline, y_spline, s_values)
+        return [x_spline, y_spline]
 
-def get_lattice(spatialSliceBounds):
+
+def get_directionsspline(sampled_directions_points):
+    directions_spline = cacher.get_object("spline",
+                                          iteratively_build_directions_spline, [
+                                              sampled_directions_points],
+                                          cacher.save_spline, config.spline_flag)
+    return directions_spline
+
+
+def get_lattice(spatial_slice_bounds):
     lattice = cacher.get_object("lattice", build_lattice_slices,
-              [spatialSliceBounds], cacher.save_lattice, config.latticeFlag)
+                                [spatial_slice_bounds], cacher.save_lattice, config.lattice_flag)
     return lattice
-

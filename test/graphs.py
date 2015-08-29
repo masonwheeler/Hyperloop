@@ -18,88 +18,90 @@ import mergetree
 import paretofront
 import interpolate
 
+
 class Graph:
     """Stores list of spatial points, their edge costs and curvature"""
 
-    def compute_curvature(self):       
-        """Compute the curvature of an interpolation of the graph""" 
-        if self.numEdges > config.graphCurvatureMinNumEdges:
-            self.curvatureMetric = interpolate.graph_curvature(
-                            self.geospatials, config.graphSampleSpacing)
+    def compute_curvature(self):
+        """Compute the curvature of an interpolation of the graph"""
+        if self.num_edges > config.graph_curvature_min_num_edges:
+            self.curvature_metric = interpolate.graph_curvature(
+                self.geospatials, config.graph_sample_spacing)
 
-    def __init__(self, numEdges, pylonCost, landCost, startId, endId,
-                 startAngle, endAngle, latlngs, geospatials):
-        self.numEdges = numEdges #The number of edges in a graph
-        self.pylonCost = pylonCost #The total cost of the pylons
-        self.landCost = landCost #The total cost of the land acquired
-        self.startId = startId #The id of the start point in the graph
-        self.endId = endId #The id of the end point in the graph
-        self.startAngle = startAngle #The angle of the start edge in the graph
-        self.endAngle = endAngle #The angle of the end edge in the graph
-        self.latlngs = latlngs #The latitude longitude coordinates
-        self.geospatials = geospatials #The geospatial coordinates
+    def __init__(self, num_edges, pylon_cost, land_cost, start_id, end_id,
+                 start_angle, end_angle, latlngs, geospatials):
+        self.num_edges = num_edges  # The number of edges in a graph
+        self.pylon_cost = pylon_cost  # The total cost of the pylons
+        self.land_cost = land_cost  # The total cost of the land acquired
+        self.start_id = start_id  # The id of the start point in the graph
+        self.end_id = end_id  # The id of the end point in the graph
+        self.start_angle = start_angle  # The angle of the start edge in the graph
+        self.end_angle = end_angle  # The angle of the end edge in the graph
+        self.latlngs = latlngs  # The latitude longitude coordinates
+        self.geospatials = geospatials  # The geospatial coordinates
         self.compute_curvature()
 
     def to_costcurvature_point(self):
         """Return the cost and curvature of the graph"""
-        if self.numEdges > config.graphCurvatureMinNumEdges:
-            cost = self.pylonCost + self.landCost
-            curvature = self.curvatureMetric
+        if self.num_edges > config.graph_curvature_min_num_edges:
+            cost = self.pylon_cost + self.land_cost
+            curvature = self.curvature_metric
             return [cost, curvature]
 
     def to_plottable(self, style):
         """Return the geospatial coords of the graph in plottable format"""
-        plottableGraph = [zip(*self.geospatials), style]
-        return plottableGraph
-        
-    def display(self):     
+        plottable_graph = [zip(*self.geospatials), style]
+        return plottable_graph
+
+    def display(self):
         """display the cost and curvature of the graph"""
         print("This graph's land cost is: " + str(self.landcost) + ".")
-        print("This graph's pylon cost is: " + str(self.startAngle) + ".")        
-        print("This graph's curvature is: " + str(self.curvatureMetric) + ".")
+        print("This graph's pylon cost is: " + str(self.start_angle) + ".")
+        print("This graph's curvature is: " + str(self.curvature_metric) + ".")
 
 
 class GraphV2(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
-    def get_time(self, geospatials, ):       
-        """Compute the curvature of an interpolation of the graph""" 
-        if self.numEdges > config.graphFilterMinNumEdges:
-            self.curvatureMetric = interpolate.graph_curvature(
-                            self.geospatials, config.graphSampleSpacing)
+
+    def get_time(self, geospatials, ):
+        """Compute the curvature of an interpolation of the graph"""
+        if self.num_edges > config.graph_filter_min_num_edges:
+            self.curvature_metric = interpolate.graph_curvature(
+                self.geospatials, config.graph_sample_spacing)
             return time
 
-    def __init__(self, startId, endId, startAngle, endAngle, numEdges,
-                       pylonCost, tubeCost, landCost, latlngs, geospatials):
-        abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
-                                                                    numEdges)
-        self.pylonCost = pylonCost #The total cost of the pylons
-        self.tubeCost = tubeCost
-        self.landCost = landCost #The total cost of the land acquired
-        self.latlngs = latlngs #The latitude longitude coordinates
-        self.geospatials = geospatials #The geospatial coordinates
+    def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
+                 pylon_cost, tube_cost, land_cost, latlngs, geospatials):
+        abstract.AbstractGraph.__init__(start_id, end_id, start_angle, end_angle,
+                                        num_edges)
+        self.pylon_cost = pylon_cost  # The total cost of the pylons
+        self.tube_cost = tube_cost
+        self.land_cost = land_cost  # The total cost of the land acquired
+        self.latlngs = latlngs  # The latitude longitude coordinates
+        self.geospatials = geospatials  # The geospatial coordinates
         self.time = self.get_time(geospatials)
 
     def get_total_cost(self):
-        return self.pylonCost + self.tubeCost + self.landCost
+        return self.pylon_cost + self.tube_cost + self.land_cost
 
     def to_plottable(self, style):
         """Return the geospatial coords of the graph in plottable format"""
-        plottableGraph = [zip(*self.geospatials), style]
-        return plottableGraph
+        plottable_graph = [zip(*self.geospatials), style]
+        return plottable_graph
 
 
 class GraphsSet:
     """Stores all selected graphs between two given lattice slices"""
-    minimizeCost = True
-    minimizeCurvature = True
+    minimize_cost = True
+    minimize_curvature = True
 
     def graphs_to_costcurvaturepoints(self):
         """Compute cost and curvature of each graph with min number of edges"""
-        if self.graphsNumEdges > config.graphCurvatureMinNumEdges:
-            self.costCurvaturePoints = [graph.to_costcurvature_point()
-                                        for graph in self.unfilteredGraphs]
+        if self.graphs_num_edges > config.graph_curvature_min_num_edges:
+            self.cost_curvature_points = [graph.to_costcurvature_point()
+                                          for graph in self.unfiltered_graphs]
         else:
-            self.costCurvaturePoints = None
+            self.cost_curvature_points = None
 
     def select_graphs(self):
         """
@@ -108,57 +110,56 @@ class GraphsSet:
         If the cost and curvature of the graphs have not been computed,
         then return all of the graphs.
         """
-        if self.costCurvaturePoints == None:
-            self.selectedGraphs = self.unfilteredGraphs            
+        if self.cost_curvature_points == None:
+            self.selected_graphs = self.unfiltered_graphs
         else:
             try:
                 self.front = paretofront.ParetoFront(
-                                  self.costCurvaturePoints,
-                                  self.minimizeCost, self.minimizeCurvature)
-                selectedGraphsIndices = self.front.frontsIndices[-1]                
-                values = [self.costCurvaturePoints[i] for i
-                                   in selectedGraphsIndices]
-                numFronts = 1
+                    self.cost_curvature_points,
+                    self.minimize_cost, self.minimize_curvature)
+                selected_graphs_indices = self.front.fronts_indices[-1]
+                values = [self.cost_curvature_points[i] for i
+                          in selected_graphs_indices]
+                num_fronts = 1
                 while (self.front.build_nextfront() and
-                       numFronts <= config.numFronts):
-                    numFronts += 1
-                    selectedGraphsIndices += self.front.frontsIndices[-1]
-                self.selectedGraphs = [self.unfilteredGraphs[i] for i in
-                                       selectedGraphsIndices]
- 
-                allCosts = [graph.landCost + graph.pylonCost for graph
-                            in self.unfilteredGraphs]
-                allCurvatures = [graph.curvatureMetric for graph 
-                                 in self.unfilteredGraphs]
-                selectedCosts = [ graph.landCost + graph.pylonCost for graph
-                                 in self.selectedGraphs]
-                selectedCurvatures = [graph.curvatureMetric for graph
-                                      in self.selectedGraphs]
+                       num_fronts <= config.num_fronts):
+                    num_fronts += 1
+                    selected_graphs_indices += self.front.fronts_indices[-1]
+                self.selected_graphs = [self.unfiltered_graphs[i] for i in
+                                        selected_graphs_indices]
+
+                all_costs = [graph.land_cost + graph.pylon_cost for graph
+                             in self.unfiltered_graphs]
+                all_curvatures = [graph.curvature_metric for graph
+                                  in self.unfiltered_graphs]
+                selected_costs = [graph.land_cost + graph.pylon_cost for graph
+                                  in self.selected_graphs]
+                selected_curvatures = [graph.curvature_metric for graph
+                                       in self.selected_graphs]
                 """
-                if config.visualMode:
+                if config.visual_mode:
                     fig = plt.figure()
                     fig.suptitle('cost vs curvature tradeoff')
                     ax = fig.add_subplot(111)
                     ax.set_xlabel('cost in dollars')
                     ax.set_ylabel('curvature metric')
-                    ax.plot(allCosts, allCurvatures, 'b.')
+                    ax.plot(all_costs, all_curvatures, 'b.')
                     plt.show()
                     fig = plt.figure()
                     fig.suptitle('cost vs curvature tradeoff')
                     ax = fig.add_subplot(111)
                     ax.set_xlabel('cost in dollars')
                     ax.set_ylabel('curvature metric')
-                    ax.plot(allCosts, allCurvatures, 'b.')
-                    ax.plot(allCosts, allCurvatures, 'b.',
-                             selectedCosts, selectedCurvatures, 'r.')
+                    ax.plot(all_costs, all_curvatures, 'b.')
+                    ax.plot(all_costs, all_curvatures, 'b.',
+                             selected_costs, selected_curvatures, 'r.')
                     plt.show()
                 """
             except ValueError:
                 print("encountered ValueError")
-                self.selectedGraphs = self.unfilteredGraphs
+                self.selected_graphs = self.unfiltered_graphs
                 return 0
-            
-    
+
     def update_graphs(self):
         """
         Update the selected graphs
@@ -170,104 +171,113 @@ class GraphsSet:
             return False
         else:
             try:
-                areGraphsUpdated = self.front.build_nextfront()
+                are_graphs_updated = self.front.build_nextfront()
             except ValueError:
                 return False
-            if areGraphsUpdated:
-                selectedGraphIndices = self.front.frontsIndices[-1]
-                for i in selectedGraphIndices:
-                    self.selectedGraphs.append(self.unfilteredGraphs[i])                
-                return True                
+            if are_graphs_updated:
+                selected_graph_indices = self.front.fronts_indices[-1]
+                for i in selected_graph_indices:
+                    self.selected_graphs.append(self.unfiltered_graphs[i])
+                return True
             else:
-                return False       
+                return False
 
-    def __init__(self, graphs):              
+    def __init__(self, graphs):
         self.front = None
-        self.unfilteredGraphs = graphs
-        self.graphsNumEdges = self.unfilteredGraphs[0].numEdges
+        self.unfiltered_graphs = graphs
+        self.graphs_num_edges = self.unfiltered_graphs[0].num_edges
         self.graphs_to_costcurvaturepoints()
-        self.select_graphs()       
+        self.select_graphs()
 
-def graphs_set_updater(graphsSet):
+
+def graphs_set_updater(graphs_set):
     """Wrapper function to update a graphset"""
-    isGraphSetUpdated = graphsSet.update_graphs()
-    return isGraphSetUpdated
+    is_graph_set_updated = graphs_set.update_graphs()
+    return is_graph_set_updated
+
 
 def edge_to_graph(edge):
     """Initializes a graph from an edge"""
-    numEdges = 1
-    pylonCost = edge.pylonCost
-    landCost = edge.landCost
-    startId = edge.startId
-    endId = edge.endId
-    startAngle = endAngle = edge.angle
+    num_edges = 1
+    pylon_cost = edge.pylon_cost
+    land_cost = edge.land_cost
+    start_id = edge.start_id
+    end_id = edge.end_id
+    start_angle = end_angle = edge.angle
     latlngs = edge.latlngs
     geospatials = edge.geospatials
-    newGraph = Graph(numEdges, pylonCost, landCost, startId, endId,
-                   startAngle, endAngle, latlngs, geospatials)
-    return newGraph
+    new_graph = Graph(num_edges, pylon_cost, land_cost, start_id, end_id,
+                      start_angle, end_angle, latlngs, geospatials)
+    return new_graph
 
-def edges_set_to_graphs_set(edgesSet):
+
+def edges_set_to_graphs_set(edges_set):
     """Creates a GraphsSet from a set of edges"""
-    graphs = map(edge_to_graph, edgesSet)
-    graphsSet = GraphsSet(graphs) 
-    return graphsSet
+    graphs = map(edge_to_graph, edges_set)
+    graphs_set = GraphsSet(graphs)
+    return graphs_set
+
 
 def edgessets_to_basegraphssets(edgessets):
-    baseGraphSets = map(edges_set_to_graphs_set, edgessets)
-    return baseGraphSets
-    
-def is_graph_pair_compatible(graphA, graphB):
-    if (graphA.endId == graphB.startId):
-        angleDifference = abs(graphA.endAngle - graphB.startAngle)
-        if angleDifference < config.degreeConstraint:
+    base_graph_sets = map(edges_set_to_graphs_set, edgessets)
+    return base_graph_sets
+
+
+def is_graph_pair_compatible(graph_a, graph_b):
+    if (graph_a.end_id == graph_b.start_id):
+        angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
+        if angle_difference < config.degree_constraint:
             return True
     return False
 
-def merge_two_graphs(graphA, graphB):
-    numEdges = graphA.numEdges + graphB.numEdges
-    pylonCost = graphA.pylonCost + graphB.pylonCost
-    landCost = graphA.landCost + graphB.landCost
-    startId = graphA.startId
-    endId = graphB.endId
-    startAngle = graphA.startAngle
-    endAngle = graphB.endAngle
-    latlngs = util.smart_concat(graphA.latlngs, graphB.latlngs)
-    geospatials = util.smart_concat(graphA.geospatials, graphB.geospatials)
-    mergedGraph = Graph(numEdges, pylonCost, landCost, startId, endId,
-                        startAngle, endAngle, latlngs, geospatials)
-    return mergedGraph
 
-def graphs_sets_merger(graphsSetA, graphsSetB):
-    mergedGraphs = []
-    selectedA = graphsSetA.selectedGraphs
-    selectedB = graphsSetB.selectedGraphs
-    for graphA in selectedA:
-        for graphB in selectedB:
-            if is_graph_pair_compatible(graphA, graphB):           
-                mergedGraph = merge_two_graphs(graphA, graphB)
-                mergedGraphs.append(mergedGraph)
-    if (len(mergedGraphs) == 0):
+def merge_two_graphs(graph_a, graph_b):
+    num_edges = graph_a.num_edges + graph_b.num_edges
+    pylon_cost = graph_a.pylon_cost + graph_b.pylon_cost
+    land_cost = graph_a.land_cost + graph_b.land_cost
+    start_id = graph_a.start_id
+    end_id = graph_b.end_id
+    start_angle = graph_a.start_angle
+    end_angle = graph_b.end_angle
+    latlngs = util.smart_concat(graph_a.latlngs, graph_b.latlngs)
+    geospatials = util.smart_concat(graph_a.geospatials, graph_b.geospatials)
+    merged_graph = Graph(num_edges, pylon_cost, land_cost, start_id, end_id,
+                         start_angle, end_angle, latlngs, geospatials)
+    return merged_graph
+
+
+def graphs_sets_merger(graphs_set_a, graphs_set_b):
+    merged_graphs = []
+    selected_a = graphs_set_a.selected_graphs
+    selected_b = graphs_set_b.selected_graphs
+    for graph_a in selected_a:
+        for graph_b in selected_b:
+            if is_graph_pair_compatible(graph_a, graph_b):
+                merged_graph = merge_two_graphs(graph_a, graph_b)
+                merged_graphs.append(merged_graph)
+    if (len(merged_graphs) == 0):
         return None
-    else:              
-        mergedGraphsSet = GraphsSet(mergedGraphs)
-        return mergedGraphsSet
+    else:
+        merged_graphs_set = GraphsSet(merged_graphs)
+        return merged_graphs_set
 
-def merge_basegraphssets(baseGraphSets):
-    rootGraphSet = mergetree.merge_allobjects(baseGraphSets, graphs_sets_merger,
-                                              graphset_updater)
-    return rootGraphSet
-    
+
+def merge_basegraphssets(base_graph_sets):
+    root_graph_set = mergetree.merge_allobjects(base_graph_sets, graphs_sets_merger,
+                                                graphset_updater)
+    return root_graph_set
+
+
 def build_graphs(edgessets):
-    baseGraphsSets = edgessets_to_basegraphssets(edgessets)
-    graphsSetsTree = mergetree.MasterTree(baseGraphsSets, graphs_sets_merger,
-                                                          graphs_set_updater)
-    rootGraphsSet = graphsSetsTree.root
-    selectedGraphs = rootGraphsSet.selectedGraphs
-    return selectedGraphs
-    
+    base_graphs_sets = edgessets_to_basegraphssets(edgessets)
+    graphs_sets_tree = mergetree.MasterTree(base_graphs_sets, graphs_sets_merger,
+                                            graphs_set_updater)
+    root_graphs_set = graphs_sets_tree.root
+    selected_graphs = root_graphs_set.selected_graphs
+    return selected_graphs
+
+
 def get_graphs(edgessets):
     graphs = cacher.get_object("graphs", build_graphs, [edgessets],
-                                cacher.save_graphs, config.graphsFlag)
+                               cacher.save_graphs, config.graphs_flag)
     return graphs
-

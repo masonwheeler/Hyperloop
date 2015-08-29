@@ -9,39 +9,42 @@ Citations:
     - See Wah Chang
 """
 
-#Standard Modules:
+# Standard Modules:
 import urllib2
 import ast
 import json
 
-#Our Modules:
+# Our Modules:
 import util
 import config
 import cacher
 
+
 def HTTP_to_string(HTTPData):
     """Reads HTTP bytecode response and converts it to a string"""
-    byteData = HTTPData.read()
-    stringData = byteData.decode("utf-8")
-    return stringData
+    byte_data = HTTPData.read()
+    string_data = byte_data.decode("utf-8")
+    return string_data
+
 
 def directions(origin, destination):
     """Pulls directions from Google API"""
     url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' + \
-    origin + '&destination=' + destination + \
-    '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
+        origin + '&destination=' + destination + \
+        '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
     util.smart_print("url: " + url)
-    rawDirections = urllib2.urlopen(url)
-    stringDirections = HTTP_to_string(rawDirections)
-    return stringDirections
+    raw_directions = urllib2.urlopen(url)
+    string_directions = HTTP_to_string(raw_directions)
+    return string_directions
 
-def string_to_polylines(stringData):
+
+def string_to_polylines(string_data):
     """Converts Directions string to JSON and extracts the polylines."""
-    dictResponse = json.loads(stringData)
-    steps = dictResponse['routes'][0]['legs'][0]['steps']
+    dict_response = json.loads(string_data)
+    steps = dict_response['routes'][0]['legs'][0]['steps']
     polylines = []
-    for step in steps :
-            polylines.append(step["polyline"]["points"])
+    for step in steps:
+        polylines.append(step["polyline"]["points"])
     return polylines
 
 
@@ -67,10 +70,10 @@ def decode_polyline(encoded):
             index += 1
             result |= (b & 0x1f) << shift
             shift += 5
-	    if b < 0x20:
-	        break
+            if b < 0x20:
+                break
 
-        dlat = ~(result >> 1) if result & 1 else result >> 1           
+        dlat = ~(result >> 1) if result & 1 else result >> 1
         lat += dlat
         shift = 0
         result = 0
@@ -80,8 +83,8 @@ def decode_polyline(encoded):
             index += 1
             result |= (b & 0x1f) << shift
             shift += 5
-	    if b < 0x20:
-	        break
+            if b < 0x20:
+                break
 
         dlng = ~(result >> 1) if result & 1 else result >> 1
         lng += dlng
@@ -89,25 +92,25 @@ def decode_polyline(encoded):
 
     return array
 
+
 def decode_polylines(polylines):
     return [decode_polyline(polyline) for polyline in polylines]
 
+
 def coordinate_list(start, end):
     """Applies decoding functions to Google API response"""
-    stringDirections = directions(start, end)
+    string_directions = directions(start, end)
     util.smart_print("Obtained directions.")
-    polylineDirections = string_to_polylines(stringDirections)
+    polyline_directions = string_to_polylines(string_directions)
     util.smart_print("Opened directions.")
-    rawCoordinateList = decode_polylines(polylineDirections)
+    raw_coordinate_list = decode_polylines(polyline_directions)
     util.smart_print("Decoded directions.")
-    coordinateList = util.remove_duplicates(rawCoordinateList)
+    coordinate_list = util.remove_duplicates(raw_coordinate_list)
     util.smart_print("Removed duplicate Coordinates.")
-    return util.round_points(coordinateList)
+    return util.round_points(coordinate_list)
+
 
 def get_directions(start, end):
     directions = cacher.get_object("directions", coordinate_list,
-                   [start, end], cacher.save_directions, config.directionsFlag)
+                                   [start, end], cacher.save_directions, config.directions_flag)
     return directions
-    
-
-

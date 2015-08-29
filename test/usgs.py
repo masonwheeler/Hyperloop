@@ -6,7 +6,7 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Redesigned logic flow to save memory.
 """
 
-#Standard Modules:
+# Standard Modules:
 from osgeo import gdal
 from osgeo import osr
 import urllib
@@ -15,107 +15,109 @@ import os
 import math
 from subprocess import call
 
-#Our Modules
+# Our Modules
 import config
 import util
 import geotiff
 
-def get_bounding_coordinates(latlngCoord):
-    lat, lng = latlngCoord
-    latBound = int(math.ceil(lat))
-    lngBound = int(math.ceil(abs(lng)))
-    return [latBound, lngBound]
 
-def get_coordstring(latlngCoord):
-    latBound, lngBound = get_bounding_coordinates(latlngCoord)
-    latstr, lngstr = "n" + str(latBound), "w" + str(lngBound).zfill(3)
+def get_bounding_coordinates(latlng_coord):
+    lat, lng = latlng_coord
+    lat_bound = int(math.ceil(lat))
+    lng_bound = int(math.ceil(abs(lng)))
+    return [lat_bound, lng_bound]
+
+
+def get_coordstring(latlng_coord):
+    lat_bound, lng_bound = get_bounding_coordinates(latlng_coord)
+    latstr, lngstr = "n" + str(lat_bound), "w" + str(lng_bound).zfill(3)
     coordstring = latstr + lngstr
     return coordstring
 
+
 def img_filename(coordstring):
-    imgFilename = "img" + coordstring + "_13" + ".img"
-    return imgFilename
+    img_filename = "img" + coordstring + "_13" + ".img"
+    return img_filename
 
-def file_exists(localFilePath):
-    return os.path.isfile(localFilePath)
 
-def unzip_zipfile(zipFilePath, outPath, imgFileName):
-    fileHandle = open(zipFilePath, 'rb')
-    zipFileData = zipfile.ZipFile(fileHandle)
-    imgFilePath = outPath + imgFileName
-    imgExists = file_exists(imgFilePath)
-    if imgExists:
-        if config.verboseMode:
+def file_exists(local_file_path):
+    return os.path.isfile(local_file_path)
+
+
+def unzip_zipfile(zip_file_path, out_path, img_file_name):
+    file_handle = open(zip_file_path, 'rb')
+    zip_file_data = zipfile.ZipFile(file_handle)
+    img_file_path = out_path + img_file_name
+    img_exists = file_exists(img_file_path)
+    if img_exists:
+        if config.verbose_mode:
             print(".img file already exists")
     else:
-        if config.verboseMode:
+        if config.verbose_mode:
             print("Unzipping folder...")
-        for fileName in zipFileData.namelist():
-            if (fileName == imgFileName):                
-                if config.verboseMode:
-                    print(fileName + " extracted.")
-                zipFileData.extract(fileName, outPath)
-        fileHandle.close()
+        for file_name in zip_file_data.namelist():
+            if (file_name == img_file_name):
+                if config.verbose_mode:
+                    print(file_name + " extracted.")
+                zip_file_data.extract(file_name, out_path)
+        file_handle.close()
         return 0
 
-def img_to_geotiff(imgFileName, unzipDirectory, coordstring):    
-    imgFilePath = unzipDirectory + imgFileName
-    tifFilePath = unzipDirectory + coordstring + ".tif"
-    call(["gdal_translate","-of","Gtiff",imgFilePath,tifFilePath])
-    return tifFilePath
 
-def geotiff_pixelVal(geotiffFilePath, lonlatCoord):
-    ds = gdal.Open(geotiffFilePath)
+def img_to_geotiff(img_file_name, unzip_directory, coordstring):
+    img_file_path = unzip_directory + img_file_name
+    tif_file_path = unzip_directory + coordstring + ".tif"
+    call(["gdal_translate", "-of", "Gtiff", img_file_path, tif_file_path])
+    return tif_file_path
+
+
+def geotiff_pixel_val(geotiff_file_path, lonlat_coord):
+    ds = gdal.Open(geotiff_file_path)
     gt = ds.GetGeoTransform()
     rb = ds.GetRasterBand(1)
     srs = osr.SpatialReference()
     srs.ImportFromWkt(ds.GetProjection())
-    srsLatLon = srs.CloneGeogCS()
-    ct = osr.CoordinateTransformation(srsLatLon,srs)
-    pixelVal = geotiff.pixel_val(ct, gt, rb, lonlatCoord)
-    return pixelVal
+    srs_lat_lon = srs.CloneGeogCS()
+    ct = osr.CoordinateTransformation(srs_lat_lon, srs)
+    pixel_val = geotiff.pixel_val(ct, gt, rb, lonlat_coord)
+    return pixel_val
 
-def remove_file(filePath):
-    os.remove(filePath)
-    
 
-def get_elevation(latlngCoord):
-    coordstring = get_coordstring(latlngCoord)
-    coordZipfile = coordstring + ".zip"
-    coordFolderName = coordstring + "/"     
+def remove_file(file_path):
+    os.remove(file_path)
 
-    url = config.usgsFtpPath + coordZipfile
-    downloadDirectory = config.cwd + config.usgsFolder
-    zipFilePath = downloadDirectory + coordZipfile
-    unzipDirectory = downloadDirectory + coordFolderName
-    imgFileName = img_filename(coordstring)
-    imgFilePath = unzipDirectory + imgFileName
-    geotiffFilePath = unzipDirectory + coordstring + ".tif"
 
-    if file_exists(geotiffFilePath):
+def get_elevation(latlng_coord):
+    coordstring = get_coordstring(latlng_coord)
+    coord_zipfile = coordstring + ".zip"
+    coord_folder_name = coordstring + "/"
+
+    url = config.usgs_ftp_path + coord_zipfile
+    download_directory = config.cwd + config.usgs_folder
+    zip_file_path = download_directory + coord_zipfile
+    unzip_directory = download_directory + coord_folder_name
+    img_file_name = img_filename(coordstring)
+    img_file_path = unzip_directory + img_file_name
+    geotiff_file_path = unzip_directory + coordstring + ".tif"
+
+    if file_exists(geotiff_file_path):
         pass
     else:
-        if file_exists(imgFilePath):
+        if file_exists(img_file_path):
             pass
         else:
-            if file_exists(zipFilePath):
+            if file_exists(zip_file_path):
                 pass
             else:
                 util.smart_print("Not yet downloaded.")
-                util.smart_print("Now downloading " + coordZipfile + "...")
-                urllib.urlretrieve(url, zipFilePath)        
-            unzip_zipfile(zipFilePath, unzipDirectory, imgFileName)   
-            remove_file(zipFilePath)
-        img_to_geotiff(imgFileName, unzipDirectory, coordstring)
-        remove_file(imgFilePath)
-        
+                util.smart_print("Now downloading " + coord_zipfile + "...")
+                urllib.urlretrieve(url, zip_file_path)
+            unzip_zipfile(zip_file_path, unzip_directory, img_file_name)
+            remove_file(zip_file_path)
+        img_to_geotiff(img_file_name, unzip_directory, coordstring)
+        remove_file(img_file_path)
 
-    lonlatCoord = util.swap_pair(latlngCoord)
-    pixelVal = geotiff_pixelVal(geotiffFilePath, lonlatCoord)
-    
-    return pixelVal
+    lonlat_coord = util.swap_pair(latlng_coord)
+    pixel_val = geotiff_pixel_val(geotiff_file_path, lonlat_coord)
 
-
-
-
-
+    return pixel_val
