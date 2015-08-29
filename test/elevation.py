@@ -18,8 +18,11 @@ import proj
 
 
 def google_elevation(coords):
+    """Fetches elevations from google's dataset for a list of lat lng pairs
+    """
     args = {
-        'locations': '|'.join([str(coord[0]) + ',' + str(coord[1]) for coord in coords])
+        'locations': '|'.join([str(coord[0]) + ',' + str(coord[1])
+                               for coord in coords])
     }
 
     url = config.ELEVATION_BASE_URL + '?' + urllib.urlencode(args)
@@ -31,21 +34,24 @@ def google_elevation(coords):
         for result_set in response['results']:
             elevation_array.append(result_set['elevation'])
     else:
-        print(response['status'])
+        print response['status']
 
     return elevation_array
 
 
 def usgs_elevation(latlngs):
+    """Fetches elevations from usgs dataset for a list of lat lng pairs
+    """
     elevations = [usgs.get_elevation(latlng) for latlng in latlngs]
     return elevations
 
 
 def get_elevation_profile(geospatials, distances):
+    """Build elevation profile for a list of geospatials
+    """
     latlngs = proj.geospatials_to_latlngs(geospatials, config.PROJ)
     elevations = usgs_elevation(latlngs)
     elevation_profile = []
-    distance_along_path = 0
     for i in range(len(geospatials)):
         elevation_point = {"latlng": latlngs[i],
                            "geospatial": geospatials[i],
