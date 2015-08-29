@@ -6,6 +6,7 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Changed from routes to graphs
 """
 
+#pylint: disable=W0105
 
 ########## Parameters And Switches ##########
 
@@ -71,7 +72,7 @@ MAX_SPEED = 330.0  # maximum speed of the capsule (in m/s)
 """
 Land Cost parameters
 """
-LAND_POINT_SPACING = 30.0  # spacing between points for land cost sampling in meters
+LAND_POINT_SPACING = 30.0  # spacing for land cost sampling (in meters)
 
 """
 Comfort parameters.
@@ -106,7 +107,8 @@ PADDING = 20  # padding (in meters)
 # See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 # Note the omission of Alaska only values (please enter values in USD/
 # meter^2.)
-COST_TABLE = {11: 300,  # Open Water (Source: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf)
+# Open Water Cost: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf
+COST_TABLE = {11: 300,  # Open Water
               12: 4,  # Perennial Ice/Snow
               21: 10,  # Developed, Open Space
               22: 20,  # Developed, Low Intensity
@@ -179,7 +181,8 @@ DROPBOX_DIRECTORY = "/home/ubuntu/Dropbox/save"
 For USGS-Elevation.
 """
 
-USGS_FTP_PATH = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
+USGS_FTP_PATH = "ftp://rockyftp.cr.usgs.gov/vdelivery/ \
+                 Datasets/Staged/Elevation/13/IMG/"
 USGS_FOLDER = "/usgs/"
 
 """
