@@ -26,7 +26,7 @@ def cost_density_to_local_cost(cost_density):
 
 
 def landcover_cost_densities(landcover_lat_lngs):
-    geotiff_file_path = config.cwd + config.GEOTIFF_FILE_PATH
+    geotiff_file_path = config.CWD + config.GEOTIFF_FILE_PATH
     file_handle = gdal.Open(geotiff_file_path)
     geo_transform = file_handle.GetGeoTransform()
     raster_band = file_handle.GetRasterBand(1)

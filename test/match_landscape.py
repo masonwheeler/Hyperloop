@@ -137,7 +137,7 @@ def match_landscape_v1(s, z, Type):
             return True
         elif Type == "elevation":
             cached[i][j] = cached[j][i] = True
-            curvature_tol = config.linear_accel_constraint / config.MAX_SPEED**2
+            curvature_tol = config.LINEAR_ACCEL_CONSTRAINT / config.MAX_SPEED**2
 
             def curvature(i, j):  # Computes the curvature of the clothoid
                 x0, x1 = [s[i], s[j]]

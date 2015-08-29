@@ -57,7 +57,7 @@ class Route:
 
         def pylon_cost(pylon_height):
             if pylon_height > 0:
-                return config.pylon_base_cost + pylon_height * config.PYLON_COST_PER_METER
+                return config.PYLON_BASE_COST + pylon_height * config.PYLON_COST_PER_METER
             else:
                 return - pylon_height * config.TUNNELING_COST_PER_METER
         geospatials = [geospatial.tolist() for geospatial in geospatials]

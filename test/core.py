@@ -135,8 +135,8 @@ def pair_analysis(start, end):
     complete_graphs = build_graphs(lattice_slices)
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
-                      config.linear_accel_constraint/config.MAX_SPEED**2,
-                      config.linear_accel_constraint, config.JERK_TOL)
+                      config.LINEAR_ACCEL_CONSTRAINT/config.MAX_SPEED**2,
+                      config.LINEAR_ACCEL_CONSTRAINT, config.JERK_TOL)
                       for graph in test_graphs]
     cacher.save_routes(complete_routes, start, end, start_lat_lng, end_lat_lng)
     for i in range(len(complete_routes)):
