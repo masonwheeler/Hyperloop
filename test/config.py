@@ -21,9 +21,9 @@ use_dropbox = False
 """
 Cache Overwriting Switches.
 """
-use_cached_directions = True
-use_cached_spline = True
-use_cached_lattice = True
+use_cached_directions = False
+use_cached_spline = False
+use_cached_lattice = False
 use_cached_edges = True
 use_cached_graphs = True
 use_cached_spatial_paths2d = False

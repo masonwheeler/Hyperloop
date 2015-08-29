@@ -31,7 +31,7 @@ def directions(origin, destination):
     """Pulls directions from Google API"""
     url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' + \
         origin + '&destination=' + destination + \
-        '&key=AIzaSyDNlWzlyeHuRVbWrMSM2oj_zm-LzINVcoX4'
+        '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
     util.smart_print("url: " + url)
     raw_directions = urllib2.urlopen(url)
     string_directions = HTTP_to_string(raw_directions)
