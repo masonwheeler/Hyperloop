@@ -9,6 +9,7 @@ Last Modification Purpose: Changed Class attributes to Instance attributes.
 import matplotlib.pyplot as plt
 import time
 
+import abstract
 import config
 import util
 import cacher
@@ -58,6 +59,35 @@ class Graph:
         print("This graph's curvature is: " + str(self.curvatureMetric) + ".")
 
 
+class GraphV2(abstract.AbstractGraph):
+    """Stores list of spatial points, their edge costs and curvature"""
+    def get_time(self, geospatials, ):       
+        """Compute the curvature of an interpolation of the graph""" 
+        if self.numEdges > config.graphFilterMinNumEdges:
+            self.curvatureMetric = interpolate.graph_curvature(
+                            self.geospatials, config.graphSampleSpacing)
+            return time
+
+    def __init__(self, startId, endId, startAngle, endAngle, numEdges,
+                       pylonCost, tubeCost, landCost, latlngs, geospatials):
+        abstract.AbstractGraph.__init__(startId, endId, startAngle, endAngle,
+                                                                    numEdges)
+        self.pylonCost = pylonCost #The total cost of the pylons
+        self.tubeCost = tubeCost
+        self.landCost = landCost #The total cost of the land acquired
+        self.latlngs = latlngs #The latitude longitude coordinates
+        self.geospatials = geospatials #The geospatial coordinates
+        self.time = self.get_time(geospatials)
+
+    def get_total_cost(self):
+        return self.pylonCost + self.tubeCost + self.landCost
+
+    def to_plottable(self, style):
+        """Return the geospatial coords of the graph in plottable format"""
+        plottableGraph = [zip(*self.geospatials), style]
+        return plottableGraph
+
+
 class GraphsSet:
     """Stores all selected graphs between two given lattice slices"""
     minimizeCost = True
@@ -80,72 +110,14 @@ class GraphsSet:
         """
         if self.costCurvaturePoints == None:
             self.selectedGraphs = self.unfilteredGraphs            
-            #for graph in self.selectedGraphs:
-            #    print(graph.geospatials)
-            #    time.sleep(3)
         else:
-            """
-            landCosts = [graph.landCost for graph in self.unfilteredGraphs]
-            #print("min land cost: " + str(min(landCosts)))
-            evaluationMetrics = [(graph.landCost) *
-                                  graph.curvatureMetric for graph
-                                  in self.unfilteredGraphs]
-            self.sortedGraphs = [graph for (metric, graph) in
-                    sorted(zip(evaluationMetrics, self.unfilteredGraphs),
-                           key = lambda pair: pair[0])]            
-            self.selectedGraphs = self.sortedGraphs[:10]
-            allCosts = [graph.landCost for graph
-                        in self.unfilteredGraphs]
-            allCurvatures = [graph.curvatureMetric for graph 
-                             in self.unfilteredGraphs]
-            selectedCosts = [ graph.landCost for graph
-                             in self.selectedGraphs]
-            selectedCurvatures = [graph.curvatureMetric for graph
-                                  in self.selectedGraphs]
-            print(min(allCosts), max(allCosts))
-            print(min(allCurvatures), max(allCurvatures))
-            #plt.scatter(allCosts, allCurvatures)
-            #plt.show()
-            #plt.scatter(selectedCosts, selectedCurvatures)
-            #plt.show()
-            fig = plt.figure()
-            fig.suptitle('cost vs curvature tradeoff')
-            ax = fig.add_subplot(111)
-            ax.set_xlabel('cost in dollars')
-            ax.set_ylabel('curvature metric')
-            ax.plot(allCosts, allCurvatures, 'b.',
-                     selectedCosts, selectedCurvatures, 'r.')
-            plt.show()
-        """
-            #print("before selection")
-            #originalCosts, originalCurvatures = zip(*self.costCurvaturePoints)
-            #plt.scatter(originalCosts, originalCurvatures)
-            #plt.show()
             try:
-                """
-                print("unsorted cost curvature points: ")
-                for costCurvaturePoint in self.costCurvaturePoints:
-                    print(costCurvaturePoint)
-                    time.sleep(3)
-                print("sorted cost curvature points: ")
-                sortedCostCurvaturePoints = sorted(self.costCurvaturePoints,
-                                                   key=lambda pair: pair[0])
-                for costCurvaturePoint in sortedCostCurvaturePoints:
-                    print(costCurvaturePoint)
-                    time.sleep(3)
-                """
-                       
                 self.front = paretofront.ParetoFront(
                                   self.costCurvaturePoints,
                                   self.minimizeCost, self.minimizeCurvature)
                 selectedGraphsIndices = self.front.frontsIndices[-1]                
-                #print("selected graphs indices: " + str(selectedGraphsIndices))
                 values = [self.costCurvaturePoints[i] for i
                                    in selectedGraphsIndices]
-                #print("selected graph cost curvatures")
-                #for value in values:
-                #    print(value)
-                #    time.sleep(3)
                 numFronts = 1
                 while (self.front.build_nextfront() and
                        numFronts <= config.numFronts):
@@ -274,10 +246,6 @@ def graphs_sets_merger(graphsSetA, graphsSetB):
         for graphB in selectedB:
             if is_graph_pair_compatible(graphA, graphB):           
                 mergedGraph = merge_two_graphs(graphA, graphB)
-                #print("graph A geospatials: " + str(graphA.geospatials))
-                #print("graph B geospatials: " + str(graphB.geospatials))
-                #print("merged graph geospatials: " + str(mergedGraph.geospatials))
-                #time.sleep(10) 
                 mergedGraphs.append(mergedGraph)
     if (len(mergedGraphs) == 0):
         return None
