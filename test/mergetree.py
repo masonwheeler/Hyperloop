@@ -6,14 +6,13 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Added MasterTree Class
 """
 
+#pylint: disable=R0913
+
 # Standard Modules:
 import collections
 
-# Our Modules:
-import config
 
-
-class MergeTree:
+class MergeTree(object):
     """
     Stores the results of recursively applied binary operations on a list.
 
@@ -22,134 +21,146 @@ class MergeTree:
     If "left" and "right" cannot be updated, then update the subelements from
     which "left" and right" came, then regenerate "left" and "right".
     """
-    right = None  # For storing the right child node
-    left = None  # For storing the left child node
-    data = None  # For storing the data internal to the node
-    children_merger = None  # Function combines children's data into node data
-    data_updater = None  # Function expands the data exposed by the node
-    child_to_update = "left"  # State variable storing which child to update next
-    is_right_exhausted = False  # State varible storing whether right child exhausted
-    is_left_exhausted = False  # State variable storing whether left child exhausted
 
-    def update_children(self):
+    def update_left_child(self, children_merger, data_updater):
+        """Attempts to update the left child node
+        """
+        is_left_updated = self.left.update_data(children_merger, data_updater)
+        if is_left_updated:
+            if not self.is_right_exhausted:
+                # If the right child is not exahusted, update it next
+                self.child_to_update = "right"
+            return True
+        else:
+            # Since the left child could not be updated, label it exhausted
+            self.is_left_exhausted = True
+            if self.is_right_exhausted:
+                # If the right is also exhausted, then record failure
+                return False
+            else:
+                # If the right is not yet exhausted, update right
+                self.child_to_update = "right"
+                return self.update_children(children_merger, data_updater)
+
+    def update_right_child(self, children_merger, data_updater):
+        """Attempts to update the right child node
+        """
+        is_right_updated = self.right.update_data(children_merger, data_updater)
+        if is_right_updated:
+            if not self.is_left_exhausted:
+                # If the left child is not exhausted, update it next
+                self.child_to_update = "left"
+            return True
+        else:
+            # Since the left child could not be updated, label it exhausted
+            self.is_right_exhausted = True
+            if self.is_left_exhausted:
+                # If the left is also exhausted, then record failure
+                return False
+            else:
+                # If the left is not yet exhausted, update left
+                self.child_to_update = "left"
+                return self.update_children(children_merger, data_updater)
+
+    def update_children(self, children_merger, data_updater):
         """
         Updates child nodes by alternating between right and left nodes.
 
         If the child nodes do not exist or do not have data, return False.
-        If one of the child nodes is sucessfully updated, the function 
-        returns True, otherwise the function returns False.        
+        If one of the child nodes is sucessfully updated, the function
+        returns True, otherwise the function returns False.
         """
-        if (self.left == None or self.right == None):
+        if self.left == None or self.right == None:
             return False
-        if (self.left.data == None or self.right.data == None):
+        if self.left.data == None or self.right.data == None:
             return False
 
         if self.child_to_update == "left":
-            is_left_updated = self.left.update_data()
-            if is_left_updated:
-                if not self.is_right_exhausted:
-                    # If the right child is not exahusted, update it next
-                    self.child_to_update = "right"
-                return True
-            else:
-                # Since the left child could not be updated, label it exhausted
-                self.is_left_exhausted = True
-                if self.is_right_exhausted:
-                    # If the right is also exhausted, then record failure
-                    return False
-                else:
-                    # If the right is not yet exhausted, update right
-                    self.child_to_update = "right"
-                    return self.update_children()
+            self.update_left_child(children_merger, data_updater)
 
         if self.child_to_update == "right":
-            is_right_updated = self.right.update_data()
-            if is_right_updated:
-                if not self.is_left_exhausted:
-                    # If the left child is not exhausted, update it next
-                    self.child_to_update = "left"
-                return True
-            else:
-                # Since the left child could not be updated, label it exhausted
-                self.is_right_exhausted = True
-                if self.is_left_exhausted:
-                    # If the left is also exhausted, then record failure
-                    return False
-                else:
-                    # If the left is not yet exhausted, update left
-                    self.child_to_update = "left"
-                    return self.update_children()
+            self.update_right_child(children_merger, data_updater)
 
-    def update_data(self):
-        """ 
+    def update_data(self, children_merger, data_updater):
+        """
         Updates the data associated with a node.
 
         If the node's data is successfully updated, return True,
         otherwise return False.
         If the node's data cannot be updated, update the node's children,
         then merge the updated children to get new data for the node.
-        If the node's children cannot be updated, record failure.        
+        If the node's children cannot be updated, record failure.
         """
         if self.data == None:
             return False
         else:
-            is_data_updated = self.data_updater(self.data)
+            is_data_updated = data_updater(self.data)
             if is_data_updated:
                 return True
             else:
-                any_children_updated = self.update_children()
+                any_children_updated = self.update_children(children_merger,
+                                                            data_updater)
                 if any_children_updated:
-                    self.data = self.merge_children()
+                    self.data = self.merge_children(children_merger,
+                                                    data_updater)
                     return True
                 else:
                     return False
 
-    def merge_children(self):
+    def merge_children(self, children_merger, data_updater):
         """
         Merges Node's children, and updates until merge result is valid.
 
-        If all of the children and subchildren are completely updated, 
+        If all of the children and subchildren are completely updated,
         without getting a valid result, then error is raised.
         Note that this case should not actually occur.
         """
-        merge_result = self.children_merger(self.left.data, self.right.data)
+        merge_result = children_merger(self.left.data, self.right.data)
         while merge_result == None:
-            any_children_updated = self.update_children()
+            any_children_updated = self.update_children(children_merger,
+                                                        data_updater)
             if any_children_updated:
-                merge_result = self.children_merger(self.left.data,
-                                                    self.right.data)
+                merge_result = children_merger(self.left.data,
+                                               self.right.data)
             else:
                 raise ValueError("Tried all potential merges without success.")
         return merge_result
 
-    def get_data(self, data):
-        if data == None:
-            if (self.left == None or self.right == None):
+    def get_data(self, init_data, children_merger, data_updater):
+        """Builds the node's data either from its children or initial data
+        """
+        if init_data == None:
+            if self.left == None or self.right == None:
                 raise ValueError("Unitialized node lacks children.")
-            if (self.left.data == None or self.right.data == None):
+            if self.left.data == None or self.right.data == None:
                 raise ValueError("Unitialized node's children lack data.")
-            self.data = self.merge_children()
+            data = self.merge_children(children_merger, data_updater)
         else:
-            self.data = data
+            data = init_data
+        return data
 
-    def __init__(self, left, right, data, children_merger, data_updater):
+    def __init__(self, left, right, init_data, children_merger, data_updater):
+        self.is_right_exhausted = False
+        self.is_left_exhausted = False
+        self.child_to_update = "left"
         self.left = left
         self.right = right
-        self.children_merger = children_merger
-        self.data_updater = data_updater
-        self.get_data(data)
+        self.data = self.get_data(init_data, children_merger, data_updater)
 
 
-class MasterTree:
-
-    def objects_to_leaves(self, objects, data_updater):
+class MasterTree(object):
+    """Wrapper class which merges all objects
+    """
+    @staticmethod
+    def objects_to_leaves(objects, data_updater):
         """Takes list of objects and initializes a list of MergeTrees."""
         leaves_list = [MergeTree(None, None, each_object, None, data_updater)
                        for each_object in objects]
         leaves = collections.deque(leaves_list)
         return leaves
 
-    def merge_branchlayer(self, branch_layer, children_merger, data_updater):
+    @staticmethod
+    def merge_branchlayer(branch_layer, children_merger, data_updater):
         """Creates next layer of MergeTrees."""
         # Use Deque for performance, it has O(1) pops and appends on both
         # sides.
@@ -173,52 +184,60 @@ class MasterTree:
             next_branch_layer.append(merged_branch)
         return next_branch_layer
 
-    def merge_all_objects(self, objects, children_merger, data_updater):
+    @staticmethod
+    def merge_all_objects(objects, children_merger, data_updater):
         """Recursively merges objects until list is completely merged."""
-        branch_layer = self.objects_to_leaves(objects, data_updater)
+        branch_layer = MasterTree.objects_to_leaves(objects, data_updater)
         while len(branch_layer) > 1:
             #config.HOLDER += 1
             #print("On layer " + str(config.HOLDER))
-            branch_layer = self.merge_branchlayer(branch_layer, children_merger,
-                                                  data_updater)
+            branch_layer = MasterTree.merge_branchlayer(branch_layer,
+                                       children_merger, data_updater)
         merged_objects = branch_layer[0]
         return merged_objects
 
     def __init__(self, objects_to_merge, children_merger, data_updater):
-        root_merge_tree = self.merge_all_objects(objects_to_merge, children_merger,
-                                                 data_updater)
+        root_merge_tree = MasterTree.merge_all_objects(objects_to_merge,
+                                          children_merger, data_updater)
         self.root = root_merge_tree.data
 
-"""
+
 #Testing Purposes
-class Number:
+class Number(object):
+    """testing class
+    """
     value = None
     times_updated = 0
     max_updates = 0
-    
     def __init__(self, value, max_updates):
         self.value = value
         self.max_updates = max_updates
 
     def update_value(self):
+        """decrement number
+        """
         if self.times_updated < self.max_updates:
-            print("updating value")
-            print("original value: " + str(self.value))
+            print "updating value"
+            print "original value: " + str(self.value)
             self.value -= 1
-            print("new value: " + str(self.value))
+            print "new value: " + str(self.value)
             self.times_updated += 1
-            print("times updated: " + str(self.times_updated))
+            print "times updated: " + str(self.times_updated)
             return True
         else:
-            print("max updates reached")
+            print "max updates reached"
             return False
 
     @staticmethod
     def merge_two_numbers(number_a, number_b):
+        """sum two numbers
+        """
         merged_value = number_a.value + number_b.value
         return merged_value
 
 def numbers_merger(number_a, number_b):
+    """wrapper function for merge_two_numbers
+    """
     merged_value = Number.merge_two_numbers(number_a, number_b)
     if merged_value < 10:
         merged_number = Number(merged_value, number_a.max_updates)
@@ -226,13 +245,15 @@ def numbers_merger(number_a, number_b):
     else:
         return None
 
-def number_updater(number):   
+def number_updater(number):
+    """wrapper function for update_value
+    """
     is_number_updated = number.update_value()
     return is_number_updated
 
 
-max_updates = 3
-numbers = [Number(value, max_updates) for value in range(6)]
-root_number = MasterTree(numbers, numbers_merger, number_updater).root
-print("root value is: " + str(root_number.value))
-"""
+#max_updates = 3
+#numbers = [Number(value, max_updates) for value in range(6)]
+#root_number = MasterTree(numbers, numbers_merger, number_updater).root
+#print("root value is: " + str(root_number.value))
+
