@@ -279,5 +279,5 @@ def build_graphs(edgessets):
 
 def get_graphs(edgessets):
     graphs = cacher.get_object("graphs", build_graphs, [edgessets],
-                               cacher.save_graphs, config.GRAPHS_FLAG)
+                               config.GRAPHS_FLAG)
     return graphs

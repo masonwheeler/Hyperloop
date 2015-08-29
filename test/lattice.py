@@ -143,13 +143,13 @@ def iteratively_build_directions_spline(sampled_directions_points):
 
 def get_directionsspline(sampled_directions_points):
     directions_spline = cacher.get_object("spline",
-                                          iteratively_build_directions_spline, [
-                                              sampled_directions_points],
-                                          cacher.save_spline, config.SPLINE_FLAG)
+                                          iteratively_build_directions_spline,
+                                          [sampled_directions_points],
+                                          config.SPLINE_FLAG)
     return directions_spline
 
 
 def get_lattice(spatial_slice_bounds):
     lattice = cacher.get_object("lattice", build_lattice_slices,
-                                [spatial_slice_bounds], cacher.save_lattice, config.LATTICE_FLAG)
+                                [spatial_slice_bounds], config.LATTICE_FLAG)
     return lattice

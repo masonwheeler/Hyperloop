@@ -115,6 +115,5 @@ def get_directions(start, end):
     """Fetchs directions if they are already cached, else builds them.
     """
     directions = cacher.get_object("directions", build_coordinate_list,
-                                   [start, end], cacher.save_directions,
-                                   config.DIRECTIONS_FLAG)
+                                   [start, end], config.DIRECTIONS_FLAG)
     return directions

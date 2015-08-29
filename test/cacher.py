@@ -5,15 +5,15 @@ Last Modified: 7/16/15
 Last Modification Purpose: To clarify naming.
 """
 
+#pylint: disable=W0142
+
 # Standard Modules:
 import os
-import csv
 import json
 import cPickle as pickle
 
 # Our Modules:
 import config
-import util
 
 
 def create_basefolders():
@@ -129,48 +129,23 @@ def is_object_saved(object_name):
     return object_saved
 
 
-def get_object(object_name, compute_function, compute_args, save_function, flag):
+def get_object(object_name, compute_function, compute_args, flag):
     """Either computes the object or loads a cached version"""
-    if (is_object_cached(object_name) and flag):
-        print(object_name + " exists.")
+    if is_object_cached(object_name) and flag:
+        print object_name + " exists."
         loaded_object = load_object(object_name)
-        print("Loaded " + object_name)
+        print "Loaded " + object_name
         return loaded_object
     else:
-        print("Computing " + object_name + "...")
+        print "Computing " + object_name + "..."
         computed_object = compute_function(*compute_args)
-        print(object_name + " computed.")
+        print object_name + " computed."
         cache_object(computed_object, object_name)
         return computed_object
 
-########## Functions for saving specific datatypes ##########
-
-
-def save_directions(directions_object, directions_name):
-    pass
-
-
-def save_spline(spline_object, spline_name):
-    pass
-
-
-def save_lattice(lattice_object, lattice_name):
-    pass
-
-
-def save_edgessets(edges_sets, edges_name):
-    pass
-
-
-def save_graphs(graphs, graphs_name):
-    pass
-
-
-def save_spatial_paths_2d(spatial_paths2d, spatial_paths2d_name):
-    pass
-
-
 def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
+    """Saves completed routes to json
+    """
     routes_dicts = []
     route_index = 0
     for route in routes:

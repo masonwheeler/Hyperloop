@@ -265,5 +265,5 @@ def build_edgessets(lattice):
 
 def get_edgessets(lattice):
     finished_edges_sets = cacher.get_object("edgessets", build_edgessets,
-                                            [lattice], cacher.save_edgessets, config.EDGES_FLAG)
+                                            [lattice], config.EDGES_FLAG)
     return finished_edges_sets
