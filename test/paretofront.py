@@ -6,6 +6,8 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To add comments.
 """
 
+# pylint: disable=E1101
+
 import scipy
 import numpy as np
 
@@ -124,7 +126,8 @@ class ParetoFront:
         # reshapes the points array into an array of tuples
         #print("original points: " + str(points_array))
         tuples_array = np.ascontiguousarray(points_array).view(
-            np.dtype((np.void, points_array.dtype.itemsize * points_array.shape[1])))
+            np.dtype((np.void,
+            points_array.dtype.itemsize * points_array.shape[1])))
         # selects the indices of the unique tuples.
         _, unique_indices = np.unique(tuples_array, return_index=True)
         #print("total number of points: " + str(points_array.shape[0]))
@@ -181,8 +184,8 @@ class ParetoFront:
             # The vertices in the convex hull.
             hull_vertices = self.points_array[hull_indices]
             # The indices of the points in the pareto front in the hull array.
-            front_indices_rel_hull = self.vertices_to_frontindices(hull_vertices,
-                                                                   self.x_reverse, self.y_reverse)
+            front_indices_rel_hull = self.vertices_to_frontindices(
+                         hull_vertices, self.x_reverse, self.y_reverse)
             # The indices of the points in the pareto front in the points
             # array.
             front_indices_rel_points = hull_indices[front_indices_rel_hull]
@@ -247,7 +250,7 @@ class ParetoFront:
             # The indices of the points in the front
             # relative to the convex hull.
             front_indices_rel_hull = self.vertices_to_frontindices(hull_vertices,
-                                                                   self.x_reverse, self.y_reverse)
+                                                  self.x_reverse, self.y_reverse)
             # The indices of the points in the front
             # relative to the points array.
             front_indices_rel_points = hull_indices_rel_points[
