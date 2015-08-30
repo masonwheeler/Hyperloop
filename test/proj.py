@@ -14,7 +14,7 @@ import util
 import config
 
 
-def omerc_proj(start_lon_lat, end_lon_lat):
+def get_omerc_proj(start_lon_lat, end_lon_lat):
     """Provides the Oblique Mercator Projection"""
     start_lon, start_lat = start_lon_lat
     end_lon, end_lat = end_lon_lat
@@ -25,13 +25,13 @@ def omerc_proj(start_lon_lat, end_lon_lat):
         + ' +lon_2=' + str(end_lon) + ' +lat_2=' + str(end_lat) \
         + ' +lon_1=' + str(start_lon) + ' +lat_1=' + str(start_lat)
     if config.VERBOSE_MODE:
-        print("The Parameters of the projection are:")
-        print(parameter_string)
+        print "The parameters of the projection are:"
+        print parameter_string
     omerc_proj = pyproj.Proj(parameter_string)
     return omerc_proj
 
 
-def albers_proj():
+def get_albers_proj():
     """Provides the Albers Conical Projection"""
     albers_proj = pyproj.Proj("+proj=aea \
                               +lat_1=29.5 \
@@ -46,7 +46,7 @@ def albers_proj():
     return albers_proj
 
 
-def usgs_proj():
+def get_usgs_proj():
     """Provides the standard USGS projection"""
     usgs_proj = pyproj.Proj(init='epsg:3857')
     return usgs_proj
@@ -77,7 +77,9 @@ def geospatials_to_latlngs(geospatials, proj):
 
 def set_projection(start_lat_lng, end_lat_lng):
     """Sets the projection used for converting lat-lngs to geospatials"""
-    start_lon_lat, end_lon_lat = map(
-        util.swap_pair, [start_lat_lng, end_lat_lng])
-    #config.PROJ = omerc_proj(start_lon_lat, end_lon_lat)
-    config.PROJ = albers_proj()
+    #start_lon_lat, end_lon_lat = util.swap_pairs([start_lat_lng, end_lat_lng])
+    #config.PROJ = get_omerc_proj(start_lon_lat, end_lon_lat)
+    config.PROJ = get_albers_proj()
+    if config.VISUAL_MODE:
+        print "start lat-lng: " + str(start_lat_lng)
+        print "end lat-lng: " + str(end_lat_lng)

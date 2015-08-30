@@ -7,7 +7,7 @@ Last Modification Purpose: To add support for tube heights.
 """
 
 import util
-import config
+import confi
 
 
 def build_pylons(pylon_locations):
