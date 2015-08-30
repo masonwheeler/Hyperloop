@@ -5,14 +5,13 @@ Last Modified: 7/28/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: To add comments.
 """
-
-# pylint: disable=E1101
+# pylint: disable=E1101, R0914
 
 import scipy
 import numpy as np
 
 
-class ParetoFront:
+class ParetoFront(object):
     """
     Computes nested Pareto Frontiers of points in 2d.
 
@@ -25,7 +24,8 @@ class ParetoFront:
     x_reverse = False  # If set to true, the front minimizes x-values.
     y_reverse = False  # If set to true, the front minimizes y-values.
 
-    def vertices_to_frontindices(self, vertices, x_reverse, y_reverse):
+    @staticmethod
+    def vertices_to_frontindices(vertices, x_reverse, y_reverse):
         """
         Computes the Pareto front given the vertices of the convex hull.
 
@@ -50,70 +50,48 @@ class ParetoFront:
         y_min_vertices = vertices[np.where(vertices[:, 1] == y_min)]
         ##print("y min vertices: " + str(y_min_vertices))
 
-        if (not x_reverse and not y_reverse):  # Taking the top-right vertices
+        if not x_reverse and not y_reverse:  # Taking the top-right vertices
             # To find the maximum y-value of the vertices with maximal x-values
-            x_max, x_max_vertices_y_max = np.amax(x_max_vertices, axis=0)
+            _, y_min_filter = np.amax(x_max_vertices, axis=0)
             # To find the maximum x-value of the vertices with maximal y-values
-            y_max_vertices_x_max, y_max = np.amax(y_max_vertices, axis=0)
-            # Set the minimum acceptable x-value for the x-value filter
-            x_min_filter = y_max_vertices_x_max
-            # Set the minimum acceptable y-value for the y-value filter
-            y_min_filter = x_max_vertices_y_max
+            x_min_filter, _ = np.amax(y_max_vertices, axis=0)
             # Take the vertices which pass the x-value and y-value filters.
             front_indices = np.where(np.logical_and(
                 vertices[:, 0] >= x_min_filter,
                 vertices[:, 1] >= y_min_filter))
             return front_indices
 
-        if (not x_reverse and y_reverse):  # Taking the bottom-right vertices
+        if not x_reverse and y_reverse:  # Taking the bottom-right vertices
             # To find the minimum y-value of the vertices with maximal x-values
-            x_max, x_max_vertices_y_min = np.amin(x_max_vertices, axis=0)
+            _, y_max_filter = np.amin(x_max_vertices, axis=0)
             # To find the maximum x-value of the vertices with minimal y-values
-            y_min_vertices_x_max, y_min = np.amax(y_min_vertices, axis=0)
-            # Set the minimum acceptable x-value for the x-value filter
-            x_min_filter = y_min_vertices_x_max
-            # Set the maximum acceptable y-value for the y-value filter
-            y_max_filter = x_max_vertices_y_min
+            x_min_filter, _ = np.amax(y_min_vertices, axis=0)
             # Take the vertices which pass the x-value and y-value filters.
             front_indices = np.where(np.logical_and(
                 vertices[:, 0] >= x_min_filter,
                 vertices[:, 1] <= y_max_filter))
             return front_indices
 
-        if (x_reverse and not y_reverse):  # Taking the top-left vertices
+        if x_reverse and not y_reverse:  # Taking the top-left vertices
             # To find the maximum y-value of the vertices with minimal x-values
-            x_min, x_min_vertices_y_max = np.amax(x_min_vertices, axis=0)
+            _, y_min_filter = np.amax(x_min_vertices, axis=0)
             # To find the minimum x-value of the vertices with maximal y-values
-            y_max_vertices_x_min, y_max = np.amin(y_max_vertices, axis=0)
-            # Set the maximum acceptable x-value for the x-value filter
-            x_max_filter = y_max_vertices_x_min
-            # Set the minimum acceptable y-value for the y-value filter
-            y_min_filter = x_min_vertices_y_max
+            x_max_filter, _ = np.amin(y_max_vertices, axis=0)
             # Take the vertices which pass the x-value and y-value filters.
             front_indices = np.where(np.logical_and(
                 vertices[:, 0] <= x_max_filter,
                 vertices[:, 1] >= y_min_filter))
             return front_indices
 
-        if (x_reverse and y_reverse):  # Taking the bottom-left vertices
-            ##print("minimizing x and y")
+        if x_reverse and y_reverse:  # Taking the bottom-left vertices
             # To find the minimum y-value of the vertices with minimal x-values
-            x_min, x_min_vertices_y_min = np.amin(x_min_vertices, axis=0)
+            _, y_max_filter = np.amin(x_min_vertices, axis=0)
             # To find the minimum x-value of the vertices with minimal y-values
-            y_min_vertices_x_min, y_min = np.amin(y_min_vertices, axis=0)
-            # Set the maximum acceptable x-value for x-value filter
-            x_max_filter = y_min_vertices_x_min
-            ##print("x max filter: " + str(x_max_filter))
-            # Set the maximum acceptable y-value for y-value filter
-            y_max_filter = x_min_vertices_y_min
-            ##print("y max filter: " + str(y_max_filter))
+            x_max_filter, _ = np.amin(y_min_vertices, axis=0)
             # Take the vertices which pass the x-value and y-value filters.
             front_indices = np.where(np.logical_and(
                 vertices[:, 0] <= x_max_filter,
                 vertices[:, 1] <= y_max_filter))
-            selected_vertices = vertices[front_indices]
-            ##print("selected vertices: ")
-            # print(str(selected_vertices))
             return front_indices
 
     def remove_frontindices(self, front_indices_rel_points):
@@ -121,7 +99,8 @@ class ParetoFront:
         self.pruned_points_indices = np.setdiff1d(self.pruned_points_indices,
                                                   front_indices_rel_points)
 
-    def remove_duplicates(self, points_array):
+    @staticmethod
+    def remove_duplicates(points_array):
         """Gives the indices of the unique points."""
         # reshapes the points array into an array of tuples
         #print("original points: " + str(points_array))
@@ -145,9 +124,9 @@ class ParetoFront:
         # print(points)
         self.x_reverse, self.y_reverse = x_reverse, y_reverse
         # Raw points array may contain duplicates
-        raw_points_array = np.array(map(np.array, points))
+        raw_points_array = np.array([np.array(point) for point in points])
         # The indices of the unique points in the raw points array.
-        unique_indices = self.remove_duplicates(raw_points_array)
+        unique_indices = ParetoFront.remove_duplicates(raw_points_array)
         # The unique points in the raw points array.
         self.points_array = raw_points_array[unique_indices]
         # The number of rows in the points array
@@ -158,7 +137,7 @@ class ParetoFront:
         if num_points < 3:
             # if there are no points, raise a value error.
             if num_points == 0:
-                print("No points passed to Pareto Front")
+                print "No points passed to Pareto Front"
                 raise ValueError("No Points passed to Pareto Front")
             else:
                 # if there are 1 or 2 points, add these to the fronts
@@ -172,35 +151,26 @@ class ParetoFront:
                 convex_hull = scipy.spatial.ConvexHull(self.points_array)
             # If convex hull not built, raise a value error.
             except scipy.spatial.qhull.QhullError:
-                print("all points are in a line.")
+                print "all points are in a line."
                 raise ValueError("All points are in a line.")
             # If another strange error occurs, record that.
             except ValueError:
-                print("Qhull encountered other error")
+                print "Qhull encountered other error"
                 raise ValueError("Qhull encountered other error")
-            # The indices of the vertices in the convex hull in the points
-            # array
+            # The indices of the convex hull vertices in the points array
             hull_indices = convex_hull.vertices
             # The vertices in the convex hull.
             hull_vertices = self.points_array[hull_indices]
             # The indices of the points in the pareto front in the hull array.
-            front_indices_rel_hull = self.vertices_to_frontindices(
+            front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
                          hull_vertices, self.x_reverse, self.y_reverse)
             # The indices of the points in the pareto front in the points
             # array.
             front_indices_rel_points = hull_indices[front_indices_rel_hull]
-            selected_points = self.points_array[front_indices_rel_points]
-            #print("selected points: ")
-            # print(str(selected_points))
-            #print("selected points indices: ")
-            # print(str(front_indices_rel_points))
             # Add the indices of the points in the pareto front to list.
             self.fronts_indices.append(front_indices_rel_points.tolist())
             # Remove the indices of the points in the pareto front from list.
             self.remove_frontindices(front_indices_rel_points)
-        ##print("the selected points are: ")
-        ##selected_points = [points[i] for i in self.fronts_indices[-1]]
-        # print(selected_points)
 
     def build_nextfront(self):
         """
@@ -232,11 +202,11 @@ class ParetoFront:
                 convex_hull = scipy.spatial.ConvexHull(pruned_points)
             # if convex hull not built, raise a value error.
             except scipy.spatial.qhull.QhullError:
-                print("all points are in a line.")
+                print "all points are in a line."
                 raise ValueError("All points are in a line.")
             # If another strange error occurs, record that.
             except ValueError:
-                print("Qhull encountered other error")
+                print "Qhull encountered other error"
                 raise ValueError("Qhull encountered other error")
             # The indices of the vertices in the convex hull
             # relative to the pruned points array
@@ -249,8 +219,8 @@ class ParetoFront:
             hull_vertices = self.points_array[hull_indices_rel_points]
             # The indices of the points in the front
             # relative to the convex hull.
-            front_indices_rel_hull = self.vertices_to_frontindices(hull_vertices,
-                                                  self.x_reverse, self.y_reverse)
+            front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
+                         hull_vertices, self.x_reverse, self.y_reverse)
             # The indices of the points in the front
             # relative to the points array.
             front_indices_rel_points = hull_indices_rel_points[
