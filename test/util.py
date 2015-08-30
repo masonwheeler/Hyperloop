@@ -7,7 +7,6 @@ Last Modification Purpose: Added docstrings
 """
 
 # Standard Modules
-import sys
 import math
 import itertools
 import operator
@@ -17,6 +16,7 @@ import numpy as np
 # Our Modules
 import config
 
+#pylint: disable=C0103, E1101, W0142, W0141
 
 # Points Operations:
 
@@ -39,14 +39,14 @@ def round_points(points):
     return [_round_nums(point) for point in points]
 
 
-def smart_sample_nth_points(points, n):
+def smart_sample_nth_points(points, n_stride):
     """
     Takes every nth point in a list as well as the last point.
 
     Used in core.build_lattice()
     """
     end_point = points[-1]
-    sampled_points = points[::n]
+    sampled_points = points[::n_stride]
     sampled_points.append(end_point)
     return sampled_points
 
@@ -62,6 +62,8 @@ def to_pairs(points):
 
 
 def points_to_radius(three_points):
+    """Convert points to radius
+    """
     #print("three points: " + str(three_points))
     p1, p2, p3 = three_points
     a = np.linalg.norm(np.subtract(p1, p2))
@@ -98,10 +100,10 @@ def get_maxmin(in_list):
     return [max(in_list), min(in_list)]
 
 
-def list_mean(in_list):
+def get_list_mean(in_list):
     """Used in gen_velocity.py"""
-    mean = sum(in_list) / float(len(in_list))
-    return mean
+    list_mean = sum(in_list) / float(len(in_list))
+    return list_mean
 
 
 def remove_duplicates(in_list):
@@ -133,64 +135,52 @@ def smart_concat(list_a, list_b):
 # Vector Operations:
 
 def safe_operation(operation, vector_a, vector_b):
+    """Wrapper function for safe vector operations
+    """
     if len(vector_a) == len(vector_b):
         return map(operation, vector_a, vector_b)
     else:
-        print(vector_a)
-        print(vector_b)
+        print vector_a
+        print vector_b
         raise ValueError("Mismatched vector lengths.")
 
-
 def add(vector_a, vector_b):
+    """Adds a pair of vectors
+    """
     return safe_operation(operator.add, vector_a, vector_b)
 
-
 def subtract(vector_a, vector_b):
+    """Subtracts the second vector from the first
+    """
     return safe_operation(operator.sub, vector_a, vector_b)
 
-
 def entry_multiply(vector_a, vector_b):
+    """Multiplies a pair of vectors entry by entry
+    """
     return safe_operation(operator.mul, vector_a, vector_b)
 
-
 def scale(scalar, vector):
+    """Multiply each element of the vector by the given scale
+    """
     return [element * scalar for element in vector]
 
-
 def norm(vector):
-    return math.sqrt(sum(map(lambda x: x**2, vector)))
-
+    """Computes the norm of the given vector
+    """
+    return math.sqrt(sum([x**2 for x in vector]))
 
 def vector_to_angle(vector):
+    """Computes the angle of the given vector
+    """
     x_val, y_val = vector
     angle = math.degrees(math.atan2(y_val, x_val))
     return angle
 
 # Sampling Operations:
 
-
-def sample_vector_interior(vector, spacing):
-    effective_scale = norm(vector) / spacing
-    unit_vector = scale(1.0 / effective_scale, vector)
-    num_points = int(effective_scale)
-    point_indices = range(num_points)
-    point_distances = [spacing * index for index in point_indices]
-    point_vectors = [scale(index, unit_vector) for index in point_indices]
-    return [point_vectors, point_distances]
-
-
-def build_grid(vector, spacing, start_vector):
-    if norm(vector) < spacing:
-        return [[], []]
-    else:
-        point_vectors, point_distances = sample_vector_interior(
-            vector, spacing)
-        grid = [add(point_vector, start_vector)
-                for point_vector in point_vectors]
-        return [grid, point_distances]
-
-
 def sample_vector(vector, spacing):
+    """Sample points from the interior of a vector at a regular spacing
+    """
     effective_scale = norm(vector) / spacing
     unit_vector = scale(1.0 / effective_scale, vector)
     num_points = int(math.ceil(effective_scale))
@@ -200,7 +190,9 @@ def sample_vector(vector, spacing):
     return [point_vectors, point_distances]
 
 
-def build_grid_v2(start_point, end_point, spacing):
+def build_grid(start_point, end_point, spacing):
+    """Builds a grid of points between the start and end point.
+    """
     vector = subtract(end_point, start_point)
     length = norm(vector)
     if length < spacing:
@@ -215,23 +207,30 @@ def build_grid_v2(start_point, end_point, spacing):
 
 
 def sample_length(length, spacing):
+    """sample values within a given length at a regular spacing
+    """
     num_points = int(length / spacing)
-    grid = [index * spacing for index in range(num_points + 1)]
-    return grid
+    values = [index * spacing for index in range(num_points + 1)]
+    return values
 
 
-def build_grid_1d(length, spacing, start_distance):
-    distances = sample_length(length, spacing)
-    if distances == None:
+def build_grid_1d(start_value, end_value, spacing):
+    """Build a 1d grid of points in a given interval
+    """
+    length = end_value - start_value
+    values = sample_length(length, spacing)
+    if values == None:
         return None
     else:
-        grid = [distance + start_distance for distance in distances]
+        grid = [value + start_value for value in values]
         return grid
 
 # Edge Operations:
 
 
 def edge_to_vector(edge):
+    """Convert a given edge to a vector.
+    """
     edge_start, edge_end = edge
     edge_vector = subtract(edge_end, edge_start)
     return edge_vector
@@ -240,20 +239,26 @@ def edge_to_vector(edge):
 
 
 def compute_arc_length_steps(points):
+    """Computes the arclength separations between each point in a path of points
+    """
     pairs = to_pairs(points)
-    vectors = map(edge_to_vector, pairs)
-    arc_length_steps = map(np.linalg.norm, vectors)
+    vectors = [edge_to_vector(pair) for pair in pairs]
+    arc_length_steps = [np.linalg.norm(vector) for vector in vectors]
     return arc_length_steps
 
 
 def compute_total_arc_length(points):
+    """Compute the total arclength of the path defined by the points
+    """
     arc_length_steps = compute_arc_length_steps(points)
     total_arc_length = np.sum(arc_length_steps)
     return total_arc_length
 
 
 def compute_arc_lengths(points):
-    arc_lenth_steps = compute_arc_length_steps(points)
+    """Compute the arclength along the path of each point in the path
+    """
+    arc_length_steps = compute_arc_length_steps(points)
     arc_length_steps_array = np.array(arc_length_steps)
     arc_lengths = np.cumsum(arc_length_steps_array)
     padded_arc_lengths = np.insert(arc_lengths, 0, 0)
@@ -261,49 +266,49 @@ def compute_arc_lengths(points):
 
 # String Operations:
 
-
 def fix_input_string(input_string):
+    """Convert the input into a string usable for web queries.
+    """
     title_string = input_string.title()
     return title_string.replace(" ", "_")
 
-
 def smart_print(string):
+    """Print the input string if verbose mode is turned on.
+    """
     if config.VERBOSE_MODE:
-        print(string)
+        print string
 
 # Other Operations:
 
-
-def interval_to_value(input_val, upperbound_output_val_pairs, else_val):
-    for upperbound_output_val_pair in upperbound_output_val_pairs:
-        upperbound, output_val = upperbound_output_val_pair
-        if input_val < upperbound:
-            return output_val
-    return else_val
-
-
 def place_indexin_list(index, ordered_list_of_integers):
+    """Place index in sorted list of integers while preserving the order
+    """
     k = 0
-    while (index > ordered_list_of_integers[k]):
+    while index > ordered_list_of_integers[k]:
         k += 1
     ordered_list_of_integers.insert(k, index)
     return k
 
 
 def sorted_insert(value, ordered_values):
+    """Place index in sorted list of integers while preserving the order
+    """
     for i in range(len(ordered_values)):
         if value <= ordered_values[i]:
             ordered_values.insert(i, value)
             return i
 
-
 def break_up(data, n):
+    """Breaks up a list of data points into chunks n-elements long
+    """
     n = max(1, n)
     chunks = [data[i:i + n] for i in range(0, len(data), n)]
     return chunks
 
 
 def numerical_derivative(f, t):
+    """Implements a numerical derivative
+    """
     N = len(f)
     df = [0] * N
     for i in range(1, N - 1):
@@ -315,10 +320,13 @@ def numerical_derivative(f, t):
 
 
 def mean(vector):
+    """Computes the mean of a vector
+    """
     return sum(vector) / len(vector)
 
-
 def LpNorm(t, x, p):
+    """Computes the discrete L^p norm of a given list of elements
+    """
     summand = [(x[i]**p) * (t[i] - t[i - 1]) for i in range(1, len(t))]
     riemann_sum = sum(summand) / t[-1]
     return riemann_sum**(1. / p)

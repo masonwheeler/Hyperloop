@@ -53,14 +53,13 @@ class PylonsSlice(abstract.AbstractSlice):
         pylon_height_step_size = pylon_slice_bounds["pylon_height_step_size"]
         tallest_pylon_height = pylon_slice_bounds["tallest_pylon_height"]
         shortest_pylon_height = pylon_slice_bounds["shortest_pylon_height"]
-        pylon_height_difference = tallest_pylon_height - shortest_pylon_height
         distance_along_path = pylon_slice_bounds["distance_along_path"]
         geospatial = pylon_slice_bounds["geospatial"]
         latlng = pylon_slice_bounds["latlng"]
         land_elevation = pylon_slice_bounds["land_elevation"]
         shortest_pylon_height = 0
-        pylon_height_options = util.build_grid_1d(pylon_height_difference,
-                                                  pylon_height_step_size, shortest_pylon_height)
+        pylon_height_options = util.build_grid_1d(tallest_pylon_height,
+                         shortest_pylon_height, pylon_height_step_size)
         pylon_ids = [index + shortest_pylon_id for index
                      in range(len(pylon_height_options))]
         pylons = []

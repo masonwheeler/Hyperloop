@@ -51,7 +51,7 @@ class Slice:
         slice_vector = util.subtract(directions_point, spline_point)
         #print("slice length: " + str(util.norm(slice_vector)))
         #print("point spacing: " + str(self.point_spacing))
-        slice_grid, distances = util.build_grid_v2(directions_point, spline_point,
+        slice_grid, distances = util.build_grid(directions_point, spline_point,
                                                    self.point_spacing)
         #print("directions point: " + str(directions_point))
         #print("spline point: " + str(spline_point))
