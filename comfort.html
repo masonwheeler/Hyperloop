@@ -1,0 +1,262 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>comfort module &mdash; hyperloop 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> hyperloop
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">hyperloop</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>comfort module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/comfort.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-comfort">
+<span id="comfort-module"></span><h1>comfort module<a class="headerlink" href="#module-comfort" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: David Roberts
+Purpose of Module: To evaluate passenger comfort using</p>
+<blockquote>
+<div>Sperling&#8217;s comfort index (Wz).</div></blockquote>
+<p>Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and add citations.</p>
+<dl class="docutils">
+<dt>Citations:</dt>
+<dd><dl class="first last docutils">
+<dt>&#8220;Ride comfort in Tilting Trains&#8221;</dt>
+<dd><ul class="first last simple">
+<li>Johan Forstberg</li>
+</ul>
+</dd>
+<dt>&#8220;Experimental and Analytical Ride Comfort Evaluation of a Railway Coach&#8221;</dt>
+<dd><ul class="first last simple">
+<li><ol class="first upperalpha" start="11">
+<li><ol class="first upperalpha" start="22">
+<li>Gangadharan</li>
+</ol>
+</li>
+</ol>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>OUTLINE of SCRIPT (comfort.py):
+input vars: {t_i}, {x_i}, {v_i}, {a_i} (four lists of points in 3_d space)
+output vars: c (comfort rating)</p>
+<dl class="docutils">
+<dt>SUB-SCRIPTS:</dt>
+<dd><ol class="first last arabic">
+<li><dl class="first docutils">
+<dt>Find acceleration in passenger frame:</dt>
+<dd><p class="first last">{t_i}, {v_i}, {a_i}  &#8211;&gt;  {ap_i}</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Take Fast Fourier Transform of passenger accel:</dt>
+<dd><p class="first last">{ap_i}  &#8211;&gt;  {ap_f}</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Apply weighting filter and sum results</dt>
+<dd><p class="first last">{ap_f} &#8211;&gt; {w(f)*ap_f} &#8211;&gt; c = sum_f <a href="#id1"><span class="problematic" id="id2">|</span></a>w(f)*ap_f|^2</p>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+</dl>
+<dl class="function">
+<dt id="comfort.accel_passenger">
+<code class="descclassname">comfort.</code><code class="descname">accel_passenger</code><span class="sig-paren">(</span><em>vel</em>, <em>accel</em>, <em>component</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/comfort.html#accel_passenger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#comfort.accel_passenger" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Find acceleration in passenger frame:</dt>
+<dd>{t_i}, {v_i}, {a_i}  &#8211;&gt;  {T_i}, {N_i}, {B_i} &#8211;&gt;  {ap_i}</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="comfort.frequency_weighted_rms">
+<code class="descclassname">comfort.</code><code class="descname">frequency_weighted_rms</code><span class="sig-paren">(</span><em>accel_frequency</em>, <em>time_interval</em>, <em>component</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/comfort.html#frequency_weighted_rms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#comfort.frequency_weighted_rms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="comfort.horizontal_weighting_factor">
+<code class="descclassname">comfort.</code><code class="descname">horizontal_weighting_factor</code><span class="sig-paren">(</span><em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/comfort.html#horizontal_weighting_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#comfort.horizontal_weighting_factor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="comfort.sperling_comfort_index">
+<code class="descclassname">comfort.</code><code class="descname">sperling_comfort_index</code><span class="sig-paren">(</span><em>vel</em>, <em>accel</em>, <em>time_interval</em>, <em>component</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/comfort.html#sperling_comfort_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#comfort.sperling_comfort_index" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="comfort.vertical_weighting_factor">
+<code class="descclassname">comfort.</code><code class="descname">vertical_weighting_factor</code><span class="sig-paren">(</span><em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/comfort.html#vertical_weighting_factor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#comfort.vertical_weighting_factor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="comfort.weighting_factors">
+<code class="descclassname">comfort.</code><code class="descname">weighting_factors</code><span class="sig-paren">(</span><em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/comfort.html#weighting_factors"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#comfort.weighting_factors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, jonathan ward.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

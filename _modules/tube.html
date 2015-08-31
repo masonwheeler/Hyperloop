@@ -1,0 +1,614 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>tube &mdash; hyperloop 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> hyperloop
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">hyperloop</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>tube</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for tube</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Original Developer: Jonathan Ward</span>
+<span class="sd">Purpose of Module: To determine the tube/pylon cost component of an edge</span>
+<span class="sd">Last Modified: 8/15/15</span>
+<span class="sd">Last Modified By: Jonathan Ward</span>
+<span class="sd">Last Modification Purpose: To implement a non naive tube/pylon cost method.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># Standard Modules</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c"># Our Modules</span>
+<span class="kn">import</span> <span class="nn">abstract</span>
+<span class="kn">import</span> <span class="nn">clothoid</span>
+<span class="kn">import</span> <span class="nn">config</span>
+<span class="kn">import</span> <span class="nn">interpolate</span>
+<span class="kn">import</span> <span class="nn">mergetree</span>
+<span class="kn">import</span> <span class="nn">velocity</span>
+<span class="kn">import</span> <span class="nn">util</span>
+
+<span class="c"># Experimental Modules</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">PchipInterpolator</span>
+<span class="kn">import</span> <span class="nn">routes</span>
+<span class="kn">import</span> <span class="nn">match_landscape</span> <span class="kn">as</span> <span class="nn">landscape</span>
+
+
+<div class="viewcode-block" id="Pylon"><a class="viewcode-back" href="../tube.html#tube.Pylon">[docs]</a><span class="k">class</span> <span class="nc">Pylon</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractPoint</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Pylon.pylon_construction_cost"><a class="viewcode-back" href="../tube.html#tube.Pylon.pylon_construction_cost">[docs]</a>    <span class="k">def</span> <span class="nf">pylon_construction_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pylon_height</span><span class="p">):</span>
+        <span class="n">pylon_cost</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_BASE_COST</span> <span class="o">+</span> \
+            <span class="n">pylon_height</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_COST_PER_METER</span>
+        <span class="k">return</span> <span class="n">pylon_cost</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pylon_id</span><span class="p">,</span> <span class="n">lattice_x_coord</span><span class="p">,</span> <span class="n">lattice_y_coord</span><span class="p">,</span> <span class="n">distance_along_path</span><span class="p">,</span>
+                 <span class="n">geospatial</span><span class="p">,</span> <span class="n">latlng</span><span class="p">,</span> <span class="n">land_elevation</span><span class="p">,</span> <span class="n">pylon_height</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pylon_height</span> <span class="o">=</span> <span class="n">pylon_height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">land_elevation</span> <span class="o">=</span> <span class="n">land_elevation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlng</span> <span class="o">=</span> <span class="n">latlng</span>
+        <span class="n">tube_elevation</span> <span class="o">=</span> <span class="n">land_elevation</span> <span class="o">+</span> <span class="n">pylon_height</span>
+        <span class="n">x_value</span><span class="p">,</span> <span class="n">y_value</span> <span class="o">=</span> <span class="n">geospatial</span>
+        <span class="n">z_value</span> <span class="o">=</span> <span class="n">tube_elevation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_value</span><span class="p">,</span> <span class="n">y_value</span><span class="p">,</span> <span class="n">z_value</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylon_construction_cost</span><span class="p">(</span><span class="n">pylon_height</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_x_coord</span> <span class="o">=</span> <span class="n">distance_along_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spatial_y_coord</span> <span class="o">=</span> <span class="n">tube_elevation</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractPoint</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pylon_id</span><span class="p">,</span> <span class="n">lattice_x_coord</span><span class="p">,</span>
+                                        <span class="n">lattice_y_coord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_x_coord</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spatial_y_coord</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="PylonsSlice"><a class="viewcode-back" href="../tube.html#tube.PylonsSlice">[docs]</a><span class="k">class</span> <span class="nc">PylonsSlice</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractSlice</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="PylonsSlice.pylons_builder"><a class="viewcode-back" href="../tube.html#tube.PylonsSlice.pylons_builder">[docs]</a>    <span class="k">def</span> <span class="nf">pylons_builder</span><span class="p">(</span><span class="n">lattice_x_coord</span><span class="p">,</span> <span class="n">pylon_slice_bounds</span><span class="p">,</span> <span class="n">shortest_pylon_id</span><span class="p">):</span>
+        <span class="n">pylon_height_step_size</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;pylon_height_step_size&quot;</span><span class="p">]</span>
+        <span class="n">tallest_pylon_height</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;tallest_pylon_height&quot;</span><span class="p">]</span>
+        <span class="n">shortest_pylon_height</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;shortest_pylon_height&quot;</span><span class="p">]</span>
+        <span class="n">distance_along_path</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;distance_along_path&quot;</span><span class="p">]</span>
+        <span class="n">geospatial</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;geospatial&quot;</span><span class="p">]</span>
+        <span class="n">latlng</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;latlng&quot;</span><span class="p">]</span>
+        <span class="n">land_elevation</span> <span class="o">=</span> <span class="n">pylon_slice_bounds</span><span class="p">[</span><span class="s">&quot;land_elevation&quot;</span><span class="p">]</span>
+        <span class="n">shortest_pylon_height</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">pylon_height_options</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">build_grid_1d</span><span class="p">(</span><span class="n">tallest_pylon_height</span><span class="p">,</span>
+                         <span class="n">shortest_pylon_height</span><span class="p">,</span> <span class="n">pylon_height_step_size</span><span class="p">)</span>
+        <span class="n">pylon_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="n">shortest_pylon_id</span> <span class="k">for</span> <span class="n">index</span>
+                     <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pylon_height_options</span><span class="p">))]</span>
+        <span class="n">pylons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pylon_ids</span><span class="p">)):</span>
+            <span class="n">pylon_id</span> <span class="o">=</span> <span class="n">pylon_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">pylon_lattice_x_coord</span> <span class="o">=</span> <span class="n">lattice_x_coord</span>
+            <span class="n">pylon_lattice_y_coord</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="n">pylon_distance_along_path</span> <span class="o">=</span> <span class="n">distance_along_path</span>
+            <span class="n">pylon_geospatial</span> <span class="o">=</span> <span class="n">geospatial</span>
+            <span class="n">pylon_lat_lng</span> <span class="o">=</span> <span class="n">latlng</span>
+            <span class="n">pylon_land_elevation</span> <span class="o">=</span> <span class="n">land_elevation</span>
+            <span class="n">pylon_height</span> <span class="o">=</span> <span class="n">pylon_height_options</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">new_pylon</span> <span class="o">=</span> <span class="n">Pylon</span><span class="p">(</span><span class="n">pylon_id</span><span class="p">,</span> <span class="n">pylon_lattice_x_coord</span><span class="p">,</span> <span class="n">pylon_lattice_y_coord</span><span class="p">,</span>
+                              <span class="n">pylon_distance_along_path</span><span class="p">,</span> <span class="n">pylon_geospatial</span><span class="p">,</span> <span class="n">pylon_lat_lng</span><span class="p">,</span>
+                              <span class="n">pylon_land_elevation</span><span class="p">,</span> <span class="n">pylon_height</span><span class="p">)</span>
+            <span class="n">pylons</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_pylon</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pylons</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lattice_x_coord</span><span class="p">,</span> <span class="n">pylons_slice_bounds</span><span class="p">,</span> <span class="n">shortest_pylon_id</span><span class="p">):</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractSlice</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lattice_x_coord</span><span class="p">,</span> <span class="n">pylons_slice_bounds</span><span class="p">,</span>
+                                        <span class="n">shortest_pylon</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="PylonsLattice"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice">[docs]</a><span class="k">class</span> <span class="nc">PylonsLattice</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractLattice</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PylonsLattice.circle_function"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.circle_function">[docs]</a>    <span class="k">def</span> <span class="nf">circle_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="n">r</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="nb">float</span><span class="p">(</span><span class="s">&quot;Inf&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">-</span> <span class="n">r</span>
+            <span class="k">return</span> <span class="n">y</span>
+</div>
+<div class="viewcode-block" id="PylonsLattice.build_window"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.build_window">[docs]</a>    <span class="k">def</span> <span class="nf">build_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left_bound</span><span class="p">,</span> <span class="n">right_bound</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="n">relative_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">left_bound</span><span class="p">,</span> <span class="n">right_bound</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&quot;relative_index&quot;</span><span class="p">:</span> <span class="n">relative_index</span><span class="p">,</span>
+                   <span class="s">&quot;relative_elevation&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">circle_function</span><span class="p">(</span>
+                       <span class="nb">abs</span><span class="p">(</span><span class="n">relative_index</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_SPACING</span><span class="p">),</span> <span class="n">radius</span><span class="p">)}</span>
+                  <span class="k">for</span> <span class="n">relative_index</span> <span class="ow">in</span> <span class="n">relative_indices</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">window</span>
+</div>
+<div class="viewcode-block" id="PylonsLattice.add_current_window"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.add_current_window">[docs]</a>    <span class="k">def</span> <span class="nf">add_current_window</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">envelope</span><span class="p">,</span> <span class="n">current_window</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">current_window</span><span class="p">:</span>
+            <span class="n">current_index</span> <span class="o">=</span> <span class="n">point</span><span class="p">[</span><span class="s">&quot;index&quot;</span><span class="p">]</span>
+            <span class="n">envelope</span><span class="p">[</span><span class="n">current_index</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="s">&quot;elevation&quot;</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="PylonsLattice.build_envelope"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.build_envelope">[docs]</a>    <span class="k">def</span> <span class="nf">build_envelope</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elevations</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">radius</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_SPACING</span><span class="p">)</span>
+        <span class="n">envelope_lists</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elevations</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">current_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">elevations</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">current_index</span> <span class="o">&lt;</span> <span class="n">window_size</span><span class="p">:</span>
+                <span class="n">left_bound</span> <span class="o">=</span> <span class="n">current_index</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">left_bound</span> <span class="o">=</span> <span class="n">window_size</span>
+            <span class="k">if</span> <span class="n">current_index</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elevations</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">window_size</span><span class="p">:</span>
+                <span class="n">right_bound</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">elevations</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">current_index</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">right_bound</span> <span class="o">=</span> <span class="n">window_size</span>
+            <span class="n">relative_window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_window</span><span class="p">(</span>
+                <span class="n">left_bound</span><span class="p">,</span> <span class="n">right_bound</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+            <span class="n">current_elevation</span> <span class="o">=</span> <span class="n">elevations</span><span class="p">[</span><span class="n">current_index</span><span class="p">]</span>
+            <span class="n">current_window</span> <span class="o">=</span> <span class="p">[{</span>
+                <span class="s">&quot;index&quot;</span><span class="p">:</span> <span class="n">point</span><span class="p">[</span><span class="s">&quot;relative_index&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">current_index</span><span class="p">,</span>
+                <span class="s">&quot;elevation&quot;</span><span class="p">:</span> <span class="n">point</span><span class="p">[</span><span class="s">&quot;relative_elevation&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">current_elevation</span><span class="p">}</span>
+                <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">relative_window</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_current_window</span><span class="p">(</span><span class="n">envelope_lists</span><span class="p">,</span> <span class="n">current_window</span><span class="p">)</span>
+        <span class="n">envelope</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">max</span><span class="p">,</span> <span class="n">envelope_lists</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">envelope</span>
+</div>
+<div class="viewcode-block" id="PylonsLattice.build_pylons_envelopes"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.build_pylons_envelopes">[docs]</a>    <span class="k">def</span> <span class="nf">build_pylons_envelopes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elevation_profile</span><span class="p">):</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">elevations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">elevation_point</span> <span class="ow">in</span> <span class="n">elevation_profile</span><span class="p">:</span>
+            <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;distance_along_path&quot;</span><span class="p">])</span>
+            <span class="n">elevations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;land_elevation&quot;</span><span class="p">])</span>
+        <span class="n">upper_speed</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">MAX_SPEED</span>
+        <span class="n">curvature_threshold_upper</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">compute_curvature_threshold</span><span class="p">(</span>
+            <span class="n">upper_speed</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">VERTICAL_ACCEL_CONSTRAINT</span><span class="p">)</span>
+        <span class="n">radius_upper</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">curvature_threshold_upper</span>
+        <span class="n">envelope_upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_envelope</span><span class="p">(</span><span class="n">elevations</span><span class="p">,</span> <span class="n">radius_upper</span><span class="p">)</span>
+        <span class="n">lower_speed</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">MAX_SPEED</span> <span class="o">/</span> <span class="mf">1.2</span>
+        <span class="n">curvature_threshold_lower</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">compute_curvature_threshold</span><span class="p">(</span>
+            <span class="n">lower_speed</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">VERTICAL_ACCEL_CONSTRAINT</span><span class="p">)</span>
+        <span class="n">radius_lower</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">curvature_threshold_lower</span>
+        <span class="n">envelope_lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_envelope</span><span class="p">(</span><span class="n">elevations</span><span class="p">,</span> <span class="n">radius_lower</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">envelope_upper</span><span class="p">,</span> <span class="n">envelope_lower</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="PylonsLattice.envelope_point_to_bounds"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.envelope_point_to_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">envelope_point_to_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_point</span><span class="p">):</span>
+        <span class="n">elevation_point</span><span class="p">,</span> <span class="n">envelope_point_upper</span><span class="p">,</span> <span class="n">envelope_point_lower</span> <span class="o">=</span> <span class="n">data_point</span>
+        <span class="n">land_elevation</span> <span class="o">=</span> <span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;land_elevation&quot;</span><span class="p">]</span>
+        <span class="n">pylons_slice_bounds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;tallest_pylon_height&quot;</span><span class="p">:</span> <span class="n">envelope_point_upper</span> <span class="o">-</span> <span class="n">land_elevation</span><span class="p">,</span>
+            <span class="s">&quot;shortest_pylon_height&quot;</span><span class="p">:</span> <span class="n">envelope_point_lower</span> <span class="o">-</span> <span class="n">land_elevation</span><span class="p">,</span>
+            <span class="s">&quot;distance_along_path&quot;</span><span class="p">:</span> <span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;distance_along_path&quot;</span><span class="p">],</span>
+            <span class="s">&quot;geospatial&quot;</span><span class="p">:</span> <span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;geospatial&quot;</span><span class="p">],</span>
+            <span class="s">&quot;latlng&quot;</span><span class="p">:</span> <span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;latlng&quot;</span><span class="p">],</span>
+            <span class="s">&quot;land_elevation&quot;</span><span class="p">:</span> <span class="n">land_elevation</span><span class="p">,</span>
+            <span class="s">&quot;pylon_height_step_size&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_HEIGHT_STEP_SIZE</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">pylons_slice_bounds</span>
+</div>
+<div class="viewcode-block" id="PylonsLattice.build_pylons_slices_bounds"><a class="viewcode-back" href="../tube.html#tube.PylonsLattice.build_pylons_slices_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">build_pylons_slices_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elevation_profile</span><span class="p">,</span> <span class="n">pylons_envelope_upper</span><span class="p">,</span>
+                                   <span class="n">pylons_envelope_lower</span><span class="p">):</span>
+        <span class="n">pylons_data</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">elevation_profile</span><span class="p">,</span> <span class="n">pylons_envelope_upper</span><span class="p">,</span>
+                          <span class="n">pylons_envelope_lower</span><span class="p">)</span>
+        <span class="n">pylons_slices_bounds</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">envelope_point_to_bounds</span><span class="p">(</span><span class="n">data_point</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">data_point</span> <span class="ow">in</span> <span class="n">pylons_data</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">pylons_slices_bounds</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elevation_profile</span><span class="p">):</span>
+        <span class="n">pylons_envelope_upper</span><span class="p">,</span> <span class="n">pylons_envelope_lower</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_pylons_envelopes</span><span class="p">(</span><span class="n">elevation_profile</span><span class="p">)</span>
+        <span class="n">pylons_slices_bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_pylons_slices_bounds</span><span class="p">(</span><span class="n">elevation_profile</span><span class="p">,</span>
+                                                               <span class="n">pylons_envelope_upper</span><span class="p">,</span> <span class="n">pylons_envelope_lower</span><span class="p">)</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractLattice</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pylons_slices_bounds</span><span class="p">,</span>
+                                          <span class="n">PylonsSlice</span><span class="o">.</span><span class="n">pylons_builder</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TubeEdge"><a class="viewcode-back" href="../tube.html#tube.TubeEdge">[docs]</a><span class="k">class</span> <span class="nc">TubeEdge</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractEdge</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TubeEdge.tube_cost"><a class="viewcode-back" href="../tube.html#tube.TubeEdge.tube_cost">[docs]</a>    <span class="k">def</span> <span class="nf">tube_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">):</span>
+        <span class="n">start_tube_coords</span> <span class="o">=</span> <span class="n">start_pylon</span><span class="o">.</span><span class="n">tube_coords</span>
+        <span class="n">end_tube_coords</span> <span class="o">=</span> <span class="n">end_pylon</span><span class="o">.</span><span class="n">tube_coords</span>
+        <span class="n">tube_vector</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">edge_to_vector</span><span class="p">([</span><span class="n">start_tube_coords</span><span class="p">,</span> <span class="n">end_tube_coords</span><span class="p">])</span>
+        <span class="n">tube_length</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">tube_vector</span><span class="p">)</span>
+        <span class="n">tube_cost</span> <span class="o">=</span> <span class="n">tube_length</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_COST_PER_METER</span>
+        <span class="k">return</span> <span class="n">tube_cost</span>
+</div>
+<div class="viewcode-block" id="TubeEdge.pylon_cost"><a class="viewcode-back" href="../tube.html#tube.TubeEdge.pylon_cost">[docs]</a>    <span class="k">def</span> <span class="nf">pylon_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">):</span>
+        <span class="n">total_pylon_cost</span> <span class="o">=</span> <span class="n">start_pylon</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">+</span> <span class="n">end_pylon</span><span class="o">.</span><span class="n">pylon_cost</span>
+        <span class="k">return</span> <span class="n">total_pylon_cost</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">):</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractEdge</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">start_pylon</span><span class="o">.</span><span class="n">tube_coords</span><span class="p">,</span> <span class="n">end_pylon</span><span class="o">.</span><span class="n">tube_coords</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span><span class="p">(</span><span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span><span class="p">(</span><span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TubeEdgesSets"><a class="viewcode-back" href="../tube.html#tube.TubeEdgesSets">[docs]</a><span class="k">class</span> <span class="nc">TubeEdgesSets</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractEdgesSets</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TubeEdgesSets.tube_edge_builder"><a class="viewcode-back" href="../tube.html#tube.TubeEdgesSets.tube_edge_builder">[docs]</a>    <span class="k">def</span> <span class="nf">tube_edge_builder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">):</span>
+        <span class="n">tube_edge</span> <span class="o">=</span> <span class="n">TubeEdge</span><span class="p">(</span><span class="n">start_pylon</span><span class="p">,</span> <span class="n">end_pylon</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tube_edge</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TubeEdgesSets.is_tube_edge_pair_compatible"><a class="viewcode-back" href="../tube.html#tube.TubeEdgesSets.is_tube_edge_pair_compatible">[docs]</a>    <span class="k">def</span> <span class="nf">is_tube_edge_pair_compatible</span><span class="p">(</span><span class="n">tube_edge_a</span><span class="p">,</span> <span class="n">tube_edge_b</span><span class="p">):</span>
+        <span class="n">edge_pair_compatible</span> <span class="o">=</span> <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractEdgesSets</span><span class="o">.</span><span class="n">is_edge_pair_compatible</span><span class="p">(</span>
+            <span class="n">tube_edge_a</span><span class="p">,</span> <span class="n">tube_edge_b</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_DEGREE_CONSTRAINT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">edge_pair_compatible</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pylons_lattice</span><span class="p">):</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractEdgesSets</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pylons_lattice</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">tube_edge_builder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_tube_edge_pair_compatible</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="TubeGraph"><a class="viewcode-back" href="../tube.html#tube.TubeGraph">[docs]</a><span class="k">class</span> <span class="nc">TubeGraph</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractGraph</span><span class="p">):</span>
+
+    <span class="n">velocity_arc_length_step_size</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">VELOCITY_ARC_LENGTH_STEP_SIZE</span>
+
+<div class="viewcode-block" id="TubeGraph.compute_triptime_excess"><a class="viewcode-back" href="../tube.html#tube.TubeGraph.compute_triptime_excess">[docs]</a>    <span class="k">def</span> <span class="nf">compute_triptime_excess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tube_coords</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">num_edges</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">z_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">tube_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">tube_coord</span> <span class="ow">in</span> <span class="n">tube_coords</span><span class="p">]</span>
+            <span class="n">local_max_allowed_vels</span> <span class="o">=</span> <span class="n">interpolate</span><span class="o">.</span><span class="n">points_1d_local_max_allowed_vels</span><span class="p">(</span>
+                <span class="n">z_values</span><span class="p">)</span>
+            <span class="n">triptime_excess</span> <span class="o">=</span> <span class="n">velocity</span><span class="o">.</span><span class="n">compute_local_trip_time_excess</span><span class="p">(</span>
+                <span class="n">local_max_allowed_vels</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity_arc_length_step_size</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">triptime_excess</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_id</span><span class="p">,</span> <span class="n">end_id</span><span class="p">,</span> <span class="n">start_angle</span><span class="p">,</span> <span class="n">end_angle</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">,</span>
+                 <span class="n">tube_cost</span><span class="p">,</span> <span class="n">pylon_cost</span><span class="p">,</span> <span class="n">tube_coords</span><span class="p">):</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractGraph</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_id</span><span class="p">,</span> <span class="n">end_id</span><span class="p">,</span>
+                                        <span class="n">start_angle</span><span class="p">,</span> <span class="n">end_angle</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">=</span> <span class="n">tube_cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">=</span> <span class="n">pylon_cost</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_coords</span> <span class="o">=</span> <span class="n">tube_coords</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">triptime_excess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_triptime_excess</span><span class="p">(</span>
+            <span class="n">tube_coords</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TubeGraph.tube_cost_trip_time_excess"><a class="viewcode-back" href="../tube.html#tube.TubeGraph.tube_cost_trip_time_excess">[docs]</a>    <span class="k">def</span> <span class="nf">tube_cost_trip_time_excess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cost_trip_time_excess</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">triptime_excess</span><span class="p">]</span>
+        <span class="c">#print(&quot;tube cost: &quot; + str(self.tube_cost))</span>
+        <span class="c">#print(&quot;pylon cost: &quot; + str(self.pylon_cost))</span>
+        <span class="c">#print(&quot;trip time excess: &quot; + str(self.triptime_excess))</span>
+        <span class="k">return</span> <span class="n">cost_trip_time_excess</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TubeGraph.init_from_tube_edge"><a class="viewcode-back" href="../tube.html#tube.TubeGraph.init_from_tube_edge">[docs]</a>    <span class="k">def</span> <span class="nf">init_from_tube_edge</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">tube_edge</span><span class="p">):</span>
+        <span class="n">start_id</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">start_id</span>
+        <span class="n">end_id</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">end_id</span>
+        <span class="n">start_angle</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">angle</span>
+        <span class="n">end_angle</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">angle</span>
+        <span class="n">num_edges</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">tube_cost</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">tube_cost</span>
+        <span class="n">pylon_cost</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">pylon_cost</span>
+        <span class="n">tube_coords</span> <span class="o">=</span> <span class="n">tube_edge</span><span class="o">.</span><span class="n">tube_coords</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="n">start_id</span><span class="p">,</span> <span class="n">end_id</span><span class="p">,</span> <span class="n">start_angle</span><span class="p">,</span> <span class="n">end_angle</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">,</span> <span class="n">tube_cost</span><span class="p">,</span>
+                   <span class="n">pylon_cost</span><span class="p">,</span> <span class="n">tube_coords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+</div>
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TubeGraph.merge_two_tube_graphs"><a class="viewcode-back" href="../tube.html#tube.TubeGraph.merge_two_tube_graphs">[docs]</a>    <span class="k">def</span> <span class="nf">merge_two_tube_graphs</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">tube_graph_a</span><span class="p">,</span> <span class="n">tube_graph_b</span><span class="p">):</span>
+        <span class="n">start_id</span> <span class="o">=</span> <span class="n">tube_graph_a</span><span class="o">.</span><span class="n">start_id</span>
+        <span class="n">end_id</span> <span class="o">=</span> <span class="n">tube_graph_b</span><span class="o">.</span><span class="n">end_id</span>
+        <span class="n">start_angle</span> <span class="o">=</span> <span class="n">tube_graph_a</span><span class="o">.</span><span class="n">start_angle</span>
+        <span class="n">end_angle</span> <span class="o">=</span> <span class="n">tube_graph_b</span><span class="o">.</span><span class="n">end_angle</span>
+        <span class="n">num_edges</span> <span class="o">=</span> <span class="n">tube_graph_a</span><span class="o">.</span><span class="n">num_edges</span> <span class="o">+</span> <span class="n">tube_graph_b</span><span class="o">.</span><span class="n">num_edges</span>
+        <span class="n">tube_cost</span> <span class="o">=</span> <span class="n">tube_graph_a</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">+</span> <span class="n">tube_graph_b</span><span class="o">.</span><span class="n">tube_cost</span>
+        <span class="n">pylon_cost</span> <span class="o">=</span> <span class="n">tube_graph_a</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">+</span> <span class="n">tube_graph_b</span><span class="o">.</span><span class="n">pylon_cost</span>
+        <span class="n">tube_coords</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">smart_concat</span><span class="p">(</span><span class="n">tube_graph_a</span><span class="o">.</span><span class="n">tube_coords</span><span class="p">,</span>
+                                        <span class="n">tube_graph_b</span><span class="o">.</span><span class="n">tube_coords</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">cls</span><span class="p">(</span><span class="n">start_id</span><span class="p">,</span> <span class="n">end_id</span><span class="p">,</span> <span class="n">start_angle</span><span class="p">,</span> <span class="n">end_angle</span><span class="p">,</span> <span class="n">num_edges</span><span class="p">,</span> <span class="n">tube_cost</span><span class="p">,</span>
+                   <span class="n">pylon_cost</span><span class="p">,</span> <span class="n">tube_coords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+</div></div>
+<div class="viewcode-block" id="TubeGraphsSet"><a class="viewcode-back" href="../tube.html#tube.TubeGraphsSet">[docs]</a><span class="k">class</span> <span class="nc">TubeGraphsSet</span><span class="p">(</span><span class="n">abstract</span><span class="o">.</span><span class="n">AbstractGraphsSet</span><span class="p">):</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TubeGraphsSet.is_graph_pair_compatible"><a class="viewcode-back" href="../tube.html#tube.TubeGraphsSet.is_graph_pair_compatible">[docs]</a>    <span class="k">def</span> <span class="nf">is_graph_pair_compatible</span><span class="p">(</span><span class="n">graph_a</span><span class="p">,</span> <span class="n">graph_b</span><span class="p">):</span>
+        <span class="n">graphs_compatible</span> <span class="o">=</span> <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractGraphsSet</span><span class="o">.</span><span class="n">is_graph_pair_compatible</span><span class="p">(</span>
+            <span class="n">graph_a</span><span class="p">,</span> <span class="n">graph_b</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_DEGREE_CONSTRAINT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graphs_compatible</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="TubeGraphsSet.tubegraphs_cost_triptime_excess"><a class="viewcode-back" href="../tube.html#tube.TubeGraphsSet.tubegraphs_cost_triptime_excess">[docs]</a>    <span class="k">def</span> <span class="nf">tubegraphs_cost_triptime_excess</span><span class="p">(</span><span class="n">tube_graphs</span><span class="p">,</span> <span class="n">graphs_num_edges</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">graphs_num_edges</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">graphs_cost_triptime_excess</span> <span class="o">=</span> <span class="p">[</span><span class="n">tube_graph</span><span class="o">.</span><span class="n">tube_cost_trip_time_excess</span><span class="p">()</span>
+                                           <span class="k">for</span> <span class="n">tube_graph</span> <span class="ow">in</span> <span class="n">tube_graphs</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">graphs_cost_triptime_excess</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tube_graphs</span><span class="p">,</span> <span class="n">graphs_num_edges</span><span class="p">):</span>
+        <span class="n">minimize_cost</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">minimize_triptime_excess</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">abstract</span><span class="o">.</span><span class="n">AbstractGraphsSet</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tube_graphs</span><span class="p">,</span>
+                                            <span class="bp">self</span><span class="o">.</span><span class="n">tubegraphs_cost_triptime_excess</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_graph_pair_compatible</span><span class="p">,</span>
+                                            <span class="n">minimize_cost</span><span class="p">,</span> <span class="n">minimize_triptime_excess</span><span class="p">,</span> <span class="n">graphs_num_edges</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="TubeGraphsSet.init_from_tube_edges_set"><a class="viewcode-back" href="../tube.html#tube.TubeGraphsSet.init_from_tube_edges_set">[docs]</a>    <span class="k">def</span> <span class="nf">init_from_tube_edges_set</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">tube_edges_set</span><span class="p">):</span>
+        <span class="n">tube_graphs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">TubeGraph</span><span class="o">.</span><span class="n">init_from_tube_edge</span><span class="p">,</span> <span class="n">tube_edges_set</span><span class="p">)</span>
+        <span class="n">graphs_num_edges</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">tube_graphs</span><span class="p">,</span> <span class="n">graphs_num_edges</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="tube_graphs_set_pair_merger"><a class="viewcode-back" href="../tube.html#tube.tube_graphs_set_pair_merger">[docs]</a><span class="k">def</span> <span class="nf">tube_graphs_set_pair_merger</span><span class="p">(</span><span class="n">tube_graphs_set_a</span><span class="p">,</span> <span class="n">tube_graphs_set_b</span><span class="p">):</span>
+    <span class="n">merged_tube_graphs</span> <span class="o">=</span> <span class="n">abstract</span><span class="o">.</span><span class="n">graphs_set_pair_merger</span><span class="p">(</span><span class="n">tube_graphs_set_a</span><span class="p">,</span>
+                                                         <span class="n">tube_graphs_set_b</span><span class="p">,</span> <span class="n">TubeGraphsSet</span><span class="p">,</span> <span class="n">TubeGraphsSet</span><span class="o">.</span><span class="n">is_graph_pair_compatible</span><span class="p">,</span>
+                                                         <span class="n">TubeGraph</span><span class="o">.</span><span class="n">merge_two_tube_graphs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">merged_tube_graphs</span>
+
+</div>
+<div class="viewcode-block" id="build_tube_graphs"><a class="viewcode-back" href="../tube.html#tube.build_tube_graphs">[docs]</a><span class="k">def</span> <span class="nf">build_tube_graphs</span><span class="p">(</span><span class="n">elevation_profile</span><span class="p">):</span>
+    <span class="n">pylons_lattice</span> <span class="o">=</span> <span class="n">PylonsLattice</span><span class="p">(</span><span class="n">elevation_profile</span><span class="p">)</span>
+    <span class="n">tube_edges_sets</span> <span class="o">=</span> <span class="n">TubeEdgesSets</span><span class="p">(</span><span class="n">pylons_lattice</span><span class="p">)</span>
+    <span class="n">tube_graphs_sets</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">TubeGraphsSet</span><span class="o">.</span><span class="n">init_from_tube_edges_set</span><span class="p">,</span>
+                           <span class="n">tube_edges_sets</span><span class="o">.</span><span class="n">final_edges_sets</span><span class="p">)</span>
+    <span class="n">tube_graphs_sets_tree</span> <span class="o">=</span> <span class="n">mergetree</span><span class="o">.</span><span class="n">MasterTree</span><span class="p">(</span><span class="n">tube_graphs_sets</span><span class="p">,</span>
+                                                 <span class="n">tube_graphs_set_pair_merger</span><span class="p">,</span> <span class="n">abstract</span><span class="o">.</span><span class="n">graphs_set_updater</span><span class="p">)</span>
+    <span class="n">root_tube_graphs_set</span> <span class="o">=</span> <span class="n">tube_graphs_sets_tree</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">selected_tube_graphs</span> <span class="o">=</span> <span class="n">root_tube_graphs_set</span><span class="o">.</span><span class="n">selected_graphs</span>
+    <span class="k">return</span> <span class="n">selected_tube_graphs</span>
+
+</div>
+<div class="viewcode-block" id="compute_pylon_cost"><a class="viewcode-back" href="../tube.html#tube.compute_pylon_cost">[docs]</a><span class="k">def</span> <span class="nf">compute_pylon_cost</span><span class="p">(</span><span class="n">pylon_height</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">pylon_height</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">height_cost</span> <span class="o">=</span> <span class="n">pylon_height</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_COST_PER_METER</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">height_cost</span> <span class="o">=</span> <span class="o">-</span><span class="n">pylon_height</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_COST_PER_METER</span>
+    <span class="n">pylon_cost</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_BASE_COST</span> <span class="o">+</span> <span class="n">height_cost</span>
+    <span class="k">return</span> <span class="n">pylon_cost</span>
+
+</div>
+<div class="viewcode-block" id="compute_tube_cost"><a class="viewcode-back" href="../tube.html#tube.compute_tube_cost">[docs]</a><span class="k">def</span> <span class="nf">compute_tube_cost</span><span class="p">(</span><span class="n">tube_length</span><span class="p">):</span>
+    <span class="n">tube_cost</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_COST_PER_METER</span> <span class="o">*</span> <span class="n">tube_length</span>
+    <span class="k">return</span> <span class="n">tube_cost</span>
+
+</div>
+<div class="viewcode-block" id="build_tube_profile_v2"><a class="viewcode-back" href="../tube.html#tube.build_tube_profile_v2">[docs]</a><span class="k">def</span> <span class="nf">build_tube_profile_v2</span><span class="p">(</span><span class="n">elevation_profile</span><span class="p">):</span>
+    <span class="n">geospatials</span> <span class="o">=</span> <span class="p">[</span><span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;geospatial&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">elevation_point</span>
+                   <span class="ow">in</span> <span class="n">elevation_profile</span><span class="p">]</span>
+    <span class="n">land_elevations</span> <span class="o">=</span> <span class="p">[</span><span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;land_elevation&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">elevation_point</span>
+                       <span class="ow">in</span> <span class="n">elevation_profile</span><span class="p">]</span>
+    <span class="n">arc_lengths</span> <span class="o">=</span> <span class="p">[</span><span class="n">elevation_point</span><span class="p">[</span><span class="s">&quot;distance_along_path&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">elevation_point</span>
+                   <span class="ow">in</span> <span class="n">elevation_profile</span><span class="p">]</span>
+    <span class="n">s_interp</span><span class="p">,</span> <span class="n">z_interp</span> <span class="o">=</span> <span class="n">landscape</span><span class="o">.</span><span class="n">match_landscape_v1</span><span class="p">(</span><span class="n">arc_lengths</span><span class="p">,</span>
+                                                      <span class="n">land_elevations</span><span class="p">,</span> <span class="s">&quot;elevation&quot;</span><span class="p">)</span>
+    <span class="n">tube_spline</span> <span class="o">=</span> <span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">s_interp</span><span class="p">,</span> <span class="n">z_interp</span><span class="p">)</span>
+    <span class="n">tube_elevations</span> <span class="o">=</span> <span class="n">tube_spline</span><span class="p">(</span><span class="n">arc_lengths</span><span class="p">)</span>
+    <span class="n">spatial_x_values</span><span class="p">,</span> <span class="n">spatial_y_values</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">geospatials</span><span class="p">)</span>
+    <span class="n">pylon_heights</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">tube_elevations</span><span class="p">,</span> <span class="n">land_elevations</span><span class="p">)</span>
+    <span class="n">tube_coords</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">spatial_x_values</span><span class="p">,</span> <span class="n">spatial_y_values</span><span class="p">,</span> <span class="n">tube_elevations</span><span class="p">)</span>
+    <span class="n">tube_length</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">compute_total_arc_length</span><span class="p">(</span><span class="n">tube_coords</span><span class="p">)</span>
+    <span class="n">total_pylon_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">compute_pylon_cost</span><span class="p">,</span> <span class="n">pylon_heights</span><span class="p">))</span>
+    <span class="n">total_tube_cost</span> <span class="o">=</span> <span class="n">compute_tube_cost</span><span class="p">(</span><span class="n">tube_length</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">total_tube_cost</span><span class="p">,</span> <span class="n">total_pylon_cost</span><span class="p">,</span> <span class="n">tube_elevations</span><span class="p">]</span>
+</div>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def curvature(i, j, arc_lengths, elevations):</span>
+<span class="sd">    x0, x1 = [arc_lengths[i], arc_lengths[j]]</span>
+<span class="sd">    y0, y1 = [elevations[i], elevations[j]]</span>
+<span class="sd">    tht0, tht1  = [0, 0]</span>
+<span class="sd">    k, K, L = clothoid.build_clothoid(x0, y0, tht0, x1, y1, tht1)</span>
+<span class="sd">    extremal_curvatures = [k + L*K, k]</span>
+<span class="sd">    return max(np.absolute(extremal_curvatures))</span>
+
+<span class="sd">def test(i, j, arc_lengths, elevations, cached):</span>
+<span class="sd">    if cached[i][j]:</span>
+<span class="sd">        return True</span>
+<span class="sd">    else:</span>
+<span class="sd">        cached[i][j] = cached[j][i] = True</span>
+<span class="sd">        curvature_tol = config.linear_accel_constraint/config.MAX_SPEED**2</span>
+<span class="sd">        return curvature(i, j, arc_lengths, elevations) &gt; curvature_tol</span>
+
+<span class="sd">def bad(index, tube_profile, arc_lengths, elevations, cached):       </span>
+<span class="sd">    index_inserted_at = util.sorted_insert(index, tube_profile)</span>
+<span class="sd">    backward_valid = test(tube_profile[index_inserted_at-1],</span>
+<span class="sd">                          tube_profile[index_inserted_at],</span>
+<span class="sd">                          arc_lengths, elevations, cached) </span>
+<span class="sd">    forward_valid = test(tube_profile[index_inserted_at],</span>
+<span class="sd">                        tube_profile[index_inserted_at+1],</span>
+<span class="sd">                        arc_lengths, elevations, cached)</span>
+<span class="sd">    index_valid = backward_valid or forward_valid</span>
+<span class="sd">    tube_profile.pop(index_inserted_at)</span>
+<span class="sd">    return index_valid</span>
+
+<span class="sd">def match_point(elevation_indices, tube_profile_indices,</span>
+<span class="sd">                     arc_lengths, elevations, cached):</span>
+<span class="sd">    i = 0</span>
+<span class="sd">    while (bad(elevation_indices[i], tube_profile_indices,</span>
+<span class="sd">                        arc_lengths, elevations, cached) and</span>
+<span class="sd">                        i &lt; len(elevation_indices) - 1):</span>
+<span class="sd">        i += 1</span>
+<span class="sd">    if i == len(elevation_indices) - 1:</span>
+<span class="sd">        print &quot;Exhausted the landscape. Could not find a point to match.&quot;</span>
+<span class="sd">        return False</span>
+<span class="sd">    else:</span>
+<span class="sd">        util.sorted_insert(elevation_indices.pop(i), tube_profile_indices)</span>
+<span class="sd">        return True</span>
+
+<span class="sd">def reverse_sort_indices(a_list):</span>
+<span class="sd">    list_indices = range(len(a_list))</span>
+<span class="sd">    sorted_indices = sorted(list_indices, key = lambda i: a_list[i], reverse=True)</span>
+<span class="sd">    return sorted_indices</span>
+
+<span class="sd">def get_selected_tube_points(elevation_profile):</span>
+<span class="sd">    #Add the endpoint indices to the tube profile</span>
+<span class="sd">    tube_profile_indices = [0, len(elevation_profile)-1]</span>
+<span class="sd">    elevations = [elevation_point[&quot;land_elevation&quot;] for elevation_point</span>
+<span class="sd">                                                 in elevation_profile]</span>
+<span class="sd">    arc_lengths = [elevation_point[&quot;distance_along_path&quot;] for elevation_point</span>
+<span class="sd">                                                     in elevation_profile]</span>
+<span class="sd">    #we now sort the remaining landscape.</span>
+<span class="sd">    truncated_elevations = elevations[1 : len(elevations)]</span>
+<span class="sd">    sorted_elevation_indices = reverse_sort_indices(truncated_elevations)</span>
+<span class="sd">    elevation_indices = [index + 1 for index in sorted_elevation_indices]</span>
+<span class="sd">    cached = [[0 for i in range(len(elevations))]</span>
+<span class="sd">                 for i in range(len(elevations))]</span>
+<span class="sd">    #l = 0</span>
+<span class="sd">    while match_point(elevation_indices, tube_profile_indices,</span>
+<span class="sd">                      arc_lengths, elevations, cached):</span>
+<span class="sd">        pass</span>
+<span class="sd">        #l += 1</span>
+<span class="sd">        #print &quot;matched the &quot;+ str(l)+ &quot;th point.&quot;</span>
+<span class="sd">    selected_elevations = [elevations[index] for index in tube_profile]</span>
+<span class="sd">    selected_arc_lengths = [arc_lengths[index] for index in tube_profile]</span>
+<span class="sd">    return [selected_arc_lengths, selected_elevations]</span>
+
+<span class="sd">def build_tube_profile(elevation_profile):    </span>
+<span class="sd">    arc_lengths = [elevation_point[&quot;distance_along_path&quot;] for elevation_point</span>
+<span class="sd">                                                     in elevation_profile]</span>
+<span class="sd">    selected_arc_lengths, selected_elevations = get_selected_tube_points(</span>
+<span class="sd">                                                         elevation_profile)</span>
+<span class="sd">    tube_spline = PchipInterpolator(selected_arc_lengths, selected_elevations)</span>
+<span class="sd">    tube_elevations = tube_spline(arc_lengths)</span>
+<span class="sd">    return tube_elevations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, jonathan ward.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

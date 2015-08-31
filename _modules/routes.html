@@ -1,0 +1,421 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>routes &mdash; hyperloop 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html"/>
+        <link rel="up" title="Module code" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="../index.html" class="icon icon-home"> hyperloop
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">hyperloop</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      
+    <li>routes</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for routes</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Original Developer: David Roberts</span>
+<span class="sd">Purpose of Module: To generate a route from a graph.</span>
+<span class="sd">Last Modified: 8/25/15</span>
+<span class="sd">Last Modified By: Jonathan Ward</span>
+<span class="sd">Last Modification Purpose: To add classes providing useful structure.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Standard Modules:</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">PchipInterpolator</span>
+
+<span class="c"># Our Modules</span>
+<span class="kn">import</span> <span class="nn">advanced_interpolate</span> <span class="kn">as</span> <span class="nn">interp</span>
+<span class="kn">import</span> <span class="nn">cacher</span>
+<span class="kn">import</span> <span class="nn">comfort</span> <span class="kn">as</span> <span class="nn">cmft</span>
+<span class="kn">import</span> <span class="nn">config</span>
+<span class="kn">import</span> <span class="nn">elevation</span>
+<span class="kn">import</span> <span class="nn">landcover</span>
+<span class="kn">import</span> <span class="nn">match_landscape</span> <span class="kn">as</span> <span class="nn">landscape</span>
+<span class="kn">import</span> <span class="nn">proj</span>
+<span class="kn">import</span> <span class="nn">util</span>
+<span class="kn">import</span> <span class="nn">visualize</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+
+<span class="c"># The Route Class.</span>
+<div class="viewcode-block" id="Route"><a class="viewcode-back" href="../routes.html#routes.Route">[docs]</a><span class="k">class</span> <span class="nc">Route</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comfort</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_latlngs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">land_cost</span> <span class="o">=</span> <span class="n">landcover</span><span class="o">.</span><span class="n">get_land_cost</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_elevations</span> <span class="o">=</span> <span class="n">z</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pylons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_pylons</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_tube_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">pylon</span><span class="p">[</span><span class="s">&quot;pylon_cost&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">pylon</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylons</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_velocity_profile</span><span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">acceleration_profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_acceleration_profile</span><span class="p">(</span>
+            <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trip_time</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">print</span> <span class="s">&quot;trip_time is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trip_time</span><span class="p">)</span>
+        <span class="n">t_chunks</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">break_up</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="n">t_comfort</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_chunks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t_chunks</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comfort_rating</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">LpNorm</span><span class="p">(</span><span class="n">t_comfort</span><span class="p">,</span> <span class="n">comfort</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;comfort_rating is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">comfort_rating</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&quot;cost is: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">land_cost</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000000000.0</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; billion USD.&quot;</span>
+
+<div class="viewcode-block" id="Route.compute_latlngs"><a class="viewcode-back" href="../routes.html#routes.Route.compute_latlngs">[docs]</a>    <span class="k">def</span> <span class="nf">compute_latlngs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="n">geospatials</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">proj</span><span class="o">.</span><span class="n">geospatials_to_latlngs</span><span class="p">(</span><span class="n">geospatials</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">PROJ</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Route.compute_pylons"><a class="viewcode-back" href="../routes.html#routes.Route.compute_pylons">[docs]</a>    <span class="k">def</span> <span class="nf">compute_pylons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="n">geospatials</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">zland</span> <span class="o">=</span> <span class="n">landscape</span><span class="o">.</span><span class="n">gen_landscape</span><span class="p">(</span><span class="n">geospatials</span><span class="p">,</span> <span class="s">&quot;elevation&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">pylon_cost</span><span class="p">(</span><span class="n">pylon_height</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pylon_height</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_BASE_COST</span> <span class="o">+</span> <span class="n">pylon_height</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_COST_PER_METER</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span> <span class="n">pylon_height</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">TUNNELING_COST_PER_METER</span>
+        <span class="n">geospatials</span> <span class="o">=</span> <span class="p">[</span><span class="n">geospatial</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">geospatial</span> <span class="ow">in</span> <span class="n">geospatials</span><span class="p">]</span>
+        <span class="n">Pylons</span> <span class="o">=</span> <span class="p">[{</span><span class="s">&quot;geospatial&quot;</span><span class="p">:</span> <span class="n">geospatials</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                   <span class="s">&quot;latlng&quot;</span><span class="p">:</span> <span class="n">proj</span><span class="o">.</span><span class="n">geospatial_to_latlng</span><span class="p">(</span><span class="n">geospatials</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">config</span><span class="o">.</span><span class="n">PROJ</span><span class="p">),</span>
+                   <span class="s">&quot;land_elevation&quot;</span><span class="p">:</span> <span class="n">zland</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                   <span class="s">&quot;pylon_height&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">zland</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span>
+                   <span class="s">&quot;pylon_cost&quot;</span><span class="p">:</span> <span class="n">pylon_cost</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">zland</span><span class="p">[</span><span class="n">i</span><span class="p">])}</span>
+                  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="n">Pylons</span>
+</div>
+<div class="viewcode-block" id="Route.compute_tube_cost"><a class="viewcode-back" href="../routes.html#routes.Route.compute_tube_cost">[docs]</a>    <span class="k">def</span> <span class="nf">compute_tube_cost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="n">geospatials</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+        <span class="n">tube_length</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">geospatials</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">geospatials</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                           <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">geospatials</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">tube_length</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">TUBE_COST_PER_METER</span>
+</div>
+<div class="viewcode-block" id="Route.compute_velocity_profile"><a class="viewcode-back" href="../routes.html#routes.Route.compute_velocity_profile">[docs]</a>    <span class="k">def</span> <span class="nf">compute_velocity_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">):</span>
+        <span class="n">velocity_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">velocity_vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">velocity_vector</span> <span class="ow">in</span> <span class="n">velocity_vectors</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Route.compute_acceleration_profile"><a class="viewcode-back" href="../routes.html#routes.Route.compute_acceleration_profile">[docs]</a>    <span class="k">def</span> <span class="nf">compute_acceleration_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
+        <span class="n">acceleration_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">])</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">acceleration_vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">acceleration_vector</span> <span class="ow">in</span> <span class="n">acceleration_vectors</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="Route.as_dict"><a class="viewcode-back" href="../routes.html#routes.Route.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">route_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;latlngs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span><span class="p">,</span>
+            <span class="s">&quot;land_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">land_cost</span><span class="p">,</span>
+            <span class="s">&quot;tube_coords&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_elevations</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+            <span class="s">&quot;pylons&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylons</span><span class="p">,</span>
+            <span class="s">&quot;tube_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span><span class="p">,</span>
+            <span class="s">&quot;pylon_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span><span class="p">,</span>
+            <span class="s">&quot;velocity_profile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity_profile</span><span class="p">,</span>
+            <span class="s">&quot;acceleration_profile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceleration_profile</span><span class="p">,</span>
+            <span class="s">&quot;comfort_rating&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">comfort_rating</span><span class="p">,</span>
+            <span class="s">&quot;trip_time&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">trip_time</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">route_dict</span>
+
+
+<span class="c"># Ancillary Functions:</span>
+</div></div>
+<div class="viewcode-block" id="graph_to_2_droute"><a class="viewcode-back" href="../routes.html#routes.graph_to_2_droute">[docs]</a><span class="k">def</span> <span class="nf">graph_to_2_droute</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">geospatials</span>
+    <span class="k">return</span> <span class="n">interp</span><span class="o">.</span><span class="n">para_super_q</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="graph_to_2_droutev2"><a class="viewcode-back" href="../routes.html#routes.graph_to_2_droutev2">[docs]</a><span class="k">def</span> <span class="nf">graph_to_2_droutev2</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">M</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">geospatials</span>
+    <span class="k">return</span> <span class="n">interp</span><span class="o">.</span><span class="n">scipy_q</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_2_droute_to_3_droute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">elevation_tradeoff</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">,</span> <span class="n">zland</span> <span class="o">=</span> <span class="n">landscape</span><span class="o">.</span><span class="n">gen_landscape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&quot;elevation&quot;</span><span class="p">)</span>
+    <span class="n">s_interp</span><span class="p">,</span> <span class="n">z_interp</span> <span class="o">=</span> <span class="n">landscape</span><span class="o">.</span><span class="n">match_landscape</span><span class="p">(</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">zland</span><span class="p">,</span> <span class="s">&quot;elevation&quot;</span><span class="p">,</span> <span class="n">elevation_tradeoff</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">s_interp</span><span class="p">,</span> <span class="n">z_interp</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="n">s_pylons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">z_pylons</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">s_pylons</span><span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_3_droute_to_4_droute</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">comfort_tradeoff1</span><span class="p">,</span> <span class="n">comfort_tradeoff2</span><span class="p">):</span>
+    <span class="n">s</span><span class="p">,</span> <span class="n">vland</span> <span class="o">=</span> <span class="n">landscape</span><span class="o">.</span><span class="n">gen_landscape</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&quot;velocity&quot;</span><span class="p">)</span>
+    <span class="n">s_interp</span><span class="p">,</span> <span class="n">v_interp</span> <span class="o">=</span> <span class="n">landscape</span><span class="o">.</span><span class="n">match_landscape</span><span class="p">(</span>
+        <span class="n">s</span><span class="p">,</span> <span class="n">vland</span><span class="p">,</span> <span class="s">&quot;velocity&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">comfort_tradeoff1</span><span class="p">,</span> <span class="n">comfort_tradeoff2</span><span class="p">])</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">s_interp</span><span class="p">,</span> <span class="n">v_interp</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">s_val</span><span class="p">))</span> <span class="k">for</span> <span class="n">s_val</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">util</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)):</span>
+        <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">util</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)])</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">t</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="comfortanalysis__of_4_droute"><a class="viewcode-back" href="../routes.html#routes.comfortanalysis__of_4_droute">[docs]</a><span class="k">def</span> <span class="nf">comfortanalysis__of_4_droute</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">util</span><span class="o">.</span><span class="n">numerical_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">util</span><span class="o">.</span><span class="n">numerical_derivative</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">util</span><span class="o">.</span><span class="n">numerical_derivative</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">]</span>
+    <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">t</span> <span class="o">=</span> <span class="p">[</span><span class="n">util</span><span class="o">.</span><span class="n">numerical_derivative</span><span class="p">(</span><span class="n">vx</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">util</span><span class="o">.</span><span class="n">numerical_derivative</span><span class="p">(</span>
+        <span class="n">vy</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">util</span><span class="o">.</span><span class="n">numerical_derivative</span><span class="p">(</span><span class="n">vz</span><span class="p">,</span> <span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">]</span>
+
+    <span class="c"># break_up data into chunks for comfort evaluation:</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">])</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">])</span>
+    <span class="n">v_chunks</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">break_up</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">a_chunks</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">break_up</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+    <span class="n">t_chunks</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">break_up</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+    <span class="n">mu</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">comfort</span> <span class="o">=</span> <span class="p">[</span><span class="n">cmft</span><span class="o">.</span><span class="n">sperling_comfort_index</span><span class="p">(</span><span class="n">v_chunks</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a_chunks</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">t_chunks</span><span class="p">[</span>
+                                           <span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t_chunks</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">mu</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t_chunks</span><span class="p">))]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">comfort</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">vz</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="graph_to_route"><a class="viewcode-back" href="../routes.html#routes.graph_to_route">[docs]</a><span class="k">def</span> <span class="nf">graph_to_route</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">elevation_tradeoff</span><span class="p">,</span> <span class="n">comfort_tradeoff1</span><span class="p">,</span> <span class="n">comfort_tradeoff2</span><span class="p">):</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">&quot;computing data for a new route...&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">geospatials</span>
+    <span class="n">graph_spacing</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">graph_spacing</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">PYLON_SPACING</span><span class="p">)</span>
+    <span class="k">print</span> <span class="s">&quot;interpolation sampling per edge is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    <span class="n">route_data</span> <span class="o">=</span> <span class="n">comfortanalysis__of_4_droute</span><span class="p">(</span><span class="n">_3_droute_to_4_droute</span><span class="p">(</span><span class="n">_2_droute_to_3_droute</span><span class="p">(</span>
+        <span class="n">graph_to_2_droute</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">M</span><span class="p">),</span> <span class="n">elevation_tradeoff</span><span class="p">),</span> <span class="n">comfort_tradeoff1</span><span class="p">,</span> <span class="n">comfort_tradeoff2</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&quot;attaching data to new route...&quot;</span>
+    <span class="k">print</span> <span class="s">&quot;done: process took &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; seconds.&quot;</span>
+    <span class="k">return</span> <span class="n">Route</span><span class="p">(</span><span class="o">*</span><span class="n">route_data</span><span class="p">)</span>
+
+
+<span class="c"># class SpatialPath2d:</span>
+<span class="c">#     def sample_geospatials(self, graph_geospatials, geospatial_sample_distance):</span>
+<span class="c">#         sampled_geospatials = interpolate.sample_path(graph_geospatials,</span>
+<span class="c">#                                              geospatial_sample_distance)</span>
+<span class="c">#         return sampled_geospatials</span>
+
+<span class="c">#     def get_interpolating_geospatials(self, sampled_geospatials):</span>
+<span class="c">#         x_array, y_array = points_2d_to_arrays(sampled_geospatials)</span>
+<span class="c">#         num_points = len(sampled_geospatials)</span>
+<span class="c">#         s_values = interpolate.get_s_values(num_points)</span>
+<span class="c">#         x_spline, y_spline = interpolate.interpolating_splines_2d(x_array, y_array,</span>
+<span class="c">#                                                                        s_values)</span>
+<span class="c">#         x_values = interpolate.get_spline_values(x_spline, s_values)</span>
+<span class="c">#         y_values = interpolate.get_spline_values(y_spline, s_values)</span>
+<span class="c">#         interpolating_geospatials = [x_values, y_values]</span>
+<span class="c">#         return interpolating_geospatials</span>
+
+<span class="c">#     def get_interpolating_geospatials_v2(self, geospatials):</span>
+<span class="c">#         interpolating_geospatials_array = interp.para_super_q(geospatials, 25)</span>
+<span class="c">#         interpolating_geospatials = interpolating_geospatials_array.tolist()</span>
+<span class="c">#         arc_lengths = util.compute_arc_lengths(interpolating_geospatials)</span>
+<span class="c">#         return [interpolating_geospatials, arc_lengths]</span>
+
+<span class="c">#     def get_interpolating_latlngs(self, interpolating_geospatials):</span>
+<span class="c">#         interpolating_lat_lngs = proj.geospatials_to_latlngs(</span>
+<span class="c">#                          interpolating_geospatials, config.PROJ)</span>
+<span class="c">#         return interpolating_lat_lngs</span>
+
+<span class="c">#     #def get_tube_graphs(self, elevation_profile):</span>
+
+<span class="c">#     def get_tube_graphs_v2(self, elevation_profile):</span>
+<span class="c">#         geospatials = [elevation_point[&quot;geospatial&quot;] for elevation_point</span>
+<span class="c">#                                                     in elevation_profile]</span>
+<span class="c">#         land_elevations = [elevation_point[&quot;land_elevation&quot;] for elevation_point</span>
+<span class="c">#                                                          in elevation_profile]</span>
+<span class="c">#         arc_lengths = [elevation_point[&quot;distance_along_path&quot;] for elevation_point</span>
+<span class="c">#                                                          in elevation_profile]</span>
+<span class="c">#         s_interp, z_interp = landscape.match_landscape(arc_lengths,</span>
+<span class="c">#                                    land_elevations, &quot;elevation&quot;)</span>
+<span class="c">#         tube_spline = PchipInterpolator(s_interp, z_interp)</span>
+<span class="c">#         tube_elevations = tube_spline(arc_lengths)</span>
+<span class="c">#         #  plt.plot(arc_lengths, tube_elevations, &#39;b.&#39;,</span>
+<span class="c">#         #            arc_lengths, land_elevations, &#39;r.&#39;)</span>
+<span class="c">#         #  plt.show()</span>
+<span class="c">#         spatial_x_values, spatial_y_values = zip(*geospatials)</span>
+<span class="c">#         tube_graph = zip(spatial_x_values, spatial_y_values, tube_elevations)</span>
+<span class="c">#         tube_graphs = [tube_graph]</span>
+<span class="c">#         return tube_graphs</span>
+
+<span class="c">#     def __init__(self, spatial_graph):</span>
+<span class="c">#         graph_geospatials = spatial_graph.geospatials</span>
+<span class="c">#         #sampled_geospatials = self.sample_geospatials(graph_geospatials)</span>
+<span class="c">#         #interpolating_geospatials = self.get_interpolating_geospatials(</span>
+<span class="c">#         #                                               sampled_geospatials)</span>
+<span class="c">#         interpolating_geospatials, arc_lengths = \</span>
+<span class="c">#           self.get_interpolating_geospatials_v2(graph_geospatials)</span>
+<span class="c">#         interpolating_lat_lngs = self.get_interpolating_latlngs(</span>
+<span class="c">#                                            interpolating_geospatials)</span>
+<span class="c">#         self.elevation_profile = elevation.get_elevation_profile(</span>
+<span class="c">#                             interpolating_geospatials, arc_lengths)</span>
+<span class="c">#         self.land_cost = landcover.get_land_cost(interpolating_lat_lngs)</span>
+<span class="c">#         #self.tube_graphs = self.get_tube_graphs_v2(self.elevation_profile)</span>
+
+<span class="c"># def build_spatial_paths_2d(complete_spatial_graphs):</span>
+<span class="c">#     spatial_paths2d = map(SpatialPath2d, complete_spatial_graphs)</span>
+<span class="c">#     return spatial_paths2d</span>
+
+<span class="c"># def get_spatial_paths_2d(complete_spatial_graphs):</span>
+<span class="c">#     spatial_paths2d = cacher.get_object(&quot;spatialpaths2d&quot;, build_spatial_paths_2d,</span>
+<span class="c">#                           [complete_spatial_graphs], cacher.save_spatial_paths_2d,</span>
+<span class="c">#                                                       config.SPATIAL_PATHS2d_flag)</span>
+<span class="c">#     return spatial_paths2d</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, jonathan ward.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
