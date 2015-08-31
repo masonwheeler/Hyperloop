@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>routes module &mdash; Hyperloop 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> Hyperloop
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">routes module</a></li>
+</ul>
+</div>
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Hyperloop</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>routes module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/routes.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-routes">
+<span id="routes-module"></span><h1>routes module<a class="headerlink" href="#module-routes" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: David Roberts
+Purpose of Module: To generate a route from a graph.
+Last Modified: 8/25/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To add classes providing useful structure.</p>
+<dl class="class">
+<dt id="routes.Route">
+<em class="property">class </em><code class="descclassname">routes.</code><code class="descname">Route</code><span class="sig-paren">(</span><em>comfort</em>, <em>t</em>, <em>x</em>, <em>y</em>, <em>z</em>, <em>vx</em>, <em>vy</em>, <em>vz</em>, <em>ax</em>, <em>ay</em>, <em>az</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="routes.Route.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="routes.Route.compute_acceleration_profile">
+<code class="descname">compute_acceleration_profile</code><span class="sig-paren">(</span><em>ax</em>, <em>ay</em>, <em>az</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route.compute_acceleration_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route.compute_acceleration_profile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="routes.Route.compute_latlngs">
+<code class="descname">compute_latlngs</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route.compute_latlngs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route.compute_latlngs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="routes.Route.compute_pylons">
+<code class="descname">compute_pylons</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route.compute_pylons"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route.compute_pylons" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="routes.Route.compute_tube_cost">
+<code class="descname">compute_tube_cost</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route.compute_tube_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route.compute_tube_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="routes.Route.compute_velocity_profile">
+<code class="descname">compute_velocity_profile</code><span class="sig-paren">(</span><em>vx</em>, <em>vy</em>, <em>vz</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#Route.compute_velocity_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.Route.compute_velocity_profile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="routes.comfortanalysis__of_4_droute">
+<code class="descclassname">routes.</code><code class="descname">comfortanalysis__of_4_droute</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#comfortanalysis__of_4_droute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.comfortanalysis__of_4_droute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="routes.graph_to_2_droute">
+<code class="descclassname">routes.</code><code class="descname">graph_to_2_droute</code><span class="sig-paren">(</span><em>graph</em>, <em>M</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#graph_to_2_droute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.graph_to_2_droute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="routes.graph_to_2_droutev2">
+<code class="descclassname">routes.</code><code class="descname">graph_to_2_droutev2</code><span class="sig-paren">(</span><em>graph</em>, <em>M</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#graph_to_2_droutev2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.graph_to_2_droutev2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="routes.graph_to_route">
+<code class="descclassname">routes.</code><code class="descname">graph_to_route</code><span class="sig-paren">(</span><em>graph</em>, <em>elevation_tradeoff</em>, <em>comfort_tradeoff1</em>, <em>comfort_tradeoff2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/routes.html#graph_to_route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#routes.graph_to_route" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Jonathan Ward.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

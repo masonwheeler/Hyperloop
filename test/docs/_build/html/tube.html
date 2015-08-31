@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>tube module &mdash; Hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-tube">
+<span id="tube-module"></span><h1>tube module<a class="headerlink" href="#module-tube" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: Jonathan Ward
+Purpose of Module: To determine the tube/pylon cost component of an edge
+Last Modified: 8/15/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To implement a non naive tube/pylon cost method.</p>
+<dl class="class">
+<dt id="tube.Pylon">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">Pylon</code><span class="sig-paren">(</span><em>pylon_id</em>, <em>lattice_x_coord</em>, <em>lattice_y_coord</em>, <em>distance_along_path</em>, <em>geospatial</em>, <em>latlng</em>, <em>land_elevation</em>, <em>pylon_height</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#Pylon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.Pylon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractPoint" title="abstract.AbstractPoint"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractPoint</span></code></a></p>
+<dl class="method">
+<dt id="tube.Pylon.pylon_construction_cost">
+<code class="descname">pylon_construction_cost</code><span class="sig-paren">(</span><em>pylon_height</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#Pylon.pylon_construction_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.Pylon.pylon_construction_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tube.PylonsLattice">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">PylonsLattice</code><span class="sig-paren">(</span><em>elevation_profile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractLattice" title="abstract.AbstractLattice"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractLattice</span></code></a></p>
+<dl class="method">
+<dt id="tube.PylonsLattice.add_current_window">
+<code class="descname">add_current_window</code><span class="sig-paren">(</span><em>envelope</em>, <em>current_window</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.add_current_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.add_current_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.PylonsLattice.build_envelope">
+<code class="descname">build_envelope</code><span class="sig-paren">(</span><em>elevations</em>, <em>radius</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.build_envelope"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.build_envelope" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.PylonsLattice.build_pylons_envelopes">
+<code class="descname">build_pylons_envelopes</code><span class="sig-paren">(</span><em>elevation_profile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.build_pylons_envelopes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.build_pylons_envelopes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.PylonsLattice.build_pylons_slices_bounds">
+<code class="descname">build_pylons_slices_bounds</code><span class="sig-paren">(</span><em>elevation_profile</em>, <em>pylons_envelope_upper</em>, <em>pylons_envelope_lower</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.build_pylons_slices_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.build_pylons_slices_bounds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.PylonsLattice.build_window">
+<code class="descname">build_window</code><span class="sig-paren">(</span><em>left_bound</em>, <em>right_bound</em>, <em>radius</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.build_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.build_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.PylonsLattice.circle_function">
+<code class="descname">circle_function</code><span class="sig-paren">(</span><em>x</em>, <em>r</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.circle_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.circle_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.PylonsLattice.envelope_point_to_bounds">
+<code class="descname">envelope_point_to_bounds</code><span class="sig-paren">(</span><em>data_point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsLattice.envelope_point_to_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsLattice.envelope_point_to_bounds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tube.PylonsSlice">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">PylonsSlice</code><span class="sig-paren">(</span><em>lattice_x_coord</em>, <em>pylons_slice_bounds</em>, <em>shortest_pylon_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsSlice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractSlice" title="abstract.AbstractSlice"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractSlice</span></code></a></p>
+<dl class="staticmethod">
+<dt id="tube.PylonsSlice.pylons_builder">
+<em class="property">static </em><code class="descname">pylons_builder</code><span class="sig-paren">(</span><em>lattice_x_coord</em>, <em>pylon_slice_bounds</em>, <em>shortest_pylon_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#PylonsSlice.pylons_builder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.PylonsSlice.pylons_builder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tube.TubeEdge">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">TubeEdge</code><span class="sig-paren">(</span><em>start_pylon</em>, <em>end_pylon</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeEdge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractEdge" title="abstract.AbstractEdge"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractEdge</span></code></a></p>
+<dl class="method">
+<dt id="tube.TubeEdge.pylon_cost">
+<code class="descname">pylon_cost</code><span class="sig-paren">(</span><em>start_pylon</em>, <em>end_pylon</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeEdge.pylon_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeEdge.pylon_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.TubeEdge.tube_cost">
+<code class="descname">tube_cost</code><span class="sig-paren">(</span><em>start_pylon</em>, <em>end_pylon</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeEdge.tube_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeEdge.tube_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tube.TubeEdgesSets">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">TubeEdgesSets</code><span class="sig-paren">(</span><em>pylons_lattice</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeEdgesSets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeEdgesSets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractEdgesSets" title="abstract.AbstractEdgesSets"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractEdgesSets</span></code></a></p>
+<dl class="staticmethod">
+<dt id="tube.TubeEdgesSets.is_tube_edge_pair_compatible">
+<em class="property">static </em><code class="descname">is_tube_edge_pair_compatible</code><span class="sig-paren">(</span><em>tube_edge_a</em>, <em>tube_edge_b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeEdgesSets.is_tube_edge_pair_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeEdgesSets.is_tube_edge_pair_compatible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.TubeEdgesSets.tube_edge_builder">
+<code class="descname">tube_edge_builder</code><span class="sig-paren">(</span><em>start_pylon</em>, <em>end_pylon</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeEdgesSets.tube_edge_builder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeEdgesSets.tube_edge_builder" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tube.TubeGraph">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">TubeGraph</code><span class="sig-paren">(</span><em>start_id</em>, <em>end_id</em>, <em>start_angle</em>, <em>end_angle</em>, <em>num_edges</em>, <em>tube_cost</em>, <em>pylon_cost</em>, <em>tube_coords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractGraph" title="abstract.AbstractGraph"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractGraph</span></code></a></p>
+<dl class="method">
+<dt id="tube.TubeGraph.compute_triptime_excess">
+<code class="descname">compute_triptime_excess</code><span class="sig-paren">(</span><em>tube_coords</em>, <em>num_edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraph.compute_triptime_excess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraph.compute_triptime_excess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="tube.TubeGraph.init_from_tube_edge">
+<em class="property">classmethod </em><code class="descname">init_from_tube_edge</code><span class="sig-paren">(</span><em>tube_edge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraph.init_from_tube_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraph.init_from_tube_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="tube.TubeGraph.merge_two_tube_graphs">
+<em class="property">classmethod </em><code class="descname">merge_two_tube_graphs</code><span class="sig-paren">(</span><em>tube_graph_a</em>, <em>tube_graph_b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraph.merge_two_tube_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraph.merge_two_tube_graphs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="tube.TubeGraph.tube_cost_trip_time_excess">
+<code class="descname">tube_cost_trip_time_excess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraph.tube_cost_trip_time_excess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraph.tube_cost_trip_time_excess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="tube.TubeGraph.velocity_arc_length_step_size">
+<code class="descname">velocity_arc_length_step_size</code><em class="property"> = 100.0</em><a class="headerlink" href="#tube.TubeGraph.velocity_arc_length_step_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="tube.TubeGraphsSet">
+<em class="property">class </em><code class="descclassname">tube.</code><code class="descname">TubeGraphsSet</code><span class="sig-paren">(</span><em>tube_graphs</em>, <em>graphs_num_edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraphsSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraphsSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="abstract.html#abstract.AbstractGraphsSet" title="abstract.AbstractGraphsSet"><code class="xref py py-class docutils literal"><span class="pre">abstract.AbstractGraphsSet</span></code></a></p>
+<dl class="classmethod">
+<dt id="tube.TubeGraphsSet.init_from_tube_edges_set">
+<em class="property">classmethod </em><code class="descname">init_from_tube_edges_set</code><span class="sig-paren">(</span><em>tube_edges_set</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraphsSet.init_from_tube_edges_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraphsSet.init_from_tube_edges_set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="tube.TubeGraphsSet.is_graph_pair_compatible">
+<em class="property">static </em><code class="descname">is_graph_pair_compatible</code><span class="sig-paren">(</span><em>graph_a</em>, <em>graph_b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraphsSet.is_graph_pair_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraphsSet.is_graph_pair_compatible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="tube.TubeGraphsSet.tubegraphs_cost_triptime_excess">
+<em class="property">static </em><code class="descname">tubegraphs_cost_triptime_excess</code><span class="sig-paren">(</span><em>tube_graphs</em>, <em>graphs_num_edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#TubeGraphsSet.tubegraphs_cost_triptime_excess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.TubeGraphsSet.tubegraphs_cost_triptime_excess" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="tube.build_tube_graphs">
+<code class="descclassname">tube.</code><code class="descname">build_tube_graphs</code><span class="sig-paren">(</span><em>elevation_profile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#build_tube_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.build_tube_graphs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tube.build_tube_profile_v2">
+<code class="descclassname">tube.</code><code class="descname">build_tube_profile_v2</code><span class="sig-paren">(</span><em>elevation_profile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#build_tube_profile_v2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.build_tube_profile_v2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tube.compute_pylon_cost">
+<code class="descclassname">tube.</code><code class="descname">compute_pylon_cost</code><span class="sig-paren">(</span><em>pylon_height</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#compute_pylon_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.compute_pylon_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tube.compute_tube_cost">
+<code class="descclassname">tube.</code><code class="descname">compute_tube_cost</code><span class="sig-paren">(</span><em>tube_length</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#compute_tube_cost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.compute_tube_cost" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="tube.tube_graphs_set_pair_merger">
+<code class="descclassname">tube.</code><code class="descname">tube_graphs_set_pair_merger</code><span class="sig-paren">(</span><em>tube_graphs_set_a</em>, <em>tube_graphs_set_b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tube.html#tube_graphs_set_pair_merger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#tube.tube_graphs_set_pair_merger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tube.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Jonathan Ward.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/tube.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

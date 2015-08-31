@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>directions module &mdash; Hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-directions">
+<span id="directions-module"></span><h1>directions module<a class="headerlink" href="#module-directions" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: Jonathan Ward
+Purpose of Module: To pull directions data from the Google Maps API.
+Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and add citations.
+Citations:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>(<a class="reference external" href="http://seewah.blogspot.com/2009/11/gpolyline-decoding-in-python.html">http://seewah.blogspot.com/2009/11/gpolyline-decoding-in-python.html</a>)</dt>
+<dd><ul class="first last simple">
+<li>See Wah Chang</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="function">
+<dt id="directions.build_coordinate_list">
+<code class="descclassname">directions.</code><code class="descname">build_coordinate_list</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#build_coordinate_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.build_coordinate_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies decoding functions to Google API response</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="directions.build_directions">
+<code class="descclassname">directions.</code><code class="descname">build_directions</code><span class="sig-paren">(</span><em>origin</em>, <em>destination</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#build_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.build_directions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pulls directions from Google API</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="directions.decode_polyline">
+<code class="descclassname">directions.</code><code class="descname">decode_polyline</code><span class="sig-paren">(</span><em>encoded</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#decode_polyline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.decode_polyline" title="Permalink to this definition">¶</a></dt>
+<dd><p>See (<a class="reference external" href="http://code.google.com/apis/maps/documentation/polylinealgorithm.html">http://code.google.com/apis/maps/documentation/polylinealgorithm.html</a>)
+and (See Wah Chang) for exposition of polyline decoding method.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="directions.decode_polylines">
+<code class="descclassname">directions.</code><code class="descname">decode_polylines</code><span class="sig-paren">(</span><em>polylines</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#decode_polylines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.decode_polylines" title="Permalink to this definition">¶</a></dt>
+<dd><p>decodes a list of polylines</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="directions.get_directions">
+<code class="descclassname">directions.</code><code class="descname">get_directions</code><span class="sig-paren">(</span><em>start</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#get_directions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.get_directions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetchs directions if they are already cached, else builds them.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="directions.http_to_string">
+<code class="descclassname">directions.</code><code class="descname">http_to_string</code><span class="sig-paren">(</span><em>http_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#http_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.http_to_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads HTTP bytecode response and converts it to a string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="directions.string_to_polylines">
+<code class="descclassname">directions.</code><code class="descname">string_to_polylines</code><span class="sig-paren">(</span><em>string_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/directions.html#string_to_polylines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#directions.string_to_polylines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts Directions string to JSON and extracts the polylines.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/directions.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Jonathan Ward.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/directions.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

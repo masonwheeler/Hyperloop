@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>util &mdash; Hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for util</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Original Developer: Jonathan Ward</span>
+<span class="sd">Purpose of Module: To provide a suite of utility function for the algorithm.</span>
+<span class="sd">Last Modified: 7/30/15</span>
+<span class="sd">Last Modified By: Jonathan Ward</span>
+<span class="sd">Last Modification Purpose: Added docstrings</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Standard Modules</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c"># Our Modules</span>
+<span class="kn">import</span> <span class="nn">config</span>
+
+<span class="c">#pylint: disable=C0103, E1101, W0142, W0141</span>
+
+<span class="c"># Points Operations:</span>
+
+<span class="k">def</span> <span class="nf">_round_num</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rounds number to predefined number of places&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">NDIGITS</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_round_nums</span><span class="p">(</span><span class="n">nums</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Rounds a list of numbers&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_round_num</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="round_points"><a class="viewcode-back" href="../util.html#util.round_points">[docs]</a><span class="k">def</span> <span class="nf">round_points</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rounds the values in each point in a list of points</span>
+
+<span class="sd">    Used in directions.build_directions()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">_round_nums</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="smart_sample_nth_points"><a class="viewcode-back" href="../util.html#util.smart_sample_nth_points">[docs]</a><span class="k">def</span> <span class="nf">smart_sample_nth_points</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">n_stride</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes every nth point in a list as well as the last point.</span>
+
+<span class="sd">    Used in core.build_lattice()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">end_point</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">sampled_points</span> <span class="o">=</span> <span class="n">points</span><span class="p">[::</span><span class="n">n_stride</span><span class="p">]</span>
+    <span class="n">sampled_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">end_point</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sampled_points</span>
+
+</div>
+<div class="viewcode-block" id="to_pairs"><a class="viewcode-back" href="../util.html#util.to_pairs">[docs]</a><span class="k">def</span> <span class="nf">to_pairs</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a list of points to a list of pairs of points</span>
+
+<span class="sd">    Used in core.build_lattice()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[</span><span class="n">points</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">pairs</span>
+
+</div>
+<div class="viewcode-block" id="points_to_radius"><a class="viewcode-back" href="../util.html#util.points_to_radius">[docs]</a><span class="k">def</span> <span class="nf">points_to_radius</span><span class="p">(</span><span class="n">three_points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert points to radius</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#print(&quot;three points: &quot; + str(three_points))</span>
+    <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">p3</span> <span class="o">=</span> <span class="n">three_points</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">))</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">p2</span><span class="p">,</span> <span class="n">p3</span><span class="p">))</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p3</span><span class="p">))</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.99999999999999</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">p</span> <span class="o">-</span> <span class="n">c</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">A</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1000000000000</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">*</span> <span class="n">c</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">A</span><span class="p">)</span>
+
+
+<span class="c"># Pair Operations:</span>
+</div>
+<div class="viewcode-block" id="swap_pair"><a class="viewcode-back" href="../util.html#util.swap_pair">[docs]</a><span class="k">def</span> <span class="nf">swap_pair</span><span class="p">(</span><span class="n">pair</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Swaps a pair of points</span>
+
+<span class="sd">    Used in proj.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+<span class="c"># List Operations:</span>
+
+</div>
+<div class="viewcode-block" id="get_firstlast"><a class="viewcode-back" href="../util.html#util.get_firstlast">[docs]</a><span class="k">def</span> <span class="nf">get_firstlast</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used in core.get_directions()&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">in_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+</div>
+<div class="viewcode-block" id="get_maxmin"><a class="viewcode-back" href="../util.html#util.get_maxmin">[docs]</a><span class="k">def</span> <span class="nf">get_maxmin</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used for testing&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="n">in_list</span><span class="p">),</span> <span class="nb">min</span><span class="p">(</span><span class="n">in_list</span><span class="p">)]</span>
+
+</div>
+<div class="viewcode-block" id="get_list_mean"><a class="viewcode-back" href="../util.html#util.get_list_mean">[docs]</a><span class="k">def</span> <span class="nf">get_list_mean</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used in gen_velocity.py&quot;&quot;&quot;</span>
+    <span class="n">list_mean</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">in_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_list</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">list_mean</span>
+
+</div>
+<div class="viewcode-block" id="remove_duplicates"><a class="viewcode-back" href="../util.html#util.remove_duplicates">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicates</span><span class="p">(</span><span class="n">in_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used in directions.py&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">in_list</span><span class="p">))))</span>
+
+
+<span class="c"># List of Lists Operations:</span>
+</div>
+<div class="viewcode-block" id="fast_concat"><a class="viewcode-back" href="../util.html#util.fast_concat">[docs]</a><span class="k">def</span> <span class="nf">fast_concat</span><span class="p">(</span><span class="n">list_of_lists</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used in edges.py&quot;&quot;&quot;</span>
+    <span class="n">concatenated</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">list_of_lists</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">concatenated</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="list_of_lists_len"><a class="viewcode-back" href="../util.html#util.list_of_lists_len">[docs]</a><span class="k">def</span> <span class="nf">list_of_lists_len</span><span class="p">(</span><span class="n">list_of_lists</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used for testing&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">list_of_lists</span><span class="p">))</span>
+
+
+<span class="c"># List Pair Operations:</span>
+</div>
+<div class="viewcode-block" id="smart_concat"><a class="viewcode-back" href="../util.html#util.smart_concat">[docs]</a><span class="k">def</span> <span class="nf">smart_concat</span><span class="p">(</span><span class="n">list_a</span><span class="p">,</span> <span class="n">list_b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Used in graphs.py&quot;&quot;&quot;</span>
+    <span class="n">new_list</span> <span class="o">=</span> <span class="n">list_a</span> <span class="o">+</span> <span class="n">list_b</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">new_list</span>
+
+
+<span class="c"># Vector Operations:</span>
+</div>
+<div class="viewcode-block" id="safe_operation"><a class="viewcode-back" href="../util.html#util.safe_operation">[docs]</a><span class="k">def</span> <span class="nf">safe_operation</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper function for safe vector operations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector_a</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector_b</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">map</span><span class="p">(</span><span class="n">operation</span><span class="p">,</span> <span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">vector_a</span>
+        <span class="k">print</span> <span class="n">vector_b</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Mismatched vector lengths.&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../util.html#util.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Adds a pair of vectors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">safe_operation</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">add</span><span class="p">,</span> <span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="subtract"><a class="viewcode-back" href="../util.html#util.subtract">[docs]</a><span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span><span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subtracts the second vector from the first</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">safe_operation</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">sub</span><span class="p">,</span> <span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="entry_multiply"><a class="viewcode-back" href="../util.html#util.entry_multiply">[docs]</a><span class="k">def</span> <span class="nf">entry_multiply</span><span class="p">(</span><span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multiplies a pair of vectors entry by entry</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">safe_operation</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">mul</span><span class="p">,</span> <span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="scale"><a class="viewcode-back" href="../util.html#util.scale">[docs]</a><span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="n">scalar</span><span class="p">,</span> <span class="n">vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multiply each element of the vector by the given scale</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">element</span> <span class="o">*</span> <span class="n">scalar</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">vector</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="norm"><a class="viewcode-back" href="../util.html#util.norm">[docs]</a><span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the norm of the given vector</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vector</span><span class="p">]))</span>
+</div>
+<div class="viewcode-block" id="vector_to_angle"><a class="viewcode-back" href="../util.html#util.vector_to_angle">[docs]</a><span class="k">def</span> <span class="nf">vector_to_angle</span><span class="p">(</span><span class="n">vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the angle of the given vector</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x_val</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">vector</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="n">y_val</span><span class="p">,</span> <span class="n">x_val</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">angle</span>
+
+<span class="c"># Sampling Operations:</span>
+</div>
+<div class="viewcode-block" id="sample_vector"><a class="viewcode-back" href="../util.html#util.sample_vector">[docs]</a><span class="k">def</span> <span class="nf">sample_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">spacing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sample points from the interior of a vector at a regular spacing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">effective_scale</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="o">/</span> <span class="n">spacing</span>
+    <span class="n">unit_vector</span> <span class="o">=</span> <span class="n">scale</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">effective_scale</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span>
+    <span class="n">num_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">effective_scale</span><span class="p">))</span>
+    <span class="n">point_indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span>
+    <span class="n">point_distances</span> <span class="o">=</span> <span class="p">[</span><span class="n">spacing</span> <span class="o">*</span> <span class="n">index</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">point_indices</span><span class="p">]</span>
+    <span class="n">point_vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">scale</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">unit_vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">point_indices</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">point_vectors</span><span class="p">,</span> <span class="n">point_distances</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="build_grid"><a class="viewcode-back" href="../util.html#util.build_grid">[docs]</a><span class="k">def</span> <span class="nf">build_grid</span><span class="p">(</span><span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">,</span> <span class="n">spacing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Builds a grid of points between the start and end point.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vector</span> <span class="o">=</span> <span class="n">subtract</span><span class="p">(</span><span class="n">end_point</span><span class="p">,</span> <span class="n">start_point</span><span class="p">)</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="n">spacing</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[[</span><span class="n">start_point</span><span class="p">,</span> <span class="n">end_point</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">point_vectors</span><span class="p">,</span> <span class="n">point_distances</span> <span class="o">=</span> <span class="n">sample_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
+        <span class="n">point_vectors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+        <span class="n">point_distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">length</span><span class="p">)</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="n">add</span><span class="p">(</span><span class="n">point_vector</span><span class="p">,</span> <span class="n">start_point</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">point_vector</span> <span class="ow">in</span> <span class="n">point_vectors</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">grid</span><span class="p">,</span> <span class="n">point_distances</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="sample_length"><a class="viewcode-back" href="../util.html#util.sample_length">[docs]</a><span class="k">def</span> <span class="nf">sample_length</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">spacing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;sample values within a given length at a regular spacing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_points</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">length</span> <span class="o">/</span> <span class="n">spacing</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="n">spacing</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_points</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">values</span>
+
+</div>
+<div class="viewcode-block" id="build_grid_1d"><a class="viewcode-back" href="../util.html#util.build_grid_1d">[docs]</a><span class="k">def</span> <span class="nf">build_grid_1d</span><span class="p">(</span><span class="n">start_value</span><span class="p">,</span> <span class="n">end_value</span><span class="p">,</span> <span class="n">spacing</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Build a 1d grid of points in a given interval</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">end_value</span> <span class="o">-</span> <span class="n">start_value</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">sample_length</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">spacing</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">values</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span> <span class="o">+</span> <span class="n">start_value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">grid</span>
+
+<span class="c"># Edge Operations:</span>
+
+</div>
+<div class="viewcode-block" id="edge_to_vector"><a class="viewcode-back" href="../util.html#util.edge_to_vector">[docs]</a><span class="k">def</span> <span class="nf">edge_to_vector</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a given edge to a vector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">edge_start</span><span class="p">,</span> <span class="n">edge_end</span> <span class="o">=</span> <span class="n">edge</span>
+    <span class="n">edge_vector</span> <span class="o">=</span> <span class="n">subtract</span><span class="p">(</span><span class="n">edge_end</span><span class="p">,</span> <span class="n">edge_start</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">edge_vector</span>
+
+<span class="c"># Path Operations:</span>
+
+</div>
+<div class="viewcode-block" id="compute_arc_length_steps"><a class="viewcode-back" href="../util.html#util.compute_arc_length_steps">[docs]</a><span class="k">def</span> <span class="nf">compute_arc_length_steps</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the arclength separations between each point in a path of points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pairs</span> <span class="o">=</span> <span class="n">to_pairs</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">vectors</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge_to_vector</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">]</span>
+    <span class="n">arc_length_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">vector</span> <span class="ow">in</span> <span class="n">vectors</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">arc_length_steps</span>
+
+</div>
+<div class="viewcode-block" id="compute_total_arc_length"><a class="viewcode-back" href="../util.html#util.compute_total_arc_length">[docs]</a><span class="k">def</span> <span class="nf">compute_total_arc_length</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the total arclength of the path defined by the points</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arc_length_steps</span> <span class="o">=</span> <span class="n">compute_arc_length_steps</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">total_arc_length</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arc_length_steps</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">total_arc_length</span>
+
+</div>
+<div class="viewcode-block" id="compute_arc_lengths"><a class="viewcode-back" href="../util.html#util.compute_arc_lengths">[docs]</a><span class="k">def</span> <span class="nf">compute_arc_lengths</span><span class="p">(</span><span class="n">points</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the arclength along the path of each point in the path</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">arc_length_steps</span> <span class="o">=</span> <span class="n">compute_arc_length_steps</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+    <span class="n">arc_length_steps_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arc_length_steps</span><span class="p">)</span>
+    <span class="n">arc_lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">arc_length_steps_array</span><span class="p">)</span>
+    <span class="n">padded_arc_lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">arc_lengths</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">padded_arc_lengths</span>
+
+<span class="c"># String Operations:</span>
+</div>
+<div class="viewcode-block" id="fix_input_string"><a class="viewcode-back" href="../util.html#util.fix_input_string">[docs]</a><span class="k">def</span> <span class="nf">fix_input_string</span><span class="p">(</span><span class="n">input_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert the input into a string usable for web queries.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">title_string</span> <span class="o">=</span> <span class="n">input_string</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">title_string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">,</span> <span class="s">&quot;_&quot;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="smart_print"><a class="viewcode-back" href="../util.html#util.smart_print">[docs]</a><span class="k">def</span> <span class="nf">smart_print</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Print the input string if verbose mode is turned on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">VERBOSE_MODE</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">string</span>
+
+<span class="c"># Other Operations:</span>
+</div>
+<div class="viewcode-block" id="place_indexin_list"><a class="viewcode-back" href="../util.html#util.place_indexin_list">[docs]</a><span class="k">def</span> <span class="nf">place_indexin_list</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">ordered_list_of_integers</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Place index in sorted list of integers while preserving the order</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="n">ordered_list_of_integers</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+        <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">ordered_list_of_integers</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">k</span>
+
+</div>
+<div class="viewcode-block" id="sorted_insert"><a class="viewcode-back" href="../util.html#util.sorted_insert">[docs]</a><span class="k">def</span> <span class="nf">sorted_insert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ordered_values</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Place index in sorted list of integers while preserving the order</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ordered_values</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">ordered_values</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+            <span class="n">ordered_values</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">i</span>
+</div>
+<div class="viewcode-block" id="break_up"><a class="viewcode-back" href="../util.html#util.break_up">[docs]</a><span class="k">def</span> <span class="nf">break_up</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Breaks up a list of data points into chunks n-elements long</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">n</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">chunks</span>
+
+</div>
+<div class="viewcode-block" id="numerical_derivative"><a class="viewcode-back" href="../util.html#util.numerical_derivative">[docs]</a><span class="k">def</span> <span class="nf">numerical_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Implements a numerical derivative</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">((</span><span class="n">f</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span>
+                       <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))</span>
+    <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">[</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">f</span><span class="p">[</span><span class="n">N</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">N</span> <span class="o">-</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span>
+
+</div>
+<div class="viewcode-block" id="mean"><a class="viewcode-back" href="../util.html#util.mean">[docs]</a><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">vector</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the mean of a vector</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="LpNorm"><a class="viewcode-back" href="../util.html#util.LpNorm">[docs]</a><span class="k">def</span> <span class="nf">LpNorm</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the discrete L^p norm of a given list of elements</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">summand</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))]</span>
+    <span class="n">riemann_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">summand</span><span class="p">)</span> <span class="o">/</span> <span class="n">t</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">riemann_sum</span><span class="o">**</span><span class="p">(</span><span class="mf">1.</span> <span class="o">/</span> <span class="n">p</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Jonathan Ward.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

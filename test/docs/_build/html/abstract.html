@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>abstract module &mdash; Hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-abstract">
+<span id="abstract-module"></span><h1>abstract module<a class="headerlink" href="#module-abstract" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: Jonathan Ward
+Purpose of Module: To provide an interface for experimental Classes
+Last Modified: 8/21/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: Debugging</p>
+<dl class="class">
+<dt id="abstract.AbstractEdge">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractEdge</code><span class="sig-paren">(</span><em>start_point</em>, <em>end_point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="abstract.AbstractEdgesSets">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractEdgesSets</code><span class="sig-paren">(</span><em>lattice</em>, <em>edge_builder</em>, <em>is_edge_pair_compatible</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="abstract.AbstractEdgesSets.check_empty">
+<code class="descname">check_empty</code><span class="sig-paren">(</span><em>edges_sets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets.check_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets.check_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract.AbstractEdgesSets.determine_useful_edges">
+<code class="descname">determine_useful_edges</code><span class="sig-paren">(</span><em>edges_sets</em>, <em>is_edge_pair_compatible</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets.determine_useful_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets.determine_useful_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edge is useful if there are compatible adjacent edges</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="abstract.AbstractEdgesSets.filter_edges">
+<code class="descname">filter_edges</code><span class="sig-paren">(</span><em>edges_sets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets.filter_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets.filter_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="abstract.AbstractEdgesSets.is_edge_pair_compatible">
+<em class="property">static </em><code class="descname">is_edge_pair_compatible</code><span class="sig-paren">(</span><em>edge_a</em>, <em>edge_b</em>, <em>degree_constraint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets.is_edge_pair_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets.is_edge_pair_compatible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract.AbstractEdgesSets.iterative_filter">
+<code class="descname">iterative_filter</code><span class="sig-paren">(</span><em>unfiltered_edges_sets</em>, <em>is_edge_pair_compatible</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets.iterative_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets.iterative_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract.AbstractEdgesSets.lattice_slices_to_unfiltered_edges_sets">
+<code class="descname">lattice_slices_to_unfiltered_edges_sets</code><span class="sig-paren">(</span><em>lattice_slices</em>, <em>edge_builder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractEdgesSets.lattice_slices_to_unfiltered_edges_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractEdgesSets.lattice_slices_to_unfiltered_edges_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract.AbstractGraph">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractGraph</code><span class="sig-paren">(</span><em>start_id</em>, <em>end_id</em>, <em>start_angle</em>, <em>end_angle</em>, <em>num_edges</em>, <em>lattice_coords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraph" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="abstract.AbstractGraph.build_local_lattice">
+<code class="descname">build_local_lattice</code><span class="sig-paren">(</span><em>lattice_coords</em>, <em>spacing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraph.build_local_lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraph.build_local_lattice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract.AbstractGraphsSet">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractGraphsSet</code><span class="sig-paren">(</span><em>graphs</em>, <em>graphs_evaluator</em>, <em>is_graph_pair_compatible</em>, <em>minimize_a_vals</em>, <em>minimize_b_vals</em>, <em>graphs_num_edges</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraphsSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraphsSet" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="staticmethod">
+<dt id="abstract.AbstractGraphsSet.is_graph_pair_compatible">
+<em class="property">static </em><code class="descname">is_graph_pair_compatible</code><span class="sig-paren">(</span><em>graph_a</em>, <em>graph_b</em>, <em>degree_constraint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraphsSet.is_graph_pair_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraphsSet.is_graph_pair_compatible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="abstract.AbstractGraphsSet.merge_two_graphs_sets">
+<em class="property">static </em><code class="descname">merge_two_graphs_sets</code><span class="sig-paren">(</span><em>graphs_set_a</em>, <em>graphs_set_b</em>, <em>is_graph_pair_compatible</em>, <em>merge_two_graphs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraphsSet.merge_two_graphs_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraphsSet.merge_two_graphs_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract.AbstractGraphsSet.select_graphs">
+<code class="descname">select_graphs</code><span class="sig-paren">(</span><em>minimize_a_vals</em>, <em>minimize_b_vals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraphsSet.select_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraphsSet.select_graphs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract.AbstractGraphsSet.update_graphs">
+<code class="descname">update_graphs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractGraphsSet.update_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractGraphsSet.update_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the selected graphs</p>
+<p>If the graphs are successfully updated return True, else return False.
+Update the graphs by adding the next front from the Pareto Frontier</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract.AbstractLattice">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractLattice</code><span class="sig-paren">(</span><em>slices_bounds</em>, <em>points_builder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractLattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractLattice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="abstract.AbstractPoint">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractPoint</code><span class="sig-paren">(</span><em>point_id</em>, <em>lattice_x_coord</em>, <em>lattice_y_coord</em>, <em>spatial_x_coord</em>, <em>spatial_y_coord</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract object that represents a point.</p>
+<dl class="attribute">
+<dt id="abstract.AbstractPoint.point_id">
+<code class="descname">point_id</code><a class="headerlink" href="#abstract.AbstractPoint.point_id" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>Unique identifier for each point.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract.AbstractPoint.lattice_x_coord">
+<code class="descname">lattice_x_coord</code><a class="headerlink" href="#abstract.AbstractPoint.lattice_x_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>The x coordinate of the point with
+relative to the lattice of points.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract.AbstractPoint.lattice_y_coord">
+<code class="descname">lattice_y_coord</code><a class="headerlink" href="#abstract.AbstractPoint.lattice_y_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em></p>
+<p>The y coordinate of the point with
+relative to the lattice of points.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract.AbstractPoint.spatial_x_coord">
+<code class="descname">spatial_x_coord</code><a class="headerlink" href="#abstract.AbstractPoint.spatial_x_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+<p>The x coordinate of the point in physical units.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract.AbstractPoint.spatial_y_coord">
+<code class="descname">spatial_y_coord</code><a class="headerlink" href="#abstract.AbstractPoint.spatial_y_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em></p>
+<p>The y coordinate of the point in physical units.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract.AbstractSlice">
+<em class="property">class </em><code class="descclassname">abstract.</code><code class="descname">AbstractSlice</code><span class="sig-paren">(</span><em>lattice_x_coord</em>, <em>slice_bounds</em>, <em>start_id</em>, <em>points_builder</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#AbstractSlice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.AbstractSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="abstract.graphs_set_pair_merger">
+<code class="descclassname">abstract.</code><code class="descname">graphs_set_pair_merger</code><span class="sig-paren">(</span><em>graphs_set_a</em>, <em>graphs_set_b</em>, <em>graphs_set_builder</em>, <em>is_graph_pair_compatible</em>, <em>merge_two_graphs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#graphs_set_pair_merger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.graphs_set_pair_merger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="abstract.graphs_set_updater">
+<code class="descclassname">abstract.</code><code class="descname">graphs_set_updater</code><span class="sig-paren">(</span><em>graphs_sets</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/abstract.html#graphs_set_updater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract.graphs_set_updater" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/abstract.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Jonathan Ward.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/abstract.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

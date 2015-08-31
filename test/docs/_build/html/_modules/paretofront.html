@@ -1,0 +1,322 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>paretofront &mdash; Hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for paretofront</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Original Developer: Jonathan Ward</span>
+<span class="sd">Purpose of Modules: To compute the 2d Pareto Front.</span>
+<span class="sd">Last Modified: 7/28/15</span>
+<span class="sd">Last Modified By: Jonathan Ward</span>
+<span class="sd">Last Modification Purpose: To add comments.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c"># pylint: disable=E1101, R0914</span>
+
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="ParetoFront"><a class="viewcode-back" href="../paretofront.html#paretofront.ParetoFront">[docs]</a><span class="k">class</span> <span class="nc">ParetoFront</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes nested Pareto Frontiers of points in 2d.</span>
+
+<span class="sd">    Calculates the Convex Hull of the set of points using qhull,</span>
+<span class="sd">    then computes the Pareto Front of those points.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">points_array</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># Numpy array containing original points.</span>
+    <span class="n">pruned_points_indices</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># Contains the indices of the pruned points.</span>
+    <span class="n">fronts_indices</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c"># Contains the indices of the points in each fronts.</span>
+    <span class="n">x_reverse</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c"># If set to true, the front minimizes x-values.</span>
+    <span class="n">y_reverse</span> <span class="o">=</span> <span class="bp">False</span>  <span class="c"># If set to true, the front minimizes y-values.</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ParetoFront.vertices_to_frontindices"><a class="viewcode-back" href="../paretofront.html#paretofront.ParetoFront.vertices_to_frontindices">[docs]</a>    <span class="k">def</span> <span class="nf">vertices_to_frontindices</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">x_reverse</span><span class="p">,</span> <span class="n">y_reverse</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the Pareto front given the vertices of the convex hull.</span>
+
+<span class="sd">        If x_reverse is set to True then the Pareto front minimizes x-values.</span>
+<span class="sd">        If y_reverse is set to True then the Pareto front minimizes y-values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x_max</span><span class="p">,</span> <span class="n">y_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c">##print(&quot;x Max: &quot; + str(x_max))</span>
+        <span class="c">##print(&quot;y Max: &quot; + str(y_max))</span>
+        <span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c">##print(&quot;x Min: &quot; + str(x_min))</span>
+        <span class="c">##print(&quot;y Min: &quot; + str(y_min))</span>
+        <span class="c"># The vertices with x-values equal to x-max</span>
+        <span class="n">x_max_vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_max</span><span class="p">)]</span>
+        <span class="c">##print(&quot;x max vertices: &quot; + str(x_max_vertices))</span>
+        <span class="c"># The vertices with y-values equal to y-max</span>
+        <span class="n">y_max_vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_max</span><span class="p">)]</span>
+        <span class="c"># The vertices with x-values equal to x-min</span>
+        <span class="n">x_min_vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">x_min</span><span class="p">)]</span>
+        <span class="c">##print(&quot;x min vertices: &quot; + str(x_min_vertices))</span>
+        <span class="c"># The vertices with y-values equal to y-min</span>
+        <span class="n">y_min_vertices</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">y_min</span><span class="p">)]</span>
+        <span class="c">##print(&quot;y min vertices: &quot; + str(y_min_vertices))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">x_reverse</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">y_reverse</span><span class="p">:</span>  <span class="c"># Taking the top-right vertices</span>
+            <span class="c"># To find the maximum y-value of the vertices with maximal x-values</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">y_min_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">x_max_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># To find the maximum x-value of the vertices with maximal y-values</span>
+            <span class="n">x_min_filter</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">y_max_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># Take the vertices which pass the x-value and y-value filters.</span>
+            <span class="n">front_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x_min_filter</span><span class="p">,</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">y_min_filter</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">front_indices</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">x_reverse</span> <span class="ow">and</span> <span class="n">y_reverse</span><span class="p">:</span>  <span class="c"># Taking the bottom-right vertices</span>
+            <span class="c"># To find the minimum y-value of the vertices with maximal x-values</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">y_max_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">x_max_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># To find the maximum x-value of the vertices with minimal y-values</span>
+            <span class="n">x_min_filter</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">y_min_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># Take the vertices which pass the x-value and y-value filters.</span>
+            <span class="n">front_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x_min_filter</span><span class="p">,</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">y_max_filter</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">front_indices</span>
+
+        <span class="k">if</span> <span class="n">x_reverse</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">y_reverse</span><span class="p">:</span>  <span class="c"># Taking the top-left vertices</span>
+            <span class="c"># To find the maximum y-value of the vertices with minimal x-values</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">y_min_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">x_min_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># To find the minimum x-value of the vertices with maximal y-values</span>
+            <span class="n">x_max_filter</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">y_max_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># Take the vertices which pass the x-value and y-value filters.</span>
+            <span class="n">front_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_max_filter</span><span class="p">,</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">y_min_filter</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">front_indices</span>
+
+        <span class="k">if</span> <span class="n">x_reverse</span> <span class="ow">and</span> <span class="n">y_reverse</span><span class="p">:</span>  <span class="c"># Taking the bottom-left vertices</span>
+            <span class="c"># To find the minimum y-value of the vertices with minimal x-values</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">y_max_filter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">x_min_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># To find the minimum x-value of the vertices with minimal y-values</span>
+            <span class="n">x_max_filter</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">y_min_vertices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c"># Take the vertices which pass the x-value and y-value filters.</span>
+            <span class="n">front_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_max_filter</span><span class="p">,</span>
+                <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">y_max_filter</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">front_indices</span>
+</div>
+<div class="viewcode-block" id="ParetoFront.remove_frontindices"><a class="viewcode-back" href="../paretofront.html#paretofront.ParetoFront.remove_frontindices">[docs]</a>    <span class="k">def</span> <span class="nf">remove_frontindices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">front_indices_rel_points</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gives the indices of the points without the indices of the front.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span><span class="p">,</span>
+                                                  <span class="n">front_indices_rel_points</span><span class="p">)</span>
+</div>
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="ParetoFront.remove_duplicates"><a class="viewcode-back" href="../paretofront.html#paretofront.ParetoFront.remove_duplicates">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicates</span><span class="p">(</span><span class="n">points_array</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gives the indices of the unique points.&quot;&quot;&quot;</span>
+        <span class="c"># reshapes the points array into an array of tuples</span>
+        <span class="c">#print(&quot;original points: &quot; + str(points_array))</span>
+        <span class="n">tuples_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">points_array</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">void</span><span class="p">,</span>
+            <span class="n">points_array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="n">points_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+        <span class="c"># selects the indices of the unique tuples.</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">unique_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">tuples_array</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="c">#print(&quot;total number of points: &quot; + str(points_array.shape[0]))</span>
+        <span class="c">#print(&quot;number of unique points: &quot; + str(unique_indices.size))</span>
+        <span class="c">##print(&quot;unique indices: &quot;)</span>
+        <span class="c"># print(str(unique_indices))</span>
+        <span class="n">sorted_unique_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">unique_indices</span><span class="p">)</span>
+        <span class="c">##print(&quot;sorted indices&quot;)</span>
+        <span class="c"># print(str(sorted_unique_indices))</span>
+        <span class="k">return</span> <span class="n">sorted_unique_indices</span>
+</div>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">x_reverse</span><span class="p">,</span> <span class="n">y_reverse</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fronts_indices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c">##print(&quot;created new pareto front with points: &quot;)</span>
+        <span class="c"># print(points)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_reverse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_reverse</span> <span class="o">=</span> <span class="n">x_reverse</span><span class="p">,</span> <span class="n">y_reverse</span>
+        <span class="c"># Raw points array may contain duplicates</span>
+        <span class="n">raw_points_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">point</span><span class="p">)</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">points</span><span class="p">])</span>
+        <span class="c"># The indices of the unique points in the raw points array.</span>
+        <span class="n">unique_indices</span> <span class="o">=</span> <span class="n">ParetoFront</span><span class="o">.</span><span class="n">remove_duplicates</span><span class="p">(</span><span class="n">raw_points_array</span><span class="p">)</span>
+        <span class="c"># The unique points in the raw points array.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_array</span> <span class="o">=</span> <span class="n">raw_points_array</span><span class="p">[</span><span class="n">unique_indices</span><span class="p">]</span>
+        <span class="c"># The number of rows in the points array</span>
+        <span class="n">num_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c"># set the indices of the pruned points as the indices of all points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_points</span><span class="p">)</span>
+        <span class="c"># At least 3 points are needed to build a convex hull</span>
+        <span class="k">if</span> <span class="n">num_points</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c"># if there are no points, raise a value error.</span>
+            <span class="k">if</span> <span class="n">num_points</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;No points passed to Pareto Front&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;No Points passed to Pareto Front&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># if there are 1 or 2 points, add these to the fronts</span>
+                <span class="c">#print(&quot;added last points&quot;)</span>
+                <span class="n">front_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fronts_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">front_indices</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_frontindices</span><span class="p">(</span><span class="n">front_indices</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># If there are enough points, try to build a convex hull.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">convex_hull</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points_array</span><span class="p">)</span>
+            <span class="c"># If convex hull not built, raise a value error.</span>
+            <span class="k">except</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">qhull</span><span class="o">.</span><span class="n">QhullError</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;all points are in a line.&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;All points are in a line.&quot;</span><span class="p">)</span>
+            <span class="c"># If another strange error occurs, record that.</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Qhull encountered other error&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Qhull encountered other error&quot;</span><span class="p">)</span>
+            <span class="c"># The indices of the convex hull vertices in the points array</span>
+            <span class="n">hull_indices</span> <span class="o">=</span> <span class="n">convex_hull</span><span class="o">.</span><span class="n">vertices</span>
+            <span class="c"># The vertices in the convex hull.</span>
+            <span class="n">hull_vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_array</span><span class="p">[</span><span class="n">hull_indices</span><span class="p">]</span>
+            <span class="c"># The indices of the points in the pareto front in the hull array.</span>
+            <span class="n">front_indices_rel_hull</span> <span class="o">=</span> <span class="n">ParetoFront</span><span class="o">.</span><span class="n">vertices_to_frontindices</span><span class="p">(</span>
+                         <span class="n">hull_vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_reverse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_reverse</span><span class="p">)</span>
+            <span class="c"># The indices of the points in the pareto front in the points</span>
+            <span class="c"># array.</span>
+            <span class="n">front_indices_rel_points</span> <span class="o">=</span> <span class="n">hull_indices</span><span class="p">[</span><span class="n">front_indices_rel_hull</span><span class="p">]</span>
+            <span class="c"># Add the indices of the points in the pareto front to list.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fronts_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">front_indices_rel_points</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+            <span class="c"># Remove the indices of the points in the pareto front from list.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_frontindices</span><span class="p">(</span><span class="n">front_indices_rel_points</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ParetoFront.build_nextfront"><a class="viewcode-back" href="../paretofront.html#paretofront.ParetoFront.build_nextfront">[docs]</a>    <span class="k">def</span> <span class="nf">build_nextfront</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build the Pareto front of the points with the last front removed</span>
+
+<span class="sd">        If the next front is successfully built return True, otherwise False.</span>
+<span class="sd">        Since points array does not have duplicates,</span>
+<span class="sd">        the pruned points array does not have duplicates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c">##print(&quot;build next front&quot;)</span>
+        <span class="c"># Initialize the points which have not been in a front yet</span>
+        <span class="n">pruned_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span><span class="p">]</span>
+        <span class="c"># The number of rows in the pruned points array</span>
+        <span class="n">num_points_left</span> <span class="o">=</span> <span class="n">pruned_points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c"># At least 3 points are needed to build a convex hull</span>
+        <span class="k">if</span> <span class="n">num_points_left</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c"># If there are no points, record failure</span>
+            <span class="k">if</span> <span class="n">num_points_left</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">False</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># If there are 1 or 2 points, add them to the front</span>
+                <span class="n">front_indices_rel_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fronts_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">front_indices_rel_points</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_frontindices</span><span class="p">(</span><span class="n">front_indices_rel_points</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># If there are enough points, try to build a convex hull</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">convex_hull</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="n">pruned_points</span><span class="p">)</span>
+            <span class="c"># if convex hull not built, raise a value error.</span>
+            <span class="k">except</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">qhull</span><span class="o">.</span><span class="n">QhullError</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;all points are in a line.&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;All points are in a line.&quot;</span><span class="p">)</span>
+            <span class="c"># If another strange error occurs, record that.</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Qhull encountered other error&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Qhull encountered other error&quot;</span><span class="p">)</span>
+            <span class="c"># The indices of the vertices in the convex hull</span>
+            <span class="c"># relative to the pruned points array</span>
+            <span class="n">hull_indices_rel_pruned_points</span> <span class="o">=</span> <span class="n">convex_hull</span><span class="o">.</span><span class="n">vertices</span>
+            <span class="c"># The indices of the vertices in the convex hull</span>
+            <span class="c"># relative to the points array</span>
+            <span class="n">hull_indices_rel_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pruned_points_indices</span><span class="p">[</span>
+                <span class="n">hull_indices_rel_pruned_points</span><span class="p">]</span>
+            <span class="c"># The vertices in the convex hull</span>
+            <span class="n">hull_vertices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_array</span><span class="p">[</span><span class="n">hull_indices_rel_points</span><span class="p">]</span>
+            <span class="c"># The indices of the points in the front</span>
+            <span class="c"># relative to the convex hull.</span>
+            <span class="n">front_indices_rel_hull</span> <span class="o">=</span> <span class="n">ParetoFront</span><span class="o">.</span><span class="n">vertices_to_frontindices</span><span class="p">(</span>
+                         <span class="n">hull_vertices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_reverse</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_reverse</span><span class="p">)</span>
+            <span class="c"># The indices of the points in the front</span>
+            <span class="c"># relative to the points array.</span>
+            <span class="n">front_indices_rel_points</span> <span class="o">=</span> <span class="n">hull_indices_rel_points</span><span class="p">[</span>
+                <span class="n">front_indices_rel_hull</span><span class="p">]</span>
+            <span class="c"># Add the indices of the points in the pareto front to list.</span>
+            <span class="c">##print(&quot;front indices: &quot; + str(front_indices_rel_points))</span>
+            <span class="n">front_indices_list</span> <span class="o">=</span> <span class="n">front_indices_rel_points</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="c"># print(front_indices_list)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fronts_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">front_indices_list</span><span class="p">)</span>
+            <span class="c"># Remove the indices of the points in the pareto front from list.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_frontindices</span><span class="p">(</span><span class="n">front_indices_rel_points</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">True</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Jonathan Ward.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

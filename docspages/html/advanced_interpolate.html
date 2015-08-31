@@ -1,0 +1,235 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>advanced_interpolate module &mdash; Hyperloop 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> Hyperloop
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">advanced_interpolate module</a></li>
+</ul>
+</div>
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">Hyperloop</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>advanced_interpolate module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/advanced_interpolate.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-advanced_interpolate">
+<span id="advanced-interpolate-module"></span><h1>advanced_interpolate module<a class="headerlink" href="#module-advanced_interpolate" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: David Roberts
+Purpose of Module: To provide an implementation of the minimum jerk</p>
+<blockquote>
+<div>implementation described in Polyakov.</div></blockquote>
+<p>Last Modified: 7/16/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: To clarify naming and add citations.
+Citations:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>&#8220;Analysis of Monkey Scribbles During Learning in the Framework of</dt>
+<dd><dl class="first last docutils">
+<dt>Models of Planar Hand Motion&#8221;</dt>
+<dd><ul class="first last simple">
+<li>Polyakov</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="function">
+<dt id="advanced_interpolate.gamma_matrix">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">gamma_matrix</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#gamma_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.gamma_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.gamma_matrix_end">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">gamma_matrix_end</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#gamma_matrix_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.gamma_matrix_end" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.gamma_matrix_start">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">gamma_matrix_start</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#gamma_matrix_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.gamma_matrix_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.join_indices">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">join_indices</code><span class="sig-paren">(</span><em>N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#join_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.join_indices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.para_super_q">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">para_super_q</code><span class="sig-paren">(</span><em>x</em>, <em>M</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#para_super_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.para_super_q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.quint">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">quint</code><span class="sig-paren">(</span><em>t</em>, <em>x</em>, <em>dx0</em>, <em>dx_n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#quint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.quint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.scipy_q">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">scipy_q</code><span class="sig-paren">(</span><em>x</em>, <em>M</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#scipy_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.scipy_q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="advanced_interpolate.super_quint">
+<code class="descclassname">advanced_interpolate.</code><code class="descname">super_quint</code><span class="sig-paren">(</span><em>t</em>, <em>x</em>, <em>M</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/advanced_interpolate.html#super_quint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#advanced_interpolate.super_quint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, Jonathan Ward.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

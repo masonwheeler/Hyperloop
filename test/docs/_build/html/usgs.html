@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>usgs module &mdash; Hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Hyperloop 0.0.1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-usgs">
+<span id="usgs-module"></span><h1>usgs module<a class="headerlink" href="#module-usgs" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: Jonathan Ward
+Purpose of Module: To download, cache, and access usgs elevation data.
+Last Modified: 7/25/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: Redesigned logic flow to save memory.</p>
+<dl class="function">
+<dt id="usgs.file_exists">
+<code class="descclassname">usgs.</code><code class="descname">file_exists</code><span class="sig-paren">(</span><em>local_file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#file_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether a given file exists</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.geotiff_pixel_val">
+<code class="descclassname">usgs.</code><code class="descname">geotiff_pixel_val</code><span class="sig-paren">(</span><em>geotiff_file_path</em>, <em>lonlat_coord</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#geotiff_pixel_val"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.geotiff_pixel_val" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the pixel value at the given lon-lat coord in the geotiff</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.get_bounding_coordinates">
+<code class="descclassname">usgs.</code><code class="descname">get_bounding_coordinates</code><span class="sig-paren">(</span><em>latlng_coord</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#get_bounding_coordinates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.get_bounding_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the top left corner of the latlng tile which the coord falls in</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.get_coordstring">
+<code class="descclassname">usgs.</code><code class="descname">get_coordstring</code><span class="sig-paren">(</span><em>latlng_coord</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#get_coordstring"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.get_coordstring" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the string used to reference the latlng tile which the coord falls in</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.get_elevation">
+<code class="descclassname">usgs.</code><code class="descname">get_elevation</code><span class="sig-paren">(</span><em>latlng_coord</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#get_elevation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.get_elevation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the elevation at a given lat-lng coord</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.get_img_file_name">
+<code class="descclassname">usgs.</code><code class="descname">get_img_file_name</code><span class="sig-paren">(</span><em>coordstring</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#get_img_file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.get_img_file_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the img file which stores the tile&#8217;s elevation data</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.img_to_geotiff">
+<code class="descclassname">usgs.</code><code class="descname">img_to_geotiff</code><span class="sig-paren">(</span><em>img_file_name</em>, <em>unzip_directory</em>, <em>coordstring</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#img_to_geotiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.img_to_geotiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the img file containing the elevation data into a geotiff file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.remove_file">
+<code class="descclassname">usgs.</code><code class="descname">remove_file</code><span class="sig-paren">(</span><em>file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#remove_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.remove_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete the given file</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="usgs.unzip_zipfile">
+<code class="descclassname">usgs.</code><code class="descname">unzip_zipfile</code><span class="sig-paren">(</span><em>zip_file_path</em>, <em>out_path</em>, <em>img_file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/usgs.html#unzip_zipfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#usgs.unzip_zipfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unzip the zipfile containing the img file which holds the elevation data</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/usgs.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Jonathan Ward.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      
+      |
+      <a href="_sources/usgs.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
