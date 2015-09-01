@@ -93,6 +93,7 @@ def build_graphs(lattice_slices):
     # edges.build_pylons(finished_edges_sets)
     #t3 = time.time()
     #print("Building the pylons took " + str(t3 - t2) + " seconds.")
+    spatial_graphs = graphs.build_spatial_graphs(finished_edges_sets)
     complete_graphs = graphs.get_graphs(finished_edges_sets)
     #print("len complete graphs: " + str(len(complete_graphs)))
     #print("graphs num edges: " + str(complete_graphs[0].num_edges))

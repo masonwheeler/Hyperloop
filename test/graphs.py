@@ -350,3 +350,13 @@ def spatial_graphs_set_pair_merger(spatial_graphs_set_a, spatial_graphs_set_b):
                                 SpatialGraph.merge_two_spatial_graphs)
     return merged_spatial_graphs
 
+def build_spatial_graphs(edges_sets):
+    base_spatial_graphs_sets = [SpatialGraphsSet.init_from_edges_set(edges_set)
+                                            for edges_set in edges_sets]    
+    spatial_graphs_sets_tree = mergetree.MasterTree(base_spatial_graphs_sets,
+                                              spatial_graphs_set_pair_merger,
+                                                 abstract.graphs_set_updater)
+    root_spatial_graphs_set = spatial_graphs_sets_tree.root
+    selected_spatial_graphs = root_spatial_graphs_set.selected_graphs
+    return selected_spatial_graphs
+
