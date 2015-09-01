@@ -290,7 +290,7 @@ def graphs_sets_merger(graphs_set_a, graphs_set_b):
         merged_graphs_set = GraphsSet(merged_graphs)
         return merged_graphs_set
 
-class SpatialGraphsSets(abstract.AbstractGraphsSet):
+class SpatialGraphsSet(abstract.AbstractGraphsSet):
 
     @staticmethod
     def is_spatial_graph_pair_compatible(spatial_graph_a, spatial_graph_b):
@@ -299,8 +299,8 @@ class SpatialGraphsSets(abstract.AbstractGraphsSet):
         return graphs_compatible
 
     @staticmethod
-    def spatial_graphs_cost_time(spatial_graphs, spatial_graphs_length):
-        if spatial_graphs_length < config.GRAPH_FILTER_MIN_NUM_EDGES:
+    def spatial_graphs_cost_time(spatial_graphs, spatial_graphs_num_edges):
+        if spatial_graphs_num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
             return None
         else:
             spatial_graphs_cost_time = [spatial_graph.get_cost_time() for
@@ -317,9 +317,12 @@ class SpatialGraphsSets(abstract.AbstractGraphsSet):
                                             minimize_cost,
                                             minimize_time)
 
-    #@classmethod
-    #def init_from_spatial_edges_set(cls, spatial_edges_set):
-    #    spatial_graphs = [SpatialGraph.init_from_
+    @classmethod
+    def init_from_spatial_edges_set(cls, spatial_edges_set):
+        spatial_graphs = [SpatialGraph.init_from_spatial_edge(spatial_edge)
+                                      for spatial_edge in spatial_edges_set]
+        spatial_graphs_num_edges = 1
+        return cls(spatial_graphs, spatial_graphs_num_edges)
 
 
 def merge_basegraphssets(base_graph_sets):

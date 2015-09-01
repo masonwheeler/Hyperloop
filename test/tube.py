@@ -299,8 +299,11 @@ class TubeGraphsSet(abstract.AbstractGraphsSet):
         minimize_cost = True
         minimize_triptime_excess = True
         abstract.AbstractGraphsSet.__init__(self, tube_graphs,
-                                            self.tubegraphs_cost_triptime_excess, self.is_graph_pair_compatible,
-                                            minimize_cost, minimize_triptime_excess, graphs_num_edges)
+                                            self.tubegraphs_cost_triptime_excess,
+                                            self.is_graph_pair_compatible,
+                                            minimize_cost,
+                                            minimize_triptime_excess,
+                                            graphs_num_edges)
 
     @classmethod
     def init_from_tube_edges_set(cls, tube_edges_set):
