@@ -317,9 +317,9 @@ class SpatialGraphsSets(abstract.AbstractGraphsSet):
                                             minimize_cost,
                                             minimize_time)
 
-    @classmethod
-    def init_from_spatial_edges_set(cls, spatial_edges_set):
-        spatial_graphs = [SpatialGraph.init_from_
+    #@classmethod
+    #def init_from_spatial_edges_set(cls, spatial_edges_set):
+    #    spatial_graphs = [SpatialGraph.init_from_
 
 
 def merge_basegraphssets(base_graph_sets):
