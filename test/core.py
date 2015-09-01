@@ -84,7 +84,8 @@ def build_graphs(lattice_slices):
     """Build graph skeletons from lattice slices
     """
     time_a = time.time()
-    finished_edges_sets = edges.get_edgessets(lattice_slices)
+    #finished_edges_sets = edges.get_edgessets(lattice_slices)
+    final_edges_sets = edges.get_spatial_edges_sets(lattice_slices)
     # for edges_set in finished_edges_sets:
     #    for edge in edges_set:
     #        print("edge geospatials: " + str(edge.geospatials))
@@ -93,8 +94,8 @@ def build_graphs(lattice_slices):
     # edges.build_pylons(finished_edges_sets)
     #t3 = time.time()
     #print("Building the pylons took " + str(t3 - t2) + " seconds.")
-    spatial_graphs = graphs.build_spatial_graphs(finished_edges_sets)
-    complete_graphs = graphs.get_graphs(finished_edges_sets)
+    spatial_graphs = graphs.build_spatial_graphs(final_edges_sets)
+    complete_graphs = graphs.get_graphs(final_edges_sets)
     #print("len complete graphs: " + str(len(complete_graphs)))
     #print("graphs num edges: " + str(complete_graphs[0].num_edges))
     # graph_geospatials = [tuple(map(tuple, graph.geospatials[:-1]))

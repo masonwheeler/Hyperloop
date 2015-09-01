@@ -12,6 +12,7 @@ import math
 import time
 
 # Our Modules
+import abstract
 import cacher
 import config
 import elevation
@@ -286,7 +287,7 @@ class SpatialEdge(abstract.AbstractEdge):
 
     @staticmethod
     def compute_land_cost(edge_is_in_right_of_way, geospatials):
-        if edge_is_in_right_of_way
+        if edge_is_in_right_of_way:
             land_cost = config.RIGHT_OF_WAY_LAND_COST
         else:
             start_geospatial, end_geospatial = geospatials
@@ -353,7 +354,7 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
 
 
 def build_spatial_edges_sets(spatial_points_lattice):
-    spatial_edges_sets = SpatialEdgesSets(spatial_points_lattice):
+    spatial_edges_sets = SpatialEdgesSets(spatial_points_lattice)
     return spatial_edges_sets.final_edges_sets
 
 def get_spatial_edges_sets(spatial_points_lattice):
