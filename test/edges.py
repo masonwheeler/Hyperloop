@@ -267,3 +267,67 @@ def get_edgessets(lattice):
     finished_edges_sets = cacher.get_object("edgessets", build_edgessets,
                                             [lattice], config.EDGES_FLAG)
     return finished_edges_sets
+
+########## Spatial Edges ##########
+
+class SpatialEdge(abstract.AbstractEdge):
+
+    @staticmethod
+    def get_geospatials(start_spatial_point, end_spatial_point):
+        geospatials = [start_spatial_point.geospatial,
+                         end_spatial_point.geospatial]
+        return geospatials
+
+    @staticmethod
+    def get_latlngs(start_spatial_point, end_spatial_point):
+        latlngs = [start_spatial_point.latlng,  
+                     end_spatial_point.latlng]
+        return latlngs
+
+    @staticmethod
+    def compute_land_cost(edge_is_in_right_of_way, geospatials):
+        if edge_is_in_right_of_way
+            land_cost = config.RIGHT_OF_WAY_LAND_COST
+        else:
+            start_geospatial, end_geospatial = geospatials
+            landcover_geospatials, distances = util.build_grid(
+                start_geospatial, end_geospatial, config.LAND_POINT_SPACING)
+            landcover_lat_lngs = proj.geospatials_to_latlngs(landcover_geospatials,
+                                                             config.PROJ)
+            landcover_cost_densities = landcover.landcover_cost_densities(
+                landcover_lat_lngs)
+            land_cost = landcover.cost_densities_to_landcost(
+                landcover_cost_densities)
+        return land_cost
+
+    @staticmethod
+    def compute_pylon_cost_and_tube_cost(geospatials):
+        elevation_profile = elevation.get_elevation_profile(geospatials)
+        tube_cost, pylon_cost = tube.quick_build_tube(elevation_profile)
+        return [pylon_cost, tube_cost]
+            
+    def __init__(self, start_spatial_point, end_spatial_point):
+        abstract.AbstractEdge.__init__(self, start_spatial_point,
+                                               end_spatial_point)
+        self.start_spatial_point = start_spatial_point
+        self.end_spatial_point = end_spatial_point
+        self.geospatials = SpatialEdge.get_geospatials(start_spatial_points,
+                                                         end_spatial_points)
+        self.latlngs = SpatialEdge.get_latlngs(start_spatial_points,
+                                                 end_spatial_points)
+        edge_is_in_right_of_way = (start_spatial_point.is_in_right_of_way and
+                                     end_spatial_point.is_in_right_of_way)
+        self.land_cost = SpatialEdge.compute_land_cost(edge_is_in_right_of_way,
+                                                       self.geospatials)
+        self.pylon_cost, self.tube_cost = \
+            SpatialEdge.compute_pylon_cost_and_tube_cost(start_spatial_point,
+                                                           end_spatial_point)
+
+    def to_abstract_edge(self):
+        abstract_edge = abstract.AbstractEdge(self.start_spatial_point,
+                                                self.end_spatial_point)
+        return abstract_edge
+
+
+
+
