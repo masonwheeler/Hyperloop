@@ -301,8 +301,16 @@ class SpatialEdge(abstract.AbstractEdge):
         return land_cost
 
     @staticmethod
-    def compute_pylon_cost_and_tube_cost(geospatials):
-        elevation_profile = elevation.get_elevation_profile(geospatials)
+    def get_elevation_profile(geospatials):
+        start_geospatial, end_geospatial = geospatials
+        geospatials_grid, distances = util.build_grid(start_geospatial,
+                                        end_geospatial, config.PYLON_SPACING)
+        elevation_profile = elevation.get_elevation_profile(geospatials_grid,
+                                                            distances)
+        return elevation_profile
+
+    @staticmethod
+    def compute_pylon_cost_and_tube_cost(elevation_profile):
         tube_cost, pylon_cost = tube.quick_build_tube(elevation_profile)
         return [pylon_cost, tube_cost]
             
@@ -315,18 +323,34 @@ class SpatialEdge(abstract.AbstractEdge):
                                                          end_spatial_points)
         self.latlngs = SpatialEdge.get_latlngs(start_spatial_points,
                                                  end_spatial_points)
+        self.elevation_profile = SpatialEdge.get_elevation_profile(
+                                                      self.geospatials)
         edge_is_in_right_of_way = (start_spatial_point.is_in_right_of_way and
                                      end_spatial_point.is_in_right_of_way)
         self.land_cost = SpatialEdge.compute_land_cost(edge_is_in_right_of_way,
                                                        self.geospatials)
         self.pylon_cost, self.tube_cost = \
-            SpatialEdge.compute_pylon_cost_and_tube_cost(start_spatial_point,
-                                                           end_spatial_point)
+            SpatialEdge.compute_pylon_cost_and_tube_cost(elevation_profile)
 
     def to_abstract_edge(self):
         abstract_edge = abstract.AbstractEdge(self.start_spatial_point,
                                                 self.end_spatial_point)
         return abstract_edge
+
+
+class SpatialEdgesSets(abstract.AbstractEdgesSets):
+    
+    @staticmethod
+    def is_spatial_edge_pair_compatible(spatial_edge_a, spatial_edge_b):
+        edge_pair_compatible = \
+            abstract.AbstractEdgesSets.is_edge_pair_compatible(spatial_edge_a,
+                             spatial_edge_b, config.SPATIAL_DEGREE_CONSTRAINT)
+        return edge_pair_compatible
+
+    def __init__(self, spatial_points_lattice):
+        abstract.AbstractEdgesSets.__init__(self, spatial_points_lattice,
+                       SpatialEdge, self.is_spatial_edge_pair_compatible)
+
 
 
 

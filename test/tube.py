@@ -212,7 +212,8 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
 
     def __init__(self, pylons_lattice):
         abstract.AbstractEdgesSets.__init__(self, pylons_lattice,
-                                            self.tube_edge_builder, self.is_tube_edge_pair_compatible)
+                                            self.tube_edge_builder,
+                                            self.is_tube_edge_pair_compatible)
 
 
 class TubeGraph(abstract.AbstractGraph):
