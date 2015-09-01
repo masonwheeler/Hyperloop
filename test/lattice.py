@@ -48,24 +48,14 @@ class Slice:
 
     def build_slice(self, id_index, directions_point, spline_point):
         """Constructs each SlicePoint in the Slice and its id_index"""
-        slice_vector = util.subtract(directions_point, spline_point)
-        #print("slice length: " + str(util.norm(slice_vector)))
-        #print("point spacing: " + str(self.point_spacing))
         slice_grid, distances = util.build_grid(directions_point, spline_point,
-                                                   self.point_spacing)
-        #print("directions point: " + str(directions_point))
-        #print("spline point: " + str(spline_point))
-        #print("slice grid: " + str(slice_grid))
-        #slice_spline_point = SlicePoint(id_index, spline_point, False).as_dict()
-        id_index += 1
+                                                   self.point_spacing)       
         slice_grid_points = []
-        # do not add the slice point
         for point in slice_grid[:-1]:
             slice_grid_points.append(SlicePoint(id_index, point,
                                                 False).as_dict())
             id_index += 1
         slice_points = slice_grid_points
-        # time.sleep(5)
         return [slice_points, id_index]
 
     def __init__(self, id_index, directions_point, spline_point):
@@ -153,3 +143,45 @@ def get_lattice(spatial_slice_bounds):
     lattice = cacher.get_object("lattice", build_lattice_slices,
                                 [spatial_slice_bounds], config.LATTICE_FLAG)
     return lattice
+
+
+######### Spatial Lattice #########
+
+class SpatialPoint(abstract.AbstractPoint):
+
+    def __init__(self, point_id, lattice_x_coord, lattice_y_coord,
+                                  geospatial, is_in_right_of_way):
+        spatial_x_coord, spatial_y_coord = geospatial
+        abstract.AbstractPoint.__init__(self, point_id, lattice_x_coord,
+                             lattice_y_coord, spatial_x_coord, spatial_y_coord)
+        self.latlng = proj.geospatial_to_latlng(geospatial, config.PROJ)
+        self.is_in_right_of_way = is_in_right_of_way
+
+
+class SpatialSlice(abstract.AbstractSlice):
+
+    @staticmethod
+    def spatial_slice_builder(lattice_x_coord, spatial_slice_bounds,
+                                                     slice_start_id):
+        step_size_in_spatial_slice = spatial_slice_bounds["step_size"]
+        spline_point_geospatials = spatial_slice_bounds["end_geospatials"]
+        directions_point_geospatials = spatial_slice_bounds["start_geospatials"]
+        spatial_slice_geospatials, distances = util.build_grid(
+                                            directions_point_geospatials,
+                                            spline_point_geospatials,
+                                            self.point_spacing)
+        point_id = slice_start_id
+        lattice_y_coord = 0
+        spatial_slice_points = []
+        for spatial_slice_geospatial in spatial_slice_geospatials[:-1]:
+            is_in_right_of_way = (lattice_y_coord == 0)
+            new_spatial_point = SpatialPoint(point_id, lattice_x_coord,
+                lattice_y_coord, spatial_slice_geospatial, is_in_right_of_way)
+            spatial_slice_points.append(new_spatial_points)
+            point_id += 1
+            lattice_y_coord += 1        
+        return [spatial_slice_points, point_id]        
+
+    def __init__(self, lattice_x_coord, spatial_slice_bounds, slice_start_id):
+        abstract.AbstractSlice.__init__(self, lattice_x_coord,
+           spatial_slice_bounds, slice_start_id, SpatialSlice.pylons_builder)
