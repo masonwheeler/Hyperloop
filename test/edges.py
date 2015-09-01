@@ -352,6 +352,12 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
                        SpatialEdge, self.is_spatial_edge_pair_compatible)
 
 
+def build_spatial_edges_sets(spatial_points_lattice):
+    spatial_edges_sets = SpatialEdgesSets(spatial_points_lattice):
+    return spatial_edges_sets.final_edges_sets
 
-
-
+def get_spatial_edges_sets(spatial_points_lattice):
+    final_edges_sets = cacher.get_object("edgessets",
+        build_spatial_edges_sets, [spatial_points_lattice],
+                                         config.EDGES_FLAG)
+    return final_edges_sets
