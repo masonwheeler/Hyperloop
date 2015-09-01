@@ -7,7 +7,6 @@ Last Modification Purpose: Changed Class attributes to Instance attributes.
 """
 
 import matplotlib.pyplot as plt
-import time
 
 import abstract
 import config
@@ -60,26 +59,56 @@ class Graph:
         print("This graph's curvature is: " + str(self.curvature_metric) + ".")
 
 
-class GraphV2(abstract.AbstractGraph):
+class SpatialGraph(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
 
-    def get_time(self, geospatials, ):
+    def get_time(self, geospatials, num_edges):
         """Compute the curvature of an interpolation of the graph"""
-        if self.num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
-            self.curvature_metric = interpolate.graph_curvature(
+        if num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
+            time = interpolate.graph_curvature(
                 self.geospatials, config.GRAPH_SAMPLE_SPACING)
             return time
 
-    def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
-                 pylon_cost, tube_cost, land_cost, latlngs, geospatials):
-        abstract.AbstractGraph.__init__(start_id, end_id, start_angle, end_angle,
-                                        num_edges)
+    def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
+                                                 latlngs, geospatials):
+        abstract.AbstractGraph.init_from_abstract_graph(abstract_graph)
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
         self.land_cost = land_cost  # The total cost of the land acquired
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.geospatials = geospatials  # The geospatial coordinates
-        self.time = self.get_time(geospatials)
+        self.time = self.get_time(geospatials, num_edges)
+
+    @classmethod
+    def init_from_spatial_edge(cls, spatial_edge):
+        abstract_edge = spatial_edge.to_abstract_edge()
+        abstract_graph = abstract.AbstractGraph.init_from_abstract_edge(
+                                                          abstract_edge)
+        pylon_cost = spatial_edge.pylon_cost
+        tube_cost = spatial_edge.tube_cost
+        land_cost = spatial_edge.land_cost
+        latlngs = spatial_edge.latlngs
+        geospatials = spatial_edge.geospatials
+        data = cls(abstract_graph, pylon_cost, tube_cost, land_cost,
+                                               latlngs, geospatials)
+        return data
+
+    @classmethod
+    def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
+        abstract_graph_a = spatial_graph_a.to_abstract_graph()
+        abstract_graph_b = spatial_graph_b.to_abstract_graph()
+        merged_abstract_graph = abstract.AbstractGraph.merge_abstract_graphs(
+                                          abstract_graph_a, abstract_graph_b)
+        pylon_cost = spatial_graph_a.pylon_cost + spatial_graph_b.pylon_cost
+        tube_cost = spatial_graph_a.tube_cost + spatial_graph_b.tube_cost
+        land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost
+        latlngs = util.smart_concat(spatial_graph_a.latlngs,
+                                    spatial_graph_b.latlngs)
+        geospatials = util.smart_concat(spatial_graph_a.geospatials,
+                                        spatial_graph_b.geospatials)
+        data = cls(merged_abstract_graph, pylon_cost, tube_cost, land_cost,
+                                                      latlngs, geospatials)
+        return data        
 
     def get_total_cost(self):
         return self.pylon_cost + self.tube_cost + self.land_cost
@@ -260,6 +289,37 @@ def graphs_sets_merger(graphs_set_a, graphs_set_b):
     else:
         merged_graphs_set = GraphsSet(merged_graphs)
         return merged_graphs_set
+
+class SpatialGraphsSets(abstract.AbstractGraphsSet):
+
+    @staticmethod
+    def is_spatial_graph_pair_compatible(spatial_graph_a, spatial_graph_b):
+        graphs_compatible = abstract.AbstractGraphsSet.is_graph_pair_compatible(
+            spatial_graph_a, spatial_graph_b, config.SPATIAL_DEGREE_CONSTRAINT)
+        return graphs_compatible
+
+    @staticmethod
+    def spatial_graphs_cost_time(spatial_graphs, spatial_graphs_length):
+        if spatial_graphs_length < config.GRAPH_FILTER_MIN_NUM_EDGES:
+            return None
+        else:
+            spatial_graphs_cost_time = [spatial_graph.get_cost_time() for
+                                        spatial_graph in spatial_graphs]
+            return spatial_graphs_cost_time
+
+    def __init__(self, spatial_graphs, spatial_graphs_length):
+        minimize_cost = True
+        minimize_time = True
+        abstract.AbstractGraphsSet.__init__(self, spatial_graphs,
+                                            spatial_graphs_length,
+                                            self.spatial_graphs_cost_time,
+                                    self.is_spatial_graph_pair_compatible,
+                                            minimize_cost,
+                                            minimize_time)
+
+    @classmethod
+    def init_from_spatial_edges_set(cls, spatial_edges_set):
+        spatial_graphs = [SpatialGraph.init_from_
 
 
 def merge_basegraphssets(base_graph_sets):

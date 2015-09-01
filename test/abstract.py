@@ -211,7 +211,7 @@ class AbstractGraphsSet:
     @staticmethod
     def is_graph_pair_compatible(graph_a, graph_b, degree_constraint):
         graph_pair_compatible = (graph_a.end_id == graph_b.start_id and
-                                 abs(graph_a.end_angle - graph_b.start_angle) < degree_constraint)
+            abs(graph_a.end_angle - graph_b.start_angle) < degree_constraint)
         return graph_pair_compatible
 
     def select_graphs(self, minimize_a_vals, minimize_b_vals):
