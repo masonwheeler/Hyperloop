@@ -149,8 +149,7 @@ def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
     routes_dicts = []
     route_index = 0
     for route in routes:
-        route_dict = route.as_dict()
-        route_dict["index"] = route_index
+        route_dict = route.as_dict(route_index)
         route_index += 1
         routes_dicts.append(route_dict)
     city_pair = {

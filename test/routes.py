@@ -83,14 +83,16 @@ class Route:
         acceleration_vectors = np.transpose([ax, ay, az])
         return [np.linalg.norm(acceleration_vector) for acceleration_vector in acceleration_vectors]
 
-    def as_dict(self):
+    def as_dict(self, index):
         route_dict = {
+            "index": index,
             "latlngs": self.latlngs,
             "land_cost": self.land_cost,
             "tube_coords": self.tube_elevations.tolist(),
             "pylons": self.pylons,
             "tube_cost": self.tube_cost,
             "pylon_cost": self.pylon_cost,
+            "total_cost": self.land_cost + self.tube_cost + self.pylon_cost,
             "velocity_profile": self.velocity_profile,
             "acceleration_profile": self.acceleration_profile,
             "comfort_rating": self.comfort_rating,
