@@ -184,4 +184,44 @@ class SpatialSlice(abstract.AbstractSlice):
 
     def __init__(self, lattice_x_coord, spatial_slice_bounds, slice_start_id):
         abstract.AbstractSlice.__init__(self, lattice_x_coord,
-           spatial_slice_bounds, slice_start_id, SpatialSlice.pylons_builder)
+                                        spatial_slice_bounds, slice_start_id,
+                                        SpatialSlice.spatial_slice_builder)
+
+
+class SpatialLattice(abstract.AbstractLattice):
+
+    @staticmethod
+    def sample_directions_points(directions_points):
+        sampled_directions_points = interpolate.sample_path(directions_points,
+                                             config.DIRECTIONS_SAMPLE_SPACING)
+        return sampled_directions_points
+
+    @staticmethod
+    def get_spatial_slices_directions_points(sampled_directions_points):
+        spatial_slices_directions_points = util.smart_sample_nth_points(
+            sampled_directions_points, config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
+        return spatial_slices_directions_points
+
+    @staticmethod
+    def get_spatial_slices_spline_points(sampled_directions_points):        
+        spatial_spline_s_values = interpolate.get_s_values(len(
+                                        sampled_directions_points))
+        spatial_slices_s_values = interpolate.get_slice_s_values(
+            spatial_spline_s_values, config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
+        spatial_x_spline, spatial_y_spline = self.get_spatial_spline(
+                                               sampled_directions_points)
+        spatial_slices_spline_points_x_values = interpolate.get_spline_values(
+                          spatial_x_spline, spatial_slices_s_values)
+        spatial_slices_spline_points_y_values = interpolate.get_spline_values(
+                          spatial_y_spline, spatial_slices_s_values)
+        spatial_slices_spline_tuples = zip(
+            spatial_slices_spline_points_x_values,
+            spatial_slices_spline_points_x_values)
+        spatial_slices_spline_points = [list(eachTuple) for eachTuple in
+                                            spatial_slices_spline_tuples]
+        return spatial_slices_spline_points
+
+    def __init__(self, directions_points):
+        sampled_directions_points = self.sample_directions_points(
+                                                    directions_points)
+    
