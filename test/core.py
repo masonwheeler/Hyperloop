@@ -40,6 +40,7 @@ def build_directions(start, end):
         config.PLOT_QUEUE.append(plottable_directions)
     return [directions_points, start_lat_lng, end_lat_lng]
 
+
 def build_lattice(directions_points):
     """Build lattice between directions points and spline points
     """

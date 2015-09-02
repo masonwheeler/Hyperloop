@@ -191,6 +191,24 @@ class SpatialSlice(abstract.AbstractSlice):
 class SpatialLattice(abstract.AbstractLattice):
 
     @staticmethod
+    def get_spatial_splines(sampled_directions_points, curvature_threshold):
+        points_x_values = [point[0] for point in sampled_directions_points]
+        points_y_values = [point[1] for point in sampled_directions_points]
+        x_array = np.array(points_x_values)
+        y_array = np.array(points_y_values)
+        initial_end_weights = \
+            config.SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS
+        initial_smoothing_factor = \
+            config.SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR
+        curvature_threshold = config.LATERAL_CURVATURE_CONSTRAINT
+        x_spline, y_spline = iterative_smoothing_interpolation_2d(x_array,
+                                                                  y_array,
+                                                      initial_end_weights,
+                                                 initial_smoothing_factor,
+                                                      curvature_threshold)
+        return [x_spline, y_spline]
+
+    @staticmethod
     def sample_directions_points(directions_points):
         sampled_directions_points = interpolate.sample_path(directions_points,
                                              config.DIRECTIONS_SAMPLE_SPACING)
@@ -208,7 +226,7 @@ class SpatialLattice(abstract.AbstractLattice):
                                         sampled_directions_points))
         spatial_slices_s_values = interpolate.get_slice_s_values(
             spatial_spline_s_values, config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
-        spatial_x_spline, spatial_y_spline = self.get_spatial_spline(
+        spatial_x_spline, spatial_y_spline = self.get_spatial_splines(
                                                sampled_directions_points)
         spatial_slices_spline_points_x_values = interpolate.get_spline_values(
                           spatial_x_spline, spatial_slices_s_values)
