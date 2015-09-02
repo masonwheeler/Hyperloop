@@ -259,7 +259,7 @@ class SpatialLattice(abstract.AbstractLattice):
                                                      directions_geospatials)
         spatial_slices_directions_geospatials = \
             SpatialLattice.get_spatial_slices_directions_geospatials(
-                                      sampled_directions_geospatials)
+                   sampled_directions_geospatials, spatial_x_spacing)
         spatial_slices_spline_points = \
             SpatialLattice.get_spatial_slices_spline_points(
                                       sampled_directions_points)         

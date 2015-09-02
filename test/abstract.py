@@ -58,7 +58,7 @@ class AbstractSlice(object):
         self.end_id = start_id + num_points
 
 
-class AbstractLattice:
+class AbstractLattice(object):
 
     def __init__(self, slices_bounds, points_builder):
         self.slices = []
@@ -72,7 +72,7 @@ class AbstractLattice:
             lattice_x_coord += 1
 
 
-class AbstractEdge:
+class AbstractEdge(object):
 
     def __init__(self, start_point, end_point):
         self.start_id = start_point.point_id
@@ -91,7 +91,7 @@ class AbstractEdge:
         self.is_useful = True
 
 
-class AbstractEdgesSets:
+class AbstractEdgesSets(object):
 
     @staticmethod
     def is_edge_pair_compatible(edge_a, edge_b, degree_constraint):
@@ -178,7 +178,7 @@ class AbstractEdgesSets:
         self.final_edges_sets = self.filtered_edges_sets_list[-1]
 
 
-class AbstractGraph:
+class AbstractGraph(object):
 
     def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
                  lattice_coords):
@@ -206,7 +206,7 @@ class AbstractGraph:
         return local_lattice
 
 
-class AbstractGraphsSet:
+class AbstractGraphsSet(object):
 
     @staticmethod
     def is_graph_pair_compatible(graph_a, graph_b, degree_constraint):
