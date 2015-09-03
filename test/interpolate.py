@@ -371,7 +371,7 @@ def compute_curvature_threshold(speed, max_acceleration):
     return curvature_threshold
 
 
-def is_curvature_valid(curvature_array, curvature_threshhold):
+def test_curvature_validity(curvature_array, curvature_threshhold):
     curvature_size = curvature_array.size
     curvature_threshhold_array = np.empty(curvature_size)
     curvature_threshhold_array.fill(curvature_threshhold)
@@ -387,17 +387,18 @@ def is_curvature_valid(curvature_array, curvature_threshhold):
 def curvature_test_2d(x_spline, y_spline, s_values, curvature_threshold):
     splines_curvature = parametric_splines_2d_curvature(x_spline, y_spline,
                                                         s_values)
-    is_curvature_valid = is_curvature_valid(
-        splines_curvature, curvature_threshold)
+    is_curvature_valid = test_curvature_validity(splines_curvature,
+                                               curvature_threshold)
     return is_curvature_valid
 
 
-def iterative_smooth_interpolate_2d(x_array, y_array, initial_end_weights,
-                                    initial_smoothing_factor, curvature_threshold):
+def iterative_smoothing_interpolation_2d(x_array, y_array, initial_end_weights,
+                                initial_smoothing_factor, curvature_threshold):
     num_points = x_array.size
     s_values = np.arange(num_points)
     x_spline, y_spline = smoothing_splines_2d(x_array, y_array, s_values,
-                                              initial_end_weights, initial_smoothing_factor)
+                                              initial_end_weights,
+                                              initial_smoothing_factor)
     is_curvature_valid = curvature_test_2d(x_spline, y_spline, s_values,
                                            curvature_threshold)
     test_smoothing_factor = initial_smoothing_factor

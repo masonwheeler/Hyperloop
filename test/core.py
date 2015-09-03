@@ -67,7 +67,8 @@ def build_lattice(directions_geospatials):
                                 spatial_spline_points)
     lattice_slices = lattice.get_lattice(spatial_slices_bounds)
     """
-    lattice = lattice.get_spatial_lattice(directions_geospatials)
+    #lattice = lattice.get_spatial_lattice(directions_geospatials)
+    spatial_lattice = lattice.SpatialLattice(directions_geospatials, 10, 8)
     #time_b = time.time()
     #print "Building the lattice took " + str(time_b - time_a) + " seconds."
     #if config.VISUAL_MODE:
@@ -77,7 +78,7 @@ def build_lattice(directions_geospatials):
     #                                                    s_values)
     #    plottable_spline = [[spline_x_values, spline_y_values], 'r-']
     #    config.PLOT_QUEUE.append(plottable_spline)
-    return lattice_slices
+    return spatial_lattice
 
 # config.DEGREE_CONSTRAINT = min(math.fabs(math.pi - math.acos(min((
 # config.distance_btwn_slices*(config.G_TOLERANCE/330**2))**2/2-1,1))),
@@ -138,6 +139,7 @@ def pair_analysis(start, end):
     directions_geospatials, start_lat_lng, end_lat_lng = build_directions(
         start, end)
     lattice_slices = build_lattice(directions_geospatials)
+    """
     complete_graphs = build_graphs(lattice_slices)
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
@@ -157,4 +159,5 @@ def pair_analysis(start, end):
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
     if config.VISUAL_MODE:
         visualize.plot_objects(config.PLOT_QUEUE)
+    """
     return 0

@@ -14,7 +14,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 TESTING_MODE = True
-VISUAL_MODE = True
+VISUAL_MODE = False
 VERBOSE_MODE = True
 TIMING_MODE = False
 USE_DROPBOX = False
@@ -32,13 +32,7 @@ USE_CACHED_SPATIAL_PATHS2D = False
 """
 Lattice Generation Parameters
 """
-POINT_SPACING = 2000.0  # (in meters) spacing between points in the same slice
-DIRECTIONS_SAMPLE_SPACING = 10  # (in meters)
 DEGREE_CONSTRAINT = 30  # the angular constraint between subsequent edges
-# (in units of directions_sample_spacing) i.e.
-SPATIAL_SLICE_S_VALUE_STEP_SIZE = 1000
-# spacing between spline points in meters is given
-# by directions_sample_spacing * spline_sample_spacing
 NDIGITS = 6  # the number of digits used for rounding
 
 """
@@ -63,13 +57,6 @@ VELOCITY_PROFILE_DEGREE_CONSTRAINT = 30.0
 VELOCITY_ARC_LENGTH_STEP_SIZE = 100.0
 
 """
-Engineering constraints.
-"""
-PYLON_SPACING = 100.0  # maximum distance between subsequent pylons (in meters)
-MAX_SPEED = 330.0  # maximum speed of the capsule (in m/s)
-
-
-"""
 Land Cost parameters
 """
 LAND_POINT_SPACING = 30.0  # spacing for land cost sampling (in meters)
@@ -77,32 +64,13 @@ LAND_POINT_SPACING = 30.0  # spacing for land cost sampling (in meters)
 """
 Comfort parameters.
 """
-LINEAR_ACCEL_CONSTRAINT = 0.5 * 9.81
-LATERAL_ACCEL_CONSTRAINT = 0.3 * 9.81
-VERTICAL_ACCEL_CONSTRAINT = 0.3 * 9.81
-
 LINEAR_ACCEL_TOL = 0.5 * 9.81
 LATERAL_ACCEL_TOL = 0.3 * 9.81
 JERK_TOL = 2
-CURVATURE_THRESHHOLD = (LATERAL_ACCEL_TOL / MAX_SPEED**2)
 
 """
-Legal Parameters
+Financial Parameters.
 """
-
-LAND_PADDING = 30
-
-"""
-Financial Parameters, all costs in dollars.
-"""
-
-RIGHT_OF_WAY_LAND_COST = 0.0
-PYLON_COST_PER_METER = 10000.0
-TUNNELING_COST_PER_METER = 10000.0  # USD/m
-PYLON_BASE_COST = 2000.0
-TUBE_COST_PER_METER = 1000.0
-PADDING = 20  # padding (in meters)
-
 
 # See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 # Note the omission of Alaska only values (please enter values in USD/
