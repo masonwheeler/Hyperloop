@@ -257,26 +257,29 @@ class SpatialLattice(abstract.AbstractLattice):
                                     "spline_geospatials":
                                     spatial_slices_spline_points[i],
                                     "y_spacing":
-                                    spatial_y_spacing * self.BASE_RESOLUTION}
+                                    spatial_y_spacing}
             spatial_slices_bounds.append(spatial_slice_bounds)
         return spatial_slices_bounds        
 
     def __init__(self, directions_geospatials, spatial_x_spacing_power,
                                               spatial_y_spacing_power):
-        spatial_x_spacing = 2**spatial_x_spacing_power
-        spatial_y_spacing = 2**spatial_y_spacing_power
+        directions_s_value_step_size = 2**spatial_x_spacing_power
+        self.spatial_x_spacing = 2**spatial_x_spacing_power * \
+                                 self.BASE_RESOLUTION
+        self.spatial_y_spacing = 2**spatial_y_spacing_power * \
+                                 self.BASE_RESOLUTION
         sampled_directions_geospatials = self.sample_directions_geospatials(
                                     directions_geospatials)
         spatial_slices_directions_geospatials = \
             SpatialLattice.get_spatial_slices_directions_geospatials(
-                   sampled_directions_geospatials, spatial_x_spacing)
+                   sampled_directions_geospatials, directions_s_value_step_size)
         spatial_slices_spline_geospatials = \
             self.get_spatial_slices_spline_geospatials(
-                        sampled_directions_geospatials, spatial_x_spacing)
+            sampled_directions_geospatials, directions_s_value_step_size)
         spatial_slices_bounds = self.get_spatial_slices_bounds(
                                     spatial_slices_directions_geospatials,
                                     spatial_slices_spline_geospatials,
-                                    spatial_y_spacing)
+                                    self.spatial_y_spacing)
         abstract.AbstractLattice.__init__(self, spatial_slices_bounds,
                                                          SpatialSlice)
         
