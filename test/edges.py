@@ -288,7 +288,7 @@ class SpatialEdge(abstract.AbstractEdge):
     @staticmethod
     def compute_land_cost(edge_is_in_right_of_way, geospatials):
         if edge_is_in_right_of_way:
-            land_cost = config.RIGHT_OF_WAY_LAND_COST
+            land_cost = parameters.RIGHT_OF_WAY_LAND_COST
         else:
             start_geospatial, end_geospatial = geospatials
             landcover_geospatials, distances = util.build_grid(
@@ -347,10 +347,17 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
             abstract.AbstractEdgesSets.is_edge_pair_compatible(spatial_edge_a,
                              spatial_edge_b, config.SPATIAL_DEGREE_CONSTRAINT)
         return edge_pair_compatible
+    
+    def compute_spatial_degree_constraint(self, spatial_lattice):          
+        initial_angle = 90
+        spatial_lattice.spatial_x_spacing
+        spatial_lattice.spatial_y_spacing
 
-    def __init__(self, spatial_points_lattice):
-        abstract.AbstractEdgesSets.__init__(self, spatial_points_lattice,
-                       SpatialEdge, self.is_spatial_edge_pair_compatible)
+    def __init__(self, spatial_lattice):
+        spatial_degree_constraint = self.compute_spatial_degree_constraint(
+                                                               spatial_lattice)
+        abstract.AbstractEdgesSets.__init__(self, spatial_lattice.slices,
+                                  SpatialEdge, spatial_degree_constraint)
 
 
 def build_spatial_edges_sets(spatial_points_lattice):
