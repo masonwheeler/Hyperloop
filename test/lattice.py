@@ -161,7 +161,7 @@ class SpatialPoint(abstract.AbstractPoint):
 class SpatialSlice(abstract.AbstractSlice):
 
     @staticmethod
-    def spatial_slice_builder(lattice_x_coord, spatial_slice_bounds,
+    def spatial_slice_points_builder(lattice_x_coord, spatial_slice_bounds,
                                                      slice_start_id):
         spatial_slice_y_spacing = spatial_slice_bounds["y_spacing"]
         spline_geospatials = spatial_slice_bounds["spline_geospatials"]
@@ -185,14 +185,12 @@ class SpatialSlice(abstract.AbstractSlice):
     def __init__(self, lattice_x_coord, spatial_slice_bounds, slice_start_id):
         abstract.AbstractSlice.__init__(self, lattice_x_coord,
                                         spatial_slice_bounds, slice_start_id,
-                                        SpatialSlice.spatial_slice_builder)
+                                    SpatialSlice.spatial_slice_points_builder)
 
 
 class SpatialLattice(abstract.AbstractLattice):
     SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS = 10**5
     SMOOTHING_SPATIAL_SPlINE_INITIAL_SMOOTHING_FACTOR = 10**13
-    DIRECTIONS_SAMPLE_SPACING = 
-    SPATIAL_SLICE_S_VALUE_STEP_SIZE =
     
     def get_spatial_splines(self, sampled_directions_points):
         points_x_values = [point[0] for point in sampled_directions_points]
@@ -211,21 +209,23 @@ class SpatialLattice(abstract.AbstractLattice):
                                                       curvature_threshold)
         return [x_spline, y_spline]
     
-    def sample_directions_points(self, directions_points):
+    def sample_directions_points(self, directions_points, base_resolution):
         sampled_directions_points = interpolate.sample_path(directions_points,
-                                               self.DIRECTIONS_SAMPLE_SPACING)
+                                                              base_resolution)
         return sampled_directions_points
    
-    def get_spatial_slices_directions_points(self, sampled_directions_points):
+    def get_spatial_slices_directions_points(self, sampled_directions_points,
+                                                          spatial_x_spacing):
         spatial_slices_directions_points = util.smart_sample_nth_points(
-            sampled_directions_points, self.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
+            sampled_directions_points, spatial_x_spacing)
         return spatial_slices_directions_points
     
-    def get_spatial_slices_spline_points(self, sampled_directions_points):        
+    def get_spatial_slices_spline_points(self, sampled_directions_points, 
+                                                      spatial_x_spacing): 
         spatial_spline_s_values = interpolate.get_s_values(len(
                                         sampled_directions_points))
         spatial_slices_s_values = interpolate.get_slice_s_values(
-            spatial_spline_s_values, self.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
+            spatial_spline_s_values, spatial_x_spacing)
         spatial_x_spline, spatial_y_spline = self.get_spatial_splines(
                                                sampled_directions_points)
         spatial_slices_spline_points_x_values = interpolate.get_spline_values(
@@ -254,17 +254,26 @@ class SpatialLattice(abstract.AbstractLattice):
         return spatial_slices_bounds        
 
     def __init__(self, directions_geospatials, spatial_x_spacing,
-                                               spatial_y_spacing):
+                             spatial_y_spacing, base_resolution):
         sampled_directions_geospatials = self.sample_directions_geospatials(
-                                                     directions_geospatials)
+                                    directions_geospatials, base_resolution)
         spatial_slices_directions_geospatials = \
             SpatialLattice.get_spatial_slices_directions_geospatials(
                    sampled_directions_geospatials, spatial_x_spacing)
         spatial_slices_spline_points = \
             SpatialLattice.get_spatial_slices_spline_points(
-                                      sampled_directions_points)         
+                        sampled_directions_points, spatial_x_spacing)         
         spatial_slices_bounds = SpatialLattice.get_spatial_slices_bounds(
                                         spatial_slices_directions_points,
                                         spatial_slices_spline_points,
                                         spatial_y_spacing)
+        abstract.AbstractLattice.__init__(self, spatial_slices_bounds,
+                                                         SpatialSlice)
+        
             
+def get_spatial_lattice(directions_geospatials, spatial_x_spacing,
+                                                spatial_y_spacing):
+    lattice = cacher.get_object("spatial_lattice", Spatial_Lattice,
+                 [directions_geospatials, spatial_x_spacing, spatial_y_spacing],
+                 config.LATTICE_FLAG)    
+    return lattice

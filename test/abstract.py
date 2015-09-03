@@ -52,21 +52,22 @@ class AbstractPoint:
 
 class AbstractSlice(object):
 
-    def __init__(self, lattice_x_coord, slice_bounds, start_id, points_builder):
-        self.points = points_builder(lattice_x_coord, slice_bounds, start_id)
+    def __init__(self, lattice_x_coord, slice_bounds, start_id,
+                                         slice_points_builder):
+        self.points = slice_points_builder(lattice_x_coord, slice_bounds,
+                                                                start_id)
         num_points = len(self.points)
         self.end_id = start_id + num_points
 
 
 class AbstractLattice(object):
 
-    def __init__(self, slices_bounds, points_builder):
+    def __init__(self, slices_bounds, slice_builder):
         self.slices = []
         start_id = 0
         lattice_x_coord = 0
         for slice_bounds in slices_bounds:
-            new_slice = AbstractSlice(lattice_x_coord, slice_bounds, start_id,
-                                      points_builder)
+            new_slice = slice_builder(lattice_x_coord, slice_bounds, start_id)
             self.slices.append(new_slice.points)
             start_id = new_slice.end_id
             lattice_x_coord += 1

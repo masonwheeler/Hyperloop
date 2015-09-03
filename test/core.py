@@ -33,18 +33,19 @@ def build_directions(start, end):
     directions_lat_lngs = directions.get_directions(start, end)
     start_lat_lng, end_lat_lng = util.get_firstlast(directions_lat_lngs)
     proj.set_projection(start_lat_lng, end_lat_lng)
-    directions_points = proj.latlngs_to_geospatials(directions_lat_lngs,
-                                                    config.PROJ)
+    directions_geospatials = proj.latlngs_to_geospatials(directions_lat_lngs,
+                                                                 config.PROJ)
     if config.VISUAL_MODE:
         plottable_directions = [zip(*directions_points), 'y-']
         config.PLOT_QUEUE.append(plottable_directions)
-    return [directions_points, start_lat_lng, end_lat_lng]
+    return [directions_geospatials, start_lat_lng, end_lat_lng]
 
 
-def build_lattice(directions_points):
+def build_lattice(directions_geospatials):
     """Build lattice between directions points and spline points
     """
     #time_a = time.time()
+    """
     sampled_points = interpolate.sample_path(directions_points,
                                              config.DIRECTIONS_SAMPLE_SPACING)
     s_values = interpolate.get_s_values(len(sampled_points))
@@ -65,6 +66,8 @@ def build_lattice(directions_points):
     spatial_slices_bounds = zip(slices_directions_points,
                                 spatial_spline_points)
     lattice_slices = lattice.get_lattice(spatial_slices_bounds)
+    """
+    lattice = lattice.SpatialLattice(directions_geospatials)
     #time_b = time.time()
     #print "Building the lattice took " + str(time_b - time_a) + " seconds."
     #if config.VISUAL_MODE:
@@ -132,9 +135,9 @@ def pair_analysis(start, end):
     """
     cacher.create_necessaryfolders(start, end)
     time_a = time.time()
-    directions_points, start_lat_lng, end_lat_lng = build_directions(
+    directions_geospatials, start_lat_lng, end_lat_lng = build_directions(
         start, end)
-    lattice_slices = build_lattice(directions_points)
+    lattice_slices = build_lattice(directions_geospatials)
     complete_graphs = build_graphs(lattice_slices)
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
