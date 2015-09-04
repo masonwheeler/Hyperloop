@@ -359,16 +359,10 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
     def test_path_points(path_points):
         sampled_path_points = interpolate.sample_path(path_points, 500)
                                                #config.BASE_RESOLUTION)
-        #sampled_x_vals = [point[0] for point in sampled_path]
-        #sampled_y_vals = [point[1] for point in sampled_path]
-        #sampled_x_array = np.array(sampled_x_vals)
-        #sampled_y_array = np.array(sampled_y_vals)
-        #print("sampled path: " + str(sampled_path))
         x_spline, y_spline, s_values = interpolate.interpolate_points_2d(
                                                                 sampled_path_points)
         curvature_array_2d = curvature.parametric_splines_2d_curvature(
                                                 x_spline, y_spline, s_values)
-        #print("max curvature: " + str(np.amax(curvature_array_2d)))
         curvature_threshold = curvature.compute_curvature_threshold(
                                                 parameters.MAX_SPEED,
                                                 parameters.MAX_LATERAL_ACCEL)
@@ -385,7 +379,6 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         pointA = [length, 0]
         pointB = util.round_nums([math.cos(angle) * length,
                                   math.sin(angle) * length])
-        #print(pointB)
         path_points = [pointA, origin, pointB]
         while not SpatialEdgesSets.test_path_points(path_points):
             spatial_degree_constraint -= 1
@@ -397,6 +390,7 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
     def __init__(self, spatial_lattice):
         spatial_degree_constraint = self.compute_spatial_degree_constraint(
                                                                spatial_lattice)
+        print("degree_constraint: " + str(spatial_degree_constraint))
         abstract.AbstractEdgesSets.__init__(self, spatial_lattice,
                                   SpatialEdge, spatial_degree_constraint)
 
