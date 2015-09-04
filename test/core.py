@@ -85,12 +85,13 @@ def build_lattice(directions_geospatials):
 # math.pi)*(180./math.pi)
 
 
-def build_graphs(lattice_slices):
+def build_graphs(spatial_lattice):
     """Build graph skeletons from lattice slices
     """
     time_a = time.time()
     #finished_edges_sets = edges.get_edgessets(lattice_slices)
-    final_edges_sets = edges.get_spatial_edges_sets(lattice_slices)
+    spatial_edges_sets = edges.SpatialEdgesSets(spatial_lattice)
+    #final_edges_sets = edges.get_spatial_edges_sets(spatial_lattice)
     # for edges_set in finished_edges_sets:
     #    for edge in edges_set:
     #        print("edge geospatials: " + str(edge.geospatials))
@@ -99,8 +100,8 @@ def build_graphs(lattice_slices):
     # edges.build_pylons(finished_edges_sets)
     #t3 = time.time()
     #print("Building the pylons took " + str(t3 - t2) + " seconds.")
-    spatial_graphs = graphs.build_spatial_graphs(final_edges_sets)
-    complete_graphs = graphs.get_graphs(final_edges_sets)
+    #spatial_graphs = graphs.build_spatial_graphs(final_edges_sets)
+    #complete_graphs = graphs.get_graphs(final_edges_sets)
     #print("len complete graphs: " + str(len(complete_graphs)))
     #print("graphs num edges: " + str(complete_graphs[0].num_edges))
     # graph_geospatials = [tuple(map(tuple, graph.geospatials[:-1]))
@@ -138,9 +139,9 @@ def pair_analysis(start, end):
     time_a = time.time()
     directions_geospatials, start_lat_lng, end_lat_lng = build_directions(
         start, end)
-    lattice_slices = build_lattice(directions_geospatials)
+    spatial_lattice = build_lattice(directions_geospatials)    
+    complete_graphs = build_graphs(spatial_lattice)
     """
-    complete_graphs = build_graphs(lattice_slices)
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
                       config.LINEAR_ACCEL_CONSTRAINT/config.MAX_SPEED**2,

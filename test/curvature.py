@@ -49,7 +49,7 @@ def compute_curvature_array_2d(x_first_deriv_values, x_second_deriv_values,
     s_length = x_first_deriv_values.size
     powers = np.empty(s_length)
     powers.fill(1.5)
-    curvature_array2d = np.divide(
+    curvature_array_2d = np.divide(
         np.absolute(
             np.subtract(
                 np.multiply(x_first_deriv_values,

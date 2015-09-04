@@ -76,6 +76,7 @@ class AbstractLattice(object):
 class AbstractEdge(object):
 
     def __init__(self, start_point, end_point):
+        print("start point: " + str(start_point))
         self.start_id = start_point.point_id
         self.end_id = end_point.point_id
         self.start_lattice_coords = [start_point.lattice_x_coord,

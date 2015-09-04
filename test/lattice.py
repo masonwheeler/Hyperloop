@@ -14,6 +14,7 @@ import time
 import abstract
 import cacher
 import config
+import curvature
 import interpolate
 import parameters
 import proj
@@ -206,7 +207,7 @@ class SpatialLattice(abstract.AbstractLattice):
             self.SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS
         initial_smoothing_factor = \
             self.SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR
-        curvature_threshold = interpolate.compute_curvature_threshold(
+        curvature_threshold = curvature.compute_curvature_threshold(
                  parameters.MAX_SPEED, parameters.MAX_LATERAL_ACCEL)
         x_spline, y_spline = interpolate.iterative_smoothing_interpolation_2d(
                                                                       x_array,

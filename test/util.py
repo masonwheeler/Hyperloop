@@ -20,14 +20,14 @@ import config
 
 # Points Operations:
 
-def _round_num(num):
+def round_num(num):
     """Rounds number to predefined number of places"""
     return round(num, config.NDIGITS)
 
 
-def _round_nums(nums):
+def round_nums(nums):
     """Rounds a list of numbers"""
-    return [_round_num(num) for num in nums]
+    return [round_num(num) for num in nums]
 
 
 def round_points(points):
@@ -36,7 +36,7 @@ def round_points(points):
 
     Used in directions.build_directions()
     """
-    return [_round_nums(point) for point in points]
+    return [round_nums(point) for point in points]
 
 
 def smart_sample_nth_points(points, n_stride):
