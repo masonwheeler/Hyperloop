@@ -35,9 +35,9 @@ def build_directions(start, end):
     proj.set_projection(start_lat_lng, end_lat_lng)
     directions_geospatials = proj.latlngs_to_geospatials(directions_lat_lngs,
                                                                  config.PROJ)
-    if config.VISUAL_MODE:
-        plottable_directions = [zip(*directions_points), 'y-']
-        config.PLOT_QUEUE.append(plottable_directions)
+    #if config.VISUAL_MODE:
+    #    plottable_directions = [zip(*directions_geospatials), 'y-']
+    #    config.PLOT_QUEUE.append(plottable_directions)
     return [directions_geospatials, start_lat_lng, end_lat_lng]
 
 
@@ -71,13 +71,13 @@ def build_lattice(directions_geospatials):
     spatial_lattice = lattice.SpatialLattice(directions_geospatials, 10, 8)
     #time_b = time.time()
     #print "Building the lattice took " + str(time_b - time_a) + " seconds."
-    #if config.VISUAL_MODE:
-    #    spline_x_values = interpolate.get_spline_values(spatial_x_spline,
-    #                                                    s_values)
-    #    spline_y_values = interpolate.get_spline_values(spatial_y_spline,
-    #                                                    s_values)
-    #    plottable_spline = [[spline_x_values, spline_y_values], 'r-']
-    #    config.PLOT_QUEUE.append(plottable_spline)
+    if config.VISUAL_MODE:
+        plottable_spline = spatial_lattice.get_plottable_spline()
+        config.PLOT_QUEUE.append([plottable_spline, 'r-'])        
+        plottable_directions = spatial_lattice.get_plottable_directions()
+        config.PLOT_QUEUE.append([plottable_directions, 'b-'])
+        plottable_lattice = spatial_lattice.get_plottable_lattice()
+        config.PLOT_QUEUE.append([plottable_lattice, 'g.'])
     return spatial_lattice
 
 # config.DEGREE_CONSTRAINT = min(math.fabs(math.pi - math.acos(min((
@@ -140,7 +140,7 @@ def pair_analysis(start, end):
     directions_geospatials, start_lat_lng, end_lat_lng = build_directions(
         start, end)
     spatial_lattice = build_lattice(directions_geospatials)    
-    complete_graphs = build_graphs(spatial_lattice)
+    #complete_graphs = build_graphs(spatial_lattice)
     """
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
@@ -158,7 +158,7 @@ def pair_analysis(start, end):
                      complete_routes[i].land_cost]))
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
-    if config.VISUAL_MODE:
-        visualize.plot_objects(config.PLOT_QUEUE)
     """
+    if config.VISUAL_MODE:
+        visualize.plot_objects(config.PLOT_QUEUE)    
     return 0

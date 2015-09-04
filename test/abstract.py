@@ -6,6 +6,9 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Debugging
 """
 
+# Standard Modules
+import numpy as np
+
 # Custom Modules
 import config
 import math
@@ -19,50 +22,41 @@ class AbstractPoint(object):
 
     Attributes:
         point_id (int): Unique identifier for each point.
-        lattice_x_coord (int): The x coordinate of the point with
+        abstract_x_coord (int): The x coordinate of the point with
                                relative to the lattice of points.
-        lattice_y_coord (int): The y coordinate of the point with
+        abstract_y_coord (int): The y coordinate of the point with
                                relative to the lattice of points.
-        spatial_x_coord (float): The x coordinate of the point in physical units.
-        spatial_y_coord (float): The y coordinate of the point in physical units.
+        physical_x_coord (float): The x coordinate of the point
+                                in physical units.
+        physical_y_coord (float): The y coordinate of the point
+                                in physical units.
 
     """
 
-    def __init__(self, point_id, lattice_x_coord, lattice_y_coord,
-                 spatial_x_coord, spatial_y_coord):
-        """
-        Args:
-            point_id (int): Unique identifier for each point.
-            lattice_x_coord (int): The x coordinate of the point with
-                                   relative to the lattice of points.
-            lattice_y_coord (int): The y coordinate of the point with
-                                   relative to the lattice of points.
-            spatial_x_coord (float): The x coordinate of the point
-                                    in physical units.
-            spatial_y_coord (float): The y coordinate of the point
-                                    in physical units.
-
-        """
+    def __init__(self, point_id, abstract_x_coord, abstract_y_coord,
+                 physical_x_coord, physical_y_coord):
         self.point_id = point_id
-        self.lattice_x_coord = lattice_x_coord
-        self.lattice_y_coord = lattice_y_coord
-        self.spatial_x_coord = spatial_x_coord
-        self.spatial_y_coord = spatial_y_coord
-
+        self.abstract_x_coord = abstract_x_coord
+        self.abstract_y_coord = abstract_y_coord
+        self.physical_x_coord = physical_x_coord
+        self.physical_y_coord = physical_y_coord
 
 class AbstractSlice(object):
 
-    def __init__(self, lattice_x_coord, slice_bounds, start_id,
+    def __init__(self, abstract_x_coord, slice_bounds, start_id,
                                          slice_points_builder):
-        #print("slice points builder: " + str(slice_points_builder))
-        self.points, self.end_id = slice_points_builder(lattice_x_coord,
+        self.points, self.end_id = slice_points_builder(abstract_x_coord,
                                                  slice_bounds, start_id)
-        #print("start id: " + str(start_id))
-        #print("end id: " + str(self.end_id))
-        #print("points: " + str(self.points))
         #num_points = len(self.points)
         #self.end_id = start_id + num_points
-
+    
+    def get_physical_x_coords(self):
+        physical_x_coords = [point.physical_x_coord for point in self.points]
+        return physical_x_coords
+    
+    def get_physical_y_coords(self):
+        physical_y_coords = [point.physical_y_coord for point in self.points]
+        return physical_y_coords
 
 class AbstractLattice(object):
 
@@ -75,6 +69,17 @@ class AbstractLattice(object):
             self.slices.append(new_slice)
             start_id = new_slice.end_id
             lattice_x_coord += 1
+
+    def get_plottable_lattice(self):
+        slices_physical_x_coords = [eachSlice.get_physical_x_coords()
+                                    for eachSlice in self.slices]        
+        slices_physical_y_coords = [eachSlice.get_physical_y_coords()
+                                    for eachSlice in self.slices]
+        physical_x_coords = util.fast_concat(slices_physical_x_coords)
+        physical_y_coords = util.fast_concat(slices_physical_y_coords)
+        physical_x_coords_array = np.array(physical_x_coords)
+        physical_y_coords_array = np.array(physical_y_coords)
+        return [physical_x_coords_array, physical_y_coords_array]        
 
 
 class AbstractEdge(object):

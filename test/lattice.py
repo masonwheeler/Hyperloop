@@ -237,16 +237,16 @@ class SpatialLattice(abstract.AbstractLattice):
     
     def get_spatial_slices_spline_geospatials(self,
             sampled_directions_geospatials, spatial_x_spacing): 
-        spatial_spline_s_values = interpolate.get_s_values(len(
+        self.spatial_spline_s_values = interpolate.get_s_values(len(
                                         sampled_directions_geospatials))
         spatial_slices_s_values = interpolate.get_slice_s_values(
-            spatial_spline_s_values, spatial_x_spacing)
-        spatial_x_spline, spatial_y_spline = self.get_spatial_splines(
+            self.spatial_spline_s_values, spatial_x_spacing)
+        self.spatial_x_spline, self.spatial_y_spline = self.get_spatial_splines(
                                                sampled_directions_geospatials)
         spatial_slices_spline_points_x_values = interpolate.get_spline_values(
-                          spatial_x_spline, spatial_slices_s_values)
+                          self.spatial_x_spline, spatial_slices_s_values)
         spatial_slices_spline_points_y_values = interpolate.get_spline_values(
-                          spatial_y_spline, spatial_slices_s_values)
+                          self.spatial_y_spline, spatial_slices_s_values)
         spatial_slices_spline_tuples = zip(
             spatial_slices_spline_points_x_values,
             spatial_slices_spline_points_x_values)
@@ -270,6 +270,7 @@ class SpatialLattice(abstract.AbstractLattice):
 
     def __init__(self, directions_geospatials, spatial_x_spacing_power,
                                               spatial_y_spacing_power):
+        self.directions_geospatials = directions_geospatials
         directions_s_value_step_size = 2**spatial_x_spacing_power
         self.spatial_x_spacing = 2**spatial_x_spacing_power * \
                                  self.BASE_RESOLUTION
@@ -289,6 +290,20 @@ class SpatialLattice(abstract.AbstractLattice):
                                     self.spatial_y_spacing)
         abstract.AbstractLattice.__init__(self, spatial_slices_bounds,
                                                          SpatialSlice)
+
+    def get_plottable_directions(self):
+        x_values = [geospatial[0] for geospatial in self.directions_geospatials]
+        y_values = [geospatial[1] for geospatial in self.directions_geospatials]
+        x_array = np.array(x_values)
+        y_array = np.array(y_values)
+        return [x_array, y_array]    
+
+    def get_plottable_spline(self):
+        x_values = self.spatial_x_spline(self.spatial_spline_s_values)
+        y_values = self.spatial_y_spline(self.spatial_spline_s_values)
+        x_array = np.array(x_values)
+        y_array = np.array(y_values)
+        return [x_array, y_array]
         
             
 def get_spatial_lattice(directions_geospatials, spatial_x_spacing,
