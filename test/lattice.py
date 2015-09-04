@@ -157,11 +157,6 @@ class SpatialPoint(abstract.AbstractPoint):
         spatial_x_coord, spatial_y_coord = geospatial
         abstract.AbstractPoint.__init__(self, point_id, lattice_x_coord,
                              lattice_y_coord, spatial_x_coord, spatial_y_coord)
-        ##print(self.point_id)
-        ##print(self.lattice_x_coord)
-        ##print(self.lattice_y_coord)
-        ##print(self.spatial_x_coord)
-        ##print(self.spatial_y_coord)
         self.geospatial = geospatial
         self.latlng = proj.geospatial_to_latlng(geospatial, config.PROJ)
         self.is_in_right_of_way = is_in_right_of_way
@@ -249,7 +244,7 @@ class SpatialLattice(abstract.AbstractLattice):
                           self.spatial_y_spline, spatial_slices_s_values)
         spatial_slices_spline_tuples = zip(
             spatial_slices_spline_points_x_values,
-            spatial_slices_spline_points_x_values)
+            spatial_slices_spline_points_y_values)
         spatial_slices_spline_points = [list(eachTuple) for eachTuple in
                                             spatial_slices_spline_tuples]
         return spatial_slices_spline_points

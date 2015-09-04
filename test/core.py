@@ -68,7 +68,7 @@ def build_lattice(directions_geospatials):
     lattice_slices = lattice.get_lattice(spatial_slices_bounds)
     """
     #lattice = lattice.get_spatial_lattice(directions_geospatials)
-    spatial_lattice = lattice.SpatialLattice(directions_geospatials, 10, 8)
+    spatial_lattice = lattice.SpatialLattice(directions_geospatials, 9, 7)
     #time_b = time.time()
     #print "Building the lattice took " + str(time_b - time_a) + " seconds."
     if config.VISUAL_MODE:
