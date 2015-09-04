@@ -47,8 +47,6 @@ class AbstractSlice(object):
                                          slice_points_builder):
         self.points, self.end_id = slice_points_builder(abstract_x_coord,
                                                  slice_bounds, start_id)
-        #num_points = len(self.points)
-        #self.end_id = start_id + num_points
     
     def get_physical_x_coords(self):
         physical_x_coords = [point.physical_x_coord for point in self.points]
@@ -87,8 +85,8 @@ class AbstractEdge(object):
     def __init__(self, start_point, end_point):
         self.start_id = start_point.point_id        
         self.end_id = end_point.point_id
-        print("start id: " + str(start_point.point_id))
-        print("end id: " + str(end_point.point_id))
+        ##print("start id: " + str(start_point.point_id))
+        ##print("end id: " + str(end_point.point_id))
         self.start_abstract_coords = [start_point.abstract_x_coord,
                                       start_point.abstract_y_coord]
         self.end_abstract_coords = [end_point.abstract_x_coord,
@@ -105,10 +103,9 @@ class AbstractEdge(object):
 
 class AbstractEdgesSets(object):
 
-    @staticmethod
-    def is_edge_pair_compatible(edge_a, edge_b, degree_constraint):
+    def is_edge_pair_compatible(self, edge_a, edge_b):
         edge_pair_compatible = (edge_a.end_id == edge_b.start_id and
-                                abs(edge_a.angle - edge_b.angle) < degree_constraint)
+            abs(edge_a.angle - edge_b.angle) < self.degree_constraint)
         return edge_pair_compatible
 
     def lattice_slices_to_unfiltered_edges_sets(self, lattice_slices,
@@ -128,18 +125,18 @@ class AbstractEdgesSets(object):
     def determine_useful_edges(self, edges_sets, is_edge_pair_compatible):
         """Edge is useful if there are compatible adjacent edges"""
         for edge_a in edges_sets[0]:
-            compatibles = [is_edge_pair_compatible(edge_a, edge_b)
+            compatibles = [self.is_edge_pair_compatible(edge_a, edge_b)
                            for edge_b in edges_sets[1]]
             edge_a.is_useful = any(compatibles)
         for edge_set_index in range(1, len(edges_sets) - 1):
             for edge_b in edges_sets[edge_set_index]:
-                compatibles_a = [is_edge_pair_compatible(edge_a, edge_b)
+                compatibles_a = [self.is_edge_pair_compatible(edge_a, edge_b)
                                  for edge_a in edges_sets[edge_set_index - 1]]
-                compatibles_c = [is_edge_pair_compatible(edge_b, edge_c)
+                compatibles_c = [self.is_edge_pair_compatible(edge_b, edge_c)
                                  for edge_c in edges_sets[edge_set_index + 1]]
                 edge_b.is_useful = any(compatibles_a) and any(compatibles_c)
         for edge_b in edges_sets[-1]:
-            compatibles = [is_edge_pair_compatible(edge_a, edge_b)
+            compatibles = [self.is_edge_pair_compatible(edge_a, edge_b)
                            for edge_a in edges_sets[-2]]
             edge_b.is_useful = any(compatibles)
 
@@ -182,7 +179,8 @@ class AbstractEdgesSets(object):
             prefilter_num_edges = postfilter_num_edges
         return filtered_edges_sets_list
 
-    def __init__(self, lattice, edge_builder, is_edge_pair_compatible):
+    def __init__(self, lattice, edge_builder, degree_constraint):
+        self.degree_constraint = degree_constraint
         self.unfiltered_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
         self.filtered_edges_sets_list = self.iterative_filter(

@@ -320,8 +320,6 @@ class SpatialEdge(abstract.AbstractEdge):
         return [pylon_cost, tube_cost]
             
     def __init__(self, start_spatial_point, end_spatial_point):
-        print("start_spatial_point: " + str(start_spatial_point))
-        print("end_spatial_point: " + str(end_spatial_point))
         abstract.AbstractEdge.__init__(self, start_spatial_point,
                                                end_spatial_point)
         self.start_spatial_point = start_spatial_point
