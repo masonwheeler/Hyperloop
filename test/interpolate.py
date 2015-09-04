@@ -201,8 +201,8 @@ def points_3d_local_max_allowed_vels(points3d):
                                                         s_values)
     return local_max_allowed_vels
 
-def compute_interpolation_errors_2d(path_points, resolution):
-    sampled_path_points = sample_path_points(path_points, resolution)
+#def compute_interpolation_errors_2d(path_points, resolution):
+#    sampled_path_points = sample_path_points(path_points, resolution)
     
 
 """

@@ -360,13 +360,19 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
     
     @staticmethod
     def compute_spatial_degree_constraint(self, spatial_lattice):          
-        angle = 90
+        spatial_degree_constraint = 90
+        angle = math.radians(spatial_degree_constraint)
         length = spatial_lattice.spatial_x_spacing
         origin = [0, 0]
         pointA = [length, 0]
         pointB = [math.cos(angle) * length, math.sin(angle) * length]
         path = [pointA, origin, pointB]
-            
+        while not SpatialEdgesSets.test_path(path):
+            spatial_degree_constraint -= 1
+            angle = math.radians(spatial_degree_constraint)
+            pointB = [math.cos(angle) * length, math.sin(angle) * length]
+            path = [pointA, origin, pointB]
+        return spatial_degree_constraint
 
     def __init__(self, spatial_lattice):
         spatial_degree_constraint = self.compute_spatial_degree_constraint(
@@ -375,12 +381,11 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
                                   SpatialEdge, spatial_degree_constraint)
 
 
-def build_spatial_edges_sets(spatial_points_lattice):
-    spatial_edges_sets = SpatialEdgesSets(spatial_points_lattice)
-    return spatial_edges_sets.final_edges_sets
+#def build_spatial_edges_sets(spatial_lattice):
+#    spatial_edges_sets = SpatialEdgesSets(spatial_points_lattice)
+#    return spatial_edges_sets.final_edges_sets
 
-def get_spatial_edges_sets(spatial_points_lattice):
-    final_edges_sets = cacher.get_object("edgessets",
-        build_spatial_edges_sets, [spatial_points_lattice],
-                                         config.EDGES_FLAG)
-    return final_edges_sets
+def get_spatial_edges_sets(spatial_lattice):
+    spatial_edges_sets = cacher.get_object("spatial_edges_sets",
+        SpatialEdgesSets, [spatial_points_lattice], config.EDGES_FLAG)
+    return spatial_edges_sets
