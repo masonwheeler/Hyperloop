@@ -89,17 +89,17 @@ class AbstractEdge(object):
         self.end_id = end_point.point_id
         print("start id: " + str(start_point.point_id))
         print("end id: " + str(end_point.point_id))
-        self.start_lattice_coords = [start_point.lattice_x_coord,
-                                     start_point.lattice_y_coord]
-        self.end_lattice_coords = [end_point.lattice_x_coord,
-                                   end_point.lattice_y_coord]
-        self.start_spatial_coords = [start_point.spatial_x_coord,
-                                     start_point.spatial_y_coord]
-        self.end_spatial_coords = [end_point.spatial_x_coord,
-                                   end_point.spatial_y_coord]
+        self.start_abstract_coords = [start_point.abstract_x_coord,
+                                      start_point.abstract_y_coord]
+        self.end_abstract_coords = [end_point.abstract_x_coord,
+                                    end_point.abstract_y_coord]
+        self.start_physical_coords = [start_point.physical_x_coord,
+                                     start_point.physical_y_coord]
+        self.end_physical_coords = [end_point.physical_x_coord,
+                                   end_point.physical_y_coord]
         self.angle = math.degrees(math.atan2(
-            end_point.spatial_y_coord - start_point.spatial_y_coord,
-            end_point.spatial_x_coord - start_point.spatial_x_coord))
+            end_point.physical_y_coord - start_point.physical_y_coord,
+            end_point.physical_x_coord - start_point.physical_x_coord))
         self.is_useful = True
 
 

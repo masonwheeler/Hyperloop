@@ -35,42 +35,17 @@ def build_directions(start, end):
     proj.set_projection(start_lat_lng, end_lat_lng)
     directions_geospatials = proj.latlngs_to_geospatials(directions_lat_lngs,
                                                                  config.PROJ)
-    #if config.VISUAL_MODE:
-    #    plottable_directions = [zip(*directions_geospatials), 'y-']
-    #    config.PLOT_QUEUE.append(plottable_directions)
     return [directions_geospatials, start_lat_lng, end_lat_lng]
 
 
 def build_lattice(directions_geospatials):
     """Build lattice between directions points and spline points
     """
-    #time_a = time.time()
-    """
-    sampled_points = interpolate.sample_path(directions_points,
-                                             config.DIRECTIONS_SAMPLE_SPACING)
-    s_values = interpolate.get_s_values(len(sampled_points))
-    spatial_x_spline, spatial_y_spline = lattice.get_directionsspline(
-        sampled_points)
-    spatial_lattice_slices_s_values = interpolate.get_slice_s_values(s_values,
-                                       config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
-    spatial_slices_x_values = interpolate.get_spline_values(
-        spatial_x_spline, spatial_lattice_slices_s_values)
-    spatial_slices_y_values = interpolate.get_spline_values(
-        spatial_y_spline, spatial_lattice_slices_s_values)
-    spatial_spline_tuples = zip(spatial_slices_x_values,
-                                spatial_slices_y_values)
-    spatial_spline_points = [list(eachTuple) for eachTuple in
-                             spatial_spline_tuples]
-    slices_directions_points = util.smart_sample_nth_points(
-        sampled_points, config.SPATIAL_SLICE_S_VALUE_STEP_SIZE)
-    spatial_slices_bounds = zip(slices_directions_points,
-                                spatial_spline_points)
-    lattice_slices = lattice.get_lattice(spatial_slices_bounds)
-    """
+    time_a = time.time()
     #lattice = lattice.get_spatial_lattice(directions_geospatials)
     spatial_lattice = lattice.SpatialLattice(directions_geospatials, 9, 7)
-    #time_b = time.time()
-    #print "Building the lattice took " + str(time_b - time_a) + " seconds."
+    time_b = time.time()
+    print "Building the lattice took " + str(time_b - time_a) + " seconds."
     if config.VISUAL_MODE:
         plottable_spline = spatial_lattice.get_plottable_spline()
         config.PLOT_QUEUE.append([plottable_spline, 'r-'])        
@@ -129,7 +104,7 @@ def build_graphs(spatial_lattice):
         # print(plottable_cost_curvature)
         config.PLOT_QUEUE += plottable_graphs
         #config.PLOT_QUEUE += plottable_cost_curvature
-    return complete_graphs
+    return 0 #complete_graphs
 
 
 def pair_analysis(start, end):
@@ -140,7 +115,7 @@ def pair_analysis(start, end):
     directions_geospatials, start_lat_lng, end_lat_lng = build_directions(
         start, end)
     spatial_lattice = build_lattice(directions_geospatials)    
-    #complete_graphs = build_graphs(spatial_lattice)
+    complete_graphs = build_graphs(spatial_lattice)
     """
     test_graphs = complete_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,

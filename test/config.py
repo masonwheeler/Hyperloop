@@ -147,8 +147,7 @@ DROPBOX_DIRECTORY = "/home/ubuntu/Dropbox/save"
 For USGS-Elevation.
 """
 
-USGS_FTP_PATH = "ftp://rockyftp.cr.usgs.gov/vdelivery/ \
-                 Datasets/Staged/Elevation/13/IMG/"
+USGS_FTP_PATH = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
 USGS_FOLDER = "/usgs/"
 
 """

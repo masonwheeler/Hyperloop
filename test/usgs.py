@@ -124,6 +124,7 @@ def get_elevation(latlng_coord):
             else:
                 util.smart_print("Not yet downloaded.")
                 util.smart_print("Now downloading " + coord_zipfile + "...")
+                util.smart_print("From " + str(url))
                 urllib.urlretrieve(url, zip_file_path)
             unzip_zipfile(zip_file_path, unzip_directory, img_file_name)
             remove_file(zip_file_path)

@@ -308,7 +308,7 @@ class SpatialEdge(abstract.AbstractEdge):
     def get_elevation_profile(geospatials):
         start_geospatial, end_geospatial = geospatials
         geospatials_grid, distances = util.build_grid(start_geospatial,
-                              end_geospatial, parameters.PYLON_SPACING)
+                              end_geospatial, parameters.PYLON_SPACING)        
         elevation_profile = elevation.get_elevation_profile(geospatials_grid,
                                                             distances)
         return elevation_profile
