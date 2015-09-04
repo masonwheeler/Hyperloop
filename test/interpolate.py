@@ -113,6 +113,35 @@ def set_smoothing_factors_2d(x_spline, y_spline, smoothing_factor):
     y_spline.set_smoothing_factor(smoothing_factor)
     return [x_spline, y_spline]
 
+def iterative_smoothing_interpolation_2d(x_array, y_array, initial_end_weights,
+                                initial_smoothing_factor, curvature_threshold):
+    num_points = x_array.size
+    s_values = np.arange(num_points)
+    x_spline, y_spline = smoothing_splines_2d(x_array, y_array, s_values,
+                                  initial_end_weights, initial_smoothing_factor)
+    is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
+                                          s_values, curvature_threshold)
+    test_smoothing_factor = initial_smoothing_factor
+    if is_curvature_valid:
+        while is_curvature_valid:
+            test_smoothing_factor *= 0.5
+            print("test_smoothing_factor: " + str(test_smoothing_factor))
+            set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
+            is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
+                                                  s_values, curvature_threshold)
+        test_smoothing_factor *= 2.0
+        set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
+        return [x_spline, y_spline]
+    else:
+        while not is_curvature_valid:
+            test_smoothing_factor *= 2.0
+            print("test_smoothing_factor: " + str(test_smoothing_factor))
+            set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
+            is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
+                                                  s_values, curvature_threshold)
+            print(is_curvature_valid)
+        return [x_spline, y_spline]
+
 ########## For Interpolating Splines ##########
 
 
@@ -159,7 +188,6 @@ def interpolate_points_3d(points3d):
                                                             z_array, s_values)
     return [x_spline, y_spline, z_spline, s_values]
 
-########## For Curvature Computations ##########
 
 def points_1d_local_max_allowed_vels(points1d):
     z_spline, s_values = interpolate_points_1d(points1d)
@@ -167,43 +195,15 @@ def points_1d_local_max_allowed_vels(points1d):
         z_spline, s_values)
     return local_max_allowed_vels1d
 
-
 def points_3d_local_max_allowed_vels(points3d):
     x_spline, y_spline, z_spline, s_values = interpolate_points_3d(points3d)
     local_max_allowed_vels = effective_max_allowed_vels(x_spline, y_spline, z_spline,
                                                         s_values)
     return local_max_allowed_vels
 
-def iterative_smoothing_interpolation_2d(x_array, y_array, initial_end_weights,
-                                initial_smoothing_factor, curvature_threshold):
-    num_points = x_array.size
-    s_values = np.arange(num_points)
-    x_spline, y_spline = smoothing_splines_2d(x_array, y_array, s_values,
-                                              initial_end_weights,
-                                              initial_smoothing_factor)
-    is_curvature_valid = curvature_test_2d(x_spline, y_spline, s_values,
-                                           curvature_threshold)
-    test_smoothing_factor = initial_smoothing_factor
-    if is_curvature_valid:
-        while is_curvature_valid:
-            test_smoothing_factor *= 0.5
-            print("test_smoothing_factor: " + str(test_smoothing_factor))
-            set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
-            is_curvature_valid = curvature_test_2d(x_spline, y_spline, s_values,
-                                                   curvature_threshold)
-        test_smoothing_factor *= 2.0
-        set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
-        return [x_spline, y_spline]
-    else:
-        while not is_curvature_valid:
-            test_smoothing_factor *= 2.0
-            print("test_smoothing_factor: " + str(test_smoothing_factor))
-            set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
-            is_curvature_valid = curvature_test_2d(x_spline, y_spline, s_values,
-                                                   curvature_threshold)
-            print(is_curvature_valid)
-        return [x_spline, y_spline]
-
+def compute_interpolation_errors_2d(path_points, resolution):
+    sampled_path_points = sample_path_points(path_points, resolution)
+    
 
 """
 def curvature_metric(graph_curvature_array):

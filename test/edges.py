@@ -349,9 +349,6 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         return edge_pair_compatible
     
     @staticmethod
-    def refine_path(path):
-
-    @staticmethod
     def test_path(path):
         curvature_array_2d = interpolate.points_2d_curvature(path)
         curvature_threshold = interpolate.compute_curvature_threshold(
