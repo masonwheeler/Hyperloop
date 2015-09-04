@@ -348,10 +348,28 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
                              spatial_edge_b, config.SPATIAL_DEGREE_CONSTRAINT)
         return edge_pair_compatible
     
+    @staticmethod
+    def refine_path(path):
+
+    @staticmethod
+    def test_path(path):
+        curvature_array_2d = interpolate.points_2d_curvature(path)
+        curvature_threshold = interpolate.compute_curvature_threshold(
+                                                parameters.MAX_SPEED,
+                                                parameters.MAX_LATERAL_ACCEL)
+        is_curvature_valid = test_curvature_validity(curvature_array_2d,
+                                                     curvature_threshold)
+        return is_curvature_valid
+    
+    @staticmethod
     def compute_spatial_degree_constraint(self, spatial_lattice):          
-        initial_angle = 90
-        spatial_lattice.spatial_x_spacing
-        spatial_lattice.spatial_y_spacing
+        angle = 90
+        length = spatial_lattice.spatial_x_spacing
+        origin = [0, 0]
+        pointA = [length, 0]
+        pointB = [math.cos(angle) * length, math.sin(angle) * length]
+        path = [pointA, origin, pointB]
+            
 
     def __init__(self, spatial_lattice):
         spatial_degree_constraint = self.compute_spatial_degree_constraint(
