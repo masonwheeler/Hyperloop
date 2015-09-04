@@ -308,7 +308,7 @@ class SpatialEdge(abstract.AbstractEdge):
     def get_elevation_profile(geospatials):
         start_geospatial, end_geospatial = geospatials
         geospatials_grid, distances = util.build_grid(start_geospatial,
-                                        end_geospatial, config.PYLON_SPACING)
+                              end_geospatial, parameters.PYLON_SPACING)
         elevation_profile = elevation.get_elevation_profile(geospatials_grid,
                                                             distances)
         return elevation_profile
@@ -319,14 +319,16 @@ class SpatialEdge(abstract.AbstractEdge):
         return [pylon_cost, tube_cost]
             
     def __init__(self, start_spatial_point, end_spatial_point):
+        print("start_spatial_point: " + str(start_spatial_point))
+        print("end_spatial_point: " + str(end_spatial_point))
         abstract.AbstractEdge.__init__(self, start_spatial_point,
                                                end_spatial_point)
         self.start_spatial_point = start_spatial_point
         self.end_spatial_point = end_spatial_point
-        self.geospatials = SpatialEdge.get_geospatials(start_spatial_points,
-                                                         end_spatial_points)
-        self.latlngs = SpatialEdge.get_latlngs(start_spatial_points,
-                                                 end_spatial_points)
+        self.geospatials = SpatialEdge.get_geospatials(start_spatial_point,
+                                                         end_spatial_point)
+        self.latlngs = SpatialEdge.get_latlngs(start_spatial_point,
+                                                 end_spatial_point)
         self.elevation_profile = SpatialEdge.get_elevation_profile(
                                                       self.geospatials)
         edge_is_in_right_of_way = (start_spatial_point.is_in_right_of_way and

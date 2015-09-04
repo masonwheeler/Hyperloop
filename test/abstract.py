@@ -14,7 +14,7 @@ import paretofront
 import util
 
 
-class AbstractPoint:
+class AbstractPoint(object):
     """Abstract object that represents a point.
 
     Attributes:
@@ -47,17 +47,21 @@ class AbstractPoint:
         self.lattice_x_coord = lattice_x_coord
         self.lattice_y_coord = lattice_y_coord
         self.spatial_x_coord = spatial_x_coord
-        self.spatial_ycoord = spatial_y_coord
+        self.spatial_y_coord = spatial_y_coord
 
 
 class AbstractSlice(object):
 
     def __init__(self, lattice_x_coord, slice_bounds, start_id,
                                          slice_points_builder):
-        self.points = slice_points_builder(lattice_x_coord, slice_bounds,
-                                                                start_id)
-        num_points = len(self.points)
-        self.end_id = start_id + num_points
+        #print("slice points builder: " + str(slice_points_builder))
+        self.points, self.end_id = slice_points_builder(lattice_x_coord,
+                                                 slice_bounds, start_id)
+        #print("start id: " + str(start_id))
+        #print("end id: " + str(self.end_id))
+        #print("points: " + str(self.points))
+        #num_points = len(self.points)
+        #self.end_id = start_id + num_points
 
 
 class AbstractLattice(object):
@@ -68,7 +72,7 @@ class AbstractLattice(object):
         lattice_x_coord = 0
         for slice_bounds in slices_bounds:
             new_slice = slice_builder(lattice_x_coord, slice_bounds, start_id)
-            self.slices.append(new_slice.points)
+            self.slices.append(new_slice)
             start_id = new_slice.end_id
             lattice_x_coord += 1
 
@@ -76,9 +80,10 @@ class AbstractLattice(object):
 class AbstractEdge(object):
 
     def __init__(self, start_point, end_point):
-        print("start point: " + str(start_point))
-        self.start_id = start_point.point_id
+        self.start_id = start_point.point_id        
         self.end_id = end_point.point_id
+        print("start id: " + str(start_point.point_id))
+        print("end id: " + str(end_point.point_id))
         self.start_lattice_coords = [start_point.lattice_x_coord,
                                      start_point.lattice_y_coord]
         self.end_lattice_coords = [end_point.lattice_x_coord,
@@ -102,15 +107,16 @@ class AbstractEdgesSets(object):
         return edge_pair_compatible
 
     def lattice_slices_to_unfiltered_edges_sets(self, lattice_slices,
-                                                edge_builder):
+                                                       edge_builder):
         unfiltered_edges_sets = []
         for lattice_slice_index in range(len(lattice_slices) - 1):
             lattice_slice_a = lattice_slices[lattice_slice_index]
             lattice_slice_b = lattice_slices[lattice_slice_index + 1]
             edges_set = []
-            for point_a in lattice_slice_a:
-                for point_b in lattice_slice_b:
-                    edges_set.append(edge_builder(point_a, point_b))
+            for point_a in lattice_slice_a.points:
+                for point_b in lattice_slice_b.points:
+                    new_edge = edge_builder(point_a, point_b)                    
+                    edges_set.append(new_edge)
             unfiltered_edges_sets.append(edges_set)
         return unfiltered_edges_sets
 
@@ -172,9 +178,8 @@ class AbstractEdgesSets(object):
         return filtered_edges_sets_list
 
     def __init__(self, lattice, edge_builder, is_edge_pair_compatible):
-        lattice_slices = lattice.slices
         self.unfiltered_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
-            lattice_slices, edge_builder)
+            lattice.slices, edge_builder)
         self.filtered_edges_sets_list = self.iterative_filter(
             self.unfiltered_edges_sets, is_edge_pair_compatible)
         self.final_edges_sets = self.filtered_edges_sets_list[-1]
