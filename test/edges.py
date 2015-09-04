@@ -298,10 +298,10 @@ class SpatialEdge(abstract.AbstractEdge):
                 start_geospatial, end_geospatial, config.LAND_POINT_SPACING)
             landcover_lat_lngs = proj.geospatials_to_latlngs(landcover_geospatials,
                                                              config.PROJ)
-            landcover_cost_densities = landcover.landcover_cost_densities(
-                landcover_lat_lngs)
+            landcover_cost_densities = landcover.get_landcover_cost_densities(
+                                                           landcover_lat_lngs)
             land_cost = landcover.cost_densities_to_landcost(
-                landcover_cost_densities)
+                                    landcover_cost_densities)
         return land_cost
 
     @staticmethod
@@ -315,7 +315,8 @@ class SpatialEdge(abstract.AbstractEdge):
 
     @staticmethod
     def compute_pylon_cost_and_tube_cost(elevation_profile):
-        tube_cost, pylon_cost = tube.quick_build_tube(elevation_profile)
+        tube_cost, pylon_cost, tube_elevations = tube.quick_build_tube_v1(
+                                                            elevation_profile)
         return [pylon_cost, tube_cost]
             
     def __init__(self, start_spatial_point, end_spatial_point):
@@ -327,6 +328,7 @@ class SpatialEdge(abstract.AbstractEdge):
         self.end_spatial_point = end_spatial_point
         self.geospatials = SpatialEdge.get_geospatials(start_spatial_point,
                                                          end_spatial_point)
+        elevation_profile = SpatialEdge.get_elevation_profile(self.geospatials)
         self.latlngs = SpatialEdge.get_latlngs(start_spatial_point,
                                                  end_spatial_point)
         self.elevation_profile = SpatialEdge.get_elevation_profile(

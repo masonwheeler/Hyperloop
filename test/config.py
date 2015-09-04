@@ -64,8 +64,6 @@ LAND_POINT_SPACING = 30.0  # spacing for land cost sampling (in meters)
 """
 Comfort parameters.
 """
-LINEAR_ACCEL_TOL = 0.5 * 9.81
-LATERAL_ACCEL_TOL = 0.3 * 9.81
 JERK_TOL = 2
 
 """
