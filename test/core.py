@@ -42,7 +42,6 @@ def build_lattice(directions_geospatials):
     """Build lattice between directions points and spline points
     """
     time_a = time.time()
-    #lattice = lattice.get_spatial_lattice(directions_geospatials)
     spatial_lattice = lattice.SpatialLattice(directions_geospatials, 9, 7)
     time_b = time.time()
     print "Building the lattice took " + str(time_b - time_a) + " seconds."
@@ -55,40 +54,12 @@ def build_lattice(directions_geospatials):
         config.PLOT_QUEUE.append([plottable_lattice, 'g.'])
     return spatial_lattice
 
-# config.DEGREE_CONSTRAINT = min(math.fabs(math.pi - math.acos(min((
-# config.distance_btwn_slices*(config.G_TOLERANCE/330**2))**2/2-1,1))),
-# math.pi)*(180./math.pi)
-
 
 def build_graphs(spatial_lattice):
     """Build graph skeletons from lattice slices
     """
     time_a = time.time()
-    #finished_edges_sets = edges.get_edgessets(lattice_slices)
     spatial_edges_sets = edges.SpatialEdgesSets(spatial_lattice)
-    #final_edges_sets = edges.get_spatial_edges_sets(spatial_lattice)
-    # for edges_set in finished_edges_sets:
-    #    for edge in edges_set:
-    #        print("edge geospatials: " + str(edge.geospatials))
-    #        time.sleep(10)
-    #t2 = time.time()
-    # edges.build_pylons(finished_edges_sets)
-    #t3 = time.time()
-    #print("Building the pylons took " + str(t3 - t2) + " seconds.")
-    #spatial_graphs = graphs.build_spatial_graphs(final_edges_sets)
-    #complete_graphs = graphs.get_graphs(final_edges_sets)
-    #print("len complete graphs: " + str(len(complete_graphs)))
-    #print("graphs num edges: " + str(complete_graphs[0].num_edges))
-    # graph_geospatials = [tuple(map(tuple, graph.geospatials[:-1]))
-    #                    for graph in complete_graphs]
-    # print(graph_geospatials[0])
-    # print(len(graph_geospatials))
-    # print(len(set(graph_geospatials)))
-    # for graph in complete_graphs:
-    #    print("geospatials: " + str(graph.geospatials))
-    #    print("pylon cost: " + str(graph.pylon_cost))
-    #    print("land cost : " + str(graph.land_cost))
-    #    print("curvature: " + str(graph.curvature_metric))
     time_b = time.time()
     print "Building the graphs took " + str(time_b - time_a) + " seconds."
     if config.VISUAL_MODE:

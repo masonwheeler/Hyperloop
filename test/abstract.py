@@ -85,8 +85,6 @@ class AbstractEdge(object):
     def __init__(self, start_point, end_point):
         self.start_id = start_point.point_id        
         self.end_id = end_point.point_id
-        ##print("start id: " + str(start_point.point_id))
-        ##print("end id: " + str(end_point.point_id))
         self.start_abstract_coords = [start_point.abstract_x_coord,
                                       start_point.abstract_y_coord]
         self.end_abstract_coords = [end_point.abstract_x_coord,
@@ -122,7 +120,7 @@ class AbstractEdgesSets(object):
             unfiltered_edges_sets.append(edges_set)
         return unfiltered_edges_sets
 
-    def determine_useful_edges(self, edges_sets, is_edge_pair_compatible):
+    def determine_useful_edges(self, edges_sets):
         """Edge is useful if there are compatible adjacent edges"""
         for edge_a in edges_sets[0]:
             compatibles = [self.is_edge_pair_compatible(edge_a, edge_b)
@@ -156,26 +154,25 @@ class AbstractEdgesSets(object):
                 return True
         return False
 
-    def iterative_filter(self, unfiltered_edges_sets, is_edge_pair_compatible):
-        self.determine_useful_edges(unfiltered_edges_sets,
-                                    is_edge_pair_compatible)
+    def iterative_filter(self, unfiltered_edges_sets):
         prefilter_num_edges = util.list_of_lists_len(unfiltered_edges_sets)
         util.smart_print("The original number of edges: " +
                          str(prefilter_num_edges))
         filtered_edges_sets_list = []
         while True:
-            self.determine_useful_edges(unfiltered_edges_sets,
-                                        is_edge_pair_compatible)
+            self.determine_useful_edges(unfiltered_edges_sets)
             filtered_edges_sets = self.filter_edges(unfiltered_edges_sets)
             any_empty_edges_set = self.check_empty(filtered_edges_sets)
             if any_empty_edges_set:
                 raise ValueError("Encountered Empty EdgesSet")
-            postfilter_num_edges = util.list_of_lists_len(filtered_edges_sets)
-            util.smart_print("The current number of edges: " +
-                             str(postfilter_num_edges))
             filtered_edges_sets_list.append(filtered_edges_sets)
+            postfilter_num_edges = util.list_of_lists_len(filtered_edges_sets)
             if postfilter_num_edges == prefilter_num_edges:
+                util.smart_print("The final number of edges is: " +
+                             str(postfilter_num_edges))
                 break
+            util.smart_print("The current number of edges is: " +
+                             str(postfilter_num_edges))
             prefilter_num_edges = postfilter_num_edges
         return filtered_edges_sets_list
 
@@ -184,7 +181,7 @@ class AbstractEdgesSets(object):
         self.unfiltered_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
         self.filtered_edges_sets_list = self.iterative_filter(
-            self.unfiltered_edges_sets, is_edge_pair_compatible)
+                                       self.unfiltered_edges_sets)
         self.final_edges_sets = self.filtered_edges_sets_list[-1]
 
 

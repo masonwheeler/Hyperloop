@@ -177,7 +177,7 @@ class SpatialSlice(abstract.AbstractSlice):
         point_id = slice_start_id
         lattice_y_coord = 0
         spatial_slice_points = []
-        for spatial_slice_geospatial in spatial_slice_geospatials[:-1]:
+        for spatial_slice_geospatial in spatial_slice_geospatials: #[:-1]:
             is_in_right_of_way = (lattice_y_coord == 0)
             new_spatial_point = SpatialPoint(point_id, lattice_x_coord,
                 lattice_y_coord, spatial_slice_geospatial, is_in_right_of_way)
