@@ -196,7 +196,7 @@ class AbstractGraph(object):
         self.num_edges = num_edges
         self.abstract_coords = abstract_coords
 
-    def init_from_abstract_edge(
+#    def init_from_abstract_edge(
 
     def build_local_lattice(self, lattice_coords, spacing):
         coord_pairs = util.to_pairs(lattice_coords)
@@ -216,12 +216,6 @@ class AbstractGraph(object):
 
 
 class AbstractGraphsSet(object):
-
-    @staticmethod
-    def is_graph_pair_compatible(graph_a, graph_b, degree_constraint):
-        graph_pair_compatible = (graph_a.end_id == graph_b.start_id and
-            abs(graph_a.end_angle - graph_b.start_angle) < degree_constraint)
-        return graph_pair_compatible
 
     def select_graphs(self, minimize_a_vals, minimize_b_vals):
         if self.graphs_a_b_vals == None:
@@ -243,14 +237,14 @@ class AbstractGraphsSet(object):
                 self.selected_graphs = self.unfiltered_graphs
                 return False
 
-    def __init__(self, graphs, graphs_evaluator, is_graph_pair_compatible,
-                 minimize_a_vals, minimize_b_vals, graphs_num_edges):
+    def __init__(self, graphs, graphs_evaluator, graphs_num_edges,
+                                minimize_a_vals, minimize_b_vals):
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges
         self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges)
         self.select_graphs(minimize_a_vals, minimize_b_vals)
-        self.minimize_a_vals, self.minimize_b_vals = minimize_a_vals, minimize_b_vals
-        self.is_graph_pair_compatible = is_graph_pair_compatible
+        self.minimize_a_vals = minimize_a_vals
+        self.minimize_b_vals = minimize_b_vals
 
     def update_graphs(self):
         """
@@ -275,18 +269,6 @@ class AbstractGraphsSet(object):
             else:
                 return False
 
-    @staticmethod
-    def merge_two_graphs_sets(graphs_set_a, graphs_set_b, is_graph_pair_compatible,
-                              merge_two_graphs):
-        merged_graphs = []
-        selected_a = graphs_set_a.selected_graphs
-        selected_b = graphs_set_b.selected_graphs
-        for graph_a in selected_a:
-            for graph_b in selected_b:
-                if is_graph_pair_compatible(graph_a, graph_b):
-                    merged_graphs.append(merge_two_graphs(graph_a, graph_b))
-        return merged_graphs
-
 
 class AbstractGraphsSets(object):
     
@@ -294,6 +276,11 @@ class AbstractGraphsSets(object):
     def graphs_set_updater(graphs_sets):
         graphs_sets.update_graphs()
         return graphs_sets
+
+    def test_graph_pair_compatibility(self, graph_a, graph_b):
+        graph_pair_compatible = (graph_a.end_id == graph_b.start_id and
+          abs(graph_a.end_angle - graph_b.start_angle) < self.degree_constraint)
+        return graph_pair_compatible
 
     def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):
         merged_graphs = []
@@ -315,10 +302,10 @@ class AbstractGraphsSets(object):
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
-                          graphs_set_builder, test_graph_pair_compatibility):
+                                      graphs_set_builder, degree_constraint):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
-        self.test_graph_pair_compatibility = test_graph_pair_compability
+        self.degree_constraint = degree_constraint
         base_graphs_sets = [edges_set_to_graphs_set(edges_set) for edges_set
                                                                in edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
@@ -326,19 +313,5 @@ class AbstractGraphsSets(object):
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
         self.selected_graphs = root_graphs_set.selected_graphs
-
-
-def graphs_set_pair_merger(graphs_set_a, graphs_set_b, graphs_set_builder,
-                           is_graph_pair_compatible, merge_two_graphs):
-    merged_graphs = AbstractGraphsSet.merge_two_graphs_sets(graphs_set_a,
-                                                            graphs_set_b, is_graph_pair_compatible, merge_two_graphs)
-    num_edges_a = graphs_set_a.num_edges
-    num_edges_b = graphs_set_b.num_edges
-    merged_num_edges = num_edges_a + num_edges_b
-    if (len(merged_graphs) == 0):
-        return None
-    else:
-        merged_graphs_set = graphs_set_builder(merged_graphs, merged_num_edges)
-        return merged_graphs_set
 
 
