@@ -188,13 +188,15 @@ class AbstractEdgesSets(object):
 class AbstractGraph(object):
 
     def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
-                 lattice_coords):
+                 abstract_coords):
         self.start_id = start_id
         self.end_id = end_id
         self.start_angle = start_angle
         self.end_angle = end_angle
         self.num_edges = num_edges
-        self.lattice_coords = lattice_coords
+        self.abstract_coords = abstract_coords
+
+    def init_from_abstract_edge(
 
     def build_local_lattice(self, lattice_coords, spacing):
         coord_pairs = util.to_pairs(lattice_coords)
@@ -254,6 +256,7 @@ class AbstractGraphsSet(object):
         """
         Update the selected graphs
 
+
         If the graphs are successfully updated return True, else return False.
         Update the graphs by adding the next front from the Pareto Frontier
         """
@@ -285,6 +288,46 @@ class AbstractGraphsSet(object):
         return merged_graphs
 
 
+class AbstractGraphsSets(object):
+    
+    @staticmethod
+    def graphs_set_updater(graphs_sets):
+        graphs_sets.update_graphs()
+        return graphs_sets
+
+    def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):
+        merged_graphs = []
+        selected_a = graphs_set_a.selected_graphs
+        selected_b = graphs_set_b.selected_graphs
+        for graph_a in selected_a:
+            for graph_b in selected_b:                
+                if self.test_graph_pair_compatibility(graph_a, graph_b):
+                    merged_graph = self.merge_graph_pair(graph_a, graph_b)
+                    merged_graphs.append(merged_graph) 
+        num_edges_a = graphs_set_a.num_edges
+        num_edges_b = graphs_set_b.num_edges
+        merged_num_edges = num_edges_a + num_edges_b
+        if (len(merged_graphs) == 0):
+            return None
+        else:
+            merged_graphs_set = self.graphs_set_builder(merged_graphs,
+                                                        merged_num_edges)
+            return merged_graphs_set
+
+    def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
+                          graphs_set_builder, test_graph_pair_compatibility):
+        self.merge_graph_pair = merge_graph_pair
+        self.graphs_set_builder = graphs_set_builder
+        self.test_graph_pair_compatibility = test_graph_pair_compability
+        base_graphs_sets = [edges_set_to_graphs_set(edges_set) for edges_set
+                                                               in edges_sets]
+        graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
+                                 self.merge_two_graphs_sets,
+                                 AbstractGraphsSets.graphs_set_updater)
+        root_graphs_set = graphs_sets_tree.root
+        self.selected_graphs = root_graphs_set.selected_graphs
+
+
 def graphs_set_pair_merger(graphs_set_a, graphs_set_b, graphs_set_builder,
                            is_graph_pair_compatible, merge_two_graphs):
     merged_graphs = AbstractGraphsSet.merge_two_graphs_sets(graphs_set_a,
@@ -299,6 +342,3 @@ def graphs_set_pair_merger(graphs_set_a, graphs_set_b, graphs_set_builder,
         return merged_graphs_set
 
 
-def graphs_set_updater(graphs_sets):
-    graphs_sets.update_graphs()
-    return graphs_sets
