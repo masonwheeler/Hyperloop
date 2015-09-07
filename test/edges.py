@@ -365,7 +365,6 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         curvature_threshold = curvature.compute_curvature_threshold(
                                                 parameters.MAX_SPEED/2.0,
                                                 parameters.MAX_LATERAL_ACCEL)
-        #print("curvature threshold: " + str(curvature_threshold))
         is_curvature_valid = curvature.test_curvature_validity(
                             curvature_array_2d, curvature_threshold)
         return is_curvature_valid
@@ -395,10 +394,6 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         abstract.AbstractEdgesSets.__init__(self, spatial_lattice,
                                   SpatialEdge, spatial_degree_constraint)
 
-
-#def build_spatial_edges_sets(spatial_lattice):
-#    spatial_edges_sets = SpatialEdgesSets(spatial_points_lattice)
-#    return spatial_edges_sets.final_edges_sets
 
 def get_spatial_edges_sets(spatial_lattice):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",

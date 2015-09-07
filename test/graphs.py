@@ -266,7 +266,7 @@ class SpatialGraph(abstract.AbstractGraph):
         self.land_cost = land_cost  # The total cost of the land acquired
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.geospatials = geospatials  # The geospatial coordinates
-        self.time = self.get_time(geospatials, num_edges)
+        self.time = self.get_time(geospatials, self.num_edges)
 
     @classmethod
     def init_from_spatial_edge(cls, spatial_edge):
@@ -339,10 +339,9 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
 class SpatialGraphsSets(abstract.AbstractGraphsSets):
     
     def __init__(self, spatial_edges_sets):
-        abstract.AbstractsGraphsSets.__init__(self, spatial_edges_sets,
+        abstract.AbstractGraphsSets.__init__(self, spatial_edges_sets,
                             SpatialGraphsSet.init_from_spatial_edges_set,
                             SpatialGraph.merge_two_spatial_graphs,
-                            SpatialGraphsSet,
-                            spatial_edges_sets.degree_constraint)
+                            SpatialGraphsSet)
     
 

@@ -196,7 +196,30 @@ class AbstractGraph(object):
         self.num_edges = num_edges
         self.abstract_coords = abstract_coords
 
-#    def init_from_abstract_edge(
+    @classmethod
+    def init_from_abstract_edge(cls, abstract_edge):
+        start_id = abstract_edge.start_id
+        end_id = abstract_edge.end_id
+        start_angle = abstract_edge.angle
+        end_angle = abstract_edge.angle
+        num_edges = 1
+        abstract_coords = [abstract_edge.start_abstract_coords,
+                           abstract_edge.end_abstract_coords]
+        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
+                                                       abstract_coords)
+        return data
+
+    @classmethod
+    def init_from_abstract_graph(cls, abstract_graph):
+        start_id = abstract_graph.start_id
+        end_id = abstract_graph.end_id
+        start_angle = abstract_graph.start_angle
+        end_angle = abstract_graph.end_angle
+        num_edges = abstract_graph.num_edges
+        abstract_coords = abstract_graph.abstract_coords
+        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
+                                                       abstract_coords)
+        return data
 
     def build_local_lattice(self, lattice_coords, spacing):
         coord_pairs = util.to_pairs(lattice_coords)
@@ -302,12 +325,12 @@ class AbstractGraphsSets(object):
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
-                                      graphs_set_builder, degree_constraint):
+                                                         graphs_set_builder):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
-        self.degree_constraint = degree_constraint
+        self.degree_constraint = edges_sets.degree_constraint
         base_graphs_sets = [edges_set_to_graphs_set(edges_set) for edges_set
-                                                               in edges_sets]
+                                              in edges_sets.final_edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)

@@ -58,6 +58,7 @@ def build_graphs(spatial_lattice):
     """
     time_a = time.time()
     spatial_edges_sets = edges.SpatialEdgesSets(spatial_lattice)
+    spatial_graphs_sets = graphs.SpatialGraphsSets(spatial_edges_sets)
     time_b = time.time()
     print "Building the graphs took " + str(time_b - time_a) + " seconds."
     if config.VISUAL_MODE:
