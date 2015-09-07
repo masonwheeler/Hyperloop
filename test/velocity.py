@@ -1,9 +1,13 @@
 """
-Original Developer: Jonathan Ward
-ies_purpose of Module: To provide a naive velocity profile generation method
-Last Modified: 8/16/15
-Last Modified By: Jonathan Ward
-Last Modification Purpose: Created Module
+Original Developer: Jonathan Ward.
+
+Purpose of Module: To provide a naive velocity profile generation method.
+
+Last Modified: 8/16/15.
+
+Last Modified By: Jonathan Ward.
+
+Last Modification Purpose: Created Module.
 """
 
 # Standard Modules
