@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>curvature module &mdash; hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-curvature">
+<span id="curvature-module"></span><h1>curvature module<a class="headerlink" href="#module-curvature" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Original Developer:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Purpose of Module:</dt>
+<dd>To provide curvature functions</dd>
+<dt>Last Modified:</dt>
+<dd>9/03/15</dd>
+<dt>Last Modified By:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Last Modification Purpose:</dt>
+<dd>Created Module</dd>
+</dl>
+<dl class="function">
+<dt id="curvature.compute_curvature_array_2d">
+<tt class="descclassname">curvature.</tt><tt class="descname">compute_curvature_array_2d</tt><big>(</big><em>x_first_deriv_values</em>, <em>x_second_deriv_values</em>, <em>y_first_deriv_values</em>, <em>y_second_deriv_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#compute_curvature_array_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.compute_curvature_array_2d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.compute_curvature_array_3d">
+<tt class="descclassname">curvature.</tt><tt class="descname">compute_curvature_array_3d</tt><big>(</big><em>x_first_deriv_values</em>, <em>x_second_deriv_values</em>, <em>y_first_deriv_values</em>, <em>y_second_deriv_values</em>, <em>z_first_deriv_values</em>, <em>z_second_deriv_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#compute_curvature_array_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.compute_curvature_array_3d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.compute_curvature_threshold">
+<tt class="descclassname">curvature.</tt><tt class="descname">compute_curvature_threshold</tt><big>(</big><em>speed</em>, <em>max_acceleration</em><big>)</big><a class="reference internal" href="_modules/curvature.html#compute_curvature_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.compute_curvature_threshold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.compute_explicit_curvature">
+<tt class="descclassname">curvature.</tt><tt class="descname">compute_explicit_curvature</tt><big>(</big><em>first_deriv_values</em>, <em>second_deriv_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#compute_explicit_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.compute_explicit_curvature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.curvature_array_3d_to_max_allowed_vels">
+<tt class="descclassname">curvature.</tt><tt class="descname">curvature_array_3d_to_max_allowed_vels</tt><big>(</big><em>curvature_array3d</em><big>)</big><a class="reference internal" href="_modules/curvature.html#curvature_array_3d_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.curvature_array_3d_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.curvature_array_to_max_allowed_vels">
+<tt class="descclassname">curvature.</tt><tt class="descname">curvature_array_to_max_allowed_vels</tt><big>(</big><em>curvature_array</em>, <em>accel_constraint</em><big>)</big><a class="reference internal" href="_modules/curvature.html#curvature_array_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.curvature_array_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.curvature_test_2d">
+<tt class="descclassname">curvature.</tt><tt class="descname">curvature_test_2d</tt><big>(</big><em>x_spline</em>, <em>y_spline</em>, <em>s_values</em>, <em>curvature_threshold</em><big>)</big><a class="reference internal" href="_modules/curvature.html#curvature_test_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.curvature_test_2d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.effective_max_allowed_vels">
+<tt class="descclassname">curvature.</tt><tt class="descname">effective_max_allowed_vels</tt><big>(</big><em>x_spline</em>, <em>y_spline</em>, <em>z_spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#effective_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.effective_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.effective_max_allowed_vels_1d">
+<tt class="descclassname">curvature.</tt><tt class="descname">effective_max_allowed_vels_1d</tt><big>(</big><em>z_spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#effective_max_allowed_vels_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.effective_max_allowed_vels_1d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.get_derivative_values">
+<tt class="descclassname">curvature.</tt><tt class="descname">get_derivative_values</tt><big>(</big><em>spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#get_derivative_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.get_derivative_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.lateral_curvature_array_to_max_allowed_vels">
+<tt class="descclassname">curvature.</tt><tt class="descname">lateral_curvature_array_to_max_allowed_vels</tt><big>(</big><em>lateral_curvature_array</em><big>)</big><a class="reference internal" href="_modules/curvature.html#lateral_curvature_array_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.lateral_curvature_array_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.parametric_splines_2d_curvature">
+<tt class="descclassname">curvature.</tt><tt class="descname">parametric_splines_2d_curvature</tt><big>(</big><em>x_spline</em>, <em>y_spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#parametric_splines_2d_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.parametric_splines_2d_curvature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.parametric_splines_3d_curvature">
+<tt class="descclassname">curvature.</tt><tt class="descname">parametric_splines_3d_curvature</tt><big>(</big><em>x_spline</em>, <em>y_spline</em>, <em>z_spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#parametric_splines_3d_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.parametric_splines_3d_curvature" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.parametric_splines_vertical_and_lateral_curvatures">
+<tt class="descclassname">curvature.</tt><tt class="descname">parametric_splines_vertical_and_lateral_curvatures</tt><big>(</big><em>x_spline</em>, <em>y_spline</em>, <em>z_spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/curvature.html#parametric_splines_vertical_and_lateral_curvatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.parametric_splines_vertical_and_lateral_curvatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.test_curvature_validity">
+<tt class="descclassname">curvature.</tt><tt class="descname">test_curvature_validity</tt><big>(</big><em>curvature_array</em>, <em>curvature_threshhold</em><big>)</big><a class="reference internal" href="_modules/curvature.html#test_curvature_validity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.test_curvature_validity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="curvature.vertical_curvature_array_to_max_allowed_vels">
+<tt class="descclassname">curvature.</tt><tt class="descname">vertical_curvature_array_to_max_allowed_vels</tt><big>(</big><em>vertical_curvature_array</em><big>)</big><a class="reference internal" href="_modules/curvature.html#vertical_curvature_array_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#curvature.vertical_curvature_array_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/curvature.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>abstract_edges module &mdash; hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-abstract_edges">
+<span id="abstract-edges-module"></span><h1>abstract_edges module<a class="headerlink" href="#module-abstract_edges" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Original Developer:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Purpose of Module:</dt>
+<dd>To provide an interface for the AbstractEdgesSets class and related classes</dd>
+<dt>Last Modified:</dt>
+<dd>09/08/15</dd>
+<dt>Last Modified By:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Last Modification Purpose:</dt>
+<dd>Created Module</dd>
+</dl>
+<dl class="class">
+<dt id="abstract_edges.AbstractEdge">
+<em class="property">class </em><tt class="descclassname">abstract_edges.</tt><tt class="descname">AbstractEdge</tt><big>(</big><em>start_point</em>, <em>end_point</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_edges.AbstractEdgesSets">
+<em class="property">class </em><tt class="descclassname">abstract_edges.</tt><tt class="descname">AbstractEdgesSets</tt><big>(</big><em>lattice</em>, <em>edge_builder</em>, <em>degree_constraint</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="method">
+<dt id="abstract_edges.AbstractEdgesSets.check_empty">
+<tt class="descname">check_empty</tt><big>(</big><em>edges_sets</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets.check_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets.check_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_edges.AbstractEdgesSets.determine_useful_edges">
+<tt class="descname">determine_useful_edges</tt><big>(</big><em>edges_sets</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets.determine_useful_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets.determine_useful_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edge is useful if there are compatible adjacent edges</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="abstract_edges.AbstractEdgesSets.filter_edges">
+<tt class="descname">filter_edges</tt><big>(</big><em>edges_sets</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets.filter_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets.filter_edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_edges.AbstractEdgesSets.is_edge_pair_compatible">
+<tt class="descname">is_edge_pair_compatible</tt><big>(</big><em>edge_a</em>, <em>edge_b</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets.is_edge_pair_compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets.is_edge_pair_compatible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_edges.AbstractEdgesSets.iterative_filter">
+<tt class="descname">iterative_filter</tt><big>(</big><em>unfiltered_edges_sets</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets.iterative_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets.iterative_filter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_edges.AbstractEdgesSets.lattice_slices_to_unfiltered_edges_sets">
+<tt class="descname">lattice_slices_to_unfiltered_edges_sets</tt><big>(</big><em>lattice_slices</em>, <em>edge_builder</em><big>)</big><a class="reference internal" href="_modules/abstract_edges.html#AbstractEdgesSets.lattice_slices_to_unfiltered_edges_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_edges.AbstractEdgesSets.lattice_slices_to_unfiltered_edges_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/abstract_edges.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

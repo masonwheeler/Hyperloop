@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>abstract_lattice module &mdash; hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-abstract_lattice">
+<span id="abstract-lattice-module"></span><h1>abstract_lattice module<a class="headerlink" href="#module-abstract_lattice" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Original Developer:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Purpose of Module:</dt>
+<dd>To implement the AbstractLattice class and accompanying classes.</dd>
+<dt>Last Modified:</dt>
+<dd>09/08/15</dd>
+<dt>Last Modified By:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Last Modification Purpose:</dt>
+<dd>Created Module</dd>
+</dl>
+<dl class="class">
+<dt id="abstract_lattice.AbstractLattice">
+<em class="property">class </em><tt class="descclassname">abstract_lattice.</tt><tt class="descname">AbstractLattice</tt><big>(</big><em>slices_bounds</em>, <em>slice_builder</em><big>)</big><a class="reference internal" href="_modules/abstract_lattice.html#AbstractLattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_lattice.AbstractLattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="method">
+<dt id="abstract_lattice.AbstractLattice.get_plottable_lattice">
+<tt class="descname">get_plottable_lattice</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/abstract_lattice.html#AbstractLattice.get_plottable_lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_lattice.AbstractLattice.get_plottable_lattice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_lattice.AbstractPoint">
+<em class="property">class </em><tt class="descclassname">abstract_lattice.</tt><tt class="descname">AbstractPoint</tt><big>(</big><em>point_id</em>, <em>abstract_x_coord</em>, <em>abstract_y_coord</em>, <em>physical_x_coord</em>, <em>physical_y_coord</em><big>)</big><a class="reference internal" href="_modules/abstract_lattice.html#AbstractPoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_lattice.AbstractPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<p>Abstract object that represents a point.</p>
+<dl class="attribute">
+<dt id="abstract_lattice.AbstractPoint.point_id">
+<tt class="descname">point_id</tt><a class="headerlink" href="#abstract_lattice.AbstractPoint.point_id" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; Unique identifier for each point.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract_lattice.AbstractPoint.abstract_x_coord">
+<tt class="descname">abstract_x_coord</tt><a class="headerlink" href="#abstract_lattice.AbstractPoint.abstract_x_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; The x coordinate of the point with
+relative to the lattice of points.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract_lattice.AbstractPoint.abstract_y_coord">
+<tt class="descname">abstract_y_coord</tt><a class="headerlink" href="#abstract_lattice.AbstractPoint.abstract_y_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> &#8211; The y coordinate of the point with
+relative to the lattice of points.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract_lattice.AbstractPoint.physical_x_coord">
+<tt class="descname">physical_x_coord</tt><a class="headerlink" href="#abstract_lattice.AbstractPoint.physical_x_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> &#8211; The x coordinate of the point
+in physical units.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="abstract_lattice.AbstractPoint.physical_y_coord">
+<tt class="descname">physical_y_coord</tt><a class="headerlink" href="#abstract_lattice.AbstractPoint.physical_y_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> &#8211; The y coordinate of the point
+in physical units.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_lattice.AbstractSlice">
+<em class="property">class </em><tt class="descclassname">abstract_lattice.</tt><tt class="descname">AbstractSlice</tt><big>(</big><em>abstract_x_coord</em>, <em>slice_bounds</em>, <em>start_id</em>, <em>slice_points_builder</em><big>)</big><a class="reference internal" href="_modules/abstract_lattice.html#AbstractSlice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_lattice.AbstractSlice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="method">
+<dt id="abstract_lattice.AbstractSlice.get_physical_x_coords">
+<tt class="descname">get_physical_x_coords</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/abstract_lattice.html#AbstractSlice.get_physical_x_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_lattice.AbstractSlice.get_physical_x_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_lattice.AbstractSlice.get_physical_y_coords">
+<tt class="descname">get_physical_y_coords</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/abstract_lattice.html#AbstractSlice.get_physical_y_coords"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_lattice.AbstractSlice.get_physical_y_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/abstract_lattice.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

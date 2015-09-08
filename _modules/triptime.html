@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>triptime &mdash; hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for triptime</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Original Developer: Jonathan Ward.</span>
+
+<span class="sd">Purpose of Module: To provide a method for computing time.</span>
+
+<span class="sd">Last Modified: 9/5/2015.</span>
+
+<span class="sd">Last Modified By: Jonathan Ward.</span>
+
+<span class="sd">Last Modification Purpose: Created Modules.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Standard Modules:</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c"># Custom Modules:</span>
+<span class="kn">import</span> <span class="nn">interpolate</span>
+
+
+<div class="viewcode-block" id="velocities_to_velocity_pairs"><a class="viewcode-back" href="../triptime.html#triptime.velocities_to_velocity_pairs">[docs]</a><span class="k">def</span> <span class="nf">velocities_to_velocity_pairs</span><span class="p">(</span><span class="n">velocities</span><span class="p">):</span>
+    <span class="n">velocity_pairs</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">to_pairs</span><span class="p">(</span><span class="n">velocities</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">velocity_pairs</span>
+
+</div>
+<div class="viewcode-block" id="time_elapsed_to_velocity"><a class="viewcode-back" href="../triptime.html#triptime.time_elapsed_to_velocity">[docs]</a><span class="k">def</span> <span class="nf">time_elapsed_to_velocity</span><span class="p">(</span><span class="n">velocity_pair</span><span class="p">,</span> <span class="n">time_elapsed</span><span class="p">):</span>
+    <span class="n">start_velocity</span><span class="p">,</span> <span class="n">end_velocity</span> <span class="o">=</span> <span class="n">velocity_pair</span>
+    <span class="n">start_velocity_time</span><span class="p">,</span> <span class="n">start_velocity_val</span> <span class="o">=</span> <span class="n">start_velocity</span>
+    <span class="n">end_velocity_time</span><span class="p">,</span> <span class="n">end_velocity_val</span> <span class="o">=</span> <span class="n">end_velocity</span>
+    <span class="n">velocity_difference</span> <span class="o">=</span> <span class="n">end_velocity_val</span> <span class="o">-</span> <span class="n">start_velocity_val</span>
+    <span class="n">time_difference</span> <span class="o">=</span> <span class="n">end_velocity_time</span> <span class="o">-</span> <span class="n">start_velocity_time</span>
+    <span class="n">relative_velocity_val</span> <span class="o">=</span> <span class="n">time_elapsed</span> <span class="o">*</span> <span class="n">velocity_difference</span> <span class="o">/</span> <span class="n">time_difference</span>
+    <span class="n">velocity_val</span> <span class="o">=</span> <span class="n">start_velocity_val</span> <span class="o">+</span> <span class="n">relative_velocity_val</span>
+    <span class="n">velocity_time</span> <span class="o">=</span> <span class="n">start_velocity_time</span> <span class="o">+</span> <span class="n">time_elapsed</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="p">[</span><span class="n">velocity_time</span><span class="p">,</span> <span class="n">velocity_val</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">velocity</span>
+
+</div>
+<div class="viewcode-block" id="sample_velocity_pair"><a class="viewcode-back" href="../triptime.html#triptime.sample_velocity_pair">[docs]</a><span class="k">def</span> <span class="nf">sample_velocity_pair</span><span class="p">(</span><span class="n">velocity_pair</span><span class="p">,</span> <span class="n">time_step_size</span><span class="p">,</span> <span class="n">time_elapsed</span><span class="p">):</span>
+    <span class="n">sampled_velocities</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start_velocity</span><span class="p">,</span> <span class="n">end_velocity</span> <span class="o">=</span> <span class="n">velocity_pair</span>
+    <span class="n">start_velocity_time</span><span class="p">,</span> <span class="n">start_velocity_val</span> <span class="o">=</span> <span class="n">start_velocity</span>
+    <span class="n">end_velocity_time</span><span class="p">,</span> <span class="n">end_velocity_val</span> <span class="o">=</span> <span class="n">end_velocity</span>
+    <span class="n">velocity_pairtime_difference</span> <span class="o">=</span> <span class="n">end_velocity_time</span> <span class="o">-</span> <span class="n">start_velocity_time</span>
+    <span class="k">while</span> <span class="n">time_elapsed</span> <span class="o">&lt;=</span> <span class="n">velocity_pair_time_difference</span><span class="p">:</span>
+        <span class="n">velocity</span> <span class="o">=</span> <span class="n">time_elapsed_to_velocity</span><span class="p">(</span><span class="n">velocity_pair</span><span class="p">,</span> <span class="n">time_elapsed</span><span class="p">)</span>
+        <span class="n">sampled_velocities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">velocity</span><span class="p">)</span>
+        <span class="n">time_elapsed</span> <span class="o">+=</span> <span class="n">time_step_size</span>
+    <span class="n">time_elapsed</span> <span class="o">-=</span> <span class="n">velocity_pair_time_difference</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">sampled_velocities</span><span class="p">,</span> <span class="n">time_elapsed</span><span class="p">]</span>
+
+</div>
+<div class="viewcode-block" id="sample_velocities"><a class="viewcode-back" href="../triptime.html#triptime.sample_velocities">[docs]</a><span class="k">def</span> <span class="nf">sample_velocities</span><span class="p">(</span><span class="n">velocities_by_time</span><span class="p">,</span> <span class="n">time_step_size</span><span class="p">):</span>
+    <span class="n">time_elapsed</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">velocities</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">velocity_pair</span> <span class="ow">in</span> <span class="n">velocity_pairs</span><span class="p">:</span>
+        <span class="n">sampled_velocities</span><span class="p">,</span> <span class="n">time_elapsed</span> <span class="o">=</span> <span class="n">sample_velocity_pair</span><span class="p">(</span><span class="n">velocity_pair</span><span class="p">,</span>
+                                                                <span class="n">time_elapsed</span><span class="p">)</span>
+        <span class="n">velocities</span> <span class="o">+=</span> <span class="n">sampled_velocities</span>
+    <span class="k">return</span> <span class="n">velocities</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

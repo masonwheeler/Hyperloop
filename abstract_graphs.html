@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>abstract_graphs module &mdash; hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-abstract_graphs">
+<span id="abstract-graphs-module"></span><h1>abstract_graphs module<a class="headerlink" href="#module-abstract_graphs" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Original Developer:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Purpose of Module:</dt>
+<dd>To provide an interface for the AbstractGraph class and related classes</dd>
+<dt>Last Modified:</dt>
+<dd>8/21/15</dd>
+<dt>Last Modified By:</dt>
+<dd>Jonathan Ward</dd>
+<dt>Last Modification Purpose:</dt>
+<dd>Refactoring</dd>
+</dl>
+<dl class="class">
+<dt id="abstract_graphs.AbstractGraph">
+<em class="property">class </em><tt class="descclassname">abstract_graphs.</tt><tt class="descname">AbstractGraph</tt><big>(</big><em>start_id</em>, <em>end_id</em>, <em>start_angle</em>, <em>end_angle</em>, <em>num_edges</em>, <em>abstract_coords</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="method">
+<dt id="abstract_graphs.AbstractGraph.build_local_lattice">
+<tt class="descname">build_local_lattice</tt><big>(</big><em>lattice_coords</em>, <em>spacing</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraph.build_local_lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraph.build_local_lattice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="abstract_graphs.AbstractGraph.init_from_abstract_edge">
+<em class="property">classmethod </em><tt class="descname">init_from_abstract_edge</tt><big>(</big><em>abstract_edge</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraph.init_from_abstract_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraph.init_from_abstract_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="classmethod">
+<dt id="abstract_graphs.AbstractGraph.init_from_abstract_graph">
+<em class="property">classmethod </em><tt class="descname">init_from_abstract_graph</tt><big>(</big><em>abstract_graph</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraph.init_from_abstract_graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraph.init_from_abstract_graph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_graphs.AbstractGraph.init_from_abstract_graph_2">
+<tt class="descname">init_from_abstract_graph_2</tt><big>(</big><em>abstract_graph</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraph.init_from_abstract_graph_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraph.init_from_abstract_graph_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_graphs.AbstractGraphsSet">
+<em class="property">class </em><tt class="descclassname">abstract_graphs.</tt><tt class="descname">AbstractGraphsSet</tt><big>(</big><em>graphs</em>, <em>graphs_evaluator</em>, <em>graphs_num_edges</em>, <em>minimize_a_vals</em>, <em>minimize_b_vals</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="method">
+<dt id="abstract_graphs.AbstractGraphsSet.select_graphs">
+<tt class="descname">select_graphs</tt><big>(</big><em>minimize_a_vals</em>, <em>minimize_b_vals</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSet.select_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSet.select_graphs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_graphs.AbstractGraphsSet.update_graphs">
+<tt class="descname">update_graphs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSet.update_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSet.update_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the selected graphs</p>
+<p>If the graphs are successfully updated return True, else return False.
+Update the graphs by adding the next front from the Pareto Frontier</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_graphs.AbstractGraphsSets">
+<em class="property">class </em><tt class="descclassname">abstract_graphs.</tt><tt class="descname">AbstractGraphsSets</tt><big>(</big><em>edges_sets</em>, <em>edges_set_to_graphs_set</em>, <em>merge_graph_pair</em>, <em>graphs_set_builder</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+<dl class="staticmethod">
+<dt id="abstract_graphs.AbstractGraphsSets.graphs_set_updater">
+<em class="property">static </em><tt class="descname">graphs_set_updater</tt><big>(</big><em>graphs_sets</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSets.graphs_set_updater"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSets.graphs_set_updater" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_graphs.AbstractGraphsSets.merge_two_graphs_sets">
+<tt class="descname">merge_two_graphs_sets</tt><big>(</big><em>graphs_set_a</em>, <em>graphs_set_b</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSets.merge_two_graphs_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSets.merge_two_graphs_sets" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="abstract_graphs.AbstractGraphsSets.test_graph_pair_compatibility">
+<tt class="descname">test_graph_pair_compatibility</tt><big>(</big><em>graph_a</em>, <em>graph_b</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractGraphsSets.test_graph_pair_compatibility"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractGraphsSets.test_graph_pair_compatibility" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_graphs.AbstractPath">
+<em class="property">class </em><tt class="descclassname">abstract_graphs.</tt><tt class="descname">AbstractPath</tt><big>(</big><em>graph_physical_coordinates</em>, <em>interpolator</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractPath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="abstract_graphs.AbstractPathsSet">
+<em class="property">class </em><tt class="descclassname">abstract_graphs.</tt><tt class="descname">AbstractPathsSet</tt><big>(</big><em>graphs_set</em>, <em>spatial_interpolator</em>, <em>path_builder</em><big>)</big><a class="reference internal" href="_modules/abstract_graphs.html#AbstractPathsSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#abstract_graphs.AbstractPathsSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></a></p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/abstract_graphs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

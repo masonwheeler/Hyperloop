@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>abstract_lattice &mdash; hyperloop 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for abstract_lattice</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Original Developer:</span>
+<span class="sd">    Jonathan Ward</span>
+
+<span class="sd">Purpose of Module:</span>
+<span class="sd">    To implement the AbstractLattice class and accompanying classes.</span>
+
+<span class="sd">Last Modified:</span>
+<span class="sd">    09/08/15</span>
+
+<span class="sd">Last Modified By:</span>
+<span class="sd">    Jonathan Ward</span>
+
+<span class="sd">Last Modification Purpose:</span>
+<span class="sd">    Created Module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Standard Modules:</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c"># Custom Modules:</span>
+<span class="kn">import</span> <span class="nn">util</span>
+
+
+<div class="viewcode-block" id="AbstractPoint"><a class="viewcode-back" href="../abstract_lattice.html#abstract_lattice.AbstractPoint">[docs]</a><span class="k">class</span> <span class="nc">AbstractPoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract object that represents a point.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        point_id (int): Unique identifier for each point.</span>
+<span class="sd">        abstract_x_coord (int): The x coordinate of the point with</span>
+<span class="sd">                               relative to the lattice of points.</span>
+<span class="sd">        abstract_y_coord (int): The y coordinate of the point with</span>
+<span class="sd">                               relative to the lattice of points.</span>
+<span class="sd">        physical_x_coord (float): The x coordinate of the point</span>
+<span class="sd">                                in physical units.</span>
+<span class="sd">        physical_y_coord (float): The y coordinate of the point</span>
+<span class="sd">                                in physical units.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">point_id</span><span class="p">,</span> <span class="n">abstract_x_coord</span><span class="p">,</span> <span class="n">abstract_y_coord</span><span class="p">,</span>
+                 <span class="n">physical_x_coord</span><span class="p">,</span> <span class="n">physical_y_coord</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">point_id</span> <span class="o">=</span> <span class="n">point_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abstract_x_coord</span> <span class="o">=</span> <span class="n">abstract_x_coord</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abstract_y_coord</span> <span class="o">=</span> <span class="n">abstract_y_coord</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">physical_x_coord</span> <span class="o">=</span> <span class="n">physical_x_coord</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">physical_y_coord</span> <span class="o">=</span> <span class="n">physical_y_coord</span>
+
+</div>
+<div class="viewcode-block" id="AbstractSlice"><a class="viewcode-back" href="../abstract_lattice.html#abstract_lattice.AbstractSlice">[docs]</a><span class="k">class</span> <span class="nc">AbstractSlice</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">abstract_x_coord</span><span class="p">,</span> <span class="n">slice_bounds</span><span class="p">,</span> <span class="n">start_id</span><span class="p">,</span>
+                                         <span class="n">slice_points_builder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_id</span> <span class="o">=</span> <span class="n">slice_points_builder</span><span class="p">(</span><span class="n">abstract_x_coord</span><span class="p">,</span>
+                                                 <span class="n">slice_bounds</span><span class="p">,</span> <span class="n">start_id</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AbstractSlice.get_physical_x_coords"><a class="viewcode-back" href="../abstract_lattice.html#abstract_lattice.AbstractSlice.get_physical_x_coords">[docs]</a>    <span class="k">def</span> <span class="nf">get_physical_x_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">physical_x_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="o">.</span><span class="n">physical_x_coord</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">physical_x_coords</span>
+</div>
+<div class="viewcode-block" id="AbstractSlice.get_physical_y_coords"><a class="viewcode-back" href="../abstract_lattice.html#abstract_lattice.AbstractSlice.get_physical_y_coords">[docs]</a>    <span class="k">def</span> <span class="nf">get_physical_y_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">physical_y_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="o">.</span><span class="n">physical_y_coord</span> <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">physical_y_coords</span>
+
+</div></div>
+<div class="viewcode-block" id="AbstractLattice"><a class="viewcode-back" href="../abstract_lattice.html#abstract_lattice.AbstractLattice">[docs]</a><span class="k">class</span> <span class="nc">AbstractLattice</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slices_bounds</span><span class="p">,</span> <span class="n">slice_builder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slices</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">start_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lattice_x_coord</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">slice_bounds</span> <span class="ow">in</span> <span class="n">slices_bounds</span><span class="p">:</span>
+            <span class="n">new_slice</span> <span class="o">=</span> <span class="n">slice_builder</span><span class="p">(</span><span class="n">lattice_x_coord</span><span class="p">,</span> <span class="n">slice_bounds</span><span class="p">,</span> <span class="n">start_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_slice</span><span class="p">)</span>
+            <span class="n">start_id</span> <span class="o">=</span> <span class="n">new_slice</span><span class="o">.</span><span class="n">end_id</span>
+            <span class="n">lattice_x_coord</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="AbstractLattice.get_plottable_lattice"><a class="viewcode-back" href="../abstract_lattice.html#abstract_lattice.AbstractLattice.get_plottable_lattice">[docs]</a>    <span class="k">def</span> <span class="nf">get_plottable_lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">slices_physical_x_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">eachSlice</span><span class="o">.</span><span class="n">get_physical_x_coords</span><span class="p">()</span>
+                                    <span class="k">for</span> <span class="n">eachSlice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">]</span>
+        <span class="n">slices_physical_y_coords</span> <span class="o">=</span> <span class="p">[</span><span class="n">eachSlice</span><span class="o">.</span><span class="n">get_physical_y_coords</span><span class="p">()</span>
+                                    <span class="k">for</span> <span class="n">eachSlice</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">slices</span><span class="p">]</span>
+        <span class="n">physical_x_coords</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">fast_concat</span><span class="p">(</span><span class="n">slices_physical_x_coords</span><span class="p">)</span>
+        <span class="n">physical_y_coords</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">fast_concat</span><span class="p">(</span><span class="n">slices_physical_y_coords</span><span class="p">)</span>
+        <span class="n">physical_x_coords_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">physical_x_coords</span><span class="p">)</span>
+        <span class="n">physical_y_coords_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">physical_y_coords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">physical_x_coords_array</span><span class="p">,</span> <span class="n">physical_y_coords_array</span><span class="p">]</span>
+</pre></div></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
