@@ -1,15 +1,22 @@
 """
-Original Developer: Jonathan Ward
-Purpose of Module: To provide an interface for experimental Classes
-Last Modified: 8/21/15
-Last Modified By: Jonathan Ward
-Last Modification Purpose: Debugging
-"""
+Original Developer:
+    Jonathan Ward
 
+Purpose of Module:
+    To provide an interface for the AbstractGraph class and related classes
+
+Last Modified:
+    8/21/15
+
+Last Modified By:
+    Jonathan Ward
+
+Last Modification Purpose:
+    Refactoring
+"""
 
 # Custom Modules
 import config
-import math
 import mergetree
 import paretofront
 import util
