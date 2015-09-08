@@ -22,7 +22,7 @@ def pair_analysis(start, end):
     """
     cacher.create_necessaryfolders(start, end)
     time_a = time.time()
-    spatial_graphs_sets = spatial.city_pair_to_spatial_graphs_set(start, end)
+    spatial_graphs_sets = spatial.city_pair_to_spatial_graphs_sets(start, end)
     spatial_graphs = spatial_graphs_sets.selected_graphs
     test_graphs = spatial_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,

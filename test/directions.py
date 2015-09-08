@@ -23,34 +23,34 @@ Citations:
 """
 
 # Standard Modules:
-import urllib2
 import json
+import urllib2
 
 # Our Modules:
-import util
-import config
 import cacher
+import config
+import proj
+import util
 
 class Directions(object):
-    def http_to_string(http_data):
+
+    def http_to_string(self, http_data):
         """Reads HTTP bytecode response and converts it to a string"""
         byte_data = http_data.read()
         string_data = byte_data.decode("utf-8")
         return string_data
 
-
-    def build_directions(origin, destination):
+    def fetch_google_directions(self, origin, destination):
         """Pulls directions from Google API"""
         url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' + \
             origin + '&destination=' + destination + \
             '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
         util.smart_print("url: " + url)
         raw_directions = urllib2.urlopen(url)
-        string_directions = http_to_string(raw_directions)
+        string_directions = self.http_to_string(raw_directions)
         return string_directions
 
-
-    def string_to_polylines(string_data):
+    def string_to_polylines(self, string_data):
         """Converts Directions string to JSON and extracts the polylines."""
         dict_response = json.loads(string_data)
         steps = dict_response['routes'][0]['legs'][0]['steps']
@@ -59,8 +59,7 @@ class Directions(object):
             polylines.append(step["polyline"]["points"])
         return polylines
 
-
-    def decode_polyline(encoded):
+    def decode_polyline(self, encoded):
         """
         See (http://code.google.com/apis/maps/documentation/polylinealgorithm.html)
         and (See Wah Chang) for exposition of polyline decoding method.
@@ -104,33 +103,32 @@ class Directions(object):
 
         return array
 
-
-    def decode_polylines(polylines):
+    def decode_polylines(self, polylines):
         """decodes a list of polylines
         """
-        return [decode_polyline(polyline) for polyline in polylines]
+        return [self.decode_polyline(polyline) for polyline in polylines]
 
 
     def get_directions_latlngs(self, start, end):
         """Applies decoding functions to Google API response"""
-        string_directions = build_directions(start, end)
+        string_directions = self.fetch_google_directions(start, end)
         util.smart_print("Obtained directions.")
-        polyline_directions = string_to_polylines(string_directions)
+        polyline_directions = self.string_to_polylines(string_directions)
         util.smart_print("Opened directions.")
-        latlngs_with_duplicates = decode_polylines(polyline_directions)
+        latlngs_with_duplicates = self.decode_polylines(polyline_directions)
         util.smart_print("Decoded directions.")
         raw_latlngs = util.remove_duplicates(latlngs_with_duplicates)
         util.smart_print("Removed duplicate Coordinates.")
         directions_latlngs = util.round_points(raw_latlngs)
         return directions_latlngs
 
-    def __init__(start, end):
-        self.directions_latlngs = self.get_directions_latlngs(start, end)
-        self.start_latlng = self.directions_latlngs[0]
-        self.end_latlng = self.directions_latlngs[-1]
-        self.projection = proj.set_projection(start_latlng, end_latlng)
-        self.directions_geospatials = proj.latlngs_to_geospatials(
-                                      self.directions_latlngs, self.projection)
+    def __init__(self, start, end):
+        self.latlngs = self.get_directions_latlngs(start, end)
+        self.start_latlng = self.latlngs[0]
+        self.end_latlng = self.latlngs[-1]
+        self.projection = proj.set_projection(self.start_latlng, self.end_latlng)
+        self.geospatials = proj.latlngs_to_geospatials(
+                                      self.latlngs, self.projection)
 
 
 def get_directions(start, end):

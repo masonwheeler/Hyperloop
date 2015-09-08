@@ -146,7 +146,7 @@ class SpatialLattice(abstract.AbstractLattice):
         self.spatial_y_spacing = 2**spatial_y_spacing_power * \
                                  self.BASE_RESOLUTION
         sampled_directions_geospatials = self.sample_directions_geospatials(
-                                    directions_geospatials)
+                                                self.directions_geospatials)
         spatial_slices_directions_geospatials = \
             SpatialLattice.get_spatial_slices_directions_geospatials(
                    sampled_directions_geospatials, directions_s_value_step_size)
@@ -175,8 +175,7 @@ class SpatialLattice(abstract.AbstractLattice):
         return [x_array, y_array]
         
             
-def get_spatial_lattice(directions, spatial_x_spacing,
-                                                spatial_y_spacing):
+def get_spatial_lattice(directions, spatial_x_spacing, spatial_y_spacing):
     lattice = cacher.get_object("spatial_lattice", Spatial_Lattice,
                  [directions, spatial_x_spacing, spatial_y_spacing],
                  config.SPATIAL_LATTICE_FLAG)    
