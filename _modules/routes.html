@@ -1,112 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>routes &mdash; hyperloop 0.0.1 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html"/>
-        <link rel="up" title="Module code" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>routes &mdash; hyperloop 0.0.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-        
-          <a href="../index.html" class="icon icon-home"> hyperloop
-        
-
-        
-        </a>
-
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-        
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul class="simple">
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../index.html">hyperloop</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="index.html">Module code</a> &raquo;</li>
-      
-    <li>routes</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
             
   <h1>Source code for routes</h1><div class="highlight"><pre>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -194,14 +133,16 @@
         <span class="n">acceleration_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">([</span><span class="n">ax</span><span class="p">,</span> <span class="n">ay</span><span class="p">,</span> <span class="n">az</span><span class="p">])</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">acceleration_vector</span><span class="p">)</span> <span class="k">for</span> <span class="n">acceleration_vector</span> <span class="ow">in</span> <span class="n">acceleration_vectors</span><span class="p">]</span>
 </div>
-<div class="viewcode-block" id="Route.as_dict"><a class="viewcode-back" href="../routes.html#routes.Route.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Route.as_dict"><a class="viewcode-back" href="../routes.html#routes.Route.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="n">route_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s">&quot;index&quot;</span><span class="p">:</span> <span class="n">index</span><span class="p">,</span>
             <span class="s">&quot;latlngs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span><span class="p">,</span>
             <span class="s">&quot;land_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">land_cost</span><span class="p">,</span>
             <span class="s">&quot;tube_coords&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_elevations</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
             <span class="s">&quot;pylons&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylons</span><span class="p">,</span>
             <span class="s">&quot;tube_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span><span class="p">,</span>
             <span class="s">&quot;pylon_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span><span class="p">,</span>
+            <span class="s">&quot;total_cost&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">land_cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tube_cost</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pylon_cost</span><span class="p">,</span>
             <span class="s">&quot;velocity_profile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity_profile</span><span class="p">,</span>
             <span class="s">&quot;acceleration_profile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">acceleration_profile</span><span class="p">,</span>
             <span class="s">&quot;comfort_rating&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">comfort_rating</span><span class="p">,</span>
@@ -285,137 +226,46 @@
     <span class="k">print</span> <span class="s">&quot;attaching data to new route...&quot;</span>
     <span class="k">print</span> <span class="s">&quot;done: process took &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot; seconds.&quot;</span>
     <span class="k">return</span> <span class="n">Route</span><span class="p">(</span><span class="o">*</span><span class="n">route_data</span><span class="p">)</span>
-
-
-<span class="c"># class SpatialPath2d:</span>
-<span class="c">#     def sample_geospatials(self, graph_geospatials, geospatial_sample_distance):</span>
-<span class="c">#         sampled_geospatials = interpolate.sample_path(graph_geospatials,</span>
-<span class="c">#                                              geospatial_sample_distance)</span>
-<span class="c">#         return sampled_geospatials</span>
-
-<span class="c">#     def get_interpolating_geospatials(self, sampled_geospatials):</span>
-<span class="c">#         x_array, y_array = points_2d_to_arrays(sampled_geospatials)</span>
-<span class="c">#         num_points = len(sampled_geospatials)</span>
-<span class="c">#         s_values = interpolate.get_s_values(num_points)</span>
-<span class="c">#         x_spline, y_spline = interpolate.interpolating_splines_2d(x_array, y_array,</span>
-<span class="c">#                                                                        s_values)</span>
-<span class="c">#         x_values = interpolate.get_spline_values(x_spline, s_values)</span>
-<span class="c">#         y_values = interpolate.get_spline_values(y_spline, s_values)</span>
-<span class="c">#         interpolating_geospatials = [x_values, y_values]</span>
-<span class="c">#         return interpolating_geospatials</span>
-
-<span class="c">#     def get_interpolating_geospatials_v2(self, geospatials):</span>
-<span class="c">#         interpolating_geospatials_array = interp.para_super_q(geospatials, 25)</span>
-<span class="c">#         interpolating_geospatials = interpolating_geospatials_array.tolist()</span>
-<span class="c">#         arc_lengths = util.compute_arc_lengths(interpolating_geospatials)</span>
-<span class="c">#         return [interpolating_geospatials, arc_lengths]</span>
-
-<span class="c">#     def get_interpolating_latlngs(self, interpolating_geospatials):</span>
-<span class="c">#         interpolating_lat_lngs = proj.geospatials_to_latlngs(</span>
-<span class="c">#                          interpolating_geospatials, config.PROJ)</span>
-<span class="c">#         return interpolating_lat_lngs</span>
-
-<span class="c">#     #def get_tube_graphs(self, elevation_profile):</span>
-
-<span class="c">#     def get_tube_graphs_v2(self, elevation_profile):</span>
-<span class="c">#         geospatials = [elevation_point[&quot;geospatial&quot;] for elevation_point</span>
-<span class="c">#                                                     in elevation_profile]</span>
-<span class="c">#         land_elevations = [elevation_point[&quot;land_elevation&quot;] for elevation_point</span>
-<span class="c">#                                                          in elevation_profile]</span>
-<span class="c">#         arc_lengths = [elevation_point[&quot;distance_along_path&quot;] for elevation_point</span>
-<span class="c">#                                                          in elevation_profile]</span>
-<span class="c">#         s_interp, z_interp = landscape.match_landscape(arc_lengths,</span>
-<span class="c">#                                    land_elevations, &quot;elevation&quot;)</span>
-<span class="c">#         tube_spline = PchipInterpolator(s_interp, z_interp)</span>
-<span class="c">#         tube_elevations = tube_spline(arc_lengths)</span>
-<span class="c">#         #  plt.plot(arc_lengths, tube_elevations, &#39;b.&#39;,</span>
-<span class="c">#         #            arc_lengths, land_elevations, &#39;r.&#39;)</span>
-<span class="c">#         #  plt.show()</span>
-<span class="c">#         spatial_x_values, spatial_y_values = zip(*geospatials)</span>
-<span class="c">#         tube_graph = zip(spatial_x_values, spatial_y_values, tube_elevations)</span>
-<span class="c">#         tube_graphs = [tube_graph]</span>
-<span class="c">#         return tube_graphs</span>
-
-<span class="c">#     def __init__(self, spatial_graph):</span>
-<span class="c">#         graph_geospatials = spatial_graph.geospatials</span>
-<span class="c">#         #sampled_geospatials = self.sample_geospatials(graph_geospatials)</span>
-<span class="c">#         #interpolating_geospatials = self.get_interpolating_geospatials(</span>
-<span class="c">#         #                                               sampled_geospatials)</span>
-<span class="c">#         interpolating_geospatials, arc_lengths = \</span>
-<span class="c">#           self.get_interpolating_geospatials_v2(graph_geospatials)</span>
-<span class="c">#         interpolating_lat_lngs = self.get_interpolating_latlngs(</span>
-<span class="c">#                                            interpolating_geospatials)</span>
-<span class="c">#         self.elevation_profile = elevation.get_elevation_profile(</span>
-<span class="c">#                             interpolating_geospatials, arc_lengths)</span>
-<span class="c">#         self.land_cost = landcover.get_land_cost(interpolating_lat_lngs)</span>
-<span class="c">#         #self.tube_graphs = self.get_tube_graphs_v2(self.elevation_profile)</span>
-
-<span class="c"># def build_spatial_paths_2d(complete_spatial_graphs):</span>
-<span class="c">#     spatial_paths2d = map(SpatialPath2d, complete_spatial_graphs)</span>
-<span class="c">#     return spatial_paths2d</span>
-
-<span class="c"># def get_spatial_paths_2d(complete_spatial_graphs):</span>
-<span class="c">#     spatial_paths2d = cacher.get_object(&quot;spatialpaths2d&quot;, build_spatial_paths_2d,</span>
-<span class="c">#                           [complete_spatial_graphs], cacher.save_spatial_paths_2d,</span>
-<span class="c">#                                                       config.SPATIAL_PATHS2d_flag)</span>
-<span class="c">#     return spatial_paths2d</span></div>
-</pre></div>
+</pre></div></div>
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, jonathan ward.
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
-</footer>
-
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
 </html>

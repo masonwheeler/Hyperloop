@@ -1,290 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>directions &mdash; hyperloop 0.0.1 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html"/>
-        <link rel="up" title="Module code" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>directions &mdash; hyperloop 0.0.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="../index.html" />
+    <link rel="up" title="Module code" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-        
-          <a href="../index.html" class="icon icon-home"> hyperloop
-        
-
-        
-        </a>
-
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-        
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul class="simple">
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../index.html">hyperloop</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="index.html">Module code</a> &raquo;</li>
-      
-    <li>directions</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
             
   <h1>Source code for directions</h1><div class="highlight"><pre>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Original Developer: Jonathan Ward</span>
-<span class="sd">Purpose of Module: To pull directions data from the Google Maps API.</span>
-<span class="sd">Last Modified: 7/16/15</span>
-<span class="sd">Last Modified By: Jonathan Ward</span>
-<span class="sd">Last Modification Purpose: To clarify naming and add citations.</span>
+<span class="sd">Original Developer:</span>
+<span class="sd">    Jonathan Ward</span>
+
+<span class="sd">Purpose of Module:</span>
+<span class="sd">    To pull directions data from the Google Maps API.</span>
+
+<span class="sd">Last Modified:</span>
+<span class="sd">    9/8/15</span>
+
+<span class="sd">Last Modified By:</span>
+<span class="sd">    Jonathan Ward</span>
+
+<span class="sd">Last Modification Purpose:</span>
+<span class="sd">    To add the Directions class.</span>
+
+<span class="sd">Todo:</span>
+<span class="sd">    Add method to get alternative Google directions routes.</span>
+
 <span class="sd">Citations:</span>
 <span class="sd">  (http://seewah.blogspot.com/2009/11/gpolyline-decoding-in-python.html)</span>
 <span class="sd">    - See Wah Chang</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c"># Standard Modules:</span>
-<span class="kn">import</span> <span class="nn">urllib2</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
 
 <span class="c"># Our Modules:</span>
-<span class="kn">import</span> <span class="nn">util</span>
-<span class="kn">import</span> <span class="nn">config</span>
 <span class="kn">import</span> <span class="nn">cacher</span>
+<span class="kn">import</span> <span class="nn">config</span>
+<span class="kn">import</span> <span class="nn">proj</span>
+<span class="kn">import</span> <span class="nn">util</span>
 
+<div class="viewcode-block" id="Directions"><a class="viewcode-back" href="../directions.html#directions.Directions">[docs]</a><span class="k">class</span> <span class="nc">Directions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-<div class="viewcode-block" id="http_to_string"><a class="viewcode-back" href="../directions.html#directions.http_to_string">[docs]</a><span class="k">def</span> <span class="nf">http_to_string</span><span class="p">(</span><span class="n">http_data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Reads HTTP bytecode response and converts it to a string&quot;&quot;&quot;</span>
-    <span class="n">byte_data</span> <span class="o">=</span> <span class="n">http_data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-    <span class="n">string_data</span> <span class="o">=</span> <span class="n">byte_data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">string_data</span>
+<div class="viewcode-block" id="Directions.http_to_string"><a class="viewcode-back" href="../directions.html#directions.Directions.http_to_string">[docs]</a>    <span class="k">def</span> <span class="nf">http_to_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">http_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads HTTP bytecode response and converts it to a string&quot;&quot;&quot;</span>
+        <span class="n">byte_data</span> <span class="o">=</span> <span class="n">http_data</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">string_data</span> <span class="o">=</span> <span class="n">byte_data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">string_data</span>
+</div>
+<div class="viewcode-block" id="Directions.fetch_google_directions"><a class="viewcode-back" href="../directions.html#directions.Directions.fetch_google_directions">[docs]</a>    <span class="k">def</span> <span class="nf">fetch_google_directions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Pulls directions from Google API&quot;&quot;&quot;</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;https://maps.googleapis.com/maps/api/directions/json?origin=&#39;</span> <span class="o">+</span> \
+            <span class="n">origin</span> <span class="o">+</span> <span class="s">&#39;&amp;destination=&#39;</span> <span class="o">+</span> <span class="n">destination</span> <span class="o">+</span> \
+            <span class="s">&#39;&amp;key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4&#39;</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;url: &quot;</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
+        <span class="n">raw_directions</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">string_directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">http_to_string</span><span class="p">(</span><span class="n">raw_directions</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">string_directions</span>
+</div>
+<div class="viewcode-block" id="Directions.string_to_polylines"><a class="viewcode-back" href="../directions.html#directions.Directions.string_to_polylines">[docs]</a>    <span class="k">def</span> <span class="nf">string_to_polylines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">string_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Converts Directions string to JSON and extracts the polylines.&quot;&quot;&quot;</span>
+        <span class="n">dict_response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">string_data</span><span class="p">)</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">dict_response</span><span class="p">[</span><span class="s">&#39;routes&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;legs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;steps&#39;</span><span class="p">]</span>
+        <span class="n">polylines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+            <span class="n">polylines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="s">&quot;polyline&quot;</span><span class="p">][</span><span class="s">&quot;points&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">polylines</span>
+</div>
+<div class="viewcode-block" id="Directions.decode_polyline"><a class="viewcode-back" href="../directions.html#directions.Directions.decode_polyline">[docs]</a>    <span class="k">def</span> <span class="nf">decode_polyline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoded</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        See (http://code.google.com/apis/maps/documentation/polylinealgorithm.html)</span>
+<span class="sd">        and (See Wah Chang) for exposition of polyline decoding method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">encoded_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lng</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">encoded_len</span><span class="p">:</span>
+
+            <span class="n">binary</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">binary</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">-</span> <span class="mi">63</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">result</span> <span class="o">|=</span> <span class="p">(</span><span class="n">binary</span> <span class="o">&amp;</span> <span class="mh">0x1f</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+                <span class="n">shift</span> <span class="o">+=</span> <span class="mi">5</span>
+                <span class="k">if</span> <span class="n">binary</span> <span class="o">&lt;</span> <span class="mh">0x20</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="n">dlat</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+            <span class="n">lat</span> <span class="o">+=</span> <span class="n">dlat</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">binary</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">-</span> <span class="mi">63</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">result</span> <span class="o">|=</span> <span class="p">(</span><span class="n">binary</span> <span class="o">&amp;</span> <span class="mh">0x1f</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
+                <span class="n">shift</span> <span class="o">+=</span> <span class="mi">5</span>
+                <span class="k">if</span> <span class="n">binary</span> <span class="o">&lt;</span> <span class="mh">0x20</span><span class="p">:</span>
+                    <span class="k">break</span>
+
+            <span class="n">dlng</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+            <span class="n">lng</span> <span class="o">+=</span> <span class="n">dlng</span>
+            <span class="n">array</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lat</span> <span class="o">*</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="n">lng</span> <span class="o">*</span> <span class="mf">1e-5</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">array</span>
+</div>
+<div class="viewcode-block" id="Directions.decode_polylines"><a class="viewcode-back" href="../directions.html#directions.Directions.decode_polylines">[docs]</a>    <span class="k">def</span> <span class="nf">decode_polylines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">polylines</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;decodes a list of polylines</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">decode_polyline</span><span class="p">(</span><span class="n">polyline</span><span class="p">)</span> <span class="k">for</span> <span class="n">polyline</span> <span class="ow">in</span> <span class="n">polylines</span><span class="p">]</span>
 
 </div>
-<div class="viewcode-block" id="build_directions"><a class="viewcode-back" href="../directions.html#directions.build_directions">[docs]</a><span class="k">def</span> <span class="nf">build_directions</span><span class="p">(</span><span class="n">origin</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Pulls directions from Google API&quot;&quot;&quot;</span>
-    <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;https://maps.googleapis.com/maps/api/directions/json?origin=&#39;</span> <span class="o">+</span> \
-        <span class="n">origin</span> <span class="o">+</span> <span class="s">&#39;&amp;destination=&#39;</span> <span class="o">+</span> <span class="n">destination</span> <span class="o">+</span> \
-        <span class="s">&#39;&amp;key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4&#39;</span>
-    <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;url: &quot;</span> <span class="o">+</span> <span class="n">url</span><span class="p">)</span>
-    <span class="n">raw_directions</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-    <span class="n">string_directions</span> <span class="o">=</span> <span class="n">http_to_string</span><span class="p">(</span><span class="n">raw_directions</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">string_directions</span>
-
+<div class="viewcode-block" id="Directions.get_directions_latlngs"><a class="viewcode-back" href="../directions.html#directions.Directions.get_directions_latlngs">[docs]</a>    <span class="k">def</span> <span class="nf">get_directions_latlngs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Applies decoding functions to Google API response&quot;&quot;&quot;</span>
+        <span class="n">string_directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_google_directions</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Obtained directions.&quot;</span><span class="p">)</span>
+        <span class="n">polyline_directions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">string_to_polylines</span><span class="p">(</span><span class="n">string_directions</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Opened directions.&quot;</span><span class="p">)</span>
+        <span class="n">latlngs_with_duplicates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decode_polylines</span><span class="p">(</span><span class="n">polyline_directions</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Decoded directions.&quot;</span><span class="p">)</span>
+        <span class="n">raw_latlngs</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">remove_duplicates</span><span class="p">(</span><span class="n">latlngs_with_duplicates</span><span class="p">)</span>
+        <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Removed duplicate Coordinates.&quot;</span><span class="p">)</span>
+        <span class="n">directions_latlngs</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">round_points</span><span class="p">(</span><span class="n">raw_latlngs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">directions_latlngs</span>
 </div>
-<div class="viewcode-block" id="string_to_polylines"><a class="viewcode-back" href="../directions.html#directions.string_to_polylines">[docs]</a><span class="k">def</span> <span class="nf">string_to_polylines</span><span class="p">(</span><span class="n">string_data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts Directions string to JSON and extracts the polylines.&quot;&quot;&quot;</span>
-    <span class="n">dict_response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">string_data</span><span class="p">)</span>
-    <span class="n">steps</span> <span class="o">=</span> <span class="n">dict_response</span><span class="p">[</span><span class="s">&#39;routes&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;legs&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;steps&#39;</span><span class="p">]</span>
-    <span class="n">polylines</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
-        <span class="n">polylines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">[</span><span class="s">&quot;polyline&quot;</span><span class="p">][</span><span class="s">&quot;points&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">polylines</span>
-
-</div>
-<div class="viewcode-block" id="decode_polyline"><a class="viewcode-back" href="../directions.html#directions.decode_polyline">[docs]</a><span class="k">def</span> <span class="nf">decode_polyline</span><span class="p">(</span><span class="n">encoded</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    See (http://code.google.com/apis/maps/documentation/polylinealgorithm.html)</span>
-<span class="sd">    and (See Wah Chang) for exposition of polyline decoding method.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">encoded_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
-    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">array</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">lat</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">lng</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">encoded_len</span><span class="p">:</span>
-
-        <span class="n">binary</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-            <span class="n">binary</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">-</span> <span class="mi">63</span>
-            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">result</span> <span class="o">|=</span> <span class="p">(</span><span class="n">binary</span> <span class="o">&amp;</span> <span class="mh">0x1f</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
-            <span class="n">shift</span> <span class="o">+=</span> <span class="mi">5</span>
-            <span class="k">if</span> <span class="n">binary</span> <span class="o">&lt;</span> <span class="mh">0x20</span><span class="p">:</span>
-                <span class="k">break</span>
-
-        <span class="n">dlat</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
-        <span class="n">lat</span> <span class="o">+=</span> <span class="n">dlat</span>
-        <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
-
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-            <span class="n">binary</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">encoded</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">-</span> <span class="mi">63</span>
-            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="n">result</span> <span class="o">|=</span> <span class="p">(</span><span class="n">binary</span> <span class="o">&amp;</span> <span class="mh">0x1f</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span>
-            <span class="n">shift</span> <span class="o">+=</span> <span class="mi">5</span>
-            <span class="k">if</span> <span class="n">binary</span> <span class="o">&lt;</span> <span class="mh">0x20</span><span class="p">:</span>
-                <span class="k">break</span>
-
-        <span class="n">dlng</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">result</span> <span class="o">&amp;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
-        <span class="n">lng</span> <span class="o">+=</span> <span class="n">dlng</span>
-        <span class="n">array</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">lat</span> <span class="o">*</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="n">lng</span> <span class="o">*</span> <span class="mf">1e-5</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">array</span>
-
-</div>
-<div class="viewcode-block" id="decode_polylines"><a class="viewcode-back" href="../directions.html#directions.decode_polylines">[docs]</a><span class="k">def</span> <span class="nf">decode_polylines</span><span class="p">(</span><span class="n">polylines</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;decodes a list of polylines</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">decode_polyline</span><span class="p">(</span><span class="n">polyline</span><span class="p">)</span> <span class="k">for</span> <span class="n">polyline</span> <span class="ow">in</span> <span class="n">polylines</span><span class="p">]</span>
-
-</div>
-<div class="viewcode-block" id="build_coordinate_list"><a class="viewcode-back" href="../directions.html#directions.build_coordinate_list">[docs]</a><span class="k">def</span> <span class="nf">build_coordinate_list</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Applies decoding functions to Google API response&quot;&quot;&quot;</span>
-    <span class="n">string_directions</span> <span class="o">=</span> <span class="n">build_directions</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
-    <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Obtained directions.&quot;</span><span class="p">)</span>
-    <span class="n">polyline_directions</span> <span class="o">=</span> <span class="n">string_to_polylines</span><span class="p">(</span><span class="n">string_directions</span><span class="p">)</span>
-    <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Opened directions.&quot;</span><span class="p">)</span>
-    <span class="n">raw_coordinate_list</span> <span class="o">=</span> <span class="n">decode_polylines</span><span class="p">(</span><span class="n">polyline_directions</span><span class="p">)</span>
-    <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Decoded directions.&quot;</span><span class="p">)</span>
-    <span class="n">coordinate_list</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">remove_duplicates</span><span class="p">(</span><span class="n">raw_coordinate_list</span><span class="p">)</span>
-    <span class="n">util</span><span class="o">.</span><span class="n">smart_print</span><span class="p">(</span><span class="s">&quot;Removed duplicate Coordinates.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">round_points</span><span class="p">(</span><span class="n">coordinate_list</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_directions_latlngs</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_latlng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_latlng</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projection</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">set_projection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_latlng</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_latlng</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geospatials</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">latlngs_to_geospatials</span><span class="p">(</span>
+                                      <span class="bp">self</span><span class="o">.</span><span class="n">latlngs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_directions"><a class="viewcode-back" href="../directions.html#directions.get_directions">[docs]</a><span class="k">def</span> <span class="nf">get_directions</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Fetchs directions if they are already cached, else builds them.</span>
+    <span class="sd">&quot;&quot;&quot;Fetchs Directions if already cached, else builds Directions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">directions</span> <span class="o">=</span> <span class="n">cacher</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s">&quot;directions&quot;</span><span class="p">,</span> <span class="n">build_coordinate_list</span><span class="p">,</span>
+    <span class="n">directions</span> <span class="o">=</span> <span class="n">cacher</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="s">&quot;directions&quot;</span><span class="p">,</span> <span class="n">Directions</span><span class="p">,</span>
                                    <span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">],</span> <span class="n">config</span><span class="o">.</span><span class="n">DIRECTIONS_FLAG</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">directions</span></div>
 </pre></div>
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, jonathan ward.
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
-</footer>
-
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'0.0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../index.html">hyperloop 0.0.1 documentation</a> &raquo;</li>
+          <li><a href="index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
 </html>

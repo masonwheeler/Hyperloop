@@ -1,367 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>interpolate module &mdash; hyperloop 0.0.1 documentation</title>
-  
-
-  
-  
-
-  
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html"/> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>interpolate module &mdash; hyperloop 0.0.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
 
-        
-          <a href="index.html" class="icon icon-home"> hyperloop
-        
-
-        
-        </a>
-
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-        
-      </div>
-
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul class="simple">
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">hyperloop</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>interpolate module</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/interpolate.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
             
   <div class="section" id="module-interpolate">
 <span id="interpolate-module"></span><h1>interpolate module<a class="headerlink" href="#module-interpolate" title="Permalink to this headline">¶</a></h1>
 <p>Original Developer: Jonathan Ward
-Purpose of Module: To provide interpolation functions for use across program.
+Purpose of Module: To provide interpolation functions.
 Last Modified: 8/13/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: Added function to set smoothing factor</p>
 <dl class="function">
-<dt id="interpolate.compute_curvature_array_2d">
-<code class="descclassname">interpolate.</code><code class="descname">compute_curvature_array_2d</code><span class="sig-paren">(</span><em>x_first_deriv_values</em>, <em>x_second_deriv_values</em>, <em>y_first_deriv_values</em>, <em>y_second_deriv_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#compute_curvature_array_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.compute_curvature_array_2d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.compute_curvature_array_3d">
-<code class="descclassname">interpolate.</code><code class="descname">compute_curvature_array_3d</code><span class="sig-paren">(</span><em>x_first_deriv_values</em>, <em>x_second_deriv_values</em>, <em>y_first_deriv_values</em>, <em>y_second_deriv_values</em>, <em>z_first_deriv_values</em>, <em>z_second_deriv_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#compute_curvature_array_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.compute_curvature_array_3d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.compute_curvature_threshold">
-<code class="descclassname">interpolate.</code><code class="descname">compute_curvature_threshold</code><span class="sig-paren">(</span><em>speed</em>, <em>max_acceleration</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#compute_curvature_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.compute_curvature_threshold" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.compute_explicit_curvature">
-<code class="descclassname">interpolate.</code><code class="descname">compute_explicit_curvature</code><span class="sig-paren">(</span><em>first_deriv_values</em>, <em>second_deriv_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#compute_explicit_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.compute_explicit_curvature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.curvature_array_3d_to_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">curvature_array_3d_to_max_allowed_vels</code><span class="sig-paren">(</span><em>curvature_array3d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#curvature_array_3d_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.curvature_array_3d_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.curvature_array_to_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">curvature_array_to_max_allowed_vels</code><span class="sig-paren">(</span><em>curvature_array</em>, <em>accel_constraint</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#curvature_array_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.curvature_array_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.curvature_metric">
-<code class="descclassname">interpolate.</code><code class="descname">curvature_metric</code><span class="sig-paren">(</span><em>graph_curvature_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#curvature_metric"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.curvature_metric" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.curvature_test_2d">
-<code class="descclassname">interpolate.</code><code class="descname">curvature_test_2d</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>s_values</em>, <em>curvature_threshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#curvature_test_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.curvature_test_2d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
 <dt id="interpolate.distance_along_edge_to_point">
-<code class="descclassname">interpolate.</code><code class="descname">distance_along_edge_to_point</code><span class="sig-paren">(</span><em>edge</em>, <em>distance_along_edge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#distance_along_edge_to_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.distance_along_edge_to_point" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.effective_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">effective_max_allowed_vels</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>z_spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#effective_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.effective_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.effective_max_allowed_vels_1d">
-<code class="descclassname">interpolate.</code><code class="descname">effective_max_allowed_vels_1d</code><span class="sig-paren">(</span><em>z_spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#effective_max_allowed_vels_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.effective_max_allowed_vels_1d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.get_derivative_values">
-<code class="descclassname">interpolate.</code><code class="descname">get_derivative_values</code><span class="sig-paren">(</span><em>spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#get_derivative_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_derivative_values" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">distance_along_edge_to_point</tt><big>(</big><em>edge</em>, <em>distance_along_edge</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#distance_along_edge_to_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.distance_along_edge_to_point" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.get_s_values">
-<code class="descclassname">interpolate.</code><code class="descname">get_s_values</code><span class="sig-paren">(</span><em>num_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#get_s_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_s_values" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">get_s_values</tt><big>(</big><em>num_points</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#get_s_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_s_values" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.get_slice_s_values">
-<code class="descclassname">interpolate.</code><code class="descname">get_slice_s_values</code><span class="sig-paren">(</span><em>s_values</em>, <em>nth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#get_slice_s_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_slice_s_values" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">get_slice_s_values</tt><big>(</big><em>s_values</em>, <em>nth</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#get_slice_s_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_slice_s_values" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.get_spline_values">
-<code class="descclassname">interpolate.</code><code class="descname">get_spline_values</code><span class="sig-paren">(</span><em>spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#get_spline_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_spline_values" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.graph_curvature">
-<code class="descclassname">interpolate.</code><code class="descname">graph_curvature</code><span class="sig-paren">(</span><em>graph_points</em>, <em>graph_sample_spacing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#graph_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.graph_curvature" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">get_spline_values</tt><big>(</big><em>spline</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#get_spline_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.get_spline_values" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.interpolate_points_1d">
-<code class="descclassname">interpolate.</code><code class="descname">interpolate_points_1d</code><span class="sig-paren">(</span><em>points1d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#interpolate_points_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolate_points_1d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">interpolate_points_1d</tt><big>(</big><em>points1d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#interpolate_points_1d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolate_points_1d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.interpolate_points_2d">
-<code class="descclassname">interpolate.</code><code class="descname">interpolate_points_2d</code><span class="sig-paren">(</span><em>points2d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#interpolate_points_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolate_points_2d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">interpolate_points_2d</tt><big>(</big><em>points2d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#interpolate_points_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolate_points_2d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.interpolate_points_3d">
-<code class="descclassname">interpolate.</code><code class="descname">interpolate_points_3d</code><span class="sig-paren">(</span><em>points3d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#interpolate_points_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolate_points_3d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">interpolate_points_3d</tt><big>(</big><em>points3d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#interpolate_points_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolate_points_3d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.interpolating_splines_2d">
-<code class="descclassname">interpolate.</code><code class="descname">interpolating_splines_2d</code><span class="sig-paren">(</span><em>x_array</em>, <em>y_array</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#interpolating_splines_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolating_splines_2d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">interpolating_splines_2d</tt><big>(</big><em>x_array</em>, <em>y_array</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#interpolating_splines_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolating_splines_2d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.interpolating_splines_3d">
-<code class="descclassname">interpolate.</code><code class="descname">interpolating_splines_3d</code><span class="sig-paren">(</span><em>x_array</em>, <em>y_array</em>, <em>z_array</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#interpolating_splines_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolating_splines_3d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">interpolating_splines_3d</tt><big>(</big><em>x_array</em>, <em>y_array</em>, <em>z_array</em>, <em>s_values</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#interpolating_splines_3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.interpolating_splines_3d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="interpolate.is_curvature_valid">
-<code class="descclassname">interpolate.</code><code class="descname">is_curvature_valid</code><span class="sig-paren">(</span><em>curvature_array</em>, <em>curvature_threshhold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#is_curvature_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.is_curvature_valid" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.iterative_smooth_interpolate_2d">
-<code class="descclassname">interpolate.</code><code class="descname">iterative_smooth_interpolate_2d</code><span class="sig-paren">(</span><em>x_array</em>, <em>y_array</em>, <em>initial_end_weights</em>, <em>initial_smoothing_factor</em>, <em>curvature_threshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#iterative_smooth_interpolate_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.iterative_smooth_interpolate_2d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.lateral_curvature_array_to_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">lateral_curvature_array_to_max_allowed_vels</code><span class="sig-paren">(</span><em>lateral_curvature_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#lateral_curvature_array_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.lateral_curvature_array_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.parametric_splines_2d_curvature">
-<code class="descclassname">interpolate.</code><code class="descname">parametric_splines_2d_curvature</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#parametric_splines_2d_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.parametric_splines_2d_curvature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.parametric_splines_3d_curvature">
-<code class="descclassname">interpolate.</code><code class="descname">parametric_splines_3d_curvature</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>z_spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#parametric_splines_3d_curvature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.parametric_splines_3d_curvature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.parametric_splines_vertical_and_lateral_curvatures">
-<code class="descclassname">interpolate.</code><code class="descname">parametric_splines_vertical_and_lateral_curvatures</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>z_spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#parametric_splines_vertical_and_lateral_curvatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.parametric_splines_vertical_and_lateral_curvatures" title="Permalink to this definition">¶</a></dt>
+<dt id="interpolate.iterative_smoothing_interpolation_2d">
+<tt class="descclassname">interpolate.</tt><tt class="descname">iterative_smoothing_interpolation_2d</tt><big>(</big><em>x_array</em>, <em>y_array</em>, <em>initial_end_weights</em>, <em>initial_smoothing_factor</em>, <em>curvature_threshold</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#iterative_smoothing_interpolation_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.iterative_smoothing_interpolation_2d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.points_1d_local_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">points_1d_local_max_allowed_vels</code><span class="sig-paren">(</span><em>points1d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#points_1d_local_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_1d_local_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">points_1d_local_max_allowed_vels</tt><big>(</big><em>points1d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#points_1d_local_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_1d_local_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.points_2d_to_arrays">
-<code class="descclassname">interpolate.</code><code class="descname">points_2d_to_arrays</code><span class="sig-paren">(</span><em>points2d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#points_2d_to_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_2d_to_arrays" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">points_2d_to_arrays</tt><big>(</big><em>points2d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#points_2d_to_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_2d_to_arrays" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.points_3d_local_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">points_3d_local_max_allowed_vels</code><span class="sig-paren">(</span><em>points3d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#points_3d_local_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_3d_local_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">points_3d_local_max_allowed_vels</tt><big>(</big><em>points3d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#points_3d_local_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_3d_local_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.points_3d_to_arrays">
-<code class="descclassname">interpolate.</code><code class="descname">points_3d_to_arrays</code><span class="sig-paren">(</span><em>points3d</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#points_3d_to_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_3d_to_arrays" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">points_3d_to_arrays</tt><big>(</big><em>points3d</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#points_3d_to_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_3d_to_arrays" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.points_to_edges">
-<code class="descclassname">interpolate.</code><code class="descname">points_to_edges</code><span class="sig-paren">(</span><em>points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#points_to_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_to_edges" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">points_to_edges</tt><big>(</big><em>points</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#points_to_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.points_to_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.sample_edge">
-<code class="descclassname">interpolate.</code><code class="descname">sample_edge</code><span class="sig-paren">(</span><em>edge</em>, <em>sample_spacing</em>, <em>distance_along_edge</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#sample_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.sample_edge" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">sample_edge</tt><big>(</big><em>edge</em>, <em>sample_spacing</em>, <em>distance_along_edge</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#sample_edge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.sample_edge" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.sample_edges">
-<code class="descclassname">interpolate.</code><code class="descname">sample_edges</code><span class="sig-paren">(</span><em>edges</em>, <em>sample_spacing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#sample_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.sample_edges" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">sample_edges</tt><big>(</big><em>edges</em>, <em>sample_spacing</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#sample_edges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.sample_edges" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.sample_path">
-<code class="descclassname">interpolate.</code><code class="descname">sample_path</code><span class="sig-paren">(</span><em>path_points</em>, <em>path_sample_spacing</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#sample_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.sample_path" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">sample_path</tt><big>(</big><em>path_points</em>, <em>path_sample_spacing</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#sample_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.sample_path" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.set_smoothing_factors_2d">
-<code class="descclassname">interpolate.</code><code class="descname">set_smoothing_factors_2d</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>smoothing_factor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#set_smoothing_factors_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.set_smoothing_factors_2d" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">set_smoothing_factors_2d</tt><big>(</big><em>x_spline</em>, <em>y_spline</em>, <em>smoothing_factor</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#set_smoothing_factors_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.set_smoothing_factors_2d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="interpolate.smoothing_splines_2d">
-<code class="descclassname">interpolate.</code><code class="descname">smoothing_splines_2d</code><span class="sig-paren">(</span><em>x_array</em>, <em>y_array</em>, <em>s_values</em>, <em>end_weights</em>, <em>smoothing_factor</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#smoothing_splines_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.smoothing_splines_2d" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="interpolate.vertical_curvature_array_to_max_allowed_vels">
-<code class="descclassname">interpolate.</code><code class="descname">vertical_curvature_array_to_max_allowed_vels</code><span class="sig-paren">(</span><em>vertical_curvature_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/interpolate.html#vertical_curvature_array_to_max_allowed_vels"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.vertical_curvature_array_to_max_allowed_vels" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">interpolate.</tt><tt class="descname">smoothing_splines_2d</tt><big>(</big><em>x_array</em>, <em>y_array</em>, <em>s_values</em>, <em>end_weights</em>, <em>smoothing_factor</em><big>)</big><a class="reference internal" href="_modules/interpolate.html#smoothing_splines_2d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#interpolate.smoothing_splines_2d" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2015, jonathan ward.
-    </p>
-  </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
-</footer>
-
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'0.0.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/interpolate.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="index.html">hyperloop 0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2015, jonathan ward.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
 </html>
