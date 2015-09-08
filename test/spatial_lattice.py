@@ -176,7 +176,7 @@ class SpatialLattice(abstract.AbstractLattice):
         
             
 def get_spatial_lattice(directions, spatial_x_spacing, spatial_y_spacing):
-    lattice = cacher.get_object("spatial_lattice", Spatial_Lattice,
+    lattice = cacher.get_object("spatial_lattice", SpatialLattice,
                  [directions, spatial_x_spacing, spatial_y_spacing],
                  config.SPATIAL_LATTICE_FLAG)    
     return lattice
