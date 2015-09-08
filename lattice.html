@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>lattice module &mdash; hyperloop 0.0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="hyperloop 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+
+        
+          <a href="index.html" class="icon icon-home"> hyperloop
+        
+
+        
+        </a>
+
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+        
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <ul class="simple">
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">hyperloop</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>lattice module</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/lattice.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="module-lattice">
+<span id="lattice-module"></span><h1>lattice module<a class="headerlink" href="#module-lattice" title="Permalink to this headline">¶</a></h1>
+<p>Original Developer: Jonathan Ward
+Purpose of Module: To build a lattice using smoothing spline.
+Last Modified: 8/13/15
+Last Modified By: Jonathan Ward
+Last Modification Purpose: Added Iteratively Spline construction</p>
+<dl class="class">
+<dt id="lattice.Lattice">
+<em class="property">class </em><code class="descclassname">lattice.</code><code class="descname">Lattice</code><span class="sig-paren">(</span><em>spatial_slice_bounds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#Lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.Lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds Lattice from the directions, the splines and the arc-parameter</p>
+<dl class="attribute">
+<dt id="lattice.Lattice.lattice_slices">
+<code class="descname">lattice_slices</code><em class="property"> = []</em><a class="headerlink" href="#lattice.Lattice.lattice_slices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="lattice.Lattice.plottable_slices">
+<code class="descname">plottable_slices</code><em class="property"> = []</em><a class="headerlink" href="#lattice.Lattice.plottable_slices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lattice.Slice">
+<em class="property">class </em><code class="descclassname">lattice.</code><code class="descname">Slice</code><span class="sig-paren">(</span><em>id_index</em>, <em>directions_point</em>, <em>spline_point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#Slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.Slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds Lattice Slice from a directions point and a spline point.</p>
+<dl class="method">
+<dt id="lattice.Slice.as_list">
+<code class="descname">as_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#Slice.as_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.Slice.as_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="lattice.Slice.build_slice">
+<code class="descname">build_slice</code><span class="sig-paren">(</span><em>id_index</em>, <em>directions_point</em>, <em>spline_point</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#Slice.build_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.Slice.build_slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs each SlicePoint in the Slice and its id_index</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="lattice.Slice.plottable_slice">
+<code class="descname">plottable_slice</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#Slice.plottable_slice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.Slice.plottable_slice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="lattice.Slice.point_spacing">
+<code class="descname">point_spacing</code><em class="property"> = 2000.0</em><a class="headerlink" href="#lattice.Slice.point_spacing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="lattice.SlicePoint">
+<em class="property">class </em><code class="descclassname">lattice.</code><code class="descname">SlicePoint</code><span class="sig-paren">(</span><em>point_id</em>, <em>geospatial_coords</em>, <em>is_in_right_of_way</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#SlicePoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.SlicePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a point from geospatial coordinates, id, and a rightofway flag</p>
+<dl class="method">
+<dt id="lattice.SlicePoint.as_dict">
+<code class="descname">as_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#SlicePoint.as_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.SlicePoint.as_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the SlicePoint data as a dictionary</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="lattice.SlicePoint.geospatial_coords">
+<code class="descname">geospatial_coords</code><em class="property"> = []</em><a class="headerlink" href="#lattice.SlicePoint.geospatial_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="lattice.SlicePoint.is_in_right_of_way">
+<code class="descname">is_in_right_of_way</code><em class="property"> = False</em><a class="headerlink" href="#lattice.SlicePoint.is_in_right_of_way" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="lattice.SlicePoint.latlng_coords">
+<code class="descname">latlng_coords</code><em class="property"> = []</em><a class="headerlink" href="#lattice.SlicePoint.latlng_coords" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="lattice.SlicePoint.point_id">
+<code class="descname">point_id</code><em class="property"> = 0</em><a class="headerlink" href="#lattice.SlicePoint.point_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="lattice.build_lattice_slices">
+<code class="descclassname">lattice.</code><code class="descname">build_lattice_slices</code><span class="sig-paren">(</span><em>spatial_slice_bounds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#build_lattice_slices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.build_lattice_slices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lattice.curvature_test">
+<code class="descclassname">lattice.</code><code class="descname">curvature_test</code><span class="sig-paren">(</span><em>x_spline</em>, <em>y_spline</em>, <em>s_values</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#curvature_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.curvature_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lattice.get_directionsspline">
+<code class="descclassname">lattice.</code><code class="descname">get_directionsspline</code><span class="sig-paren">(</span><em>sampled_directions_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#get_directionsspline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.get_directionsspline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lattice.get_lattice">
+<code class="descclassname">lattice.</code><code class="descname">get_lattice</code><span class="sig-paren">(</span><em>spatial_slice_bounds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#get_lattice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.get_lattice" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="lattice.iteratively_build_directions_spline">
+<code class="descclassname">lattice.</code><code class="descname">iteratively_build_directions_spline</code><span class="sig-paren">(</span><em>sampled_directions_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lattice.html#iteratively_build_directions_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#lattice.iteratively_build_directions_spline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2015, jonathan ward.
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
