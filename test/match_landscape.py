@@ -88,8 +88,8 @@ def match_landscape(s, z, Type, tradeoffs):
             ds = s[j] - s[i]
             v = (z[j] + z[i]) / 2
 
-            C = tradeoffs[1] / v
-            D = tradeoffs[2] / v**2
+            C = tradeoffs[0] / v
+            D = tradeoffs[1] / v**2
 
             def dz_tol(s):
                 if s < 2 * C / D:
