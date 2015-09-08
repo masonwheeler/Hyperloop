@@ -70,16 +70,17 @@ def match_landscape(s, z, Type, tradeoffs):
             return True
         elif Type == "elevation":
             cached[i][j] = cached[j][i] = True
-            curvature_tol = tradeoffs
+            slopeConstraint = tradeoffs
 
-            def curvature(i, j):  # Computes the curvature of the clothoid
-                x0, x1 = [s[i], s[j]]
-                y0, y1 = [z[i], z[j]]
-                tht0, tht1 = [0, 0]
-                k, K, L = clothoid.build_clothoid(x0, y0, tht0, x1, y1, tht1)
-                extremal_curvatures = [k + L * K, k]
-                return max(np.absolute(extremal_curvatures))
-            return curvature(i, j) > curvature_tol
+            # def curvature(i, j):  # Computes the curvature of the clothoid
+            #     x0, x1 = [s[i], s[j]]
+            #     y0, y1 = [z[i], z[j]]
+            #     tht0, tht1 = [0, 0]
+            #     k, K, L = clothoid.build_clothoid(x0, y0, tht0, x1, y1, tht1)
+            #     extremal_curvatures = [k + L * K, k]
+            #     return max(np.absolute(extremal_curvatures))
+            # return curvature(i, j) > curvature_tol
+            return np.absolute((z[i]-z[j])/(s[i] - s[j])) > slopeConstraint
 
         elif Type == "velocity":
             cached[i][j] = cached[j][i] = True
