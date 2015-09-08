@@ -14,6 +14,7 @@ import clothoid
 import config
 import interpolate
 import mergetree
+import parameters
 import velocity
 import util
 
@@ -212,7 +213,8 @@ class TubeEdgesSets(abstract.AbstractEdgesSets):
 
     def __init__(self, pylons_lattice):
         abstract.AbstractEdgesSets.__init__(self, pylons_lattice,
-                                            self.tube_edge_builder, self.is_tube_edge_pair_compatible)
+                                            self.tube_edge_builder,
+                                            self.is_tube_edge_pair_compatible)
 
 
 class TubeGraph(abstract.AbstractGraph):
@@ -299,8 +301,11 @@ class TubeGraphsSet(abstract.AbstractGraphsSet):
         minimize_cost = True
         minimize_triptime_excess = True
         abstract.AbstractGraphsSet.__init__(self, tube_graphs,
-                                            self.tubegraphs_cost_triptime_excess, self.is_graph_pair_compatible,
-                                            minimize_cost, minimize_triptime_excess, graphs_num_edges)
+                                            self.tubegraphs_cost_triptime_excess,
+                                            self.is_graph_pair_compatible,
+                                            minimize_cost,
+                                            minimize_triptime_excess,
+                                            graphs_num_edges)
 
     @classmethod
     def init_from_tube_edges_set(cls, tube_edges_set):
@@ -330,19 +335,19 @@ def build_tube_graphs(elevation_profile):
 
 def compute_pylon_cost(pylon_height):
     if pylon_height >= 0:
-        height_cost = pylon_height * config.PYLON_COST_PER_METER
+        height_cost = pylon_height * parameters.PYLON_COST_PER_METER
     else:
-        height_cost = -pylon_height * 5 * config.PYLON_COST_PER_METER
-    pylon_cost = config.PYLON_BASE_COST + height_cost
+        height_cost = -pylon_height * 5 * parameters.PYLON_COST_PER_METER
+    pylon_cost = parameters.PYLON_BASE_COST + height_cost
     return pylon_cost
 
 
 def compute_tube_cost(tube_length):
-    tube_cost = config.TUBE_COST_PER_METER * tube_length
+    tube_cost = parameters.TUBE_COST_PER_METER * tube_length
     return tube_cost
 
 
-def build_tube_profile_v2(elevation_profile):
+def quick_build_tube_v1(elevation_profile):
     geospatials = [elevation_point["geospatial"] for elevation_point
                    in elevation_profile]
     land_elevations = [elevation_point["land_elevation"] for elevation_point

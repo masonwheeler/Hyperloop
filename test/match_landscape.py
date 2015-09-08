@@ -16,6 +16,7 @@ import advanced_interpolate as interp
 import util
 import config
 import clothoid
+import parameters
 import proj
 import directions
 import elevation
@@ -137,7 +138,8 @@ def match_landscape_v1(s, z, Type):
             return True
         elif Type == "elevation":
             cached[i][j] = cached[j][i] = True
-            curvature_tol = config.LINEAR_ACCEL_CONSTRAINT / config.MAX_SPEED**2
+            curvature_tol = parameters.MAX_LINEAR_ACCEL / \
+                            parameters.MAX_SPEED**2
 
             def curvature(i, j):  # Computes the curvature of the clothoid
                 x0, x1 = [s[i], s[j]]
@@ -154,7 +156,7 @@ def match_landscape_v1(s, z, Type):
             ds = s[j] - s[i]
             v = (z[j] + z[i]) / 2
 
-            C = config.LINEAR_ACCEL_CONSTRAINT / v
+            C = parameters.MAX_LINEAR_ACCEL / v
             D = config.JERK_TOL / v**2
 
             def dz_tol(s):

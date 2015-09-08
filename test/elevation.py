@@ -41,7 +41,7 @@ def google_elevation(coords):
 
 def usgs_elevation(latlngs):
     """Fetches elevations from usgs dataset for a list of lat lng pairs
-    """
+    """   
     elevations = [usgs.get_elevation(latlng) for latlng in latlngs]
     return elevations
 

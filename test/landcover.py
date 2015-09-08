@@ -13,15 +13,16 @@ from osgeo import osr
 
 # Our Modules:
 import config
-import util
 import geotiff
+import parameters
+import util
 
 
 def cost_density_to_local_cost(cost_density):
     """Takes the cost per unit area and outputs the land acquisition cost
     """
     length = config.LAND_POINT_SPACING
-    width = 2.0 * config.LAND_PADDING
+    width = 2.0 * parameters.LAND_PADDING
     area = length * width
     local_cost = cost_density * area * 10
     return local_cost

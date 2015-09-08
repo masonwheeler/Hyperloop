@@ -50,7 +50,7 @@ def plot_clothoid(i, j):
 # print "min radius of curvature is " + str(1./curvature(i, j))
 # plot_clothoid(i, j)
 
-
+"""
 C = 2.
 D = 5.
 
@@ -68,3 +68,4 @@ x = np.arange(0, 2, .01)
 y = map(dz_tol, x)
 plt.plot(x, y)
 plt.show()
+"""
