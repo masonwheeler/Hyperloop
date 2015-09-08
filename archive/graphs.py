@@ -260,7 +260,7 @@ class SpatialGraph(abstract.AbstractGraph):
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
                                                  latlngs, geospatials):
-        abstract.AbstractGraph.init_from_abstract_graph(abstract_graph)
+        abstract.AbstractGraph.init_from_abstract_graph_2(self, abstract_graph)
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
         self.land_cost = land_cost  # The total cost of the land acquired
