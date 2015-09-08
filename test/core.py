@@ -22,9 +22,9 @@ def pair_analysis(start, end):
     """
     cacher.create_necessaryfolders(start, end)
     time_a = time.time()
-    spatial.city_pair_to_spatial_paths_3d(start, end)
-    """
-    test_graphs = complete_graphs[:3]
+    spatial_graphs_sets = spatial.city_pair_to_spatial_graphs_set(start, end)
+    spatial_graphs = spatial_graphs_sets.selected_graphs
+    test_graphs = spatial_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
                       config.LINEAR_ACCEL_CONSTRAINT/config.MAX_SPEED**2,
                       config.LINEAR_ACCEL_CONSTRAINT, config.JERK_TOL)
@@ -40,7 +40,6 @@ def pair_analysis(start, end):
                      complete_routes[i].land_cost]))
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
-    """
     if config.VISUAL_MODE:
         visualize.plot_objects(config.PLOT_QUEUE)    
     return 0

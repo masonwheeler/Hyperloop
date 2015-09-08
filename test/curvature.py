@@ -1,13 +1,18 @@
 """
-Original Developer: Jonathan Ward
+Original Developer:
+   Jonathan Ward
 
-Purpose of Module: To provide curvature functions
+Purpose of Module:
+   To provide curvature functions
 
-Last Modified: 9/03/15
+Last Modified:
+   9/03/15
 
-Last Modified By: Jonathan Ward
+Last Modified By:
+   Jonathan Ward
 
-Last Modification Purpose: Created Module
+Last Modification Purpose:
+   Created Module
 """
 
 #Standard Modules:

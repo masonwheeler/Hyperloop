@@ -124,7 +124,7 @@ class Directions(object):
         directions_latlngs = util.round_points(raw_latlngs)
         return directions_latlngs
 
-    def __init__(start, end)
+    def __init__(start, end):
         self.directions_latlngs = self.get_directions_latlngs(start, end)
         self.start_latlng = self.directions_latlngs[0]
         self.end_latlng = self.directions_latlngs[-1]

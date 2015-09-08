@@ -55,6 +55,15 @@ def build_spatial_graphs_sets(spatial_edges_sets):
         pass
     return spatial_graphs_sets
 
+
+def city_pair_to_spatial_graphs_sets(start, end):
+    directions = build_directions(start, end)
+    spatial_lattice = build_spatial_lattice(directions)
+    spatial_edges_sets = build_spaital_edges_sets(spatial_lattice)
+    spatial_graphs_sets = build_spatial_graphs_sets(spatial_edges_sets)
+    return spatial_graphs_sets
+
+"""
 def city_pair_to_spatial_paths_3d_sets(start, end):
     directions = build_directions(start, end)
     spatial_lattice = build_spatial_lattice(directions)
@@ -63,5 +72,5 @@ def city_pair_to_spatial_paths_3d_sets(start, end):
     spatial_paths_2d_sets = build_spatial_paths_2d_sets(spatial_graphs_sets)
     spatial_paths_3d_sets = build_spatial_paths_3d_sets(spatial_paths_2d_sets)
     return spatial_paths_3d_sets
-    
+""" 
 

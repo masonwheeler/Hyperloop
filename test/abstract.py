@@ -348,13 +348,13 @@ class AbstractGraphsSets(object):
         self.selected_graphs = root_graphs_set.selected_graphs
 
 
-class AbstractPath2d(object):
+class AbstractPath(object):
     def __init__(self, graph_physical_coordinates, interpolator):
         self.graph_coordinates = graph_physical_coordinates
         self.interpolator = interpolator
         self.path_coordinates = interpolator(self.graph_coordinates)
 
-class AbstractPathsSet2d(object):
+class AbstractPathsSet(object):
     def __init__(self, graphs_set, spatial_interpolator, path_builder):
         self.spatial_paths = [path_builder(spatial_graph, spatial_interpolator)
                                  for spatial_graph in spatial_graphs_set.graphs]
