@@ -205,7 +205,6 @@ def points_3d_local_max_allowed_vels(points3d):
 #    sampled_path_points = sample_path_points(path_points, resolution)
     
 
-"""
 def curvature_metric(graph_curvature_array):
     curvature_size = graph_curvature_array.size
     curvature_threshhold = np.empty(curvature_size)
@@ -228,4 +227,3 @@ def graph_curvature(graph_points, graph_sample_spacing):
                                                             s_values)
     graph_curvature = curvature_metric(graph_curvature_array)
     return graph_curvature
-"""

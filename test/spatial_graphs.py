@@ -21,7 +21,12 @@ class SpatialGraph(abstract.AbstractGraph):
     def get_time(self, geospatials, num_edges):
         """Compute the curvature of an interpolation of the graph"""
         if num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
-            time = triptime.compute_spatial_graph_time(geospatials)
+            #interpolated_geospatials = interpolate_spatial_graph(geospatials)
+            #spatial_curvature = compute_spatial_curvature(interpolated_geospatials)
+            #max_velocities
+            #time = triptime.compute_spatial_graph_time(geospatials)
+            time = interpolate.graph_curvature(geospatials,
+                                               config.GRAPH_SAMPLE_SPACING)
             return time
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
