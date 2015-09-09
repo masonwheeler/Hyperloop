@@ -49,8 +49,8 @@ class AbstractGraph(object):
     def merge_abstract_graphs(cls, abstract_graph_a, abstract_graph_b):
         start_id = abstract_graph_a.start_id
         end_id = abstract_graph_b.end_id
-        start_angle = abstract_graph_a.start_id
-        end_angle = abstract_graph_b.end_id
+        start_angle = abstract_graph_a.start_angle
+        end_angle = abstract_graph_b.end_angle
         num_edges = abstract_graph_a.num_edges + abstract_graph_b.num_edges
         abstract_coords = util.smart_concat(abstract_graph_a.abstract_coords,
                                             abstract_graph_b.abstract_coords)
@@ -124,6 +124,7 @@ class AbstractGraphsSet(object):
 
     def __init__(self, graphs, graphs_num_edges, graphs_evaluator,
                                 minimize_a_vals, minimize_b_vals):
+        self.front = None
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges
         self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges)
@@ -139,6 +140,7 @@ class AbstractGraphsSet(object):
         If the graphs are successfully updated return True, else return False.
         Update the graphs by adding the next front from the Pareto Frontier
         """
+        print("tried to update graphs")
         if self.front == None:
             return False
         else:
@@ -163,8 +165,13 @@ class AbstractGraphsSets(object):
         return graphs_sets
 
     def test_graph_pair_compatibility(self, graph_a, graph_b):
-        graph_pair_compatible = (graph_a.end_id == graph_b.start_id and
-          abs(graph_a.end_angle - graph_b.start_angle) < self.degree_constraint)
+        print("end angle: " + str(graph_a.end_angle))
+        print("start angle: " + str(graph_b.start_angle))
+        angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
+        end_points_match = graph_a.end_id == graph_b.start_id
+        graph_pair_compatible = (end_points_match and
+                                 angle_difference < self.degree_constraint)
+        #print("angle difference: " + str(angle_difference))
         return graph_pair_compatible
 
     def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):
@@ -180,6 +187,9 @@ class AbstractGraphsSets(object):
         num_edges_b = graphs_set_b.num_edges
         merged_num_edges = num_edges_a + num_edges_b
         if (len(merged_graphs) == 0):
+            print("num input a: " + str(len(selected_a)))
+            print("num input b: " + str(len(selected_b)))
+            print("num merged graphs: " + str(len(merged_graphs)))
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs,

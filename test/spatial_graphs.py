@@ -67,6 +67,7 @@ class SpatialGraph(abstract.AbstractGraph):
 
     @classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
+        #print("merged two spatial graphs")
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
         abstract_graph_b = spatial_graph_b.to_abstract_graph()
         merged_abstract_graph = abstract.AbstractGraph.merge_abstract_graphs(
@@ -81,9 +82,7 @@ class SpatialGraph(abstract.AbstractGraph):
         data = cls(merged_abstract_graph, pylon_cost, tube_cost, land_cost,
                                                       latlngs, geospatials)
         return data
-
          
-
     def get_total_cost(self):
         return self.pylon_cost + self.tube_cost + self.land_cost
 

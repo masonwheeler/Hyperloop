@@ -11,6 +11,7 @@ Last Modification Purpose: Added MasterTree Class
 # Standard Modules:
 import collections
 
+import config
 
 class MergeTree(object):
     """
@@ -160,7 +161,7 @@ class MasterTree(object):
         return leaves
 
     @staticmethod
-    def merge_branchlayer(branch_layer, children_merger, data_updater):
+    def merge_branch_layer(branch_layer, children_merger, data_updater):
         """Creates next layer of MergeTrees."""
         # Use Deque for performance, it has O(1) pops and appends on both
         # sides.
@@ -189,10 +190,10 @@ class MasterTree(object):
         """Recursively merges objects until list is completely merged."""
         branch_layer = MasterTree.objects_to_leaves(objects, data_updater)
         while len(branch_layer) > 1:
-            #config.HOLDER += 1
-            #print("On layer " + str(config.HOLDER))
-            branch_layer = MasterTree.merge_branchlayer(branch_layer,
-                                       children_merger, data_updater)
+            config.HOLDER += 1
+            print("On layer " + str(config.HOLDER))
+            branch_layer = MasterTree.merge_branch_layer(branch_layer,
+                                        children_merger, data_updater)
         merged_objects = branch_layer[0]
         return merged_objects
 
