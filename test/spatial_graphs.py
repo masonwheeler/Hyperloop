@@ -6,16 +6,14 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Changed Class attributes to Instance attributes.
 """
 
-import matplotlib.pyplot as plt
-
 import abstract_graphs as abstract
-import config
-import util
 import cacher
-import visualize
+import config
 import mergetree
 import paretofront
-import interpolate
+import triptime
+import util
+import visualize
 
 class SpatialGraph(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
@@ -23,8 +21,7 @@ class SpatialGraph(abstract.AbstractGraph):
     def get_time(self, geospatials, num_edges):
         """Compute the curvature of an interpolation of the graph"""
         if num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
-            time = interpolate.graph_curvature(
-                self.geospatials, config.GRAPH_SAMPLE_SPACING)
+            time = triptime.compute_spatial_graph_time(geospatials)
             return time
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
@@ -67,7 +64,6 @@ class SpatialGraph(abstract.AbstractGraph):
 
     @classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
-        #print("merged two spatial graphs")
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
         abstract_graph_b = spatial_graph_b.to_abstract_graph()
         merged_abstract_graph = abstract.AbstractGraph.merge_abstract_graphs(
@@ -83,8 +79,8 @@ class SpatialGraph(abstract.AbstractGraph):
                                                       latlngs, geospatials)
         return data
          
-    def get_total_cost(self):
-        return self.pylon_cost + self.tube_cost + self.land_cost
+    def get_cost_and_time(self):
+        return [self.pylon_cost + self.tube_cost + self.land_cost, self.time]
 
     def to_plottable(self, style):
         """Return the geospatial coords of the graph in plottable format"""
@@ -95,20 +91,20 @@ class SpatialGraph(abstract.AbstractGraph):
 class SpatialGraphsSet(abstract.AbstractGraphsSet):
 
     @staticmethod
-    def spatial_graphs_cost_time(spatial_graphs, spatial_graphs_num_edges):
+    def get_spatial_graphs_cost_time(spatial_graphs, spatial_graphs_num_edges):
         if spatial_graphs_num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
             return None
         else:
-            spatial_graphs_cost_time = [spatial_graph.get_cost_time() for
-                                        spatial_graph in spatial_graphs]
-            return spatial_graphs_cost_time
+            spatial_graphs_costs_and_times = [spatial_graph.get_cost_and_time()
+                                            for spatial_graph in spatial_graphs]
+            return spatial_graphs_costs_and_times
 
     def __init__(self, spatial_graphs, spatial_graphs_num_edges):
         minimize_cost = True
         minimize_time = True
         abstract.AbstractGraphsSet.__init__(self, spatial_graphs,
                                             spatial_graphs_num_edges,
-                                            self.spatial_graphs_cost_time,
+                                            self.get_spatial_graphs_cost_time,
                                             minimize_cost,
                                             minimize_time)
 

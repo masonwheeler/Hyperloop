@@ -165,13 +165,10 @@ class AbstractGraphsSets(object):
         return graphs_sets
 
     def test_graph_pair_compatibility(self, graph_a, graph_b):
-        print("end angle: " + str(graph_a.end_angle))
-        print("start angle: " + str(graph_b.start_angle))
         angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
         end_points_match = graph_a.end_id == graph_b.start_id
         graph_pair_compatible = (end_points_match and
                                  angle_difference < self.degree_constraint)
-        #print("angle difference: " + str(angle_difference))
         return graph_pair_compatible
 
     def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):
@@ -187,9 +184,6 @@ class AbstractGraphsSets(object):
         num_edges_b = graphs_set_b.num_edges
         merged_num_edges = num_edges_a + num_edges_b
         if (len(merged_graphs) == 0):
-            print("num input a: " + str(len(selected_a)))
-            print("num input b: " + str(len(selected_b)))
-            print("num merged graphs: " + str(len(merged_graphs)))
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs,

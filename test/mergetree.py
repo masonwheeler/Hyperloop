@@ -190,8 +190,6 @@ class MasterTree(object):
         """Recursively merges objects until list is completely merged."""
         branch_layer = MasterTree.objects_to_leaves(objects, data_updater)
         while len(branch_layer) > 1:
-            config.HOLDER += 1
-            print("On layer " + str(config.HOLDER))
             branch_layer = MasterTree.merge_branch_layer(branch_layer,
                                         children_merger, data_updater)
         merged_objects = branch_layer[0]
