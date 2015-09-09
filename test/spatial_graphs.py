@@ -9,6 +9,7 @@ Last Modification Purpose: Changed Class attributes to Instance attributes.
 import abstract_graphs as abstract
 import cacher
 import config
+import interpolate
 import mergetree
 import paretofront
 import triptime
@@ -18,16 +19,8 @@ import visualize
 class SpatialGraph(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
 
-    def get_time(self, geospatials, num_edges):
+    def get_time(self, geospatials, spatial_graph_num_edges):
         """Compute the curvature of an interpolation of the graph"""
-        if num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
-            #interpolated_geospatials = interpolate_spatial_graph(geospatials)
-            #spatial_curvature = compute_spatial_curvature(interpolated_geospatials)
-            #max_velocities
-            #time = triptime.compute_spatial_graph_time(geospatials)
-            time = interpolate.graph_curvature(geospatials,
-                                               config.GRAPH_SAMPLE_SPACING)
-            return time
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
                                                  latlngs, geospatials):
@@ -84,8 +77,21 @@ class SpatialGraph(abstract.AbstractGraph):
                                                       latlngs, geospatials)
         return data
          
-    def get_cost_and_time(self):
-        return [self.pylon_cost + self.tube_cost + self.land_cost, self.time]
+    def get_cost_and_time(self):        
+        print("num edges 2: " + str(self.num_edges))
+        if self.num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
+            print("should not see this message")
+            return None
+        else:
+            #interpolated_geospatials = interpolate_spatial_graph(geospatials)
+            #spatial_curvature = compute_spatial_curvature(interpolated_geospatials)
+            #max_velocities
+            #time = triptime.compute_spatial_graph_time(geospatials)
+            time = interpolate.graph_curvature(self.geospatials,
+                                               config.GRAPH_SAMPLE_SPACING)
+            print("time: " + str(time))
+            total_cost = self.pylon_cost + self.tube_cost + self.land_costs
+            return [total_cost, time]
 
     def to_plottable(self, style):
         """Return the geospatial coords of the graph in plottable format"""
@@ -97,7 +103,10 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
 
     @staticmethod
     def get_spatial_graphs_cost_time(spatial_graphs, spatial_graphs_num_edges):
+        print("num edges 1: " + str(spatial_graphs_num_edges))
+        print("min num edges: " + str(config.GRAPH_FILTER_MIN_NUM_EDGES))
         if spatial_graphs_num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
+            print("graph not long enough")
             return None
         else:
             spatial_graphs_costs_and_times = [spatial_graph.get_cost_and_time()
