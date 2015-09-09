@@ -14,6 +14,7 @@ import numpy as np
 import util
 import config
 import curvature
+import parameters
 
 ########## For Edge Sampling ##########
 
@@ -208,7 +209,9 @@ def points_3d_local_max_allowed_vels(points3d):
 def curvature_metric(graph_curvature_array):
     curvature_size = graph_curvature_array.size
     curvature_threshhold = np.empty(curvature_size)
-    curvature_threshhold.fill(config.CURVATURE_THRESHHOLD)
+    curvature_threshold_value = curvature.compute_curvature_threshold(
+                             parameters.MAX_SPEED, parameters.MAX_LATERAL_ACCEL)
+    curvature_threshhold.fill(curvature_threshold_value)
     absolute_curvature = np.absolute(graph_curvature_array)
     relative_curvature = np.subtract(absolute_curvature, curvature_threshhold)
     excess_curvature = relative_curvature.clip(min=0)
@@ -223,7 +226,7 @@ def graph_curvature(graph_points, graph_sample_spacing):
     num_points = x_array.size
     s_values = get_s_values(num_points)
     x_spline, y_spline = interpolating_splines_2d(x_array, y_array, s_values)
-    graph_curvature_array = parametric_splines_2d_curvature(x_spline, y_spline,
-                                                            s_values)
+    graph_curvature_array = curvature.parametric_splines_2d_curvature(x_spline,
+                                                            y_spline, s_values)
     graph_curvature = curvature_metric(graph_curvature_array)
     return graph_curvature

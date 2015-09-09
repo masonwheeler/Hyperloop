@@ -10,7 +10,9 @@ Last Modification Purpose: To clarify naming.
 # Standard Modules:
 import os
 import json
-import cPickle as pickle
+#import cPickle as pickle
+#import pickle
+import dill as pickle
 
 # Our Modules:
 import config
@@ -102,6 +104,7 @@ def cache_object(in_object, object_name):
     """Caches the object for future use"""
     object_cache_path = get_object_cachepath(object_name)
     file_handle = open(object_cache_path, "wb")
+    print("object to be cached: " + str(in_object))
     pickle.dump(in_object, file_handle)
     file_handle.close()
 
@@ -135,6 +138,7 @@ def get_object(object_name, compute_function, compute_args, flag):
         print object_name + " exists."
         loaded_object = load_object(object_name)
         print "Loaded " + object_name
+        print "Loaded " + str(loaded_object)
         return loaded_object
     else:
         print "Computing " + object_name + "..."

@@ -120,8 +120,8 @@ class ParetoFront(object):
 
     def __init__(self, points, x_reverse, y_reverse):
         self.fronts_indices = []
-        print("created new pareto front with points: ")
-        print(points)
+        ##print("created new pareto front with points: ")
+        ##print(points)
         self.x_reverse, self.y_reverse = x_reverse, y_reverse
         # Raw points array may contain duplicates
         raw_points_array = np.array([np.array(point) for point in points])

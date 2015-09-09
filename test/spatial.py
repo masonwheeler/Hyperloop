@@ -53,10 +53,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
 def build_spatial_graphs_sets(route_spatial_edges_sets):
     """Build SpatialGraphsSets object from SpatialEdgesSets object
     """
-    route_spatial_graphs_sets = spatial_graphs.SpatialGraphsSets(
-                                        route_spatial_edges_sets)
-    if config.VISUAL_MODE:
-        pass
+    route_spatial_graphs_sets = spatial_graphs.get_spatial_graphs_sets(
+                                                 route_spatial_edges_sets)
     return route_spatial_graphs_sets
 
 

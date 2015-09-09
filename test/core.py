@@ -13,7 +13,9 @@ import time
 
 # Our Modules:
 import cacher
+import config
 import spatial
+import parameters
 import routes
 
 
@@ -26,8 +28,8 @@ def pair_analysis(start, end):
     spatial_graphs = spatial_graphs_sets.selected_graphs
     test_graphs = spatial_graphs[:3]
     complete_routes = [routes.graph_to_route(graph,
-                      config.LINEAR_ACCEL_CONSTRAINT/config.MAX_SPEED**2,
-                      config.LINEAR_ACCEL_CONSTRAINT, config.JERK_TOL)
+                      parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
+                      parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
                       for graph in test_graphs]    
     cacher.save_routes(complete_routes, start, end, start_lat_lng, end_lat_lng)
     for i in range(len(complete_routes)):

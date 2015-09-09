@@ -59,7 +59,7 @@ class SpatialGraph(abstract.AbstractGraph):
                                                 self.num_edges,
                                                 self.abstract_coords)
         return abstract_graph
-
+         
     @classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
@@ -76,11 +76,9 @@ class SpatialGraph(abstract.AbstractGraph):
         data = cls(merged_abstract_graph, pylon_cost, tube_cost, land_cost,
                                                       latlngs, geospatials)
         return data
-         
+
     def get_cost_and_time(self):        
-        print("num edges 2: " + str(self.num_edges))
         if self.num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
-            print("should not see this message")
             return None
         else:
             #interpolated_geospatials = interpolate_spatial_graph(geospatials)
@@ -89,8 +87,7 @@ class SpatialGraph(abstract.AbstractGraph):
             #time = triptime.compute_spatial_graph_time(geospatials)
             time = interpolate.graph_curvature(self.geospatials,
                                                config.GRAPH_SAMPLE_SPACING)
-            print("time: " + str(time))
-            total_cost = self.pylon_cost + self.tube_cost + self.land_costs
+            total_cost = self.pylon_cost + self.tube_cost + self.land_cost
             return [total_cost, time]
 
     def to_plottable(self, style):
@@ -103,10 +100,7 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
 
     @staticmethod
     def get_spatial_graphs_cost_time(spatial_graphs, spatial_graphs_num_edges):
-        print("num edges 1: " + str(spatial_graphs_num_edges))
-        print("min num edges: " + str(config.GRAPH_FILTER_MIN_NUM_EDGES))
         if spatial_graphs_num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
-            print("graph not long enough")
             return None
         else:
             spatial_graphs_costs_and_times = [spatial_graph.get_cost_and_time()
@@ -132,10 +126,31 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
 
 class SpatialGraphsSets(abstract.AbstractGraphsSets):
     
+    @staticmethod
+    def merge_two_spatial_graphs(spatial_graph_a, spatial_graph_b):
+        abstract_graph_a = spatial_graph_a.to_abstract_graph()
+        abstract_graph_b = spatial_graph_b.to_abstract_graph()
+        merged_abstract_graph = abstract.AbstractGraph.merge_abstract_graphs(
+                                          abstract_graph_a, abstract_graph_b)
+        pylon_cost = spatial_graph_a.pylon_cost + spatial_graph_b.pylon_cost
+        tube_cost = spatial_graph_a.tube_cost + spatial_graph_b.tube_cost
+        land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost
+        latlngs = util.smart_concat(spatial_graph_a.latlngs,
+                                    spatial_graph_b.latlngs)
+        geospatials = util.smart_concat(spatial_graph_a.geospatials,
+                                        spatial_graph_b.geospatials)
+        merged_spatial_graph = SpatialGraph(merged_abstract_graph, pylon_cost,
+                                   tube_cost, land_cost, latlngs, geospatials)
+        return merged_spatial_graph
+    
     def __init__(self, spatial_edges_sets):
         abstract.AbstractGraphsSets.__init__(self, spatial_edges_sets,
                             SpatialGraphsSet.init_from_spatial_edges_set,
-                            SpatialGraph.merge_two_spatial_graphs,
+                            SpatialGraphsSets.merge_two_spatial_graphs,
                             SpatialGraphsSet)
-    
 
+
+def get_spatial_graphs_sets(spatial_edges_sets):
+    spatial_graphs_sets = cacher.get_object("spatial_graphs_sets",
+        SpatialGraphsSets, [spatial_edges_sets], config.SPATIAL_GRAPHS_FLAG)
+    return spatial_graphs_sets
