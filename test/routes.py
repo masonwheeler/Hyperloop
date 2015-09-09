@@ -19,6 +19,7 @@ import config
 import elevation
 import landcover
 import match_landscape as landscape
+import parameters
 import proj
 import util
 import visualize
@@ -40,12 +41,12 @@ class Route:
         self.acceleration_profile = self.compute_acceleration_profile(
             ax, ay, az)
         self.trip_time = t[-1]
-        print "trip_time is: " + str(self.trip_time)
+        ##print "trip_time is: " + str(self.trip_time)
         t_chunks = util.break_up(t, 500)
         t_comfort = [t_chunks[i][-1] for i in range(len(t_chunks))]
         self.comfort_rating = util.LpNorm(t_comfort, comfort, 10)
-        print "comfort_rating is: " + str(self.comfort_rating)
-        print "cost is: " + str((self.pylon_cost + self.tube_cost + self.land_cost) / 1000000000.0) + " billion USD."
+        ##print "comfort_rating is: " + str(self.comfort_rating)
+        ##print "cost is: " + str((self.pylon_cost + self.tube_cost + self.land_cost) / 1000000000.0) + " billion USD."
 
     def compute_latlngs(self, x, y):
         geospatials = np.transpose([x, y])
@@ -57,9 +58,9 @@ class Route:
 
         def pylon_cost(pylon_height):
             if pylon_height > 0:
-                return config.PYLON_BASE_COST + pylon_height * config.PYLON_COST_PER_METER
+                return parameters.PYLON_BASE_COST + pylon_height * parameters.PYLON_COST_PER_METER
             else:
-                return - pylon_height * config.TUNNELING_COST_PER_METER
+                return - pylon_height * parameters.TUNNELING_COST_PER_METER
         geospatials = [geospatial.tolist() for geospatial in geospatials]
         Pylons = [{"geospatial": geospatials[i],
                    "latlng": proj.geospatial_to_latlng(geospatials[i], config.PROJ),
@@ -73,7 +74,7 @@ class Route:
         geospatials = np.transpose([x, y, z])
         tube_length = sum([np.linalg.norm(geospatials[i + 1] - geospatials[i])
                            for i in range(len(geospatials) - 1)])
-        return tube_length * config.TUBE_COST_PER_METER
+        return tube_length * parameters.TUBE_COST_PER_METER
 
     def compute_velocity_profile(self, vx, vy, vz):
         velocity_vectors = np.transpose([vx, vy, vz])
@@ -103,17 +104,17 @@ class Route:
 
 # Ancillary Functions:
 
-def graph_to_2_droute(graph, M):
+def graph_to_route_2d(graph, M):
     x = graph.geospatials
     return interp.para_super_q(x, M)
 
-
+"""
 def graph_to_2_droutev2(graph, M):
     x = graph.geospatials
     return interp.scipy_q(x, M)
+"""
 
-
-def _2_droute_to_3_droute(x, elevation_tradeoff):
+def route_2d_to_route_3d(x, elevation_tradeoff):
     s, zland = landscape.gen_landscape(x, "elevation")
     s_interp, z_interp = landscape.match_landscape(
         s, zland, "elevation", elevation_tradeoff)
@@ -127,7 +128,7 @@ def _2_droute_to_3_droute(x, elevation_tradeoff):
     return np.transpose([x, y, z])
 
 
-def _3_droute_to_4_droute(x, comfort_tradeoff1, comfort_tradeoff2):
+def route_3d_to_route_4d(x, comfort_tradeoff1, comfort_tradeoff2):
     s, vland = landscape.gen_landscape(x, "velocity")
     s_interp, v_interp = landscape.match_landscape(
         s, vland, "velocity", [comfort_tradeoff1, comfort_tradeoff2])
@@ -144,7 +145,7 @@ def _3_droute_to_4_droute(x, comfort_tradeoff1, comfort_tradeoff2):
     return np.transpose([x, y, z, t])
 
 
-def comfortanalysis__of_4_droute(x):
+def comfort_analysis_of_route_4d(x):
     x, y, z, t = np.transpose(x)
     vx, vy, vz, t = [util.numerical_derivative(x, t), util.numerical_derivative(
         y, t), util.numerical_derivative(z, t), t]
@@ -169,11 +170,25 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
     print "computing data for a new route..."
     x = graph.geospatials
     graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
-    M = int(graph_spacing / config.PYLON_SPACING)
+    M = int(graph_spacing / parameters.PYLON_SPACING)
     print "interpolation sampling per edge is " + str(M)
-    route_data = comfortanalysis__of_4_droute(_3_droute_to_4_droute(_2_droute_to_3_droute(
-        graph_to_2_droute(graph, M), elevation_tradeoff), comfort_tradeoff1, comfort_tradeoff2))
-    print "attaching data to new route..."
-    print "done: process took " + str(time.time() - start) + " seconds."
+    t_a = time.time()
+    route_2d = graph_to_route_2d(graph, M)
+    t_b = time.time()
+    print "computed 2d route in: " + str(t_b - t_a) + " seconds."
+    route_3d = route_2d_to_route_3d(route_2d, elevation_tradeoff)
+    t_c = time.time()
+    print "computed 3d route in: " + str(t_c - t_b) + " seconds."
+    route_4d = route_3d_to_route_4d(route_3d, comfort_tradeoff1,
+                                              comfort_tradeoff2)    
+    t_d = time.time()
+    print "computed 4d route in: " + str(t_d - t_c) + " seconds."
+    route_data = comfort_analysis_of_route_4d(route_4d)
+    t_e = time.time()
+    print "completed comfort analysis in: " + str(t_e - t_d) + " seconds."
+    route = Route(*route_data)    
+    t_f = time.time()
+    print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
+    print "entire process took " + str(time.time() - start) + " seconds."
     return Route(*route_data)
 

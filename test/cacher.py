@@ -138,7 +138,7 @@ def get_object(object_name, compute_function, compute_args, flag):
         print object_name + " exists."
         loaded_object = load_object(object_name)
         print "Loaded " + object_name
-        print "Loaded " + str(loaded_object)
+        ##print "Loaded " + str(loaded_object)
         return loaded_object
     else:
         print "Computing " + object_name + "..."

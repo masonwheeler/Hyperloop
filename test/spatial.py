@@ -29,6 +29,7 @@ def build_directions(start, end):
     """Build Directions Object
     """
     route_directions = directions.get_directions(start, end)
+    config.PROJ = route_directions.projection
     return route_directions
 
 def build_spatial_lattice(route_directions):
