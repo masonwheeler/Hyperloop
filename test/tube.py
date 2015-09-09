@@ -9,13 +9,13 @@ Last Modification Purpose: To implement a non naive tube/pylon cost method.
 import numpy as np
 
 # Our Modules
-import abstract
+#import abstract
 import clothoid
 import config
 import interpolate
 import mergetree
 import parameters
-import velocity
+#import velocity
 import util
 
 # Experimental Modules
@@ -23,7 +23,7 @@ from scipy.interpolate import PchipInterpolator
 import routes
 import match_landscape as landscape
 
-
+"""
 class Pylon(abstract.AbstractPoint):
 
     def pylon_construction_cost(self, pylon_height):
@@ -331,7 +331,7 @@ def build_tube_graphs(elevation_profile):
     root_tube_graphs_set = tube_graphs_sets_tree.root
     selected_tube_graphs = root_tube_graphs_set.selected_graphs
     return selected_tube_graphs
-
+"""
 
 def compute_pylon_cost(pylon_height):
     if pylon_height >= 0:

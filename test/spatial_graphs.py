@@ -8,7 +8,7 @@ Last Modification Purpose: Changed Class attributes to Instance attributes.
 
 import matplotlib.pyplot as plt
 
-import abstract
+import abstract_graphs as abstract
 import config
 import util
 import cacher
@@ -29,7 +29,12 @@ class SpatialGraph(abstract.AbstractGraph):
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
                                                  latlngs, geospatials):
-        abstract.AbstractGraph.init_from_abstract_graph_2(self, abstract_graph)
+        abstract.AbstractGraph.__init__(self, abstract_graph.start_id,
+                                              abstract_graph.end_id,
+                                              abstract_graph.start_angle,
+                                              abstract_graph.end_angle,
+                                              abstract_graph.num_edges,
+                                              abstract_graph.abstract_coords)
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
         self.land_cost = land_cost  # The total cost of the land acquired
@@ -51,6 +56,15 @@ class SpatialGraph(abstract.AbstractGraph):
                                                latlngs, geospatials)
         return data
 
+    def to_abstract_graph(self):
+        abstract_graph = abstract.AbstractGraph(self.start_id,
+                                                self.end_id,
+                                                self.start_angle,
+                                                self.end_angle,
+                                                self.num_edges,
+                                                self.abstract_coords)
+        return abstract_graph
+
     @classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
@@ -66,7 +80,9 @@ class SpatialGraph(abstract.AbstractGraph):
                                         spatial_graph_b.geospatials)
         data = cls(merged_abstract_graph, pylon_cost, tube_cost, land_cost,
                                                       latlngs, geospatials)
-        return data        
+        return data
+
+         
 
     def get_total_cost(self):
         return self.pylon_cost + self.tube_cost + self.land_cost

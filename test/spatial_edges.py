@@ -17,7 +17,7 @@ Last Modification Purpose:
 """
 
 # Our Modules
-import abstract
+import abstract_edges as abstract
 import cacher
 import config
 import elevation

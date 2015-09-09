@@ -11,7 +11,7 @@ import numpy as np
 import time
 
 # Our Modules:
-import abstract
+import abstract_lattice as abstract
 import cacher
 import config
 import curvature

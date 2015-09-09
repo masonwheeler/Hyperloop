@@ -46,6 +46,21 @@ class AbstractGraph(object):
         return data
 
     @classmethod
+    def merge_abstract_graphs(cls, abstract_graph_a, abstract_graph_b):
+        start_id = abstract_graph_a.start_id
+        end_id = abstract_graph_b.end_id
+        start_angle = abstract_graph_a.start_id
+        end_angle = abstract_graph_b.end_id
+        num_edges = abstract_graph_a.num_edges + abstract_graph_b.num_edges
+        abstract_coords = util.smart_concat(abstract_graph_a.abstract_coords,
+                                            abstract_graph_b.abstract_coords)
+        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
+                                                       abstract_coords)
+        return data
+        
+
+"""
+    @classmethod
     def init_from_abstract_graph(cls, abstract_graph):
         start_id = abstract_graph.start_id
         end_id = abstract_graph.end_id
@@ -82,6 +97,7 @@ class AbstractGraph(object):
 
         local_lattice = map(slice_center_to_slice, slice_centers)
         return local_lattice
+"""
 
 
 class AbstractGraphsSet(object):
@@ -106,7 +122,7 @@ class AbstractGraphsSet(object):
                 self.selected_graphs = self.unfiltered_graphs
                 return False
 
-    def __init__(self, graphs, graphs_evaluator, graphs_num_edges,
+    def __init__(self, graphs, graphs_num_edges, graphs_evaluator,
                                 minimize_a_vals, minimize_b_vals):
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges

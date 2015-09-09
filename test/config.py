@@ -37,7 +37,7 @@ NDIGITS = 6  # the number of digits used for rounding
 """
 Graph Generation Parameters
 """
-GRAPH_CURVATURE_MIN_NUM_EDGES = 3
+GRAPH_FILTER_MIN_NUM_EDGES = 3
 GRAPH_SAMPLE_SPACING = 1000.0
 NUM_FRONTS = 4
 
