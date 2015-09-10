@@ -123,6 +123,8 @@ class Directions(object):
         return directions_latlngs
 
     def __init__(self, start, end):
+        self.start = start
+        self.end = end
         self.latlngs = self.get_directions_latlngs(start, end)
         self.start_latlng = self.latlngs[0]
         self.end_latlng = self.latlngs[-1]

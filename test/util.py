@@ -293,7 +293,7 @@ def place_indexin_list(index, ordered_list_of_integers):
 def sorted_insert(value, ordered_values):
     """Place index in sorted list of integers while preserving the order
     """
-    for i in range(len(ordered_values)):
+    for i in xrange(len(ordered_values)):
         if value <= ordered_values[i]:
             ordered_values.insert(i, value)
             return i

@@ -191,12 +191,12 @@ class AbstractGraphsSets(object):
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
-                                                         graphs_set_builder):
+                                        graphs_set_builder):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
         self.degree_constraint = edges_sets.degree_constraint
-        base_graphs_sets = [edges_set_to_graphs_set(edges_set) for edges_set
-                                              in edges_sets.final_edges_sets]
+        base_graphs_sets = [edges_set_to_graphs_set(edges_set)
+                            for edges_set in edges_sets.final_edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)

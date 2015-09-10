@@ -66,7 +66,7 @@ class SpatialSlice(abstract.AbstractSlice):
 class SpatialLattice(abstract.AbstractLattice):
     SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS = 10**5
     SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR = 10**13
-    BASE_RESOLUTION = 10 #Meters
+    SPATIAL_BASE_RESOLUTION = 10 #Meters
     
     def get_spatial_splines(self, sampled_directions_geospatials):
         geospatials_x_values = [geospatial[0] for geospatial
@@ -91,7 +91,7 @@ class SpatialLattice(abstract.AbstractLattice):
     
     def sample_directions_geospatials(self, directions_geospatials):
         sampled_directions_geospatials = interpolate.sample_path(
-                        directions_geospatials, self.BASE_RESOLUTION)
+                        directions_geospatials, self.SPATIAL_BASE_RESOLUTION)
         return sampled_directions_geospatials
    
     @staticmethod
@@ -135,7 +135,9 @@ class SpatialLattice(abstract.AbstractLattice):
         return spatial_slices_bounds        
 
     def __init__(self, directions, spatial_x_spacing_power,
-                                              spatial_y_spacing_power): 
+                                              spatial_y_spacing_power):
+        self.start = directions.start
+        self.end = directions.end
         self.start_latlng = directions.start_latlng
         self.end_latlng = directions.end_latlng
         self.projection = directions.projection

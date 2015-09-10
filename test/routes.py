@@ -98,7 +98,7 @@ class Route:
             "acceleration_profile": self.acceleration_profile,
             "comfort_rating": self.comfort_rating,
             "trip_time": self.trip_time
-        }
+            }
         return route_dict
 
 
@@ -171,7 +171,7 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
     x = graph.geospatials
     graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
     M = int(graph_spacing / parameters.PYLON_SPACING)
-    print "interpolation sampling per edge is " + str(M)
+    #print "interpolation sampling per edge is " + str(M)
     t_a = time.time()
     route_2d = graph_to_route_2d(graph, M)
     t_b = time.time()
@@ -190,5 +190,5 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
     t_f = time.time()
     print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
     print "entire process took " + str(time.time() - start) + " seconds."
-    return Route(*route_data)
+    return route
 

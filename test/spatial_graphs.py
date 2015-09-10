@@ -19,8 +19,8 @@ import visualize
 class SpatialGraph(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
 
-    def get_time(self, geospatials, spatial_graph_num_edges):
-        """Compute the curvature of an interpolation of the graph"""
+    #def get_time(self, geospatials, spatial_graph_num_edges):
+    #    """Compute the curvature of an interpolation of the graph"""
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
                                                  latlngs, geospatials):
@@ -117,7 +117,8 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
                                             minimize_time)
 
     @classmethod
-    def init_from_spatial_edges_set(cls, spatial_edges_set):
+    def init_from_spatial_edges_set(cls, spatial_edges_set,
+                                  spatial_graphs_metadata):
         spatial_graphs = [SpatialGraph.init_from_spatial_edge(spatial_edge)
                                       for spatial_edge in spatial_edges_set]
         spatial_graphs_num_edges = 1
@@ -144,6 +145,11 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         return merged_spatial_graph
     
     def __init__(self, spatial_edges_sets):
+        self.start = spatial_edges_sets.start
+        self.end = spatial_edges_sets.end
+        self.start_latlng = spatial_edges_sets.start_latlng
+        self.end_latlng = spatial_edges_sets.end_latlng
+        self.projection = spatial_edges.projection
         abstract.AbstractGraphsSets.__init__(self, spatial_edges_sets,
                             SpatialGraphsSet.init_from_spatial_edges_set,
                             SpatialGraphsSets.merge_two_spatial_graphs,

@@ -31,7 +31,8 @@ def pair_analysis(start, end):
                       parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
                       parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
                       for graph in test_graphs]    
-    cacher.save_routes(complete_routes, start, end, start_lat_lng, end_lat_lng)
+    #cacher.save_routes(complete_routes)
+    """
     for i in range(len(complete_routes)):
         print ("(triptime, comfort rating, pylon cost, tube cost, land cost) \
                 of route "+ str(i) +" is:" +
@@ -40,6 +41,7 @@ def pair_analysis(start, end):
                      complete_routes[i].pylon_cost,
                      complete_routes[i].tube_cost,
                      complete_routes[i].land_cost]))
+    """
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
     if config.VISUAL_MODE:

@@ -104,6 +104,11 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         spatial_degree_constraint = 25#self.compute_spatial_degree_constraint(
                                     #                           spatial_lattice)
         print("degree_constraint: " + str(spatial_degree_constraint))
+        self.start = spatial_lattice.start
+        self.end = spatial_lattice.end
+        self.start_latlng = spatial_lattice.start_latlng
+        self.end_latlng = spatial_lattice.end_latlng
+        self.projection = spatial_lattice.projection        
         abstract.AbstractEdgesSets.__init__(self, spatial_lattice,
                                   SpatialEdge, spatial_degree_constraint)
 
