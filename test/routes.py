@@ -33,11 +33,11 @@ class Route:
     def __init__(self, comfort, t, x, y, z, vx, vy, vz, ax, ay, az):
 
         self.latlngs = self.compute_latlngs(x, y)
-        self.land_cost = landcover.get_land_cost(self.latlngs)
+        #self.land_cost = landcover.get_land_cost(self.latlngs)
         self.tube_elevations = z
-        self.pylons = self.compute_pylons(x, y, z)
-        self.tube_cost = self.compute_tube_cost(x, y, z)
-        self.pylon_cost = sum([pylon["pylon_cost"] for pylon in self.pylons])
+        #self.pylons = self.compute_pylons(x, y, z)
+        #self.tube_cost = self.compute_tube_cost(x, y, z)
+        #self.pylon_cost = sum([pylon["pylon_cost"] for pylon in self.pylons])
         self.velocity_profile = self.compute_velocity_profile(vx, vy, vz)
         self.acceleration_profile = self.compute_acceleration_profile(
             ax, ay, az)
@@ -52,7 +52,7 @@ class Route:
 
     def compute_pylons(self, x, y, z):
         geospatials = np.transpose([x, y])
-        s, zland = landscape.gen_landscape(geospatials, "elevation")
+        #s, zland = landscape.gen_landscape(geospatials, "elevation")
 
         def pylon_cost(pylon_height):
             if pylon_height > 0:

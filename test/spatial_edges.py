@@ -81,7 +81,6 @@ class SpatialEdge(abstract.AbstractEdge):
         self.end_spatial_point = end_spatial_point
         self.geospatials = SpatialEdge.get_geospatials(start_spatial_point,
                                                          end_spatial_point)
-        elevation_profile = SpatialEdge.get_elevation_profile(self.geospatials)
         self.latlngs = SpatialEdge.get_latlngs(start_spatial_point,
                                                  end_spatial_point)
         self.elevation_profile = SpatialEdge.get_elevation_profile(
@@ -91,7 +90,7 @@ class SpatialEdge(abstract.AbstractEdge):
         self.land_cost = SpatialEdge.compute_land_cost(edge_is_in_right_of_way,
                                                        self.geospatials)
         self.pylon_cost, self.tube_cost = \
-            SpatialEdge.compute_pylon_cost_and_tube_cost(elevation_profile)
+            SpatialEdge.compute_pylon_cost_and_tube_cost(self.elevation_profile)
 
     def to_abstract_edge(self):
         abstract_edge = abstract.AbstractEdge(self.start_spatial_point,
@@ -114,7 +113,7 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
                                   SpatialEdge, spatial_degree_constraint)
 
 
-def get_spatial_edges_sets(spatial_lattice):
+def get_spatial_edges_sets(spatial_lattice, spatial_interpolator):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",
                                                SpatialEdgesSets,
                         [spatial_lattice, spatial_interpolator],

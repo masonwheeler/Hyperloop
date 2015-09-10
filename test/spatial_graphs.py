@@ -20,7 +20,7 @@ class SpatialGraph(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
-                                                 latlngs, geospatials):
+                               latlngs, geospatials, elevation_profile):
         abstract.AbstractGraph.__init__(self, abstract_graph.start_id,
                                               abstract_graph.end_id,
                                               abstract_graph.start_angle,
@@ -32,7 +32,7 @@ class SpatialGraph(abstract.AbstractGraph):
         self.land_cost = land_cost  # The total cost of the land acquired
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.geospatials = geospatials  # The geospatial coordinates
-        self.time = self.get_time(geospatials, self.num_edges)
+        self.elevation_profile = elevation_profile
 
     @classmethod
     def init_from_spatial_edge(cls, spatial_edge):
@@ -44,8 +44,9 @@ class SpatialGraph(abstract.AbstractGraph):
         land_cost = spatial_edge.land_cost
         latlngs = spatial_edge.latlngs
         geospatials = spatial_edge.geospatials
+        elevation_profile = spatial_edges.elevation_profile
         data = cls(abstract_graph, pylon_cost, tube_cost, land_cost,
-                                               latlngs, geospatials)
+                            latlngs, geospatials, elevation_profile)
         return data
 
     def to_abstract_graph(self):
@@ -58,7 +59,7 @@ class SpatialGraph(abstract.AbstractGraph):
         return abstract_graph
          
     
-@classmethod
+    @classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
         abstract_graph_b = spatial_graph_b.to_abstract_graph()
@@ -71,8 +72,10 @@ class SpatialGraph(abstract.AbstractGraph):
                                     spatial_graph_b.latlngs)
         geospatials = util.smart_concat(spatial_graph_a.geospatials,
                                         spatial_graph_b.geospatials)
+        elevation_profile = util.smart_concat(spatial_graph_a.elevation_profile,
+                                              spatial_graph_b.elevation_profile)
         data = cls(merged_abstract_graph, pylon_cost, tube_cost, land_cost,
-                                                      latlngs, geospatials)
+                                   latlngs, geospatials, elevation_profile)
         return data
 
     def get_cost_and_time(self, spatial_interpolator):

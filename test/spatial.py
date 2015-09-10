@@ -48,7 +48,8 @@ def build_spatial_lattice(route_directions):
 
 def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
-                                                  route_spatial_lattice)
+                                              route_spatial_lattice,
+                                        spatial_interpolate.quintic)
     return route_spatial_edges_sets
 
 def build_spatial_graphs_sets(route_spatial_edges_sets):

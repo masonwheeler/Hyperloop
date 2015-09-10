@@ -20,7 +20,7 @@ def spatial_interpolation_v2(graph_geospatials):
     interpolating_geospatials = [x_values, y_values]
     return [interpolating_geospatials, arc_lengths]
 
-def spatial_interpolation_v1(graph_geospatials):
+def quintic(graph_geospatials):
     interpolating_geospatials_array = interp.para_super_q(
                                         graph_geospatials, 25)
     interpolating_geospatials = interpolating_geospatials_array.tolist()
