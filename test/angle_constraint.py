@@ -19,7 +19,6 @@ def test_path_points(path_points):
                         curvature_array_2d, curvature_threshold)
     return is_curvature_valid
 
-@staticmethod
 def compute_spatial_degree_constraint(spatial_lattice):
     spatial_degree_constraint = 90
     angle = math.radians(spatial_degree_constraint)

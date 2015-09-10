@@ -26,8 +26,9 @@ import visualize
 import time
 
 
-# The Route Class.
 class Route:
+    """For storing a single route option
+    """
 
     def __init__(self, comfort, t, x, y, z, vx, vy, vz, ax, ay, az):
 
@@ -41,12 +42,9 @@ class Route:
         self.acceleration_profile = self.compute_acceleration_profile(
             ax, ay, az)
         self.trip_time = t[-1]
-        ##print "trip_time is: " + str(self.trip_time)
         t_chunks = util.break_up(t, 500)
         t_comfort = [t_chunks[i][-1] for i in range(len(t_chunks))]
         self.comfort_rating = util.LpNorm(t_comfort, comfort, 10)
-        ##print "comfort_rating is: " + str(self.comfort_rating)
-        ##print "cost is: " + str((self.pylon_cost + self.tube_cost + self.land_cost) / 1000000000.0) + " billion USD."
 
     def compute_latlngs(self, x, y):
         geospatials = np.transpose([x, y])
@@ -92,7 +90,7 @@ class Route:
             "tube_coords": self.tube_elevations.tolist(),
             "pylons": self.pylons,
             "tube_cost": self.tube_cost,
-            "pylon_cost": self.pylon_cost,
+            "pylon_cost": self.pylon_cost * 4,
             "total_cost": self.land_cost + self.tube_cost + self.pylon_cost,
             "velocity_profile": self.velocity_profile,
             "acceleration_profile": self.acceleration_profile,
@@ -107,12 +105,6 @@ class Route:
 def graph_to_route_2d(graph, M):
     x = graph.geospatials
     return interp.para_super_q(x, M)
-
-"""
-def graph_to_2_droutev2(graph, M):
-    x = graph.geospatials
-    return interp.scipy_q(x, M)
-"""
 
 def route_2d_to_route_3d(x, elevation_tradeoff):
     s, zland = landscape.gen_landscape(x, "elevation")
@@ -170,7 +162,7 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
     print "computing data for a new route..."
     x = graph.geospatials
     graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
-    M = int(graph_spacing / parameters.PYLON_SPACING * 3)
+    M = int(graph_spacing / (parameters.PYLON_SPACING * 4))
     #print "interpolation sampling per edge is " + str(M)
     t_a = time.time()
     route_2d = graph_to_route_2d(graph, M)

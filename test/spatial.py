@@ -22,7 +22,7 @@ import spatial_edges
 import spatial_graphs
 import spatial_interpolate
 import spatial_paths_2d
-import spatial_paths_3d
+#import spatial_paths_3d
 
 
 def build_directions(start, end):

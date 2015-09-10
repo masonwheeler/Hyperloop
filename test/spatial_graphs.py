@@ -19,9 +19,6 @@ import visualize
 class SpatialGraph(abstract.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
 
-    #def get_time(self, geospatials, spatial_graph_num_edges):
-    #    """Compute the curvature of an interpolation of the graph"""
-
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
                                                  latlngs, geospatials):
         abstract.AbstractGraph.__init__(self, abstract_graph.start_id,
@@ -60,7 +57,8 @@ class SpatialGraph(abstract.AbstractGraph):
                                                 self.abstract_coords)
         return abstract_graph
          
-    @classmethod
+    
+@classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
         abstract_graph_b = spatial_graph_b.to_abstract_graph()
@@ -77,7 +75,7 @@ class SpatialGraph(abstract.AbstractGraph):
                                                       latlngs, geospatials)
         return data
 
-    def get_cost_and_time(self):        
+    def get_cost_and_time(self, spatial_interpolator):
         if self.num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
             return None
         else:
@@ -97,32 +95,38 @@ class SpatialGraph(abstract.AbstractGraph):
 
 
 class SpatialGraphsSet(abstract.AbstractGraphsSet):
-
-    @staticmethod
-    def get_spatial_graphs_cost_time(spatial_graphs, spatial_graphs_num_edges):
+    
+    def get_spatial_graphs_cost_time(self, spatial_graphs,
+                                           spatial_graphs_num_edges,
+                                           spatial_interpolator):
         if spatial_graphs_num_edges < config.GRAPH_FILTER_MIN_NUM_EDGES:
             return None
         else:
-            spatial_graphs_costs_and_times = [spatial_graph.get_cost_and_time()
+            spatial_graphs_costs_and_times = [spatial_graph.get_cost_and_time(
+                                              spatial_interpolator)
                                             for spatial_graph in spatial_graphs]
             return spatial_graphs_costs_and_times
 
-    def __init__(self, spatial_graphs, spatial_graphs_num_edges):
+    def __init__(self, spatial_graphs, spatial_graphs_num_edges,
+                                       spatial_interpolator):
         minimize_cost = True
         minimize_time = True
         abstract.AbstractGraphsSet.__init__(self, spatial_graphs,
                                             spatial_graphs_num_edges,
                                             self.get_spatial_graphs_cost_time,
+                                            spatial_interpolator,
                                             minimize_cost,
                                             minimize_time)
 
     @classmethod
     def init_from_spatial_edges_set(cls, spatial_edges_set,
-                                  spatial_graphs_metadata):
+                                         spatial_interpolator):
         spatial_graphs = [SpatialGraph.init_from_spatial_edge(spatial_edge)
                                       for spatial_edge in spatial_edges_set]
         spatial_graphs_num_edges = 1
-        return cls(spatial_graphs, spatial_graphs_num_edges)
+        data = cls(spatial_graphs, spatial_graphs_num_edges,
+                                   spatial_interpolator)
+        return data
 
 
 class SpatialGraphsSets(abstract.AbstractGraphsSets):

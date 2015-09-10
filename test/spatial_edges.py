@@ -18,6 +18,7 @@ Last Modification Purpose:
 
 # Our Modules
 import abstract_edges as abstract
+import angle_constraint
 import cacher
 import config
 import elevation
@@ -100,7 +101,7 @@ class SpatialEdge(abstract.AbstractEdge):
 
 class SpatialEdgesSets(abstract.AbstractEdgesSets):
     
-    def __init__(self, spatial_lattice):
+    def __init__(self, spatial_lattice, spatial_interpolator):
         spatial_degree_constraint = 25#self.compute_spatial_degree_constraint(
                                     #                           spatial_lattice)
         print("degree_constraint: " + str(spatial_degree_constraint))
@@ -115,5 +116,7 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
 
 def get_spatial_edges_sets(spatial_lattice):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",
-        SpatialEdgesSets, [spatial_lattice], config.SPATIAL_EDGES_FLAG)
+                                               SpatialEdgesSets,
+                        [spatial_lattice, spatial_interpolator],
+                                      config.SPATIAL_EDGES_FLAG)
     return spatial_edges_sets

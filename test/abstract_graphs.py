@@ -98,11 +98,12 @@ class AbstractGraphsSet(object):
                 return False
 
     def __init__(self, graphs, graphs_num_edges, graphs_evaluator,
-                                minimize_a_vals, minimize_b_vals):
+                   graph_interpolator, minimize_a_vals, minimize_b_vals):
         self.front = None
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges
-        self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges)
+        self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges,
+                                                graph_interpolator)
         self.select_graphs(minimize_a_vals, minimize_b_vals)
         self.minimize_a_vals = minimize_a_vals
         self.minimize_b_vals = minimize_b_vals
@@ -170,23 +171,13 @@ class AbstractGraphsSets(object):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
         self.degree_constraint = edges_sets.degree_constraint
-        base_graphs_sets = [edges_set_to_graphs_set(edges_set)
+        self.interpolator = edges_sets.interpolator
+        base_graphs_sets = [edges_set_to_graphs_set(edges_set,
+                                                    self.interpolator)
                             for edges_set in edges_sets.final_edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
         self.selected_graphs = root_graphs_set.selected_graphs
-
-
-class AbstractPath(object):
-    def __init__(self, graph_physical_coordinates, interpolator):
-        self.graph_coordinates = graph_physical_coordinates
-        self.interpolator = interpolator
-        self.path_coordinates = interpolator(self.graph_coordinates)
-
-class AbstractPathsSet(object):
-    def __init__(self, graphs_set, spatial_interpolator, path_builder):
-        self.spatial_paths = [path_builder(spatial_graph, spatial_interpolator)
-                                 for spatial_graph in spatial_graphs_set.graphs]
 
