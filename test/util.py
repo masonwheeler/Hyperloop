@@ -280,16 +280,6 @@ def smart_print(string):
 
 # Other Operations:
 
-def place_indexin_list(index, ordered_list_of_integers):
-    """Place index in sorted list of integers while preserving the order
-    """
-    k = 0
-    while index > ordered_list_of_integers[k]:
-        k += 1
-    ordered_list_of_integers.insert(k, index)
-    return k
-
-
 def sorted_insert(value, ordered_values):
     """Place index in sorted list of integers while preserving the order
     """

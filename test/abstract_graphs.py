@@ -57,30 +57,6 @@ class AbstractGraph(object):
         data = cls(start_id, end_id, start_angle, end_angle, num_edges,
                                                        abstract_coords)
         return data
-        
-
-"""
-    @classmethod
-    def init_from_abstract_graph(cls, abstract_graph):
-        start_id = abstract_graph.start_id
-        end_id = abstract_graph.end_id
-        start_angle = abstract_graph.start_angle
-        end_angle = abstract_graph.end_angle
-        num_edges = abstract_graph.num_edges
-        abstract_coords = abstract_graph.abstract_coords
-        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
-                                                       abstract_coords)
-        return data
-    
-    def init_from_abstract_graph_2(self, abstract_graph):
-        start_id = abstract_graph.start_id
-        end_id = abstract_graph.end_id
-        start_angle = abstract_graph.start_angle
-        end_angle = abstract_graph.end_angle
-        num_edges = abstract_graph.num_edges
-        abstract_coords = abstract_graph.abstract_coords
-        self.__init__(start_id, end_id, start_angle, end_angle, num_edges,
-                                                          abstract_coords)
 
     def build_local_lattice(self, lattice_coords, spacing):
         coord_pairs = util.to_pairs(lattice_coords)
@@ -97,7 +73,6 @@ class AbstractGraph(object):
 
         local_lattice = map(slice_center_to_slice, slice_centers)
         return local_lattice
-"""
 
 
 class AbstractGraphsSet(object):
