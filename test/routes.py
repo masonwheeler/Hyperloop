@@ -170,7 +170,7 @@ def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeof
     print "computing data for a new route..."
     x = graph.geospatials
     graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
-    M = int(graph_spacing / parameters.PYLON_SPACING)
+    M = int(graph_spacing / parameters.PYLON_SPACING * 3)
     #print "interpolation sampling per edge is " + str(M)
     t_a = time.time()
     route_2d = graph_to_route_2d(graph, M)
