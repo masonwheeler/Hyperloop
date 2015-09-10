@@ -26,12 +26,17 @@ def pair_analysis(start, end):
     time_a = time.time()
     spatial_graphs_sets = spatial.city_pair_to_spatial_graphs_sets(start, end)
     spatial_graphs = spatial_graphs_sets.selected_graphs
-    test_graphs = spatial_graphs[:1]
+    start = spatial_graphs_sets.start
+    end = spatial_graphs_sets.end
+    start_latlng = spatial_graphs_sets.start_latlng
+    end_latlng = spatial_graphs_sets.end_latlng
+    ##print("num graphs: " + str(len(spatial_graphs)))
+    ##test_graphs = spatial_graphs[:1]
     complete_routes = [routes.graph_to_route(graph,
                       parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
                       parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
-                      for graph in test_graphs]    
-    #cacher.save_routes(complete_routes)
+                      for graph in spatial_graphs]
+    cacher.save_routes(complete_routes, start, end, start_latlng, end_latlng)
     """
     for i in range(len(complete_routes)):
         print ("(triptime, comfort rating, pylon cost, tube cost, land cost) \

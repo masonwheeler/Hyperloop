@@ -108,9 +108,9 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         self.end = spatial_lattice.end
         self.start_latlng = spatial_lattice.start_latlng
         self.end_latlng = spatial_lattice.end_latlng
-        self.projection = spatial_lattice.projection        
+        self.projection = spatial_lattice.projection
         abstract.AbstractEdgesSets.__init__(self, spatial_lattice,
-                                  SpatialEdge, spatial_degree_constraint)
+            SpatialEdge, spatial_degree_constraint, spatial_interpolator)
 
 
 def get_spatial_edges_sets(spatial_lattice, spatial_interpolator):

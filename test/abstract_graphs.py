@@ -77,7 +77,8 @@ class AbstractGraph(object):
 
 class AbstractGraphsSet(object):
 
-    def select_graphs(self, minimize_a_vals, minimize_b_vals):
+    def select_graphs(self, minimize_a_vals, minimize_b_vals,
+                                       num_fronts_to_select):
         if self.graphs_a_b_vals == None:
             self.selected_graphs = self.unfiltered_graphs
         else:
@@ -85,10 +86,10 @@ class AbstractGraphsSet(object):
                 self.front = paretofront.ParetoFront(self.graphs_a_b_vals,
                                                      minimize_a_vals, minimize_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
-                num_fronts = 1
+                current_num_fronts = 1
                 while (self.front.build_nextfront() and
-                       num_fronts <= config.NUM_FRONTS):
-                    num_fronts += 1
+                       current_num_fronts <= num_fronts_to_select):
+                    current_num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
                 self.selected_graphs = [self.unfiltered_graphs[i] for i in
                                         selected_graphs_indices]
@@ -98,15 +99,18 @@ class AbstractGraphsSet(object):
                 return False
 
     def __init__(self, graphs, graphs_num_edges, graphs_evaluator,
-                   graph_interpolator, minimize_a_vals, minimize_b_vals):
+                   graph_interpolator, minimize_a_vals, minimize_b_vals,
+                   num_fronts_to_select):
         self.front = None
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges
         self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges,
                                                 graph_interpolator)
-        self.select_graphs(minimize_a_vals, minimize_b_vals)
+        self.select_graphs(minimize_a_vals, minimize_b_vals, 
+                                       num_fronts_to_select)
         self.minimize_a_vals = minimize_a_vals
         self.minimize_b_vals = minimize_b_vals
+        self.num_fronts_to_select = num_fronts_to_select
 
     def update_graphs(self):
         """
@@ -163,7 +167,7 @@ class AbstractGraphsSets(object):
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs,
-                                                        merged_num_edges)
+                                  merged_num_edges, self.interpolator)
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
@@ -179,5 +183,9 @@ class AbstractGraphsSets(object):
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
+        final_num_fronts_to_select = 1
+        root_graphs_set.select_graphs(root_graphs_set.minimize_a_vals,
+                                      root_graphs_set.minimize_b_vals,
+                                           final_num_fronts_to_select)
         self.selected_graphs = root_graphs_set.selected_graphs
 

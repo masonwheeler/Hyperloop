@@ -30,14 +30,16 @@ class Route:
     """For storing a single route option
     """
 
-    def __init__(self, comfort, t, x, y, z, vx, vy, vz, ax, ay, az):
+    def __init__(self, comfort, t, x, y, z, vx, vy, vz, ax, ay, az, land_cost,
+                                                             land_elevations):
 
         self.latlngs = self.compute_latlngs(x, y)
         #self.land_cost = landcover.get_land_cost(self.latlngs)
+        self.land_cost = land_cost
         self.tube_elevations = z
-        #self.pylons = self.compute_pylons(x, y, z)
-        #self.tube_cost = self.compute_tube_cost(x, y, z)
-        #self.pylon_cost = sum([pylon["pylon_cost"] for pylon in self.pylons])
+        self.pylons = self.compute_pylons(x, y, z, land_elevations)
+        self.tube_cost = self.compute_tube_cost(x, y, z)
+        self.pylon_cost = sum([pylon["pylonCost"] for pylon in self.pylons])
         self.velocity_profile = self.compute_velocity_profile(vx, vy, vz)
         self.acceleration_profile = self.compute_acceleration_profile(
             ax, ay, az)
@@ -50,7 +52,7 @@ class Route:
         geospatials = np.transpose([x, y])
         return proj.geospatials_to_latlngs(geospatials, config.PROJ)
 
-    def compute_pylons(self, x, y, z):
+    def compute_pylons(self, x, y, z, land_elevations):
         geospatials = np.transpose([x, y])
         #s, zland = landscape.gen_landscape(geospatials, "elevation")
 
@@ -62,9 +64,9 @@ class Route:
         geospatials = [geospatial.tolist() for geospatial in geospatials]
         Pylons = [{"geospatial": geospatials[i],
                    "latlng": proj.geospatial_to_latlng(geospatials[i], config.PROJ),
-                   "land_elevation": zland[i],
-                   "pylon_height": (z[i] - zland[i]),
-                   "pylon_cost": pylon_cost(z[i] - zland[i])}
+                   "landElevation": land_elevations[i],
+                   "pylonHeight": (z[i] - land_elevations[i]),
+                   "pylonCost": pylon_cost(z[i] - land_elevations[i])}
                   for i in range(len(z))]
         return Pylons
 
@@ -86,16 +88,16 @@ class Route:
         route_dict = {
             "index": index,
             "latlngs": self.latlngs,
-            "land_cost": self.land_cost,
-            "tube_coords": self.tube_elevations.tolist(),
+            "landCost": self.land_cost,
+            "tubeCoords": self.tube_elevations.tolist(),
             "pylons": self.pylons,
-            "tube_cost": self.tube_cost,
-            "pylon_cost": self.pylon_cost * 4,
-            "total_cost": self.land_cost + self.tube_cost + self.pylon_cost,
-            "velocity_profile": self.velocity_profile,
-            "acceleration_profile": self.acceleration_profile,
-            "comfort_rating": self.comfort_rating,
-            "trip_time": self.trip_time
+            "tubeCost": self.tube_cost,
+            "pylonCost": self.pylon_cost * 4,
+            "totalCost": self.land_cost + self.tube_cost + self.pylon_cost,
+            "velocityProfile": self.velocity_profile,
+            "accelerationProfile": self.acceleration_profile,
+            "comfortRating": self.comfort_rating,
+            "tripTime": self.trip_time
             }
         return route_dict
 
@@ -103,21 +105,40 @@ class Route:
 # Ancillary Functions:
 
 def graph_to_route_2d(graph, M):
-    x = graph.geospatials
-    return interp.para_super_q(x, M)
+    graph_geospatials = graph.geospatials
+    route_2d = interp.para_super_q(graph_geospatials, M)
+    return route_2d
 
-def route_2d_to_route_3d(x, elevation_tradeoff):
-    s, zland = landscape.gen_landscape(x, "elevation")
-    s_interp, z_interp = landscape.match_landscape(
-        s, zland, "elevation", elevation_tradeoff)
-    f = PchipInterpolator(s_interp, z_interp)
-    z = f(s)
+def route_2d_to_route_3d(route_2d, elevation_tradeoff):
+    arclengths, land_elevations = landscape.gen_landscape(route_2d,
+                                                            "elevation")
+    ##arclengths2 = [elevation_point["distance_along_path"] for elevation_point
+    ##                                                    in elevation_profile]
+    ##land_elevations2 = [elevation_point["land_elevation"] for elevation_point
+    ##                                                    in elevation_profile]
+    ##print(len(arclengths1))
+    ##print(len(arclengths2))
+    ##print(len(land_elevations1))
+    ##print(len(land_elevations2))
+    waypoint_arclengths, waypoint_land_elevations = \
+        landscape.match_landscape(arclengths, land_elevations,
+                                  "elevation", elevation_tradeoff)
+    tube_elevation_spline = PchipInterpolator(waypoint_arclengths,
+                                              waypoint_land_elevations)
 
-    s_pylons = np.arange(s[0], s[-1], 100)
-    z_pylons = f(s_pylons)
+    tube_elevations = tube_elevation_spline(arclengths)
+    
+    #start_arclength = arclengths[0]
+    #end_arclength = arclengths[-1]
+    #pylons_arclengths = np.arange(start_arclength, end_arclength,
+    #                              parameters.PYLON_SPACING)
+    #pylons_top_height_above_sealevel = tube_elevation_spline(pylons_arclengths)
 
-    x, y = np.transpose(x)
-    return np.transpose([x, y, z])
+    geospatials_x_vals, geospatials_y_vals = np.transpose(route_2d)
+    route_3d = np.transpose([geospatials_x_vals,
+                             geospatials_y_vals,
+                             tube_elevations])
+    return [route_3d, land_elevations]
 
 
 def route_3d_to_route_4d(x, comfort_tradeoff1, comfort_tradeoff2):
@@ -159,28 +180,30 @@ def comfort_analysis_of_route_4d(x):
 
 def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeoff2):
     start = time.time()
-    print "computing data for a new route..."
+    ##print "computing data for a new route..."
     x = graph.geospatials
     graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
     M = int(graph_spacing / (parameters.PYLON_SPACING * 4))
-    #print "interpolation sampling per edge is " + str(M)
+    ##print "interpolation sampling per edge is " + str(M)
     t_a = time.time()
     route_2d = graph_to_route_2d(graph, M)
     t_b = time.time()
-    print "computed 2d route in: " + str(t_b - t_a) + " seconds."
-    route_3d = route_2d_to_route_3d(route_2d, elevation_tradeoff)
+    ##print "computed 2d route in: " + str(t_b - t_a) + " seconds."
+    route_3d, land_elevations = route_2d_to_route_3d(route_2d, elevation_tradeoff)
     t_c = time.time()
-    print "computed 3d route in: " + str(t_c - t_b) + " seconds."
+    ##print "computed 3d route in: " + str(t_c - t_b) + " seconds."
     route_4d = route_3d_to_route_4d(route_3d, comfort_tradeoff1,
                                               comfort_tradeoff2)    
     t_d = time.time()
-    print "computed 4d route in: " + str(t_d - t_c) + " seconds."
-    route_data = comfort_analysis_of_route_4d(route_4d)
+    ##print "computed 4d route in: " + str(t_d - t_c) + " seconds."
+    comfort, t, x, y, z, vx, vy, vz, ax, ay, az = \
+         comfort_analysis_of_route_4d(route_4d)
     t_e = time.time()
-    print "completed comfort analysis in: " + str(t_e - t_d) + " seconds."
-    route = Route(*route_data)    
+    ##print "completed comfort analysis in: " + str(t_e - t_d) + " seconds."
+    route = Route(comfort, t, x, y, z, vx, vy, vz, ax, ay, az,
+                             graph.land_cost, land_elevations)
     t_f = time.time()
-    print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
-    print "entire process took " + str(time.time() - start) + " seconds."
+    ##print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
+    ##print "entire process took " + str(time.time() - start) + " seconds."
     return route
 

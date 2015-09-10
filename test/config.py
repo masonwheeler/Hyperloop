@@ -22,38 +22,16 @@ USE_DROPBOX = False
 """
 Cache Overwriting Switches.
 """
-USE_CACHED_DIRECTIONS = True
+USE_CACHED_DIRECTIONS = False
 USE_CACHED_SPATIAL_LATTICE = True
 USE_CACHED_SPATIAL_EDGES = True
-USE_CACHED_SPATIAL_GRAPHS = True
+USE_CACHED_SPATIAL_GRAPHS = False
 USE_CACHED_SPATIAL_PATHS_2D = False
 
 """
 Lattice Generation Parameters
 """
-DEGREE_CONSTRAINT = 30  # the angular constraint between subsequent edges
 NDIGITS = 6  # the number of digits used for rounding
-
-"""
-Graph Generation Parameters
-"""
-GRAPH_FILTER_MIN_NUM_EDGES = 3
-GRAPH_SAMPLE_SPACING = 1000.0
-NUM_FRONTS = 8
-
-"""
-Tube Generation Parameters
-"""
-
-TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES = 3
-PYLON_HEIGHT_STEP_SIZE = 10.0
-TUBE_DEGREE_CONSTRAINT = 60.0
-
-"""
-Velocity Profile Generation Parameters
-"""
-VELOCITY_PROFILE_DEGREE_CONSTRAINT = 30.0
-VELOCITY_ARC_LENGTH_STEP_SIZE = 100.0
 
 """
 Land Cost parameters
