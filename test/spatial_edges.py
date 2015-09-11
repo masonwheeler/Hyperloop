@@ -87,8 +87,8 @@ class SpatialEdge(abstract.AbstractEdge):
                                                       self.geospatials)
         edge_is_in_right_of_way = (start_spatial_point.is_in_right_of_way and
                                      end_spatial_point.is_in_right_of_way)
-        self.land_cost = SpatialEdge.compute_land_cost(edge_is_in_right_of_way,
-                                                       self.geospatials)
+        #self.land_cost = SpatialEdge.compute_land_cost(edge_is_in_right_of_way,
+        #                                               self.geospatials)
         self.pylon_cost, self.tube_cost = \
             SpatialEdge.compute_pylon_cost_and_tube_cost(self.elevation_profile)
 

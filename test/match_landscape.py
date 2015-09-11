@@ -116,7 +116,6 @@ def match_landscape(s, z, Type, tradeoffs):
         pass
     return [[s[k] for k in K], [z[k] for k in K]]
 
-
 def match_landscape_v1(s, z, Type):
     # the profile initializes as delta-z.
     K = [0, len(z) - 1]

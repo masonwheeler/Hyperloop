@@ -7,18 +7,18 @@ Last Modification Purpose: Redesigned logic flow to save memory.
 """
 
 # Standard Modules:
+import math
+import os
 from osgeo import gdal
 from osgeo import osr
+from subprocess import call
 import urllib
 import zipfile
-import os
-import math
-from subprocess import call
 
 # Our Modules
 import config
-import util
 import geotiff
+import util
 
 
 def get_bounding_coordinates(latlng_coord):
@@ -26,7 +26,7 @@ def get_bounding_coordinates(latlng_coord):
     """
     lat, lng = latlng_coord
     lat_bound = int(math.ceil(lat))
-    lng_bound = int(math.ceil(abs(lng)))
+    lng_bound = int(math.ceil(abs(lng)))    
     return [lat_bound, lng_bound]
 
 def get_coordstring(latlng_coord):
@@ -35,6 +35,7 @@ def get_coordstring(latlng_coord):
     lat_bound, lng_bound = get_bounding_coordinates(latlng_coord)
     latstr, lngstr = "n" + str(lat_bound), "w" + str(lng_bound).zfill(3)
     coordstring = latstr + lngstr
+    #print(coordstring)
     return coordstring
 
 def get_img_file_name(coordstring):
@@ -76,7 +77,6 @@ def img_to_geotiff(img_file_name, unzip_directory, coordstring):
     tif_file_path = unzip_directory + coordstring + ".tif"
     call(["gdal_translate", "-of", "Gtiff", img_file_path, tif_file_path])
     return tif_file_path
-
 
 def geotiff_pixel_val(geotiff_file_path, lonlat_coord):
     """Get the pixel value at the given lon-lat coord in the geotiff
@@ -135,3 +135,36 @@ def get_elevation(latlng_coord):
     pixel_val = geotiff_pixel_val(geotiff_file_path, lonlat_coord)
 
     return pixel_val
+
+#Experimental
+import rasterio
+import numpy as np
+import affine
+import pyproj
+
+def get_geostiff_pixel_val_v2(geotiff):
+    with rasterio.open(geotiff) as r:
+        T0 = r.affine
+        p1 = pyproj.Proj(r.crs)
+        A = r.read_band(1)
+
+    cols, rows = np.meshgrid(np.arange(A.shape[1]), np.arange(A.shape[0]))
+  
+    T1 = T0 * Affine.translation(0.5, 0.5)
+    rc2en = lambda r, c: (c, r) * T1
+    
+    eastings, northings = np.vectorize(rc2en, otypes=[np.float, np.float])(rows, cols)
+    longs, lats = pyproj.transform(p1, p1.to_latlong(), eastings, northings)    
+
+def get_pixel_vals(geotiff_file_path, latlngs):  
+    file_handle = gdal.Open(geotiff_file_path)
+    geo_transform = file_handle.GetGeoTransform()
+    geotiff_array = np.array(file_handle.GetRasterBand(1).ReadAsArray())
+    spatial_reference = osr.SpatialReference()
+    spatial_reference.ImportFromWkt(file_handle.GetProjection())
+    spatial_reference_lat_lon = spatial_reference.CloneGeogCS()
+    coord_trans = osr.CoordinateTransformation(spatial_reference_lat_lon,
+                                               spatial_reference)
+    
+
+
