@@ -18,9 +18,6 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 import csv
 
-"""
-For an exposition of the following see (Polyakov page 79).
-"""
 
 
 def gamma_matrix(t):
@@ -51,6 +48,8 @@ def gamma_matrix_start(t):
 
 
 def quint(t, x, dx0, dx_n):
+    """ For an exposition of the quintic interpolation method see Polyakov (79.)
+    """
     N = len(x) - 1  # number of viapoints
     d2x0 = d2x_n = 0
     b0 = np.array([x[0], dx0, d2x0])  # initial position and derivatives
@@ -70,9 +69,8 @@ def quint(t, x, dx0, dx_n):
     C[0:3, 0:6] = gamma_matrix(t[0])
     C[6 * N - 3:6 * N, 6 * N - 6:6 * N] = gamma_matrix(t[N])
     for j in range(1, N):
-        C[3 + 6 * (j - 1): 3 + 6 * j, 6 * (j - 1)          :6 * j] = gamma_matrix_end(t[j])
-        C[3 + 6 * (j - 1): 3 + 6 * j, 6 * j:6 *
-          (j + 1)] = gamma_matrix_start(t[j])
+        C[3 + 6 * (j - 1): 3 + 6 * j, 6 * (j - 1):6 * j] = gamma_matrix_end(t[j])
+        C[3 + 6 * (j - 1): 3 + 6 * j, 6 * j:6 *(j + 1)] = gamma_matrix_start(t[j])
 
     a = np.linalg.solve(C, b)  # vector of polynomial coeffs (Polyakov A.3.1)
     alist = np.zeros((N, 6))
@@ -80,10 +78,6 @@ def quint(t, x, dx0, dx_n):
         alist[i] = a[6 * i:6 * (i + 1)]
     list_of_coefficients = alist.tolist()
     return list_of_coefficients
-
-# super_quint(): Extends quint() to allow for high numbers (> 5) of waypoints to be interpolated,
-# without running into ill-conditioning problems:
-
 
 def join_indices(N):
     if N <= 5:
@@ -97,6 +91,11 @@ def join_indices(N):
 
 
 def super_quint(t, x, M):
+    """
+    Extends quint() to allow for high numbers (> 5) of waypoints to be
+    interpolated, without running into ill-conditioning problems.
+    """
+
     J = join_indices(len(x) - 1)
     if len(J) == 0:
         polys = quint(t, x, 0, 0)
@@ -112,18 +111,17 @@ def super_quint(t, x, M):
     return [sum(t_m, []), sum(x_m, [])]
 
 
-# para_super_q(): Extends super_quint() to allow for an interpolation without an explicit parametrization a priori:
-# this function is used to generate the spatial interpolation of each graph.
-
 def para_super_q(x, M):
+    """
+    Extends super_quint to allow for an interpolation without an explicit
+    parametrization a priori.
+    This function is used to generate the spatial interpolation of each graph.
+    """
     t = [15 * n for n in range(len(x))]
     x_points, y_points = np.transpose(x)
     t_m, x_m = super_quint(t, x_points, M)
     t_m, y_m = super_quint(t, y_points, M)
     return np.transpose([x_m, y_m])
-
-
-# Standard interpolate function from scipy is imported here as a benchmark.
 
 def scipy_q(x, M):
     t = [15 * n for n in range(len(x))]

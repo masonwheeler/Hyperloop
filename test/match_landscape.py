@@ -184,7 +184,3 @@ def match_landscape_v1(s, z, Type):
         pass
     return [[s[k] for k in K], [z[k] for k in K]]
 
-# Test sort_indices(z, Type):
-# z = [random.uniform(-10,10) for i in range(4)]
-# print z
-# print sort_indices(z, "velocity")

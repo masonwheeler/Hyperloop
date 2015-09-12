@@ -20,6 +20,12 @@ import config
 import geotiff
 import util
 
+#Experimental
+import rasterio
+import numpy as np
+import affine
+import pyproj
+
 
 def get_bounding_coordinates(latlng_coord):
     """Get the top left corner of the latlng tile which the coord falls in
@@ -81,7 +87,7 @@ def img_to_geotiff(img_file_name, unzip_directory, coordstring):
 def geotiff_pixel_val(geotiff_file_path, lonlat_coord):
     """Get the pixel value at the given lon-lat coord in the geotiff
     """
-    file_handle = gdal.Open(geotiff_file_path)
+    file_handle = gdal.Open(geotiff_file_path)    
     geo_transform = file_handle.GetGeoTransform()
     raster_band = file_handle.GetRasterBand(1)
     spatial_reference = osr.SpatialReference()
@@ -133,38 +139,95 @@ def get_elevation(latlng_coord):
 
     lonlat_coord = util.swap_pair(latlng_coord)
     pixel_val = geotiff_pixel_val(geotiff_file_path, lonlat_coord)
-
     return pixel_val
 
-#Experimental
-import rasterio
-import numpy as np
-import affine
-import pyproj
+#V2
 
-def get_geostiff_pixel_val_v2(geotiff):
-    with rasterio.open(geotiff) as r:
-        T0 = r.affine
+def partition_latlngs(latlngs):
+    latlngs_partitions = [[]]
+    last_bounds = get_bounding_coordinates(latlngs[0])   
+    for latlng in latlngs:
+        bounds = get_bounding_coordinates(latlng)
+        if last_bounds == bounds:
+            latlngs_partitions[-1].append(latlng)
+        else:
+            latlngs_partitions.append([latlng])
+            last_bounds = bounds
+    return latlngs_partitions
+
+def geotiff_elevations(geotiff_file_path, lnglats):
+    """Get the pixel value at the given lon-lat coord in the geotiff
+    """
+    #lngs = [lnglat[0] for lnglat in lnglats]
+    #lats = [lnglat[1] for lnglat in lnglats]
+    lngs, lats = zip(*lnglats)
+    max_lng = max(lngs)
+    min_lng = min(lngs)
+    max_lat = max(lats)
+    min_lat = min(lats)
+    top_left_lnglat = [min_lng, max_lat]
+    top_right_lnglat = [max_lng, max_lat]
+    bottom_right_lnglat = [max_lng, min_lat]
+    bottom_left_lnglat = [min_lng, min_lat]
+    with rasterio.open(geotiff_file_path) as r:
         p1 = pyproj.Proj(r.crs)
-        A = r.read_band(1)
+        top_left_pixel = r.index(*top_left_lnglat)
+        top_right_pixel = r.index(*top_right_lnglat)
+        bottom_right_pixel = r.index(*bottom_right_lnglat)
+        bottom_left_pixel = r.index(*bottom_left_lnglat)
+        top = min(top_left_pixel[0], top_right_pixel[0])
+        bottom = max(bottom_left_pixel[0], bottom_right_pixel[0])
+        left = min(top_left_pixel[1], bottom_left_pixel[1])
+        right = max(top_right_pixel[1], bottom_right_pixel[1])
+        w = r.read(1, window=((top, bottom + 1), (left, right + 1)))
+    untranslated_pixels = [r.index(*lnglat) for lnglat in lnglats]
+    translated_pixels = [[pixel[0] - top, pixel[1] - left] for pixel
+                                              in untranslated_pixels]
+    xPixels, yPixels = np.transpose(np.array(translated_pixels))
+    elevations_array = w[xPixels, yPixels]
+    elevations = elevations_array.tolist()
+    return elevations
 
-    cols, rows = np.meshgrid(np.arange(A.shape[1]), np.arange(A.shape[0]))
-  
-    T1 = T0 * Affine.translation(0.5, 0.5)
-    rc2en = lambda r, c: (c, r) * T1
-    
-    eastings, northings = np.vectorize(rc2en, otypes=[np.float, np.float])(rows, cols)
-    longs, lats = pyproj.transform(p1, p1.to_latlong(), eastings, northings)    
+def get_partition_elevations(latlngs_partition):
+    """Gets the elevation at a given lat-lng coord
+    """    
+    coordstring = get_coordstring(latlngs_partition[0])
+    coord_zipfile = coordstring + ".zip"
+    coord_folder_name = coordstring + "/"
 
-def get_pixel_vals(geotiff_file_path, latlngs):  
-    file_handle = gdal.Open(geotiff_file_path)
-    geo_transform = file_handle.GetGeoTransform()
-    geotiff_array = np.array(file_handle.GetRasterBand(1).ReadAsArray())
-    spatial_reference = osr.SpatialReference()
-    spatial_reference.ImportFromWkt(file_handle.GetProjection())
-    spatial_reference_lat_lon = spatial_reference.CloneGeogCS()
-    coord_trans = osr.CoordinateTransformation(spatial_reference_lat_lon,
-                                               spatial_reference)
-    
+    url = config.USGS_FTP_PATH + coord_zipfile
+    download_directory = config.CWD + config.USGS_FOLDER
+    zip_file_path = download_directory + coord_zipfile
+    unzip_directory = download_directory + coord_folder_name
+    img_file_name = get_img_file_name(coordstring)
+    img_file_path = unzip_directory + img_file_name
+    geotiff_file_path = unzip_directory + coordstring + ".tif"
 
+    if file_exists(geotiff_file_path):
+        pass
+    else:
+        if file_exists(img_file_path):
+            pass
+        else:
+            if file_exists(zip_file_path):
+                pass
+            else:
+                util.smart_print("Not yet downloaded.")
+                util.smart_print("Now downloading " + coord_zipfile + "...")
+                util.smart_print("From " + str(url))
+                urllib.urlretrieve(url, zip_file_path)
+            unzip_zipfile(zip_file_path, unzip_directory, img_file_name)
+            remove_file(zip_file_path)
+        img_to_geotiff(img_file_name, unzip_directory, coordstring)
+        remove_file(img_file_path)
 
+    lnglats = util.swap_pairs(latlngs_partition)
+    partition_elevations = geotiff_elevations(geotiff_file_path, lnglats)
+    return partition_elevations
+
+def get_elevations(latlngs):
+    latlngs_partitions = partition_latlngs(latlngs)
+    partitions_elevations = [get_partition_elevations(latlngs_partition)
+                             for latlngs_partition in latlngs_partitions]
+    elevations = util.fast_concat(partitions_elevations)
+    return elevations
