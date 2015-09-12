@@ -142,7 +142,8 @@ def get_object(object_name, compute_function, compute_args, flag):
         print "Computing " + object_name + "..."
         computed_object = compute_function(*compute_args)
         print object_name + " computed."
-        cache_object(computed_object, object_name)
+        if config.CACHE_MODE:
+            cache_object(computed_object, object_name)
         return computed_object
 
 def save_routes(routes, start, end, start_lat_lng, end_lat_lng):

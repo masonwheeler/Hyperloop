@@ -14,6 +14,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 TESTING_MODE = True
+CACHE_MODE = False
 VISUAL_MODE = False
 VERBOSE_MODE = True
 TIMING_MODE = False
@@ -104,7 +105,7 @@ WORKING_GRAPHS_DIRECTORY = ""
 Unitialized Global variables.
 """
 
-HOLDER = 0
+holder = {}
 PROJ = 0
 DIRECTIONS_COORDS = 0
 PLOT_QUEUE = []

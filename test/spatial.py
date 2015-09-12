@@ -49,9 +49,11 @@ def build_spatial_lattice(route_directions):
 def build_spatial_edges_sets(route_spatial_lattice):
     import time
     start = time.time()
+    config.holder["totalPixels"] = 0
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
                                         spatial_interpolate.quintic)
+    print("total pixels: " + str(config.holder["totalPixels"]))
     print "time: " + str(time.time() - start)
     return route_spatial_edges_sets
 

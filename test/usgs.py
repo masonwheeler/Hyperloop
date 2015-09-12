@@ -41,7 +41,6 @@ def get_coordstring(latlng_coord):
     lat_bound, lng_bound = get_bounding_coordinates(latlng_coord)
     latstr, lngstr = "n" + str(lat_bound), "w" + str(lng_bound).zfill(3)
     coordstring = latstr + lngstr
-    #print(coordstring)
     return coordstring
 
 def get_img_file_name(coordstring):
@@ -155,11 +154,7 @@ def partition_latlngs(latlngs):
             last_bounds = bounds
     return latlngs_partitions
 
-def geotiff_elevations(geotiff_file_path, lnglats):
-    """Get the pixel value at the given lon-lat coord in the geotiff
-    """
-    #lngs = [lnglat[0] for lnglat in lnglats]
-    #lats = [lnglat[1] for lnglat in lnglats]
+def get_bounding_box(lnglats):
     lngs, lats = zip(*lnglats)
     max_lng = max(lngs)
     min_lng = min(lngs)
@@ -169,23 +164,46 @@ def geotiff_elevations(geotiff_file_path, lnglats):
     top_right_lnglat = [max_lng, max_lat]
     bottom_right_lnglat = [max_lng, min_lat]
     bottom_left_lnglat = [min_lng, min_lat]
+    return 0
+
+def geotiff_elevations(geotiff_file_path, lnglats):
+    """Get the pixel value at the given lon-lat coord in the geotiff
+    """
+    ##print(len(lnglats))
+    lngs, lats = zip(*lnglats)
+    max_lng = max(lngs)
+    min_lng = min(lngs)
+    max_lat = max(lats)
+    min_lat = min(lats)
     with rasterio.open(geotiff_file_path) as r:
         p1 = pyproj.Proj(r.crs)
-        top_left_pixel = r.index(*top_left_lnglat)
-        top_right_pixel = r.index(*top_right_lnglat)
-        bottom_right_pixel = r.index(*bottom_right_lnglat)
-        bottom_left_pixel = r.index(*bottom_left_lnglat)
-        top = min(top_left_pixel[0], top_right_pixel[0])
-        bottom = max(bottom_left_pixel[0], bottom_right_pixel[0])
-        left = min(top_left_pixel[1], bottom_left_pixel[1])
-        right = max(top_right_pixel[1], bottom_right_pixel[1])
-        w = r.read(1, window=((top, bottom + 1), (left, right + 1)))
-    untranslated_pixels = [r.index(*lnglat) for lnglat in lnglats]
-    translated_pixels = [[pixel[0] - top, pixel[1] - left] for pixel
+        top_left_row, top_left_col = r.index(min_lng, max_lat)
+        top_right_row, top_right_col = r.index(max_lng, max_lat)
+        bottom_right_row, bottom_right_col = r.index(max_lng, min_lat)
+        bottom_left_row, bottom_left_col = r.index(min_lng, min_lat)
+        top_row = min(top_left_row, top_right_row)
+        bottom_row = max(bottom_left_row, bottom_right_row)
+        left_col = min(top_left_col, bottom_left_col)
+        right_col = max(top_right_col, bottom_right_col)
+        w = r.read(1, window=((top_row, bottom_row + 1),
+                              (left_col, right_col + 1)))
+        width, height = w.shape
+        window_pixels = width * height
+        config.holder["totalPixels"] += window_pixels
+    untranslated_pixels = [r.index(lnglat[0], lnglat[1]) for lnglat in lnglats]
+    translated_pixels = [[pixel[0] - top_row, pixel[1] - left_col] for pixel
                                               in untranslated_pixels]
     xPixels, yPixels = np.transpose(np.array(translated_pixels))
     elevations_array = w[xPixels, yPixels]
     elevations = elevations_array.tolist()
+    return elevations
+
+def geotiff_subdivided_elevations(geotiff_file_path, lnglats,
+                                         subdivision_length):
+    lnglats_subdivisions = util.break_up(lnglats, subdivision_length)
+    elevations_subdivisions = [geotiff_elevations(geotiff_file_path, lnglats)
+                                          for lnglats in lnglats_subdivisions]
+    elevations = util.fast_concat(elevations_subdivisions)
     return elevations
 
 def get_partition_elevations(latlngs_partition):
@@ -222,7 +240,10 @@ def get_partition_elevations(latlngs_partition):
         remove_file(img_file_path)
 
     lnglats = util.swap_pairs(latlngs_partition)
-    partition_elevations = geotiff_elevations(geotiff_file_path, lnglats)
+    #partition_elevations = geotiff_elevations(geotiff_file_path, lnglats)
+    subdivision_length = 50
+    partition_elevations = geotiff_subdivided_elevations(geotiff_file_path,
+                                               lnglats, subdivision_length)
     return partition_elevations
 
 def get_elevations(latlngs):
