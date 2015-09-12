@@ -49,12 +49,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                                self.start_point.geospatial,
                                                self.end_point.geospatial,
                                                config.LAND_POINT_SPACING)
-            landcover_lat_lngs = proj.geospatials_to_latlngs(landcover_geospatials,
+            landcover_latlngs = proj.geospatials_to_latlngs(landcover_geospatials,
                                                              config.PROJ)
-            landcover_cost_densities = landcover.get_landcover_cost_densities(
-                                                           landcover_lat_lngs)
-            self.land_cost = landcover.cost_densities_to_landcost(
-                                         landcover_cost_densities)
+            self.land_cost = landcover.get_land_cost(landcover_latlngs)
     def get_elevation_profile(self):
         geospatials_grid, distances = util.build_grid(
                                            self.start_point.geospatial,
@@ -76,9 +73,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         self.get_latlngs()
 
     def to_abstract_edge(self):
-        abstract_edges = abstract_edges.AbstractEdge(self.start_point,
+        abstract_edge = abstract_edges.AbstractEdge(self.start_point,
                                                 self.end_point)
-        return abstract_edges
+        return abstract_edge
 
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
@@ -99,10 +96,10 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     def finish_edges_sets(self):
         a = time.time()
-        self.build_elevation_profiles()
+        self.compute_land_costs()
         b = time.time()
         print b - a
-        self.compute_land_costs()
+        self.build_elevation_profiles()
         c = time.time()
         print c - b
         self.build_tubes()

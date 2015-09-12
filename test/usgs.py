@@ -23,7 +23,6 @@ import util
 #Experimental
 import rasterio
 import numpy as np
-import affine
 import pyproj
 
 
@@ -83,6 +82,12 @@ def img_to_geotiff(img_file_name, unzip_directory, coordstring):
     call(["gdal_translate", "-of", "Gtiff", img_file_path, tif_file_path])
     return tif_file_path
 
+
+def remove_file(file_path):
+    """Delete the given file
+    """
+    os.remove(file_path)
+
 def geotiff_pixel_val(geotiff_file_path, lonlat_coord):
     """Get the pixel value at the given lon-lat coord in the geotiff
     """
@@ -97,11 +102,6 @@ def geotiff_pixel_val(geotiff_file_path, lonlat_coord):
     pixel_val = geotiff.get_pixel_val(coord_trans, geo_transform,
                                       raster_band, lonlat_coord)
     return pixel_val
-
-def remove_file(file_path):
-    """Delete the given file
-    """
-    os.remove(file_path)
 
 def get_elevation(latlng_coord):
     """Gets the elevation at a given lat-lng coord
@@ -140,8 +140,6 @@ def get_elevation(latlng_coord):
     pixel_val = geotiff_pixel_val(geotiff_file_path, lonlat_coord)
     return pixel_val
 
-#V2
-
 def partition_latlngs(latlngs):
     latlngs_partitions = [[]]
     last_bounds = get_bounding_coordinates(latlngs[0])   
@@ -154,35 +152,11 @@ def partition_latlngs(latlngs):
             last_bounds = bounds
     return latlngs_partitions
 
-def geotiff_elevations(geotiff_file_path, lnglats):
+def get_geotiff_elevations(geotiff_file_path, lnglats):
     """Get the pixel value at the given lon-lat coord in the geotiff
     """
-    lngs, lats = zip(*lnglats)
-    max_lng = max(lngs)
-    min_lng = min(lngs)
-    max_lat = max(lats)
-    min_lat = min(lats)
-    with rasterio.open(geotiff_file_path) as r:
-        p1 = pyproj.Proj(r.crs)
-        top_left_row, top_left_col = r.index(min_lng, max_lat)
-        top_right_row, top_right_col = r.index(max_lng, max_lat)
-        bottom_right_row, bottom_right_col = r.index(max_lng, min_lat)
-        bottom_left_row, bottom_left_col = r.index(min_lng, min_lat)
-        top_row = min(top_left_row, top_right_row)
-        bottom_row = max(bottom_left_row, bottom_right_row)
-        left_col = min(top_left_col, bottom_left_col)
-        right_col = max(top_right_col, bottom_right_col)
-        w = r.read(1, window=((top_row, bottom_row + 1),
-                              (left_col, right_col + 1)))
-        width, height = w.shape
-        window_pixels = width * height
-        config.holder["totalPixels"] += window_pixels
-    untranslated_pixels = [r.index(lnglat[0], lnglat[1]) for lnglat in lnglats]
-    translated_pixels = [[pixel[0] - top_row, pixel[1] - left_col] for pixel
-                                              in untranslated_pixels]
-    xPixels, yPixels = np.transpose(np.array(translated_pixels))
-    elevations_array = w[xPixels, yPixels]
-    elevations = elevations_array.tolist()
+    elevations = geotiff.get_geotiff_pixel_vals_without_projection(
+                                            geotiff_file_path, lnglats)
     return elevations
 
 def get_partition_elevations(latlngs_partition):
@@ -219,7 +193,7 @@ def get_partition_elevations(latlngs_partition):
         remove_file(img_file_path)
 
     lnglats = util.swap_pairs(latlngs_partition)
-    partition_elevations = geotiff_elevations(geotiff_file_path, lnglats)
+    partition_elevations = get_geotiff_elevations(geotiff_file_path, lnglats)
     return partition_elevations
 
 def get_elevations(latlngs):
