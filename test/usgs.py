@@ -154,22 +154,9 @@ def partition_latlngs(latlngs):
             last_bounds = bounds
     return latlngs_partitions
 
-def get_bounding_box(lnglats):
-    lngs, lats = zip(*lnglats)
-    max_lng = max(lngs)
-    min_lng = min(lngs)
-    max_lat = max(lats)
-    min_lat = min(lats)
-    top_left_lnglat = [min_lng, max_lat]
-    top_right_lnglat = [max_lng, max_lat]
-    bottom_right_lnglat = [max_lng, min_lat]
-    bottom_left_lnglat = [min_lng, min_lat]
-    return 0
-
 def geotiff_elevations(geotiff_file_path, lnglats):
     """Get the pixel value at the given lon-lat coord in the geotiff
     """
-    ##print(len(lnglats))
     lngs, lats = zip(*lnglats)
     max_lng = max(lngs)
     min_lng = min(lngs)
@@ -196,14 +183,6 @@ def geotiff_elevations(geotiff_file_path, lnglats):
     xPixels, yPixels = np.transpose(np.array(translated_pixels))
     elevations_array = w[xPixels, yPixels]
     elevations = elevations_array.tolist()
-    return elevations
-
-def geotiff_subdivided_elevations(geotiff_file_path, lnglats,
-                                         subdivision_length):
-    lnglats_subdivisions = util.break_up(lnglats, subdivision_length)
-    elevations_subdivisions = [geotiff_elevations(geotiff_file_path, lnglats)
-                                          for lnglats in lnglats_subdivisions]
-    elevations = util.fast_concat(elevations_subdivisions)
     return elevations
 
 def get_partition_elevations(latlngs_partition):
@@ -240,10 +219,7 @@ def get_partition_elevations(latlngs_partition):
         remove_file(img_file_path)
 
     lnglats = util.swap_pairs(latlngs_partition)
-    #partition_elevations = geotiff_elevations(geotiff_file_path, lnglats)
-    subdivision_length = 50
-    partition_elevations = geotiff_subdivided_elevations(geotiff_file_path,
-                                               lnglats, subdivision_length)
+    partition_elevations = geotiff_elevations(geotiff_file_path, lnglats)
     return partition_elevations
 
 def get_elevations(latlngs):

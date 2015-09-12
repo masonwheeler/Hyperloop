@@ -17,7 +17,7 @@ Last Modification Purpose:
 """
 
 # Our Modules
-import abstract_edges as abstract
+import abstract_edges
 import angle_constraint
 import cacher
 import config
@@ -27,9 +27,10 @@ import parameters
 import proj
 import tube
 import util
-import visualize
 
-class SpatialEdge(abstract.AbstractEdge):
+import time
+
+class SpatialEdge(abstract_edges.AbstractEdge):
 
     def get_geospatials(self):
         self.geospatials = [self.start_point.geospatial,
@@ -68,18 +69,18 @@ class SpatialEdge(abstract.AbstractEdge):
         self.tube_cost = tube_cost
             
     def __init__(self, start_point, end_point):
-        abstract.AbstractEdge.__init__(self, start_point, end_point)
+        abstract_edges.AbstractEdge.__init__(self, start_point, end_point)
         self.start_point = start_point
         self.end_point = end_point
         self.get_geospatials()
         self.get_latlngs()
 
     def to_abstract_edge(self):
-        abstract_edge = abstract.AbstractEdge(self.start_point,
+        abstract_edges = abstract_edges.AbstractEdge(self.start_point,
                                                 self.end_point)
-        return abstract_edge
+        return abstract_edges
 
-class SpatialEdgesSets(abstract.AbstractEdgesSets):
+class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     def build_elevation_profiles(self):
         for spatial_edges_set in self.final_edges_sets:
@@ -117,7 +118,7 @@ class SpatialEdgesSets(abstract.AbstractEdgesSets):
         self.start_latlng = spatial_lattice.start_latlng
         self.end_latlng = spatial_lattice.end_latlng
         self.projection = spatial_lattice.projection
-        abstract.AbstractEdgesSets.__init__(self, spatial_lattice,
+        abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
             SpatialEdge, spatial_degree_constraint, spatial_interpolator)
         self.finish_edges_sets()
 
