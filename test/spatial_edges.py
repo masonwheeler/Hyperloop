@@ -98,6 +98,49 @@ class SpatialEdge(abstract.AbstractEdge):
         return abstract_edge
 
 
+class SpatialEdgesSet(abstract.AbstractEdgesSet):
+    
+    def __init__(self, spatial_edges):
+        set_geospatials_bounds = [spatial_edge.geospatials for spatial_edge
+                                                    in spatial_edges]
+        set_geospatial_partitions = [util.build_grid(geospatial_bound[0],
+                                                     geospatial_bound[1],
+                                                parameters.PYLON_SPACING)
+                                     for geospatial_bound
+                                     in set_geospatial_bounds]
+        partitions_geospatials_grids = [geospatial_partition[0]
+                                        for geospatial_partition
+                                        in set_geospatial_partitions]
+        partitions_latlngs_grids = [proj.geospatials_to_latlngs(
+                                        geospatial_partition[0], config.PROJ)
+                                    for geospatial_partition
+                                    in set_geospatial_partitions]
+        partitions_distances = [geospatial_partition[1]
+                                for geospatial_partition
+                                in set_geospatial_partitions]
+        partitions_lengths = [len(partition_geospatial_grid)
+                              for partition_geospatial_grid
+                              in partitions_geospatials_grid]
+        set_latlngs = util.fast_concat(partitions_latlngs_grids)
+        set_elevations = elevation.usgs_windowed_elevation(set_latlngs)
+        elevations_partitions = []
+        last_index = 0
+        for length in partitions_lengths:            
+            elevations_partition = set_elevations[last_index:length]
+            elevations_partitions.append(elevation_partition)
+            last_index = length
+        for i in range(len(elevation_partitions)):
+            elevation_profile = elevation.build_elevation_profile(
+                                              partitions_latlngs_grid[i],
+                                              partitions_geospatials_grid[i],
+                                              elevation_partitions[i],
+                                              partitions_distances[i])
+            spatial_edge = spatial_edges[i]
+            spatial_edge.elevation_profile = elevation_profile
+       
+      
+
+
 class SpatialEdgesSets(abstract.AbstractEdgesSets):
     
     def __init__(self, spatial_lattice, spatial_interpolator):

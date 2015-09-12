@@ -41,6 +41,12 @@ class AbstractEdge(object):
         self.is_useful = True
 
 
+class AbstractEdgesSet(object):
+
+    def __init__(self, abstract_edges):
+        self.abstract_edges = abstract_edges
+
+
 class AbstractEdgesSets(object):
 
     def is_edge_pair_compatible(self, edge_a, edge_b):

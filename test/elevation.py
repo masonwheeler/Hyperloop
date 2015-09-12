@@ -43,9 +43,13 @@ def usgs_elevation(latlngs):
     """Fetches elevations from usgs dataset for a list of lat lng pairs
     """   
     elevations = [usgs.get_elevation(latlng) for latlng in latlngs]
-    #elevations = usgs.get_elevations(latlngs)
     return elevations
 
+def usgs_windowed_elevation(latlngs):
+    """Fetches elevations from usgs dataset for a list of lat lng pairs
+    """   
+    elevations = usgs.get_elevations(latlngs)
+    return elevations
 
 def get_elevation_profile(geospatials, distances):
     """Build elevation profile for a list of geospatials
