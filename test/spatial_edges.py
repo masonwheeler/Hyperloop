@@ -28,8 +28,6 @@ import proj
 import tube
 import util
 
-import time
-
 class SpatialEdge(abstract_edges.AbstractEdge):
 
     def get_geospatials(self):
@@ -52,6 +50,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
             landcover_latlngs = proj.geospatials_to_latlngs(landcover_geospatials,
                                                              config.PROJ)
             self.land_cost = landcover.get_land_cost(landcover_latlngs)
+
     def get_elevation_profile(self):
         geospatials_grid, distances = util.build_grid(
                                            self.start_point.geospatial,
@@ -95,16 +94,9 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                 spatial_edge.build_tube()
 
     def finish_edges_sets(self):
-        a = time.time()
         self.compute_land_costs()
-        b = time.time()
-        print b - a
         self.build_elevation_profiles()
-        c = time.time()
-        print c - b
         self.build_tubes()
-        d = time.time()
-        print d - c
     
     def __init__(self, spatial_lattice, spatial_interpolator):
         spatial_degree_constraint = 25#self.compute_spatial_degree_constraint(

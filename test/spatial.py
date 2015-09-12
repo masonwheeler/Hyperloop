@@ -22,7 +22,7 @@ import spatial_edges
 import spatial_graphs
 import spatial_interpolate
 import spatial_paths_2d
-#import spatial_paths_3d
+import spatial_paths_3d
 
 
 def build_directions(start, end):
@@ -47,24 +47,16 @@ def build_spatial_lattice(route_directions):
     return route_spatial_lattice
 
 def build_spatial_edges_sets(route_spatial_lattice):
-    import time
-    start = time.time()
-    config.holder["totalPixels"] = 0
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
                                         spatial_interpolate.quintic)
-    print("total pixels: " + str(config.holder["totalPixels"]))
-    print "time: " + str(time.time() - start)
     return route_spatial_edges_sets
 
 def build_spatial_graphs_sets(route_spatial_edges_sets):
     """Build SpatialGraphsSets object from SpatialEdgesSets object
     """
-    #import time
-    #start = time.time()
     route_spatial_graphs_sets = spatial_graphs.get_spatial_graphs_sets(
                                                  route_spatial_edges_sets)
-    #print "time: " + str(time.time() - start)
     return route_spatial_graphs_sets
 
 
