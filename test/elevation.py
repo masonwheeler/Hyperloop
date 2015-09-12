@@ -64,3 +64,33 @@ def get_elevation_profile(geospatials, distances):
                            "distance_along_path": distances[i]}
         elevation_profile.append(elevation_point)
     return elevation_profile
+
+def get_elevation_profile_v2(geospatials, distances):
+    """Build elevation profile for a list of geospatials
+    """
+    latlngs = proj.geospatials_to_latlngs(geospatials, config.PROJ)
+    elevations = usgs_windowed_elevation(latlngs)
+    elevation_profile = []
+    for i in range(len(geospatials)):
+        elevation_point = {"latlng": latlngs[i],
+                           "geospatial": geospatials[i],
+                           "land_elevation": elevations[i],
+                           "distance_along_path": distances[i]}
+        elevation_profile.append(elevation_point)
+    return elevation_profile
+
+def build_elevation_profile(latlngs, geospatials, elevations, distances):
+    """Build elevation profile for a list of geospatials
+    """
+    #print(len(latlngs))
+    #print(len(geospatials))
+    #print(len(elevations))
+    #print(len(distances))
+    elevation_profile = []
+    for i in range(len(geospatials)):
+        elevation_point = {"latlng": latlngs[i],
+                          "geospatial": geospatials[i],
+                           "land_elevation": elevations[i],
+                           "distance_along_path": distances[i]}
+        elevation_profile.append(elevation_point)
+    return elevation_profile
