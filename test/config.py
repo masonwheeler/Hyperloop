@@ -14,7 +14,7 @@ Last Modification Purpose: Changed from routes to graphs
 Modes and settings.
 """
 TESTING_MODE = True
-CACHE_MODE = False
+CACHE_MODE = True
 VISUAL_MODE = False
 VERBOSE_MODE = True
 TIMING_MODE = False
@@ -23,10 +23,10 @@ USE_DROPBOX = False
 """
 Cache Overwriting Switches.
 """
-USE_CACHED_DIRECTIONS = False
+USE_CACHED_DIRECTIONS = True
 USE_CACHED_SPATIAL_LATTICE = True
 USE_CACHED_SPATIAL_EDGES = True
-USE_CACHED_SPATIAL_GRAPHS = False
+USE_CACHED_SPATIAL_GRAPHS = True
 USE_CACHED_SPATIAL_PATHS_2D = False
 
 """

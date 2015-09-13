@@ -94,7 +94,7 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
     def __init__(self, spatial_graphs, spatial_graphs_num_edges,
                                        spatial_interpolator):
         minimize_cost = True
-        minimize_time = True
+        minimize_time = True        
         abstract.AbstractGraphsSet.__init__(self, spatial_graphs,
                                             spatial_graphs_num_edges,
                                             self.get_spatial_graphs_cost_time,
