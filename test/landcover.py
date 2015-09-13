@@ -27,29 +27,21 @@ def cost_density_to_local_cost(cost_density):
     local_cost = cost_density * area * 10
     return local_cost
 
-
-def get_landcover_cost_densities(landcover_lat_lngs):
+def get_landcover_pixel_values(landcover_latlngs):
     """Fetches the cost per unit area at each input lat lng point
     """
     geotiff_file_path = config.CWD + config.GEOTIFF_FILE_PATH
-    file_handle = gdal.Open(geotiff_file_path)
-    geo_transform = file_handle.GetGeoTransform()
-    raster_band = file_handle.GetRasterBand(1)
-    spatial_reference = osr.SpatialReference()
-    spatial_reference.ImportFromWkt(file_handle.GetProjection())
-    spatial_reference_lat_lon = spatial_reference.CloneGeogCS()
-    coord_trans = osr.CoordinateTransformation(spatial_reference_lat_lon,
-                                               spatial_reference)
-    landcover_pixel_values = [geotiff.get_pixel_val(coord_trans,
-                                                    geo_transform,
-                                                    raster_band,
-                                                    util.swap_pair(
-                                                    landcover_lat_lng))
-                              for landcover_lat_lng in landcover_lat_lngs]
+    landcover_lnglats = util.swap_pairs(landcover_latlngs)
+    landcover_pixel_values = geotiff.get_geotiff_pixel_vals_with_projection(
+                                        geotiff_file_path, landcover_lnglats)
+    return landcover_pixel_values
+
+def pixel_values_to_cost_densities(landcover_pixel_values):
+    """Maps the land cover pixel values to the corresponding costs
+    """
     landcover_cost_densities = [config.COST_TABLE[pixel_val] for pixel_val
                                 in landcover_pixel_values]
     return landcover_cost_densities
-
 
 def cost_densities_to_landcost(landcover_cost_densities):
     """Computes the total land acquisition cost from a list of cost densities
@@ -60,9 +52,11 @@ def cost_densities_to_landcost(landcover_cost_densities):
     return land_cost
 
 
-def get_land_cost(landcover_lat_lngs):
+def get_land_cost(landcover_latlngs):
     """Computes the total land acquisition cost for a list of lat lng points
     """
-    land_cover_cost_densities = get_landcover_cost_densities(landcover_lat_lngs)
-    land_cost = cost_densities_to_landcost(land_cover_cost_densities)
+    landcover_pixel_values = get_landcover_pixel_values(landcover_latlngs)
+    landcover_cost_densities = pixel_values_to_cost_densities(
+                                                   landcover_pixel_values)
+    land_cost = cost_densities_to_landcost(landcover_cost_densities)
     return land_cost

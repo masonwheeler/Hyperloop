@@ -34,7 +34,7 @@ def build_directions(start, end):
 
 def build_spatial_lattice(route_directions):
     """Build lattice between directions points and spline points
-    """    
+    """
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
                                              route_directions, 9, 7)
     if config.VISUAL_MODE:
@@ -47,17 +47,33 @@ def build_spatial_lattice(route_directions):
     return route_spatial_lattice
 
 def build_spatial_edges_sets(route_spatial_lattice):
+    """Build edges between pairs of a lattice points
+    """
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
-                                                  route_spatial_lattice)
+                                              route_spatial_lattice,
+                                        spatial_interpolate.quintic)
     return route_spatial_edges_sets
 
 def build_spatial_graphs_sets(route_spatial_edges_sets):
-    """Build SpatialGraphsSets object from SpatialEdgesSets object
+    """Build graphs from edges
     """
     route_spatial_graphs_sets = spatial_graphs.get_spatial_graphs_sets(
                                                  route_spatial_edges_sets)
     return route_spatial_graphs_sets
 
+def build_spatial_paths_set_2d(route_spatial_graphs_sets):
+    """Interpolate full length spatial graphs
+    """
+    route_spatial_paths_set_2d = spatial_paths_2d.get_spatial_paths_set_2d(
+                                                 route_spatial_graphs_sets)
+    return route_spatial_paths_set_2d
+
+#def build_spatial_paths_3d(route_spatial_paths_set_2d):
+#    """Build the best tube elevation options for a given 2d spatial path
+#    """
+#    route_spatial_paths_set_3d = spatial_paths_2d.get_spatial_paths_2d(
+#                                            route_spatial_paths_set_2d)
+#    return route_spatial_paths_set_3d
 
 def city_pair_to_spatial_graphs_sets(start, end):
     route_directions = build_directions(start, end)
@@ -65,5 +81,8 @@ def city_pair_to_spatial_graphs_sets(start, end):
     route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
     route_spatial_graphs_sets = build_spatial_graphs_sets(
                                      route_spatial_edges_sets)
+    route_spatial_paths_set_2d = build_spatial_paths_set_2d(
+                                     route_spatial_graphs_sets)
+    #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
     return route_spatial_graphs_sets
 

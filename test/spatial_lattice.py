@@ -144,9 +144,9 @@ class SpatialLattice(abstract.AbstractLattice):
         self.directions_geospatials = directions.geospatials
         directions_s_value_step_size = 2**spatial_x_spacing_power
         self.spatial_x_spacing = 2**spatial_x_spacing_power * \
-                                 self.BASE_RESOLUTION
+                                 self.SPATIAL_BASE_RESOLUTION
         self.spatial_y_spacing = 2**spatial_y_spacing_power * \
-                                 self.BASE_RESOLUTION
+                                 self.SPATIAL_BASE_RESOLUTION
         sampled_directions_geospatials = self.sample_directions_geospatials(
                                                 self.directions_geospatials)
         spatial_slices_directions_geospatials = \

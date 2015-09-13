@@ -116,7 +116,6 @@ def match_landscape(s, z, Type, tradeoffs):
         pass
     return [[s[k] for k in K], [z[k] for k in K]]
 
-
 def match_landscape_v1(s, z, Type):
     # the profile initializes as delta-z.
     K = [0, len(z) - 1]
@@ -128,7 +127,7 @@ def match_landscape_v1(s, z, Type):
 
     def bad(index, Type):
         # append newcomer to list; try it on for size
-        new = util.place_indexin_list(index, K)
+        new = util.sorted_insert(index, K)
         result = test(K[new - 1], K[new], Type) or test(K[new],
                                                         K[new + 1], Type)  # how did we do?
         K.pop(new)  # return list back to normal
@@ -175,7 +174,7 @@ def match_landscape_v1(s, z, Type):
             # print "Exhausted the landscape. Could not find a point to match."
             return "Exhausted the landscape. Could not find a point to match."
         else:
-            util.place_indexin_list(J.pop(i), K)
+            util.sorted_insert(J.pop(i), K)
             return "Success! See if we can match another point."
 
     #l = 0
@@ -185,7 +184,3 @@ def match_landscape_v1(s, z, Type):
         pass
     return [[s[k] for k in K], [z[k] for k in K]]
 
-# Test sort_indices(z, Type):
-# z = [random.uniform(-10,10) for i in range(4)]
-# print z
-# print sort_indices(z, "velocity")

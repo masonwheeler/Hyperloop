@@ -87,6 +87,14 @@ def swap_pair(pair):
     """
     return [pair[1], pair[0]]
 
+def swap_pairs(pairs):
+    """
+    Swaps pairs of points
+
+    Used in proj.py
+    """
+    return [[pair[1], pair[0]] for pair in pairs]
+
 # List Operations:
 
 

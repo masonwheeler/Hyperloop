@@ -33,22 +33,15 @@ class ParetoFront(object):
         If y_reverse is set to True then the Pareto front minimizes y-values.
         """
         x_max, y_max = np.amax(vertices, axis=0)
-        ##print("x Max: " + str(x_max))
-        ##print("y Max: " + str(y_max))
         x_min, y_min = np.amin(vertices, axis=0)
-        ##print("x Min: " + str(x_min))
-        ##print("y Min: " + str(y_min))
         # The vertices with x-values equal to x-max
         x_max_vertices = vertices[np.where(vertices[:, 0] == x_max)]
-        ##print("x max vertices: " + str(x_max_vertices))
         # The vertices with y-values equal to y-max
         y_max_vertices = vertices[np.where(vertices[:, 1] == y_max)]
         # The vertices with x-values equal to x-min
         x_min_vertices = vertices[np.where(vertices[:, 0] == x_min)]
-        ##print("x min vertices: " + str(x_min_vertices))
         # The vertices with y-values equal to y-min
         y_min_vertices = vertices[np.where(vertices[:, 1] == y_min)]
-        ##print("y min vertices: " + str(y_min_vertices))
 
         if not x_reverse and not y_reverse:  # Taking the top-right vertices
             # To find the maximum y-value of the vertices with maximal x-values
@@ -109,19 +102,11 @@ class ParetoFront(object):
             points_array.dtype.itemsize * points_array.shape[1])))
         # selects the indices of the unique tuples.
         _, unique_indices = np.unique(tuples_array, return_index=True)
-        #print("total number of points: " + str(points_array.shape[0]))
-        #print("number of unique points: " + str(unique_indices.size))
-        ##print("unique indices: ")
-        # print(str(unique_indices))
         sorted_unique_indices = sorted(unique_indices)
-        ##print("sorted indices")
-        # print(str(sorted_unique_indices))
         return sorted_unique_indices
 
     def __init__(self, points, x_reverse, y_reverse):
         self.fronts_indices = []
-        ##print("created new pareto front with points: ")
-        ##print(points)
         self.x_reverse, self.y_reverse = x_reverse, y_reverse
         # Raw points array may contain duplicates
         raw_points_array = np.array([np.array(point) for point in points])
@@ -141,7 +126,6 @@ class ParetoFront(object):
                 raise ValueError("No Points passed to Pareto Front")
             else:
                 # if there are 1 or 2 points, add these to the fronts
-                #print("added last points")
                 front_indices = self.pruned_points_indices
                 self.fronts_indices.append(front_indices.tolist())
                 self.remove_frontindices(front_indices)
@@ -180,7 +164,6 @@ class ParetoFront(object):
         Since points array does not have duplicates,
         the pruned points array does not have duplicates.
         """
-        ##print("build next front")
         # Initialize the points which have not been in a front yet
         pruned_points = self.points_array[self.pruned_points_indices]
         # The number of rows in the pruned points array
@@ -226,9 +209,7 @@ class ParetoFront(object):
             front_indices_rel_points = hull_indices_rel_points[
                 front_indices_rel_hull]
             # Add the indices of the points in the pareto front to list.
-            ##print("front indices: " + str(front_indices_rel_points))
             front_indices_list = front_indices_rel_points.tolist()
-            # print(front_indices_list)
             self.fronts_indices.append(front_indices_list)
             # Remove the indices of the points in the pareto front from list.
             self.remove_frontindices(front_indices_rel_points)

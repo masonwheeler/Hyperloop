@@ -15,6 +15,7 @@ Modes and settings.
 """
 TESTING_MODE = True
 VISUAL_MODE = True
+CACHE_MODE = True
 VERBOSE_MODE = True
 TIMING_MODE = False
 USE_DROPBOX = False
@@ -31,29 +32,7 @@ USE_CACHED_SPATIAL_PATHS_2D = False
 """
 Lattice Generation Parameters
 """
-DEGREE_CONSTRAINT = 30  # the angular constraint between subsequent edges
 NDIGITS = 6  # the number of digits used for rounding
-
-"""
-Graph Generation Parameters
-"""
-GRAPH_FILTER_MIN_NUM_EDGES = 3
-GRAPH_SAMPLE_SPACING = 1000.0
-NUM_FRONTS = 8
-
-"""
-Tube Generation Parameters
-"""
-
-TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES = 3
-PYLON_HEIGHT_STEP_SIZE = 10.0
-TUBE_DEGREE_CONSTRAINT = 60.0
-
-"""
-Velocity Profile Generation Parameters
-"""
-VELOCITY_PROFILE_DEGREE_CONSTRAINT = 30.0
-VELOCITY_ARC_LENGTH_STEP_SIZE = 100.0
 
 """
 Land Cost parameters
@@ -126,7 +105,7 @@ WORKING_GRAPHS_DIRECTORY = ""
 Unitialized Global variables.
 """
 
-HOLDER = 0
+holder = {}
 PROJ = 0
 DIRECTIONS_COORDS = 0
 PLOT_QUEUE = []

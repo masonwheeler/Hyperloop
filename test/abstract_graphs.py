@@ -77,7 +77,8 @@ class AbstractGraph(object):
 
 class AbstractGraphsSet(object):
 
-    def select_graphs(self, minimize_a_vals, minimize_b_vals):
+    def select_graphs(self, minimize_a_vals, minimize_b_vals,
+                                       num_fronts_to_select):
         if self.graphs_a_b_vals == None:
             self.selected_graphs = self.unfiltered_graphs
         else:
@@ -85,10 +86,10 @@ class AbstractGraphsSet(object):
                 self.front = paretofront.ParetoFront(self.graphs_a_b_vals,
                                                      minimize_a_vals, minimize_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
-                num_fronts = 1
+                current_num_fronts = 1
                 while (self.front.build_nextfront() and
-                       num_fronts <= config.NUM_FRONTS):
-                    num_fronts += 1
+                       current_num_fronts <= num_fronts_to_select):
+                    current_num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
                 self.selected_graphs = [self.unfiltered_graphs[i] for i in
                                         selected_graphs_indices]
@@ -98,14 +99,18 @@ class AbstractGraphsSet(object):
                 return False
 
     def __init__(self, graphs, graphs_num_edges, graphs_evaluator,
-                                minimize_a_vals, minimize_b_vals):
+                   graph_interpolator, minimize_a_vals, minimize_b_vals,
+                   num_fronts_to_select):
         self.front = None
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges
-        self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges)
-        self.select_graphs(minimize_a_vals, minimize_b_vals)
+        self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges,
+                                                graph_interpolator)
+        self.select_graphs(minimize_a_vals, minimize_b_vals, 
+                                       num_fronts_to_select)
         self.minimize_a_vals = minimize_a_vals
         self.minimize_b_vals = minimize_b_vals
+        self.num_fronts_to_select = num_fronts_to_select
 
     def update_graphs(self):
         """
@@ -162,7 +167,7 @@ class AbstractGraphsSets(object):
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs,
-                                                        merged_num_edges)
+                                  merged_num_edges, self.interpolator)
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
@@ -170,23 +175,17 @@ class AbstractGraphsSets(object):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
         self.degree_constraint = edges_sets.degree_constraint
-        base_graphs_sets = [edges_set_to_graphs_set(edges_set)
+        self.interpolator = edges_sets.interpolator
+        base_graphs_sets = [edges_set_to_graphs_set(edges_set,
+                                                    self.interpolator)
                             for edges_set in edges_sets.final_edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
+        final_num_fronts_to_select = 1
+        root_graphs_set.select_graphs(root_graphs_set.minimize_a_vals,
+                                      root_graphs_set.minimize_b_vals,
+                                           final_num_fronts_to_select)
         self.selected_graphs = root_graphs_set.selected_graphs
-
-
-class AbstractPath(object):
-    def __init__(self, graph_physical_coordinates, interpolator):
-        self.graph_coordinates = graph_physical_coordinates
-        self.interpolator = interpolator
-        self.path_coordinates = interpolator(self.graph_coordinates)
-
-class AbstractPathsSet(object):
-    def __init__(self, graphs_set, spatial_interpolator, path_builder):
-        self.spatial_paths = [path_builder(spatial_graph, spatial_interpolator)
-                                 for spatial_graph in spatial_graphs_set.graphs]
 

@@ -104,7 +104,6 @@ def cache_object(in_object, object_name):
     """Caches the object for future use"""
     object_cache_path = get_object_cachepath(object_name)
     file_handle = open(object_cache_path, "wb")
-    print("object to be cached: " + str(in_object))
     pickle.dump(in_object, file_handle)
     file_handle.close()
 
@@ -138,13 +137,13 @@ def get_object(object_name, compute_function, compute_args, flag):
         print object_name + " exists."
         loaded_object = load_object(object_name)
         print "Loaded " + object_name
-        ##print "Loaded " + str(loaded_object)
         return loaded_object
     else:
         print "Computing " + object_name + "..."
         computed_object = compute_function(*compute_args)
         print object_name + " computed."
-        cache_object(computed_object, object_name)
+        if config.CACHE_MODE:
+            cache_object(computed_object, object_name)
         return computed_object
 
 def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
@@ -157,16 +156,17 @@ def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
         route_index += 1
         routes_dicts.append(route_dict)
     city_pair = {
-        "start_city": {
+        "startCity": {
             "name": start,
             "coordinates": start_lat_lng
         },
-        "end_city": {
+        "endCity": {
             "name": end,
             "coordinates": end_lat_lng
         },
-        "routes":  routes_dicts
+        "routes": routes_dicts
     }
-    save_path = config.DROPBOX_DIRECTORY + "/example_city_pair.json"
+    filename = "/" + str(start) + "_" + str(end) + ".json"
+    save_path = config.DROPBOX_DIRECTORY + filename 
     with open(save_path, 'w') as file_path:
         json.dump(city_pair, file_path)
