@@ -17,6 +17,7 @@ import config
 import spatial
 import parameters
 import routes
+import visualize
 
 
 def pair_analysis(start, end):
@@ -32,11 +33,11 @@ def pair_analysis(start, end):
     end_latlng = spatial_graphs_sets.end_latlng
     ##print("num graphs: " + str(len(spatial_graphs)))
     ##test_graphs = spatial_graphs[:1]
-    complete_routes = [routes.graph_to_route(graph,
-                      parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
-                      parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
-                      for graph in spatial_graphs]
-    cacher.save_routes(complete_routes, start, end, start_latlng, end_latlng)
+    #complete_routes = [routes.graph_to_route(graph,
+    #                  parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
+    #                  parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
+    #                  for graph in spatial_graphs]
+    #cacher.save_routes(complete_routes, start, end, start_latlng, end_latlng)
     """
     for i in range(len(complete_routes)):
         print ("(triptime, comfort rating, pylon cost, tube cost, land cost) \

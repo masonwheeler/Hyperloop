@@ -24,6 +24,12 @@ import spatial_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
 
+VISUALIZE_DIRECTIONS = True
+VISUALIZE_SPLINE = True
+VISUALIZE_LATTICE = True
+VISUALIZE_EDGES = True
+VISUALIZE_GRAPHS = True
+VISUALIZE_PATHS_2D = True
 
 def build_directions(start, end):
     """Build Directions Object
@@ -38,12 +44,16 @@ def build_spatial_lattice(route_directions):
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
                                              route_directions, 9, 7)
     if config.VISUAL_MODE:
-        plottable_spline = route_spatial_lattice.get_plottable_spline()
-        config.PLOT_QUEUE.append([plottable_spline, 'r-'])
-        plottable_directions = route_spatial_lattice.get_plottable_directions()
-        config.PLOT_QUEUE.append([plottable_directions, 'b-'])
-        plottable_lattice = route_spatial_lattice.get_plottable_lattice()
-        config.PLOT_QUEUE.append([plottable_lattice, 'g.'])
+        if VISUALIZE_SPLINE:
+            plottable_spline = route_spatial_lattice.get_plottable_spline()
+            config.PLOT_QUEUE.append([plottable_spline, 'r-'])
+        if VISUALIZE_DIRECTIONS:
+            plottable_directions = \
+                route_spatial_lattice.get_plottable_directions()
+            config.PLOT_QUEUE.append([plottable_directions, 'b-'])
+        if VISUALIZE_LATTICE:
+            plottable_lattice = route_spatial_lattice.get_plottable_lattice()
+            config.PLOT_QUEUE.append([plottable_lattice, 'g.'])
     return route_spatial_lattice
 
 def build_spatial_edges_sets(route_spatial_lattice):
@@ -52,6 +62,10 @@ def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
                                         spatial_interpolate.quintic)
+    if config.VISUAL_MODE:
+        if VISUALIZE_EDGES:
+            plottable_edges = route_spatial_edges_sets.get_plottable_edges()
+            config.PLOT_QUEUE.append([plottable_edges, 'k-'])
     return route_spatial_edges_sets
 
 def build_spatial_graphs_sets(route_spatial_edges_sets):
@@ -59,6 +73,13 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
     """
     route_spatial_graphs_sets = spatial_graphs.get_spatial_graphs_sets(
                                                  route_spatial_edges_sets)
+    if config.VISUAL_MODE:
+        if VISUALIZE_GRAPHS:
+            plottable_graphs = route.spatial_graphs_sets.get_plottable_graphs()
+            for plottable_graph in plottable_graphs:
+                config.PLOT_QUEUE.append([plottable_graph, 'c-'])
+                visualize.plot_objects(config.PLOT_QUEUE)
+                config.PLOT_QUEUE.pop()    
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):
@@ -66,6 +87,14 @@ def build_spatial_paths_set_2d(route_spatial_graphs_sets):
     """
     route_spatial_paths_set_2d = spatial_paths_2d.get_spatial_paths_set_2d(
                                                  route_spatial_graphs_sets)
+    if config.VISUAL_MODE:
+        if VISUALIZE_PATHS_2D:
+            plottable_paths_2d = \
+                route.spatial_paths_set_2d.get_plottable_paths()
+            for plottable_path in plottable_paths_2d:
+                config.PLOT_QUEUE.append([plottable_path, 'c-'])
+                visualize.plot_objects(config.PLOT_QUEUE)
+                config.PLOT_QUEUE.pop()    
     return route_spatial_paths_set_2d
 
 #def build_spatial_paths_3d(route_spatial_paths_set_2d):
