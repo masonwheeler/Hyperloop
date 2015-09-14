@@ -87,17 +87,17 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     def build_elevation_profiles(self):
-        for spatial_edges_set in self.final_edges_sets:
+        for spatial_edges_set in self.filtered_edges_sets:
             for spatial_edge in spatial_edges_set:
                 spatial_edge.get_elevation_profile()
     
     def compute_land_costs(self):
-        for spatial_edges_set in self.final_edges_sets:
+        for spatial_edges_set in self.filtered_edges_sets:
             for spatial_edge in spatial_edges_set:
                 spatial_edge.compute_land_cost()
 
     def build_tubes(self):
-        for spatial_edges_set in self.final_edges_sets:
+        for spatial_edges_set in self.filtered_edges_sets:
             for spatial_edge in spatial_edges_set:
                 spatial_edge.build_tube()
 
@@ -117,11 +117,11 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         self.projection = spatial_lattice.projection
         abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
             SpatialEdge, spatial_degree_constraint, spatial_interpolator)
-        self.finish_edges_sets()
+        #self.finish_edges_sets()
 
     def get_plottable_edges(self, color_string):
         plottable_edges = []
-        for edges_set in self.final_edges_sets:
+        for edges_set in self.filtered_edges_sets:
             for edge in edges_set:
                 plottable_edge = edge.to_plottable_edge(color_string)
                 plottable_edges.append(plottable_edge)

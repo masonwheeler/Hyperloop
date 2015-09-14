@@ -50,8 +50,10 @@ class AbstractEdgesSet(object):
 class AbstractEdgesSets(object):
 
     def is_edge_pair_compatible(self, edge_a, edge_b):
-        edge_pair_compatible = (edge_a.end_id == edge_b.start_id and
-            abs(edge_a.angle - edge_b.angle) < self.degree_constraint)
+        do_end_points_match = edge_a.end_id == edge_b.start_id
+        are_angles_compatible = (abs(edge_a.angle - edge_b.angle)
+                                 < self.degree_constraint)
+        edge_pair_compatible = do_end_points_match and are_angles_compatible
         return edge_pair_compatible
 
     def lattice_slices_to_unfiltered_edges_sets(self, lattice_slices,
@@ -75,11 +77,14 @@ class AbstractEdgesSets(object):
                            for edge_b in edges_sets[1]]
             edge_a.is_useful = any(compatibles)
         for edge_set_index in range(1, len(edges_sets) - 1):
-            for edge_b in edges_sets[edge_set_index]:
+            current_edge_set = edges_sets[edge_set_index]
+            last_edge_set = edges_sets[edge_set_index - 1]
+            next_edge_set = edges_sets[edge_set_index + 1]
+            for edge_b in current_edge_set:                
                 compatibles_a = [self.is_edge_pair_compatible(edge_a, edge_b)
-                                 for edge_a in edges_sets[edge_set_index - 1]]
+                                 for edge_a in last_edge_set]
                 compatibles_c = [self.is_edge_pair_compatible(edge_b, edge_c)
-                                 for edge_c in edges_sets[edge_set_index + 1]]
+                                 for edge_c in next_edge_set]
                 edge_b.is_useful = any(compatibles_a) and any(compatibles_c)
         for edge_b in edges_sets[-1]:
             compatibles = [self.is_edge_pair_compatible(edge_a, edge_b)
@@ -87,12 +92,16 @@ class AbstractEdgesSets(object):
             edge_b.is_useful = any(compatibles)
 
     def filter_edges(self, edges_sets):
+        unfiltered_length = 0
+        filtered_length = 0
         filtered_edges_sets = []
         for edges_set in edges_sets:
             filtered_edges_set = []
             for edge in edges_set:
                 if edge.is_useful:
                     filtered_edges_set.append(edge)
+            unfiltered_length += len(edges_set)
+            filtered_length += len(filtered_edges_set)
             filtered_edges_sets.append(filtered_edges_set)
         return filtered_edges_sets
 
@@ -102,19 +111,17 @@ class AbstractEdgesSets(object):
                 return True
         return False
 
-    def iterative_filter(self, unfiltered_edges_sets):
-        prefilter_num_edges = util.list_of_lists_len(unfiltered_edges_sets)
+    def iterative_filter(self, edges_sets):
+        prefilter_num_edges = util.list_of_lists_len(edges_sets)
         util.smart_print("The original number of edges: " +
                          str(prefilter_num_edges))
-        filtered_edges_sets_list = []
         while True:
-            self.determine_useful_edges(unfiltered_edges_sets)
-            filtered_edges_sets = self.filter_edges(unfiltered_edges_sets)
-            any_empty_edges_set = self.check_empty(filtered_edges_sets)
+            self.determine_useful_edges(edges_sets)
+            edges_sets = self.filter_edges(edges_sets)
+            any_empty_edges_set = self.check_empty(edges_sets)
             if any_empty_edges_set:
                 raise ValueError("Encountered Empty EdgesSet")
-            filtered_edges_sets_list.append(filtered_edges_sets)
-            postfilter_num_edges = util.list_of_lists_len(filtered_edges_sets)
+            postfilter_num_edges = util.list_of_lists_len(edges_sets)
             if postfilter_num_edges == prefilter_num_edges:
                 util.smart_print("The final number of edges is: " +
                              str(postfilter_num_edges))
@@ -122,14 +129,12 @@ class AbstractEdgesSets(object):
             util.smart_print("The current number of edges is: " +
                              str(postfilter_num_edges))
             prefilter_num_edges = postfilter_num_edges
-        return filtered_edges_sets_list
+        return edges_sets
 
     def __init__(self, lattice, edge_builder, degree_constraint, interpolator):
         self.degree_constraint = degree_constraint
         self.interpolator = interpolator
-        self.unfiltered_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
+        self.raw_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
-        self.filtered_edges_sets_list = self.iterative_filter(
-                                       self.unfiltered_edges_sets)
-        self.final_edges_sets = self.filtered_edges_sets_list[-1]
+        self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
 
