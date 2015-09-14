@@ -51,7 +51,7 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
 
     def get_plottable_paths(self, color_string):
         plottable_paths = []
-        for path in self.paths
+        for path in self.paths:
             plottable_path = path.to_plottable(color_string)
             plottable_paths.append(plottable_path)
         return plottable_paths
