@@ -27,9 +27,9 @@ import spatial_paths_3d
 if config.VISUAL_MODE:
     import visualize
     VISUALIZE_DIRECTIONS = True
-    VISUALIZE_SPLINE = True
-    VISUALIZE_LATTICE = True
-    VISUALIZE_EDGES = True
+    VISUALIZE_SPLINE = False
+    VISUALIZE_LATTICE = False
+    VISUALIZE_EDGES = False
     VISUALIZE_GRAPHS = True
     VISUALIZE_COST_TIME_SCATTERPLOT = True
     VISUALIZE_PATHS_2D = True
@@ -84,11 +84,11 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                 visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
                 visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D)
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
-        #if VISUALIZE_COST_TIME_SCATTERPLOT:
-        #    cost_time_scatter = route_spatial_graphs_sets.cost_time_scatter()
-        #    config.PLOT_QUEUE_COST_TIME_SCATTERPLOT.append(
-        #                             [cost_time_scatter, 'r.'])
-        #    visualize.plot_objects(config.PLOT_QUEUE_COST_TIME_SCATTERPLOT)
+        if VISUALIZE_COST_TIME_SCATTERPLOT:
+            cost_time_scatterplot = \
+                route_spatial_graphs_sets.cost_time_scatter('r-')
+            visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
+            visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT)
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):

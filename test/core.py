@@ -32,7 +32,6 @@ def pair_analysis(start, end):
     start_latlng = spatial_graphs_sets.start_latlng
     end_latlng = spatial_graphs_sets.end_latlng
     ##print("num graphs: " + str(len(spatial_graphs)))
-    ##test_graphs = spatial_graphs[:1]
     #complete_routes = [routes.graph_to_route(graph,
     #                  parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
     #                  parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
@@ -50,6 +49,4 @@ def pair_analysis(start, end):
     """
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
-    if config.VISUAL_MODE:
-        visualize.plot_objects(config.PLOT_QUEUE)    
     return 0
