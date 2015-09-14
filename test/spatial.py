@@ -86,7 +86,7 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
         if VISUALIZE_COST_TIME_SCATTERPLOT:
             cost_time_scatterplot = \
-                route_spatial_graphs_sets.cost_time_scatter('r-')
+                route_spatial_graphs_sets.get_cost_time_scatterplot('r-')
             visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
             visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT)
     return route_spatial_graphs_sets

@@ -10,8 +10,9 @@ class AbstractPath(object):
 
 class AbstractPathsSet(object):
     def __init__(self, graphs_sets, interpolator, path_builder):
-        self.spatial_paths = [path_builder(graph, interpolator)
-                                for graph in graphs_sets.selected_graphs]
+        self.underlying_graphs = graphs_sets.selected_graphs
+        self.paths = [path_builder(graph, interpolator)
+                      for graph in self.underlying_graphs]
 
 class AbstractPathsSets(object):
     def __init__(self, graphs_sets):
