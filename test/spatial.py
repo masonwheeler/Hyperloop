@@ -30,7 +30,7 @@ if config.VISUAL_MODE:
     VISUALIZE_SPLINE = False
     VISUALIZE_LATTICE = False
     VISUALIZE_EDGES = False
-    VISUALIZE_GRAPHS = True
+    VISUALIZE_GRAPHS = False
     VISUALIZE_COST_TIME_SCATTERPLOT = True
     VISUALIZE_PATHS_2D = True
     VISUALIZE_PATHS_3D = True
@@ -80,15 +80,19 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
     if config.VISUAL_MODE:
         if VISUALIZE_GRAPHS:
             plottable_graphs = route_spatial_graphs_sets.get_plottable_graphs('c-')
+            are_axes_equal = True
             for plottable_graph in plottable_graphs:
                 visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
-                visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D)
+                visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D,
+                                       are_axes_equal)
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
         if VISUALIZE_COST_TIME_SCATTERPLOT:
+            are_axes_equal = False
             cost_time_scatterplot = \
-                route_spatial_graphs_sets.get_cost_time_scatterplot('r-')
+                route_spatial_graphs_sets.get_cost_time_scatterplot('r.')
             visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
-            visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT)
+            visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
+                                   are_axes_equal)
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):
@@ -99,16 +103,18 @@ def build_spatial_paths_set_2d(route_spatial_graphs_sets):
     if config.VISUAL_MODE:
         if VISUALIZE_PATHS_2D:
             plottable_paths_2d = \
-                route_spatial_paths_set_2d.get_plottable_paths()
+                route_spatial_paths_set_2d.get_plottable_paths('c-')
             plottable_paths_graphs_2d = \
-                route_spatial_paths_set_2d.get_paths_graphs()
+                route_spatial_paths_set_2d.get_paths_graphs('y-')
             plottable_paths_and_graphs = zip(plottable_paths_2d,
                                              plottable_paths_graphs_2d)
+            are_axes_equal = True
             for plottable_path_and_graph in plottable_paths_and_graphs:
                 plottable_path, plottable_graph = plottable_path_and_graph
-                visualize.PLOT_QUEUE_SPATIAL_2D.append([plottable_path, 'c-'])
-                visualize.PLOT_QUEUE_SPATIAL_2D.append([plottable_graph, 'y-'])
-                visualize.plot_objects(config.PLOT_QUEUE_SPATIAL_2D)
+                visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_path)
+                visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
+                visualize.plot_objects(config.PLOT_QUEUE_SPATIAL_2D,
+                                       are_axes_equal)
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
     return route_spatial_paths_set_2d
@@ -130,7 +136,7 @@ def city_pair_to_spatial_graphs_sets(start, end):
     route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
     route_spatial_graphs_sets = build_spatial_graphs_sets(
                                      route_spatial_edges_sets)
-    #route_spatial_paths_set_2d = build_spatial_paths_set_2d(
-    #                                 route_spatial_graphs_sets)
+    route_spatial_paths_set_2d = build_spatial_paths_set_2d(
+                                     route_spatial_graphs_sets)
     #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
     return route_spatial_graphs_sets

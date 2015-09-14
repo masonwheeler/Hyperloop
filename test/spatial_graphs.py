@@ -65,10 +65,10 @@ class SpatialGraph(abstract.AbstractGraph):
         #spatial_curvature = compute_spatial_curvature(interpolated_geospatials)
         #max_velocities
         #time = triptime.compute_spatial_graph_time(geospatials)
-        time = interpolate.graph_curvature(self.geospatials,
+        self.time = interpolate.graph_curvature(self.geospatials,
                                            self.GRAPH_SAMPLE_SPACING)
-        total_cost = self.pylon_cost + self.tube_cost + self.land_cost
-        return [total_cost, time]
+        self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
+        return [self.total_cost, self.time]
 
     def to_plottable(self, color_string):
         """Return the geospatial coords of the graph in plottable format"""
@@ -158,9 +158,11 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         return plottable_graphs
 
     def get_cost_time_scatterplot(self, color_string):
-        cost_time_pairs = self.root_graphs_set.graphs_a_b_vals
-        costs = [cost_time_pair[0] for cost_time_pair in cost_time_pairs]        
-        times = [cost_time_pair[1] for cost_time_pair in cost_time_pairs]
+        costs = []
+        times = []
+        for graph in self.selected_graphs:
+            costs.append(graph.total_cost)
+            times.append(graph.time)
         scatterplot_values = [costs, times]
         scatterplot = [scatterplot_values, color_string]
         return scatterplot

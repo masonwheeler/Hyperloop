@@ -182,10 +182,10 @@ class AbstractGraphsSets(object):
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)
-        self.root_graphs_set = graphs_sets_tree.root
+        root_graphs_set = graphs_sets_tree.root
         final_num_fronts_to_select = 1
-        self.root_graphs_set.select_graphs(self.root_graphs_set.minimize_a_vals,
-                                           self.root_graphs_set.minimize_b_vals,
+        root_graphs_set.select_graphs(root_graphs_set.minimize_a_vals,
+                                      root_graphs_set.minimize_b_vals,
                                            final_num_fronts_to_select)
-        self.selected_graphs = self.root_graphs_set.selected_graphs
+        self.selected_graphs = root_graphs_set.selected_graphs
 
