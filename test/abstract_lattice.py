@@ -6,21 +6,14 @@ Purpose of Module:
     To implement the AbstractLattice class and accompanying classes.
 
 Last Modified:
-    09/08/15
+    09/13/15
 
 Last Modified By:
     Jonathan Ward
 
 Last Modification Purpose:
-    Created Module
+    Moved get plottable lattice to subclasses
 """
-
-# Standard Modules:
-import numpy as np
-
-# Custom Modules:
-import util
-
 
 class AbstractPoint(object):
     """Abstract object that represents a point.
@@ -74,15 +67,4 @@ class AbstractLattice(object):
             self.slices.append(new_slice)
             start_id = new_slice.end_id
             lattice_x_coord += 1
-
-    def get_plottable_lattice(self):
-        slices_physical_x_coords = [eachSlice.get_physical_x_coords()
-                                    for eachSlice in self.slices]
-        slices_physical_y_coords = [eachSlice.get_physical_y_coords()
-                                    for eachSlice in self.slices]
-        physical_x_coords = util.fast_concat(slices_physical_x_coords)
-        physical_y_coords = util.fast_concat(slices_physical_y_coords)
-        physical_x_coords_array = np.array(physical_x_coords)
-        physical_y_coords_array = np.array(physical_y_coords)
-        return [physical_x_coords_array, physical_y_coords_array]
 

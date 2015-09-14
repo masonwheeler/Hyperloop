@@ -105,10 +105,8 @@ WORKING_GRAPHS_DIRECTORY = ""
 Unitialized Global variables.
 """
 
-holder = {}
 PROJ = 0
 DIRECTIONS_COORDS = 0
-PLOT_QUEUE = []
 
 
 ########## API-Specific and System-Specific Settings ##########

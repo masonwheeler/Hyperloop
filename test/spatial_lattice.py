@@ -162,20 +162,36 @@ class SpatialLattice(abstract.AbstractLattice):
         abstract.AbstractLattice.__init__(self, spatial_slices_bounds,
                                                          SpatialSlice)
 
-    def get_plottable_directions(self):
+    def get_plottable_directions(self, color_string):
         x_values = [geospatial[0] for geospatial in self.directions_geospatials]
         y_values = [geospatial[1] for geospatial in self.directions_geospatials]
         x_array = np.array(x_values)
         y_array = np.array(y_values)
-        return [x_array, y_array]    
+        directions_points = [x_array, y_array]
+        plottable_directions = [directions_points, color_string]
+        return plottable_directions
 
-    def get_plottable_spline(self):
+    def get_plottable_spline(self, color_string):
         x_values = self.spatial_x_spline(self.spatial_spline_s_values)
         y_values = self.spatial_y_spline(self.spatial_spline_s_values)
         x_array = np.array(x_values)
         y_array = np.array(y_values)
-        return [x_array, y_array]
-        
+        spline_points = [x_array, y_array]
+        plottable_spline = [spline_points, color_string]
+        return plottable_spline
+
+    def get_plottable_lattice(self, color_string):
+        slices_physical_x_coords = [eachSlice.get_physical_x_coords()
+                                    for eachSlice in self.slices]
+        slices_physical_y_coords = [eachSlice.get_physical_y_coords()
+                                    for eachSlice in self.slices]
+        physical_x_coords = util.fast_concat(slices_physical_x_coords)
+        physical_y_coords = util.fast_concat(slices_physical_y_coords)
+        physical_x_coords_array = np.array(physical_x_coords)
+        physical_y_coords_array = np.array(physical_y_coords)
+        lattice_points = [physical_x_coords_array, physical_y_coords_array]
+        plottable_lattice = [lattice_points, color_string]
+        return plottable_lattice     
             
 def get_spatial_lattice(directions, spatial_x_spacing, spatial_y_spacing):
     lattice = cacher.get_object("spatial_lattice", SpatialLattice,

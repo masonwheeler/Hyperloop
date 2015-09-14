@@ -76,6 +76,14 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                                 self.end_point)
         return abstract_edge
 
+    def to_plottable_edge(self, color_string):
+        geospatial_x_vals = [geospatial[0] for geospatial in self.geospatials]
+        geospatial_y_vals = [geospatial[1] for geospatial in self.geospatials]
+        plottable_points = [geospatial_x_vals, geospatial_y_vals]
+        plottable_edge = [plottable_points, color_string]
+        return plottable_edge
+
+
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     def build_elevation_profiles(self):
@@ -111,6 +119,13 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
             SpatialEdge, spatial_degree_constraint, spatial_interpolator)
         self.finish_edges_sets()
 
+    def get_plottable_edges(self, color_string):
+        plottable_edges = []
+        for edges_set in self.final_edges_sets:
+            for edge in edges_set:
+                plottable_edge = edge.to_plottable_edge(color_string)
+                plottable_edges.append(plottable_edge)
+        return plottable_edges
 
 def get_spatial_edges_sets(spatial_lattice, spatial_interpolator):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",
