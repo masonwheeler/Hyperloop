@@ -157,6 +157,15 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
             plottable_graphs.append(plottable_graph)
         return plottable_graphs
 
+    def get_cost_time_scatterplot(self, color_string):
+        cost_time_pairs = self.root_graphs_set.graphs_a_b_vals
+        costs = [cost_time_pair[0] for cost_time_pair in cost_time_pairs]        
+        times = [cost_time_pair[1] for cost_time_pair in cost_time_pairs]
+        scatterplot_values = [costs, times]
+        scatterplot = [scatterplot_values, color_string]
+        return scatterplot
+        
+
 def get_spatial_graphs_sets(spatial_edges_sets):
     spatial_graphs_sets = cacher.get_object("spatial_graphs_sets",
         SpatialGraphsSets, [spatial_edges_sets], config.SPATIAL_GRAPHS_FLAG)

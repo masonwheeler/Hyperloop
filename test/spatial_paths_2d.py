@@ -41,6 +41,20 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
                    spatial_graphs_sets,
                    self.spatial_interpolator,
                    SpatialPath2d)
+
+    def get_plottable_graphs(self, color_string):
+        plottable_graphs = []
+        for graph in self.underlying_graphs:
+            plottable_graph = graph.to_plottable(color_string)
+            plottable_graphs.append(plottable_graph)
+        return plottable_graphs
+
+    def get_plottable_paths(self, color_string):
+        plottable_paths = []
+        for path in self.paths
+            plottable_path = path.to_plottable(color_string)
+            plottable_paths.append(plottable_path)
+        return plottable_paths
        
 def get_spatial_paths_set_2d(spatial_graphs_sets):
     spatial_paths_set_2d = cacher.get_object("spatial_paths_2d",
