@@ -84,11 +84,11 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                 config.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
                 visualize.plot_objects(config.PLOT_QUEUE_SPATIAL_2D)
                 config.PLOT_QUEUE.pop()
-        if VISUALIZE_COST_TIME_SCATTERPLOT:
-            cost_time_scatter = route_spatial_graphs_sets.cost_time_scatter()
-            config.PLOT_QUEUE_COST_TIME_SCATTERPLOT.append(
-                                     [cost_time_scatter, 'r.'])
-            visualize.plot_objects(config.PLOT_QUEUE_COST_TIME_SCATTERPLOT)
+        #if VISUALIZE_COST_TIME_SCATTERPLOT:
+        #    cost_time_scatter = route_spatial_graphs_sets.cost_time_scatter()
+        #    config.PLOT_QUEUE_COST_TIME_SCATTERPLOT.append(
+        #                             [cost_time_scatter, 'r.'])
+        #    visualize.plot_objects(config.PLOT_QUEUE_COST_TIME_SCATTERPLOT)
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):
@@ -130,7 +130,7 @@ def city_pair_to_spatial_graphs_sets(start, end):
     route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
     route_spatial_graphs_sets = build_spatial_graphs_sets(
                                      route_spatial_edges_sets)
-    route_spatial_paths_set_2d = build_spatial_paths_set_2d(
-                                     route_spatial_graphs_sets)
+    #route_spatial_paths_set_2d = build_spatial_paths_set_2d(
+    #                                 route_spatial_graphs_sets)
     #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
     return route_spatial_graphs_sets
