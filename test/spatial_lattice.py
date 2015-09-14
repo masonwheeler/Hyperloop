@@ -11,7 +11,7 @@ import numpy as np
 import time
 
 # Our Modules:
-import abstract_lattice as abstract
+import abstract_lattice
 import cacher
 import config
 import curvature
@@ -21,19 +21,19 @@ import proj
 import util
 
 
-class SpatialPoint(abstract.AbstractPoint):
+class SpatialPoint(abstract_lattice.AbstractPoint):
 
     def __init__(self, point_id, lattice_x_coord, lattice_y_coord,
                                   geospatial, is_in_right_of_way):
         spatial_x_coord, spatial_y_coord = geospatial
-        abstract.AbstractPoint.__init__(self, point_id, lattice_x_coord,
+        abstract_lattice.AbstractPoint.__init__(self, point_id, lattice_x_coord,
                              lattice_y_coord, spatial_x_coord, spatial_y_coord)
         self.geospatial = geospatial
         self.latlng = proj.geospatial_to_latlng(geospatial, config.PROJ)
         self.is_in_right_of_way = is_in_right_of_way
 
 
-class SpatialSlice(abstract.AbstractSlice):
+class SpatialSlice(abstract_lattice.AbstractSlice):
 
     @staticmethod
     def spatial_slice_points_builder(lattice_x_coord, spatial_slice_bounds,
@@ -58,12 +58,12 @@ class SpatialSlice(abstract.AbstractSlice):
         return [spatial_slice_points, point_id]        
 
     def __init__(self, lattice_x_coord, spatial_slice_bounds, slice_start_id):
-        abstract.AbstractSlice.__init__(self, lattice_x_coord,
+        abstract_lattice.AbstractSlice.__init__(self, lattice_x_coord,
                                         spatial_slice_bounds, slice_start_id,
                                     SpatialSlice.spatial_slice_points_builder)
 
 
-class SpatialLattice(abstract.AbstractLattice):
+class SpatialLattice(abstract_lattice.AbstractLattice):
     SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS = 10**5
     SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR = 10**13
     SPATIAL_BASE_RESOLUTION = 10 #Meters
@@ -159,8 +159,8 @@ class SpatialLattice(abstract.AbstractLattice):
                                     spatial_slices_directions_geospatials,
                                     spatial_slices_spline_geospatials,
                                     self.spatial_y_spacing)
-        abstract.AbstractLattice.__init__(self, spatial_slices_bounds,
-                                                         SpatialSlice)
+        abstract_lattice.AbstractLattice.__init__(self, spatial_slices_bounds,
+                                                                 SpatialSlice)
 
     def get_plottable_directions(self, color_string):
         x_values = [geospatial[0] for geospatial in self.directions_geospatials]

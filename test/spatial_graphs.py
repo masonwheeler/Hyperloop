@@ -70,9 +70,12 @@ class SpatialGraph(abstract.AbstractGraph):
         total_cost = self.pylon_cost + self.tube_cost + self.land_cost
         return [total_cost, time]
 
-    def to_plottable(self, style):
+    def to_plottable(self, color_string):
         """Return the geospatial coords of the graph in plottable format"""
-        plottable_graph = [zip(*self.geospatials), style]
+        geospatials_x_vals = [geospatial[0] for geospatial in self.geospatials]
+        geospatials_y_vals = [geospatial[1] for geospatial in self.geospatials]
+        graph_points = [geospatials_x_vals, geospatials_y_vals]
+        plottable_graph = [graph_points, color_string]
         return plottable_graph
 
 
@@ -147,6 +150,12 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
                             SpatialGraphsSets.merge_two_spatial_graphs,
                             SpatialGraphsSet)
 
+    def get_plottable_graphs(self, color_string):
+        plottable_graphs = []
+        for graph in self.selected_graphs:
+            plottable_graph = graph.to_plottable(color_string)
+            plottable_graphs.append(plottable_graph)
+        return plottable_graphs
 
 def get_spatial_graphs_sets(spatial_edges_sets):
     spatial_graphs_sets = cacher.get_object("spatial_graphs_sets",

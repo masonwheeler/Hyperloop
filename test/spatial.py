@@ -79,10 +79,10 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                                                  route_spatial_edges_sets)
     if config.VISUAL_MODE:
         if VISUALIZE_GRAPHS:
-            plottable_graphs = route_spatial_graphs_sets.get_plottable_graphs()
+            plottable_graphs = route_spatial_graphs_sets.get_plottable_graphs('c-')
             for plottable_graph in plottable_graphs:
-                config.PLOT_QUEUE.append([plottable_graph, 'c-'])
-                visualize.plot_objects(config.PLOT_QUEUE)
+                config.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
+                visualize.plot_objects(config.PLOT_QUEUE_SPATIAL_2D)
                 config.PLOT_QUEUE.pop()
         if VISUALIZE_COST_TIME_SCATTERPLOT:
             cost_time_scatter = route_spatial_graphs_sets.cost_time_scatter()
@@ -134,4 +134,3 @@ def city_pair_to_spatial_graphs_sets(start, end):
                                      route_spatial_graphs_sets)
     #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
     return route_spatial_graphs_sets
-
