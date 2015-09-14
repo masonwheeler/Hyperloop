@@ -50,14 +50,14 @@ def build_spatial_lattice(route_directions):
     if config.VISUAL_MODE:
         if VISUALIZE_SPLINE:
             plottable_spline = route_spatial_lattice.get_plottable_spline('r-')
-            config.PLOT_QUEUE_SPATIAL_2D.append(plottable_spline)
+            visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_spline)
         if VISUALIZE_DIRECTIONS:
             plottable_directions = \
                 route_spatial_lattice.get_plottable_directions('b-')
-            config.PLOT_QUEUE_SPATIAL_2D.append(plottable_directions)
+            visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_directions)
         if VISUALIZE_LATTICE:
             plottable_lattice = route_spatial_lattice.get_plottable_lattice('g.')
-            config.PLOT_QUEUE_SPATIAL_2D.append(plottable_lattice)
+            visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_lattice)
     return route_spatial_lattice
 
 def build_spatial_edges_sets(route_spatial_lattice):
@@ -69,7 +69,7 @@ def build_spatial_edges_sets(route_spatial_lattice):
     if config.VISUAL_MODE:
         if VISUALIZE_EDGES:
             plottable_edges = route_spatial_edges_sets.get_plottable_edges('k-')
-            config.PLOT_QUEUE_SPATIAL_2D += plottable_edges
+            visualize.PLOT_QUEUE_SPATIAL_2D += plottable_edges
     return route_spatial_edges_sets
 
 def build_spatial_graphs_sets(route_spatial_edges_sets):
@@ -81,9 +81,9 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
         if VISUALIZE_GRAPHS:
             plottable_graphs = route_spatial_graphs_sets.get_plottable_graphs('c-')
             for plottable_graph in plottable_graphs:
-                config.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
-                visualize.plot_objects(config.PLOT_QUEUE_SPATIAL_2D)
-                config.PLOT_QUEUE.pop()
+                visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_graph)
+                visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D)
+                visualize.PLOT_QUEUE_SPATIAL_2D.pop()
         #if VISUALIZE_COST_TIME_SCATTERPLOT:
         #    cost_time_scatter = route_spatial_graphs_sets.cost_time_scatter()
         #    config.PLOT_QUEUE_COST_TIME_SCATTERPLOT.append(
@@ -106,11 +106,11 @@ def build_spatial_paths_set_2d(route_spatial_graphs_sets):
                                              plottable_paths_graphs_2d)
             for plottable_path_and_graph in plottable_paths_and_graphs:
                 plottable_path, plottable_graph = plottable_path_and_graph
-                config.PLOT_QUEUE_SPATIAL_2D.append([plottable_path, 'c-'])
-                config.PLOT_QUEUE_SPATIAL_2D.append([plottable_graph, 'y-'])
+                visualize.PLOT_QUEUE_SPATIAL_2D.append([plottable_path, 'c-'])
+                visualize.PLOT_QUEUE_SPATIAL_2D.append([plottable_graph, 'y-'])
                 visualize.plot_objects(config.PLOT_QUEUE_SPATIAL_2D)
-                config.PLOT_QUEUE_SPATIAL_2D.pop()
-                config.PLOT_QUEUE_SPATIAL_2D.pop()
+                visualize.PLOT_QUEUE_SPATIAL_2D.pop()
+                visualize.PLOT_QUEUE_SPATIAL_2D.pop()
     return route_spatial_paths_set_2d
 
 def build_spatial_paths_3d(route_spatial_paths_set_2d):

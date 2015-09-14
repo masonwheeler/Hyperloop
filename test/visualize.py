@@ -16,6 +16,8 @@ import config
 import interpolate
 import util
 
+PLOT_QUEUE_SPATIAL_2D = []
+
 def visualize_elevation_profile(elevation_profile, tube_elevations):
     distances = []
     land_elevations = []
@@ -31,12 +33,10 @@ def visualize_elevation_profile(elevation_profile, tube_elevations):
     # plt.axis('equal')
     plt.show()
 
-
 def plot_object(object_data, style):
     x_values, y_values = object_data
     #print(x_values, y_values, style)
     plt.plot(x_values, y_values, style)
-
 
 def plot_objects(objects):
     for each_object in objects:
@@ -45,23 +45,19 @@ def plot_objects(objects):
     # plt.axis('equal')
     plt.show()
 
-
 def plot_colorful_objects(objects_and_styles):
     for each_object_and_style in objects_and_styles:
         each_object, each_style = each_object_and_style
         plot_object(each_object, each_style)
     plt.show()
 
-
 def plot_objectslist(object_data, style):
     for each_object_data in object_data:
         plot_object(each_object_data, style)
 
-
 def scatter_plot(x_vals, y_vals):
     plt.scatter(x_vals, y_vals)
     plt.show()
-
 
 def display_inputs(inputs):
     for each_input in inputs:
