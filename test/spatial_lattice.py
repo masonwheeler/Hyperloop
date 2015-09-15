@@ -135,7 +135,7 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
         return spatial_slices_bounds        
 
     def __init__(self, directions, spatial_x_spacing_power,
-                                              spatial_y_spacing_power):
+                                   spatial_y_spacing_power):
         self.start = directions.start
         self.end = directions.end
         self.start_latlng = directions.start_latlng

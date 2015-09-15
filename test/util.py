@@ -60,23 +60,6 @@ def to_pairs(points):
     pairs = [points[i:i + 2] for i in range(len(points) - 1)]
     return pairs
 
-
-def points_to_radius(three_points):
-    """Convert points to radius
-    """
-    #print("three points: " + str(three_points))
-    p1, p2, p3 = three_points
-    a = np.linalg.norm(np.subtract(p1, p2))
-    b = np.linalg.norm(np.subtract(p2, p3))
-    c = np.linalg.norm(np.subtract(p1, p3))
-    p = (a + b + c) / 1.99999999999999
-    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
-    if A == 0:
-        return 1000000000000
-    else:
-        return a * b * c / (4 * A)
-
-
 # Pair Operations:
 
 def swap_pair(pair):

@@ -11,13 +11,15 @@ Citations:
     - Polyakov
 """
 
+# Standard Modules:
 import math
 import numpy as np
 import random
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
-import csv
 
+# Custom Modules:
+import util
 
 
 def gamma_matrix(t):
@@ -47,24 +49,24 @@ def gamma_matrix_start(t):
     return gamma_matrix_start
 
 
-def quint(t, x, dx0, dx_n):
+def quint(t, x, dx_0, dx_n):
     """ For an exposition of the quintic interpolation method see Polyakov (79.)
     """
     N = len(x) - 1  # number of viapoints
-    d2x0 = d2x_n = 0
-    b0 = np.array([x[0], dx0, d2x0])  # initial position and derivatives
+    d2x_0 = d2x_n = 0
+    b_0 = np.array([x[0], dx_0, d2x_0])  # initial position and derivatives
     b_n = np.array([x[N], dx_n, d2x_n])  # final position and derivatives
 
-    def bj(j):
+    def b_j(j):
         return np.array([x[j], 0, 0, 0, 0, x[j]])
 
     C = np.zeros((6 * N, 6 * N))
     b = np.zeros(6 * N)
 
-    b[0:3] = b0
+    b[0:3] = b_0
     b[6 * N - 3:6 * N] = b_n
     for j in range(1, N):
-        b[3 + 6 * (j - 1):3 + 6 * j] = bj(j)
+        b[3 + 6 * (j - 1):3 + 6 * j] = b_j(j)
 
     C[0:3, 0:6] = gamma_matrix(t[0])
     C[6 * N - 3:6 * N, 6 * N - 6:6 * N] = gamma_matrix(t[N])
@@ -79,6 +81,8 @@ def quint(t, x, dx0, dx_n):
     list_of_coefficients = alist.tolist()
     return list_of_coefficients
 
+#Customizations of quintic interpolation
+
 def join_indices(N):
     if N <= 5:
         return []
@@ -87,21 +91,36 @@ def join_indices(N):
         if k >= 2:
             return [5 * j for j in range(1, m + 1)]
         else:
-            return [5 * j for j in range(1, m)] + [int(5 * (m - 1) + np.ceil((5 + k) / 2.))]
+            return [5 * j for j in range(1, m)] + [int(5 * (m - 1) + np.ceil((5 + k) /  2.))]
 
+def get_boundary_indices(num_intervals):
+    if num_intervals <= 5:
+        joined_indices = []
+    else:
+        num_indices_partitions, num_leftover_indices  = divmod(num_intervals, 5)
+        if num_leftover_indices >= 2:
+            boundary_indices = [5 * (j + 1) for j
+                                in range(num_indices_partitions)]
+        else:
+            boundary_indices = [5 * (j + 1) for j
+                                in range(num_indices_partitions - 1)]
+            last_offset = np.ceil((5 + num_leftover_indices) / 2.0)
+            last_index = int(5 * (m - 1) + last_offset)
+            boundary_indices.append(last_index)
+    return boundary_indices
 
 def super_quint(t, x, M):
-    """
+    "
     Extends quint() to allow for high numbers (> 5) of waypoints to be
     interpolated, without running into ill-conditioning problems.
-    """
+    "
 
     J = join_indices(len(x) - 1)
     if len(J) == 0:
         polys = quint(t, x, 0, 0)
     else:
         u = [(x[j + 1] - x[j - 1]) / (t[j + 1] - t[j - 1]) for j in J]
-        polys = quint(t[:J[0] + 1], x[:J[0] + 1], 0, u[0]) + sum([quint(t[J[i]:J[i + 1] + 1], x[J[i]:J[i + 1] + 1],
+        polys = quint(t[:J[0] + 1], x[:J[0] + 1], 0, u[0]) + sum([quint(t[J[i]:J[i +    1] + 1], x[J[i]:J[i + 1] + 1],
                                                                         u[i], u[i + 1]) for i in range(len(J) - 1)], []) + quint(t[J[-1]:], x[J[-1]:], u[-1], 0)
 
     t_m = [[t[i] + (m * 1. / M) * (t[i + 1] - t[i])
@@ -110,6 +129,66 @@ def super_quint(t, x, M):
             for time in t_m[i]] for i in range(len(t_m))]
     return [sum(t_m, []), sum(x_m, [])]
 
+def extended_quintic(s, x, num_partition_samples):
+    """
+    Extends quint() to allow for high numbers (> 5) of waypoints to be
+    interpolated, without running into ill-conditioning problems.
+    """
+    num_intervals = len(x) - 1
+    boundary_indices = get_boundary_indices(num_intervals)
+    if len(boundary_indices) == 0:
+        first_derivative_initial_value = 0
+        first_derivative_final_value = 0
+        quintic_coeffs = quint(s, x, first_derivative_initial_value,
+                                           first_derivative_final_value)
+    else:
+        boundary_first_derivatives = []
+        initial_first_derivative = 0
+        boundary_first_derivatives.append(initial_first_derivative)
+        for i in boundary_indices: 
+             boundary_first_derivative = ((x[i + 1] - x[i - 1]) /
+                                          (s[i + 1] - s[i - 1]))
+             boundary_first_derivatives.append(boundary_first_derivative)
+        final_first_derivative = 0
+        boundary_first_derivatives.append(final_first_derivative)
+
+        boundary_indices_pairs = util.to_pairs(boundary_indices)
+
+        s_partitions = []
+        for boundary_index_pair in boundary_indices_pairs:
+            boundary_index_a, boundary_index_b = boundary_index_pair
+            s_partition = s[joined_index_a : joined_index_b + 1]
+            s_partitions.append(s_partition)
+        
+        x_partitions = []
+        for boundary_index_pair in boundary_indices_pairs:
+            boundary_index_a, boundary_index_b = boundary_index_pair
+            x_partition = x[joined_index_a : joined_index_b + 1]
+            x_partitions.append(x_partition)
+
+        quintic_coeffs = []
+        for i in range(len(joined_indices) - 1):
+            quintic_coeff = quint(s_partitions[i],
+                                  x_partitions[i],
+                                  boundary_first_derivatives[i],
+                                  boundary_first_derivatives[i + 1])
+            quintic_coeffs.append(quintic_coeff)
+    
+    sampled_x_values = []
+    for i in range(num_intervals):
+        sampled_s_partition = []
+        for each_int in range(num_partition_samples):
+            fraction_along = float(each_int) / float(num_partition_samples)
+            sampled_s_value = s[i] + fraction_along * (s[i+1] - s[i])
+            sampled_s_partition.append(sampled_s_value)
+
+        partition_quintic_coeffs = partitions_quintic_coeffs[i]
+        for s in sampled_s_partition:
+            s_powers = [1, s, s**2, s**3, s**4, s**5]
+            sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
+            sampled_x_values.append(sampled_x_value)
+    
+    return sampled_x_values
 
 def para_super_q(x, M):
     """
@@ -123,6 +202,19 @@ def para_super_q(x, M):
     t_m, y_m = super_quint(t, y_points, M)
     return np.transpose([x_m, y_m])
 
+def parametric_extended_quintic(points, num_partition_samples,
+                                        num_s_vals_per_x_val):
+    """
+    Parametric version of extended_quintic.
+    """
+    s_vals = [num_s_vals_per_x_val * n for n in range(len(points))]
+    points_x_vals, points_y_vals = np.transpose(points)
+    sampled_x_vals = extended_quintic(s_vals, x_points, num_partition_samples)
+    sampled_y_vals = extended_quintic(s_vals, y_points, num_partition_samples)
+    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    return interpolated_points
+
+"""
 def scipy_q(x, M):
     t = [15 * n for n in range(len(x))]
     t_m = sum([[t[i] + (m * 1. / M) * (t[i + 1] - t[i])
@@ -135,35 +227,35 @@ def scipy_q(x, M):
     x_m = x_func(t_m)
     y_m = y_func(t_m)
     return np.transpose([x_m, y_m])
-
+"""
 
 # Test quint(t, x, v1, v2):
+"""
+t = [i for i in range(6)]
+x = [random.uniform(-10,10) for i in range(len(t))]
+v1 = random.uniform(-10,10)
+v2 = random.uniform(-10,10)
+print "x is:"
+print x
+print "t is:"
+print t
+print "(v1, v2) is:"
+print [v1, v2]
 
-# t = [i for i in range(6)]
-# x = [random.uniform(-10,10) for i in range(len(t))]
-# v1 = random.uniform(-10,10)
-# v2 = random.uniform(-10,10)
-# print "x is:"
-# print x
-# print "t is:"
-# print t
-# print "(v1, v2) is:"
-# print [v1, v2]
+polys = quint(t, x, v1, v2)
 
-# polys = quint(t, x, v1, v2)
+t_m = [[t[i]+(m/100.)*(t[i+1]-t[i]) for m in range(100)] for i in range(len(t)-1)]
+x_m = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in t_m[i]] for i in range(len(t_m))]
+t_m = sum(t_m, [])
+x_m = sum(x_m, [])
 
-# t_m = [[t[i]+(m/100.)*(t[i+1]-t[i]) for m in range(100)] for i in range(len(t)-1)]
-# x_m = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in t_m[i]] for i in range(len(t_m))]
-# t_m = sum(t_m, [])
-# x_m = sum(x_m, [])
-
-# print "x_m is:"
-# print x_m
-# print "t_m is:"
-# print t_m
-# plt.plot(t_m, x_m, t, x)
-# plt.show()
-
+print "x_m is:"
+print x_m
+print "t_m is:"
+print t_m
+plt.plot(t_m, x_m, t, x)
+plt.show()
+"""
 
 # Test join_indices(N):
 # should get 5,5,5,3,3,...
@@ -186,14 +278,3 @@ def scipy_q(x, M):
 #x = np.transpose([x_points, y_points])
 
 
-# with open('/Users/Droberts/Dropbox/save/Dallas_to_Austin/Dallas_to_Austin_graphs/Dallas_to_Austin_graph003.csv', 'rb') as f:
-#     reader = csv.reader(f)
-#     x = list(reader)
-# x = [[float(p[0]),float(p[1])] for p in x]
-# x_points, y_points = np.transpose(x)
-
-#x_vals = scipy_q(x, 100)
-#x_vals, y_vals = np.transpose(x_vals)
-
-#plt.plot(x_vals, y_vals, '.', x_points, y_points, 'o')
-# plt.show()

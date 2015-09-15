@@ -17,6 +17,7 @@ Last Modification Purpose:
 
 #Standard Modules:
 import scipy.interpolate
+import math
 import numpy as np
 
 #Our Modules:
@@ -231,3 +232,22 @@ def curvature_test_2d(x_spline, y_spline, s_values, curvature_threshold):
                                                curvature_threshold)
     return is_curvature_valid
 
+def points_to_radius(three_points):
+    """Convert points to radius
+    """
+    #print("three points: " + str(three_points))
+    p1, p2, p3 = three_points
+    a = np.linalg.norm(np.subtract(p1, p2))
+    b = np.linalg.norm(np.subtract(p2, p3))
+    c = np.linalg.norm(np.subtract(p1, p3))
+    p = (a + b + c) / 1.99999999999999
+    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
+    if A == 0:
+        return 1000000000000
+    else:
+        return a * b * c / (4 * A)
+
+def compute_naive_curvature(three_points):
+    radius_of_curvature = points_to_radius(three_points)
+    naive_curvature = 1.0 / radius_of_curvature
+    return naive_curvature
