@@ -30,9 +30,6 @@ SUB-SCRIPTS:
 import math
 import numpy as np
 
-# Our Modules:
-import config
-
 
 def accel_passenger(vel, accel, component):
     """
@@ -61,19 +58,6 @@ def accel_passenger(vel, accel, component):
                                   accel_passenger_val in accel_passenger]
     return accel_passenger_components
 
-
-"""
-2. Take Fast Fourier Transform of psnger accel:
-      {ap_i}  -->  {ap_f}
-3. Apply weighting filter and sum results
-      {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)|^2
-"""
-
-"""
-See (Gangadharan) equations (7) and (8) for weighting factors.
-"""
-
-
 def vertical_weighting_factor(frequency):
     vertical_weighting_factor = 0.588 * math.sqrt(
         (1.911 * frequency**2 + (.25 * frequency**2)**2) /
@@ -81,22 +65,21 @@ def vertical_weighting_factor(frequency):
             (1.563 * frequency - 0.0368 * frequency**3)**2))
     return vertical_weighting_factor
 
-
 def horizontal_weighting_factor(frequency):
     return 1.25 * vertical_weighting_factor(frequency)
 
-
 def weighting_factors(frequency):
+    """
+    See (Gangadharan) equations (7) and (8) for weighting factors.
+    """
     weighting_factors = [0, vertical_weighting_factor(frequency),
                          horizontal_weighting_factor(frequency)]
     return weighting_factors
 
-"""
-See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
-"""
-
-
 def frequency_weighted_rms(accel_frequency, time_interval, component):
+    """
+    See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
+    """
     frequency_width = float(len(accel_frequency))
     time_interval = float(time_interval)
     frequency_half_width = int(math.floor(frequency_width / 2.0))
@@ -108,8 +91,13 @@ def frequency_weighted_rms(accel_frequency, time_interval, component):
                                             for accel_val in accel_frequency_weighted]))
     return frequency_weighted_r_m_s
 
-
 def sperling_comfort_index(vel, accel, time_interval, component):
+    """
+    2. Take Fast Fourier Transform of psnger accel:
+          {ap_i}  -->  {ap_f}
+    3. Apply weighting filter and sum results
+          {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)|^2
+    """
     num_time_points = len(vel)
     accel_passenger_components = accel_passenger(vel, accel, component)
     accel_passenger_frequency = np.fft.fft(
