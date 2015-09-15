@@ -46,7 +46,7 @@ def build_spatial_lattice(route_directions):
     """Build lattice between directions points and spline points
     """
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
-                                             route_directions, 9, 7)
+                                             route_directions, 8, 6)
     if config.VISUAL_MODE:
         if VISUALIZE_SPLINE:
             plottable_spline = route_spatial_lattice.get_plottable_spline('r-')

@@ -16,11 +16,12 @@ import math
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-from scipy.interpolate import UnivariateSpline
+import scipy.interpolate 
 
 # Custom Modules:
-import util
 import curvature
+import interpolate
+import util
 
 def gamma_matrix(t):
     gamma_matrix = np.array([[1, t, t**2, t**3, t**4, t**5],
@@ -287,21 +288,89 @@ def parametric_extended_quintic(points, num_samples_per_partition=25,
                                            x_quintic_coeffs,
                                            y_quintic_coeffs)
     return [interpolated_points, quintic_curvature_array]
-
 """
-def scipy_q(x, M):
-    t = [15 * n for n in range(len(x))]
-    t_m = sum([[t[i] + (m * 1. / M) * (t[i + 1] - t[i])
-                for m in range(M)] for i in range(len(t) - 1)], [])
+def scipy_quintic(points, num_samples_per_partition=25,
+                          num_s_vals_per_x_val=15):
+    points = interpolate.sample_path(points, 1280)
+    s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
+    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
+    sampled_s_vals = util.fast_concat(partitions_sampled_s_vals)
+    points_x_vals, points_y_vals = np.transpose(points)
+    x_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals,
+                                                  points_x_vals, k=5)
+    y_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals,
+                                                  points_y_vals, k=5)
+    sampled_x_vals = x_spline(sampled_s_vals)
+    sampled_y_vals = y_spline(sampled_s_vals)
+    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                                   y_spline,
+                                                             sampled_s_vals)
+    return [interpolated_points, curvature_array_2d]
 
-    x_points, y_points = np.transpose(x)
-    x_func = UnivariateSpline(t, x_points, k=5)
-    y_func = UnivariateSpline(t, y_points, k=5)
+def scipy_cubic(points, num_samples_per_partition=25,
+                          num_s_vals_per_x_val=15):
+    points = interpolate.sample_path(points, 2560)
+    s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
+    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
+    sampled_s_vals = util.fast_concat(partitions_sampled_s_vals)
+    points_x_vals, points_y_vals = np.transpose(points)
+    x_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals, points_x_vals)
+    y_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals, points_y_vals)
 
-    x_m = x_func(t_m)
-    y_m = y_func(t_m)
-    return np.transpose([x_m, y_m])
+    sampled_x_vals = x_spline(sampled_s_vals)
+    sampled_y_vals = y_spline(sampled_s_vals)
+    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                                   y_spline,
+                                                             sampled_s_vals)
+    return [interpolated_points, curvature_array_2d]
+
+def scipy_pchip(points, num_samples_per_partition=25,
+                          num_s_vals_per_x_val=15):
+    points = interpolate.sample_path(points, 2560)
+    s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
+    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
+    sampled_s_vals = util.fast_concat(partitions_sampled_s_vals)
+    points_x_vals, points_y_vals = np.transpose(points)
+    x_spline = scipy.interpolate.PchipInterpolator(s_vals, points_x_vals)
+    y_spline = scipy.interpolate.PchipInterpolator(s_vals, points_y_vals)
+
+    sampled_x_vals = x_spline(sampled_s_vals)
+    sampled_y_vals = y_spline(sampled_s_vals)
+    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                                   y_spline,
+                                                             sampled_s_vals)
+    return [interpolated_points, curvature_array_2d]
 """
+def scipy_smoothing(points, num_samples_per_partition=25,
+                          num_s_vals_per_x_val=15):
+    points = interpolate.sample_path(points, 160)
+    s_vals = np.arange(len(points))
+    #s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
+    #partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
+    #sampled_s_vals = np.array(util.fast_concat(partitions_sampled_s_vals))
+    points_x_vals, points_y_vals = np.transpose(points)
+    end_weights = 10**4
+    smoothing_factor = 10**5
+    #print(points_x_vals)
+    #print(points_y_vals)
+    #print(s_vals)
+    x_spline, y_spline = interpolate.smoothing_splines_2d(points_x_vals,
+                                                          points_y_vals,
+                                                                 s_vals,
+                                                            end_weights,
+                                                       smoothing_factor)
+    sampled_x_vals = x_spline(s_vals)
+    sampled_y_vals = y_spline(s_vals)
+    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                                   y_spline,
+                                                                     s_vals)
+    print(curvature_array_2d)
+    print("spline max curvature: " + str(np.amax(curvature_array_2d)))
+    return [interpolated_points, curvature_array_2d]
 
 # Test quint(t, x, v1, v2):
 """
