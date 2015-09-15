@@ -20,7 +20,7 @@ from scipy.interpolate import UnivariateSpline
 
 # Custom Modules:
 import util
-
+import curvature
 
 def gamma_matrix(t):
     gamma_matrix = np.array([[1, t, t**2, t**3, t**4, t**5],
@@ -143,7 +143,7 @@ def get_boundary_indices(num_intervals):
             boundary_indices.append(last_index)
     return boundary_indices
 
-def build_extended_quintic(s, x, num_partitions_samples):
+def build_extended_quintic(s, x, num_samples_per_partition):
     """
     Extends quint() to allow for high numbers (> 5) of waypoints to be
     interpolated, without running into ill-conditioning problems.
@@ -191,8 +191,8 @@ def build_extended_quintic(s, x, num_partitions_samples):
     sampled_s_vals = []
     for i in range(num_intervals):
         partition_quintic_coeffs = partitions_quintic_coeffs[i]
-        for each_int in range(num_partition_samples):
-            fraction_along = float(each_int) / float(samples_per_partition)
+        for each_int in range(num_samples_per_partition):
+            fraction_along = float(each_int) / float(num_samples_per_partition)
             sampled_s_val = s[i] + fraction_along * (s[i+1] - s[i])
             sampled_s_vals.append(sampled_s_val)
 
@@ -207,23 +207,42 @@ def evaluate_coeffs(sampled_s_vals, quintic_coeffs):
     return sampled_x_vals
 
 def evaluate_coeffs_first_derivatives(sampled_s_vals, quintic_coeffs):
-    sampled_x_values = []
+    sampled_first_derivatives = []
     for s_val in sampled_s_vals:
         s_powers = [1, 2*s_val, 3*s_val**2, 4*s_val**3, 5*s_val**4, 0]
-        sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
-        sampled_x_values.append(sampled_x_value)
-    return sampled_x_vals
+        sampled_first_derivative = np.dot(partition_quintic_coeff, s_powers)
+        sampled_first_derivatives.append(sampled_first_derivative)
+    sampled_first_deriv_values = np.array(sampled_first_derivatives)
+    return sampled_first_deriv_values
 
 def evaluate_coeffs_second_derivatives(sampled_s_vals, quintic_coeffs):
-    sampled_x_values = []
+    sampled_second_derivatives = []
     for s_val in sampled_s_vals:
         s_powers = [2, 6*s_val, 12*s_val**2, 20*s_val**3, 0, 0]
-        sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
-        sampled_x_values.append(sampled_x_value)
-    return sampled_x_vals
+        sampled_second_derivative = np.dot(partition_quintic_coeff, s_powers)
+        sampled_second_derivatives.append(sampled_second_derivative)
+    sampled_second_deriv_values = np.array(sampled_second_derivatives)
+    return sampled_second_deriv_values
 
-def parametric_extended_quintic(points, num_partition_samples,
-                                        num_s_vals_per_x_val):
+def compute_quintic_curvature(sampled_s_vals, x_quintic_coeffs,
+                                              y_quintic_coeffs):
+    x_first_deriv_values = evaluate_coeffs_first_derivatives(sampled_s_vals,
+                                                          x_quintic_coeffs)
+    x_second_deriv_values = evaluate_coeffs_second_derivatives(sampled_s_vals,
+                                                          x_quintic_coeffs)
+    y_first_deriv_values = evaluate_coeffs_first_derivatives(sampled_s_vals,
+                                                          y_quintic_coeffs)
+    y_second_deriv_values = evaluate_coeffs_second_derivatives(sampled_s_vals,
+                                                          y_quintic_coeffs)
+    quintic_curvature = curvature.compute_curvature_array_2d(
+                                        x_first_deriv_values,
+                                       x_second_deriv_values,
+                                        y_first_deriv_values,
+                                       y_second_deriv_values)
+    return quintic_curvature
+
+def parametric_extended_quintic(points, num_samples_per_partition,
+                                             num_s_vals_per_x_val):
     """
     Parametric version of extended_quintic.
     """

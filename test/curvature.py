@@ -52,8 +52,8 @@ def compute_explicit_curvature(first_deriv_values, second_deriv_values):
 
 def compute_curvature_array_2d(x_first_deriv_values, x_second_deriv_values,
                                y_first_deriv_values, y_second_deriv_values):
-    s_length = x_first_deriv_values.size
-    powers = np.empty(s_length)
+    array_length = x_first_deriv_values.size
+    powers = np.empty(array_length)
     powers.fill(1.5)
     curvature_array_2d = np.divide(
         np.absolute(
