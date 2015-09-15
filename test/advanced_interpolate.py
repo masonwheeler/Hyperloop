@@ -94,10 +94,10 @@ def join_indices(N):
             return [5 * j for j in range(1, m)] + [int(5 * (m - 1) + np.ceil((5 + k) /  2.))]
 
 def super_quint(t, x, M):
-    "
+    """
     Extends quint() to allow for high numbers (> 5) of waypoints to be
     interpolated, without running into ill-conditioning problems.
-    "
+    """
 
     J = join_indices(len(x) - 1)
     if len(J) == 0:
@@ -129,7 +129,7 @@ def para_super_q(x, M):
 
 def get_boundary_indices(num_intervals):
     if num_intervals <= 5:
-        joined_indices = []
+        boundary_indices = []
     else:
         num_indices_partitions, num_leftover_indices  = divmod(num_intervals, 5)
         if num_leftover_indices >= 2:
@@ -143,18 +143,18 @@ def get_boundary_indices(num_intervals):
             boundary_indices.append(last_index)
     return boundary_indices
 
-def build_extended_quintic(s, x, num_samples_per_partition):
+def build_extended_quintic(s, x):
     """
     Extends quint() to allow for high numbers (> 5) of waypoints to be
     interpolated, without running into ill-conditioning problems.
     """
-    num_intervals = len(x) - 1
+    num_intervals = len(s) - 1
     boundary_indices = get_boundary_indices(num_intervals)
     if len(boundary_indices) == 0:
         first_derivative_initial_value = 0
         first_derivative_final_value = 0
-        quintic_coeffs = quint(s, x, first_derivative_initial_value,
-                                           first_derivative_final_value)
+        partitions_quintic_coeffs = quint(s, x, first_derivative_initial_value,
+                                                  first_derivative_final_value)
     else:
         boundary_first_derivatives = []
         initial_first_derivative = 0
@@ -186,72 +186,107 @@ def build_extended_quintic(s, x, num_samples_per_partition):
                                             x_partitions[i],
                               boundary_first_derivatives[i],
                           boundary_first_derivatives[i + 1])
-            partitions_quintic_coeffs.append(partition_quintic_coeff)
-    
-    sampled_s_vals = []
+            partitions_quintic_coeffs.append(partition_quintic_coeff)   
+    return partitions_quintic_coeffs
+
+def sample_s_vals(s_vals, num_samples_per_partition):
+    num_intervals = len(s_vals) - 1
+    partitions_sampled_s_vals = []
     for i in range(num_intervals):
-        partition_quintic_coeffs = partitions_quintic_coeffs[i]
+        partition_sampled_s_vals = []
         for each_int in range(num_samples_per_partition):
             fraction_along = float(each_int) / float(num_samples_per_partition)
-            sampled_s_val = s[i] + fraction_along * (s[i+1] - s[i])
-            sampled_s_vals.append(sampled_s_val)
+            sampled_s_val = s_vals[i] + fraction_along * (s_vals[i+1] - s_vals[i])
+            partition_sampled_s_vals.append(sampled_s_val)
+        partitions_sampled_s_vals.append(partition_sampled_s_vals)
+    return partitions_sampled_s_vals
 
-    return [sampled_s_vals, quintic_coeffs]
+def get_standard_powers(s_val):
+    s_powers = [1, s_val, s_val**2, s_val**3, s_val**4, s_val**5]
+    return s_powers
 
-def evaluate_coeffs(sampled_s_vals, quintic_coeffs): 
-    sampled_x_values = []
-    for s_val in sampled_s_vals:
-        s_powers = [1, s_val, s_val**2, s_val**3, s_val**4, s_val**5]
-        sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
-        sampled_x_values.append(sampled_x_value)
+def get_first_derivative_powers(s_val):
+    s_powers = [1, 2*s_val, 3*s_val**2, 4*s_val**3, 5*s_val**4, 0]
+    return s_powers
+
+def get_second_derivative_powers(s_val):
+    s_powers = [2, 6*s_val, 12*s_val**2, 20*s_val**3, 0, 0]
+    return s_powers
+
+def evaluate_coeffs(partitions_sampled_s_vals, partitions_quintic_coeffs,
+                    powers_function):
+    partitions_sampled_s_vals_quintic_coeffs_pairs = zip(
+        partitions_sampled_s_vals, partitions_quintic_coeffs)
+    sampled_vals = []    
+    for partition_sampled_s_vals_quintic_coeffs_pair \
+     in partitions_sampled_s_vals_quintic_coeffs_pairs:
+        partition_sampled_s_vals, partition_quintic_coeffs = \
+            partition_sampled_s_vals_quintic_coeffs_pair
+        for s_val in partition_sampled_s_vals:
+            s_powers = powers_function(s_val)
+            sampled_val = np.dot(partition_quintic_coeffs, s_powers)
+            sampled_vals.append(sampled_val)
+    sampled_vals_array = np.array(sampled_vals)
+    return sampled_vals_array
+
+def evaluate_coeffs_standard(partitions_sampled_s_vals,
+                             partitions_quintic_coeffs):
+    sampled_x_vals = evaluate_coeffs(partitions_sampled_s_vals,
+                                     partitions_quintic_coeffs,
+                                     get_standard_powers)
     return sampled_x_vals
 
-def evaluate_coeffs_first_derivatives(sampled_s_vals, quintic_coeffs):
-    sampled_first_derivatives = []
-    for s_val in sampled_s_vals:
-        s_powers = [1, 2*s_val, 3*s_val**2, 4*s_val**3, 5*s_val**4, 0]
-        sampled_first_derivative = np.dot(partition_quintic_coeff, s_powers)
-        sampled_first_derivatives.append(sampled_first_derivative)
-    sampled_first_deriv_values = np.array(sampled_first_derivatives)
-    return sampled_first_deriv_values
+def evaluate_coeffs_first_derivatives(partitions_sampled_s_vals,
+                             partitions_quintic_coeffs):
+    sampled_first_derivatives = evaluate_coeffs(partitions_sampled_s_vals,
+                                                partitions_quintic_coeffs,
+                                                get_first_derivative_powers)
+    return sampled_first_derivatives
 
-def evaluate_coeffs_second_derivatives(sampled_s_vals, quintic_coeffs):
-    sampled_second_derivatives = []
-    for s_val in sampled_s_vals:
-        s_powers = [2, 6*s_val, 12*s_val**2, 20*s_val**3, 0, 0]
-        sampled_second_derivative = np.dot(partition_quintic_coeff, s_powers)
-        sampled_second_derivatives.append(sampled_second_derivative)
-    sampled_second_deriv_values = np.array(sampled_second_derivatives)
-    return sampled_second_deriv_values
+def evaluate_coeffs_second_derivatives(partitions_sampled_s_vals,
+                             partitions_quintic_coeffs):
+    sampled_second_derivatives = evaluate_coeffs(partitions_sampled_s_vals,
+                                                partitions_quintic_coeffs,
+                                                get_second_derivative_powers)
+    return sampled_second_derivatives
 
-def compute_quintic_curvature(sampled_s_vals, x_quintic_coeffs,
-                                              y_quintic_coeffs):
-    x_first_deriv_values = evaluate_coeffs_first_derivatives(sampled_s_vals,
-                                                          x_quintic_coeffs)
-    x_second_deriv_values = evaluate_coeffs_second_derivatives(sampled_s_vals,
-                                                          x_quintic_coeffs)
-    y_first_deriv_values = evaluate_coeffs_first_derivatives(sampled_s_vals,
-                                                          y_quintic_coeffs)
-    y_second_deriv_values = evaluate_coeffs_second_derivatives(sampled_s_vals,
-                                                          y_quintic_coeffs)
-    quintic_curvature = curvature.compute_curvature_array_2d(
-                                        x_first_deriv_values,
-                                       x_second_deriv_values,
-                                        y_first_deriv_values,
-                                       y_second_deriv_values)
-    return quintic_curvature
+def compute_quintic_curvature(partitions_sampled_s_vals, x_quintic_coeffs,
+                                                         y_quintic_coeffs):
+    x_first_deriv_values = evaluate_coeffs_first_derivatives(
+                 partitions_sampled_s_vals, x_quintic_coeffs)
+    x_second_deriv_values = evaluate_coeffs_second_derivatives(
+                   partitions_sampled_s_vals, x_quintic_coeffs)
+    y_first_deriv_values = evaluate_coeffs_first_derivatives(
+                 partitions_sampled_s_vals, y_quintic_coeffs)
+    y_second_deriv_values = evaluate_coeffs_second_derivatives(
+                   partitions_sampled_s_vals, y_quintic_coeffs)
+    quintic_curvature_array = curvature.compute_curvature_array_2d(
+                                              x_first_deriv_values,
+                                             x_second_deriv_values,
+                                              y_first_deriv_values,
+                                             y_second_deriv_values)
+    return quintic_curvature_array
 
-def parametric_extended_quintic(points, num_samples_per_partition,
-                                             num_s_vals_per_x_val):
+def parametric_extended_quintic(points, num_samples_per_partition=25,
+                                             num_s_vals_per_x_val=15):
     """
     Parametric version of extended_quintic.
     """
     s_vals = [num_s_vals_per_x_val * n for n in range(len(points))]
     points_x_vals, points_y_vals = np.transpose(points)
-    sampled_x_vals = extended_quintic(s_vals, x_points, num_partition_samples)
-    sampled_y_vals = extended_quintic(s_vals, y_points, num_partition_samples)
+    x_quintic_coeffs = build_extended_quintic(s_vals, points_x_vals)
+    y_quintic_coeffs = build_extended_quintic(s_vals, points_y_vals)
+    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
+    sampled_x_vals = evaluate_coeffs_standard(partitions_sampled_s_vals,
+                                              x_quintic_coeffs)
+    sampled_y_vals = evaluate_coeffs_standard(partitions_sampled_s_vals,
+                                              y_quintic_coeffs)
     interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
-    return interpolated_points
+    quintic_curvature_array = compute_quintic_curvature(
+                                  partitions_sampled_s_vals,
+                                           x_quintic_coeffs,
+                                           y_quintic_coeffs)
+    return [interpolated_points, quintic_curvature_array]
 
 """
 def scipy_q(x, M):
@@ -315,5 +350,3 @@ plt.show()
 #x_points = [random.uniform(-100,100) for i in range(40)]
 #y_points = [random.uniform(-100,100) for i in range(40)]
 #x = np.transpose([x_points, y_points])
-
-
