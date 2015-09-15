@@ -93,22 +93,6 @@ def join_indices(N):
         else:
             return [5 * j for j in range(1, m)] + [int(5 * (m - 1) + np.ceil((5 + k) /  2.))]
 
-def get_boundary_indices(num_intervals):
-    if num_intervals <= 5:
-        joined_indices = []
-    else:
-        num_indices_partitions, num_leftover_indices  = divmod(num_intervals, 5)
-        if num_leftover_indices >= 2:
-            boundary_indices = [5 * (j + 1) for j
-                                in range(num_indices_partitions)]
-        else:
-            boundary_indices = [5 * (j + 1) for j
-                                in range(num_indices_partitions - 1)]
-            last_offset = np.ceil((5 + num_leftover_indices) / 2.0)
-            last_index = int(5 * (m - 1) + last_offset)
-            boundary_indices.append(last_index)
-    return boundary_indices
-
 def super_quint(t, x, M):
     "
     Extends quint() to allow for high numbers (> 5) of waypoints to be
@@ -129,7 +113,37 @@ def super_quint(t, x, M):
             for time in t_m[i]] for i in range(len(t_m))]
     return [sum(t_m, []), sum(x_m, [])]
 
-def extended_quintic(s, x, num_partition_samples):
+def para_super_q(x, M):
+    """
+    Extends super_quint to allow for an interpolation without an explicit
+    parametrization a priori.
+    This function is used to generate the spatial interpolation of each graph.
+    """
+    t = [15 * n for n in range(len(x))]
+    x_points, y_points = np.transpose(x)
+    t_m, x_m = super_quint(t, x_points, M)
+    t_m, y_m = super_quint(t, y_points, M)
+    return np.transpose([x_m, y_m])
+
+#Refactored Version
+
+def get_boundary_indices(num_intervals):
+    if num_intervals <= 5:
+        joined_indices = []
+    else:
+        num_indices_partitions, num_leftover_indices  = divmod(num_intervals, 5)
+        if num_leftover_indices >= 2:
+            boundary_indices = [5 * (j + 1) for j
+                                in range(num_indices_partitions)]
+        else:
+            boundary_indices = [5 * (j + 1) for j
+                                in range(num_indices_partitions - 1)]
+            last_offset = np.ceil((5 + num_leftover_indices) / 2.0)
+            last_index = int(5 * (m - 1) + last_offset)
+            boundary_indices.append(last_index)
+    return boundary_indices
+
+def build_extended_quintic(s, x, num_partitions_samples):
     """
     Extends quint() to allow for high numbers (> 5) of waypoints to be
     interpolated, without running into ill-conditioning problems.
@@ -166,41 +180,47 @@ def extended_quintic(s, x, num_partition_samples):
             x_partition = x[joined_index_a : joined_index_b + 1]
             x_partitions.append(x_partition)
 
-        quintic_coeffs = []
+        partitions_quintic_coeffs = []
         for i in range(len(joined_indices) - 1):
-            quintic_coeff = quint(s_partitions[i],
-                                  x_partitions[i],
-                                  boundary_first_derivatives[i],
-                                  boundary_first_derivatives[i + 1])
-            quintic_coeffs.append(quintic_coeff)
+            partition_quintic_coeff = quint(s_partitions[i],
+                                            x_partitions[i],
+                              boundary_first_derivatives[i],
+                          boundary_first_derivatives[i + 1])
+            partitions_quintic_coeffs.append(partition_quintic_coeff)
     
-    sampled_x_values = []
+    sampled_s_vals = []
     for i in range(num_intervals):
-        sampled_s_partition = []
-        for each_int in range(num_partition_samples):
-            fraction_along = float(each_int) / float(num_partition_samples)
-            sampled_s_value = s[i] + fraction_along * (s[i+1] - s[i])
-            sampled_s_partition.append(sampled_s_value)
-
         partition_quintic_coeffs = partitions_quintic_coeffs[i]
-        for s in sampled_s_partition:
-            s_powers = [1, s, s**2, s**3, s**4, s**5]
-            sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
-            sampled_x_values.append(sampled_x_value)
-    
-    return sampled_x_values
+        for each_int in range(num_partition_samples):
+            fraction_along = float(each_int) / float(samples_per_partition)
+            sampled_s_val = s[i] + fraction_along * (s[i+1] - s[i])
+            sampled_s_vals.append(sampled_s_val)
 
-def para_super_q(x, M):
-    """
-    Extends super_quint to allow for an interpolation without an explicit
-    parametrization a priori.
-    This function is used to generate the spatial interpolation of each graph.
-    """
-    t = [15 * n for n in range(len(x))]
-    x_points, y_points = np.transpose(x)
-    t_m, x_m = super_quint(t, x_points, M)
-    t_m, y_m = super_quint(t, y_points, M)
-    return np.transpose([x_m, y_m])
+    return [sampled_s_vals, quintic_coeffs]
+
+def evaluate_coeffs(sampled_s_vals, quintic_coeffs): 
+    sampled_x_values = []
+    for s_val in sampled_s_vals:
+        s_powers = [1, s_val, s_val**2, s_val**3, s_val**4, s_val**5]
+        sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
+        sampled_x_values.append(sampled_x_value)
+    return sampled_x_vals
+
+def evaluate_coeffs_first_derivatives(sampled_s_vals, quintic_coeffs):
+    sampled_x_values = []
+    for s_val in sampled_s_vals:
+        s_powers = [1, 2*s_val, 3*s_val**2, 4*s_val**3, 5*s_val**4, 0]
+        sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
+        sampled_x_values.append(sampled_x_value)
+    return sampled_x_vals
+
+def evaluate_coeffs_second_derivatives(sampled_s_vals, quintic_coeffs):
+    sampled_x_values = []
+    for s_val in sampled_s_vals:
+        s_powers = [2, 6*s_val, 12*s_val**2, 20*s_val**3, 0, 0]
+        sampled_x_value = np.dot(partition_quintic_coeff, s_powers)
+        sampled_x_values.append(sampled_x_value)
+    return sampled_x_vals
 
 def parametric_extended_quintic(points, num_partition_samples,
                                         num_s_vals_per_x_val):
