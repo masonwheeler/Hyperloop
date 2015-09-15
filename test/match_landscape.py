@@ -9,8 +9,6 @@ Last Modification Purpose: To clarify naming and add docstrings
 
 # Standard Modules
 import numpy as np
-import random
-import advanced_interpolate as interp
 
 # Our Modules
 import util
@@ -18,7 +16,6 @@ import config
 import clothoid
 import parameters
 import proj
-import directions
 import elevation
 
 
