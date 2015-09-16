@@ -131,9 +131,8 @@ class AbstractEdgesSets(object):
             prefilter_num_edges = postfilter_num_edges
         return edges_sets
 
-    def __init__(self, lattice, edge_builder, degree_constraint, interpolator):
+    def __init__(self, lattice, edge_builder, degree_constraint):
         self.degree_constraint = degree_constraint
-        self.interpolator = interpolator
         self.raw_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
         self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)

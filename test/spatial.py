@@ -23,6 +23,7 @@ import spatial_graphs
 import spatial_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
+import util
 
 if config.VISUAL_MODE:
     import visualize
@@ -46,7 +47,13 @@ def build_spatial_lattice(route_directions):
     """Build lattice between directions points and spline points
     """
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
-                                             route_directions, 9, 6)
+                                             route_directions, 6, 4)
+    util.smart_print("With a base resolution of: " +
+                     str(route_spatial_lattice.SPATIAL_BASE_RESOLUTION))
+    util.smart_print("The spatial lattice spacing parallel to the route is: " +
+                     str(route_spatial_lattice.spatial_x_spacing) + " meters.")
+    util.smart_print("And perpendicular to the route is: " +
+                     str(route_spatial_lattice.spatial_y_spacing) + " meters.")
     if config.VISUAL_MODE:
         if VISUALIZE_SPLINE:
             plottable_spline = route_spatial_lattice.get_plottable_spline('r-')
@@ -65,7 +72,7 @@ def build_spatial_edges_sets(route_spatial_lattice):
     """
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
-                                        spatial_interpolate.quintic)
+                                spatial_interpolate.scipy_smoothing)
     if config.VISUAL_MODE:
         if VISUALIZE_EDGES:
             plottable_edges = route_spatial_edges_sets.get_plottable_edges('k-')

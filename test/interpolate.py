@@ -149,9 +149,9 @@ def error_test_2d(x_spline, y_spline, s_values, max_error, x_array, y_array):
     y_differences = interpolated_y_array - y_array
     points_errors = np.hypot(x_differences, y_differences)
     largest_error = np.amax(points_errors)
-    print("largest error: " + str(largest_error))
+    ##print("largest error: " + str(largest_error))
     is_error_valid = (largest_error <= max_error)   
-    print("is error valid: " + str(is_error_valid))
+    ##print("is error valid: " + str(is_error_valid))
     return is_error_valid
 
 def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
@@ -164,7 +164,7 @@ def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
     test_smoothing_factor = initial_smoothing_factor
     if is_error_valid:
         while not is_error_valid:
-            #print(test_smoothing_factor)
+            ##print(test_smoothing_factor)
             test_smoothing_factor *= 1.0 / smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_error_valid = error_test_2d(x_spline, y_spline, s_values,
@@ -174,7 +174,7 @@ def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
         return [x_spline, y_spline]
     else:
         while is_error_valid:
-            #print(test_smoothing_factor)
+            ##print(test_smoothing_factor)
             test_smoothing_factor *= smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_error_valid = error_test_2d(x_spline, y_spline, s_values,

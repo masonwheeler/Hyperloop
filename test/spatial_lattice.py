@@ -48,7 +48,7 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
         point_id = slice_start_id
         lattice_y_coord = 0
         spatial_slice_points = []
-        for spatial_slice_geospatial in spatial_slice_geospatials: #[:-1]:
+        for spatial_slice_geospatial in spatial_slice_geospatials:
             is_in_right_of_way = (lattice_y_coord == 0)
             new_spatial_point = SpatialPoint(point_id, lattice_x_coord,
                 lattice_y_coord, spatial_slice_geospatial, is_in_right_of_way)
@@ -66,7 +66,7 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
 class SpatialLattice(abstract_lattice.AbstractLattice):
     SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS = 10**5
     SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR = 10**13
-    SPATIAL_BASE_RESOLUTION = 10 #Meters
+    SPATIAL_BASE_RESOLUTION = 100 #Meters
     
     def get_spatial_splines(self, sampled_directions_geospatials):
         geospatials_x_values = [geospatial[0] for geospatial

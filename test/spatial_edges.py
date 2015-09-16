@@ -87,13 +87,17 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
+    MIN_SPEED = parameters.MAX_SPEED / 2.0
+
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
         max_curvature = curvature.compute_curvature_threshold(
-            parameters.MAX_SPEED / 2.0, parameters.MAX_LATERAL_ACCEL)
-        degree_constraint = angle_constraint.compute_degree_constraint(
-                                              length_scale, max_curvature)
-        return degree_constraint                                                
+            self.MIN_SPEED, parameters.MAX_LATERAL_ACCEL)
+        spatial_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
+        degree_constraint = angle_constraint.compute_angle_constraint(
+                              length_scale, self.spatial_interpolator,
+                                    max_curvature, spatial_resolution)
+        return degree_constraint            
 
     def build_elevation_profiles(self):
         for spatial_edges_set in self.filtered_edges_sets:
@@ -116,17 +120,16 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         self.build_tubes()
     
     def __init__(self, spatial_lattice, spatial_interpolator):
-        spatial_degree_constraint = 10
-        spatial_degree_constraint_v2 = self.compute_spatial_degree_constraint(
-                                                              spatial_lattice)
-        #print("degree_constraint v2: " + str(spatial_degree_constraint_v2))
+        self.spatial_interpolator = spatial_interpolator
+        spatial_degree_constraint = self.compute_spatial_degree_constraint(
+                                                           spatial_lattice)
         self.start = spatial_lattice.start
         self.end = spatial_lattice.end
         self.start_latlng = spatial_lattice.start_latlng
         self.end_latlng = spatial_lattice.end_latlng
         self.projection = spatial_lattice.projection
         abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
-            SpatialEdge, spatial_degree_constraint, spatial_interpolator)
+                                 SpatialEdge, spatial_degree_constraint)
         #self.finish_edges_sets()
 
     def get_plottable_edges(self, color_string):
