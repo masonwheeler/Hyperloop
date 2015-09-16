@@ -32,6 +32,12 @@ def get_derivative_values(spline, s_values):
     second_deriv_values = second_deriv(s_values)
     return [first_deriv_values, second_deriv_values]
 
+def get_derivative_values_pchip(pchip_spline, s_values):
+    first_deriv = pchip_spline.derivative(1)
+    second_deriv = pchip_spline.derivative(2)
+    first_deriv_values = first_deriv(s_values)
+    second_deriv_values = second_deriv(s_values)
+    return [first_deriv_values, second_deriv_values]
 
 def compute_explicit_curvature(first_deriv_values, second_deriv_values):
     s_length = first_deriv_values.size
@@ -48,6 +54,13 @@ def compute_explicit_curvature(first_deriv_values, second_deriv_values):
             powers
         )
     )
+    return curvature_array
+
+def compute_curvature_pchip(pchip_spline, s_values):
+    first_deriv_values, second_deriv_values = get_derivative_values_pchip(
+                                                   pchip_spline, s_values)
+    curvature_array = compute_explicit_curvature(first_deriv_values,
+                                                second_deriv_values)
     return curvature_array
 
 def compute_curvature_array_2d(x_first_deriv_values, x_second_deriv_values,

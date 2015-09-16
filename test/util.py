@@ -38,19 +38,6 @@ def round_points(points):
     """
     return [round_nums(point) for point in points]
 
-
-def smart_sample_nth_points(points, n_stride):
-    """
-    Takes every nth point in a list as well as the last point.
-
-    Used in core.build_lattice()
-    """
-    end_point = points[-1]
-    sampled_points = points[::n_stride]
-    sampled_points.append(end_point)
-    return sampled_points
-
-
 def to_pairs(points):
     """
     Converts a list of points to a list of pairs of points
@@ -81,21 +68,10 @@ def swap_pairs(pairs):
 # List Operations:
 
 
-def get_firstlast(in_list):
-    """Used in core.get_directions()"""
-    return [in_list[0], in_list[-1]]
-
-
-def get_maxmin(in_list):
-    """Used for testing"""
-    return [max(in_list), min(in_list)]
-
-
 def get_list_mean(in_list):
     """Used in gen_velocity.py"""
     list_mean = sum(in_list) / float(len(in_list))
     return list_mean
-
 
 def remove_duplicates(in_list):
     """Used in directions.py"""
@@ -105,13 +81,12 @@ def remove_duplicates(in_list):
 # List of Lists Operations:
 
 def fast_concat(list_of_lists):
-    """Used in edges.py"""
+    """Concatenates a list of lists"""
     concatenated = itertools.chain.from_iterable(list_of_lists)
     return list(concatenated)
 
-
 def list_of_lists_len(list_of_lists):
-    """Used for testing"""
+    """gets total length of a list of lists"""
     return sum(map(len, list_of_lists))
 
 
@@ -121,7 +96,6 @@ def smart_concat(list_a, list_b):
     """Used in graphs.py"""
     new_list = list_a + list_b[1:]
     return new_list
-
 
 # Vector Operations:
 
@@ -218,7 +192,6 @@ def build_grid_1d(start_value, end_value, spacing):
 
 # Edge Operations:
 
-
 def edge_to_vector(edge):
     """Convert a given edge to a vector.
     """
@@ -237,14 +210,12 @@ def compute_arc_length_steps(points):
     arc_length_steps = [np.linalg.norm(vector) for vector in vectors]
     return arc_length_steps
 
-
 def compute_total_arc_length(points):
     """Compute the total arclength of the path defined by the points
     """
     arc_length_steps = compute_arc_length_steps(points)
     total_arc_length = np.sum(arc_length_steps)
     return total_arc_length
-
 
 def compute_arc_lengths(points):
     """Compute the arclength along the path of each point in the path
@@ -298,7 +269,6 @@ def numerical_derivative(f, t):
     df[0] = (f[1] - f[0]) / (t[1] - t[0])
     df[N - 1] = (f[N - 1] - f[N - 2]) / (t[N - 1] - t[N - 2])
     return df
-
 
 def mean(vector):
     """Computes the mean of a vector

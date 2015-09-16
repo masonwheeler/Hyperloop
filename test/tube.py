@@ -5,13 +5,16 @@ Last Modified: 8/15/15
 Last Modified By: Jonathan Ward
 Last Modification Purpose: To implement a non naive tube/pylon cost method.
 """
-# Standard Modules
-from scipy.interpolate import PchipInterpolator
 
 # Custom Modules
-import match_landscape as landscape
+import config
 import parameters
+import tube_interpolate
 import util
+import visualize
+
+VISUALIZE_TUBE = True
+PLOT_QUEUE_ELEVATION_PROFILE = []
 
 def compute_pylon_cost(pylon_height):
     if pylon_height >= 0:
@@ -26,23 +29,67 @@ def compute_tube_cost(tube_length):
     tube_cost = parameters.TUBE_COST_PER_METER * tube_length
     return tube_cost
 
-
-def quick_build_tube_v1(elevation_profile):
+def quick_build_tube_testing(elevation_profile):
     geospatials = [elevation_point["geospatial"] for elevation_point
                    in elevation_profile]
     land_elevations = [elevation_point["land_elevation"] for elevation_point
                        in elevation_profile]
     arc_lengths = [elevation_point["distance_along_path"] for elevation_point
                    in elevation_profile]
-    s_interp, z_interp = landscape.match_landscape_v1(arc_lengths,
-                                                      land_elevations, "elevation")
-    tube_spline = PchipInterpolator(s_interp, z_interp)
-    tube_elevations = tube_spline(arc_lengths)
+    arc_length_waypoints, tube_elevation_waypoints = \
+        tube_interpolate.get_tube_waypoints_v1(arc_lengths, land_elevations)
+    tube_elevations, tube_curvature = tube_interpolate.tube_pchip(
+         arc_length_waypoints, tube_elevation_waypoints, arc_lengths)
     spatial_x_values, spatial_y_values = zip(*geospatials)
     pylon_heights = util.subtract(tube_elevations, land_elevations)
     tube_coords = zip(spatial_x_values, spatial_y_values, tube_elevations)
     tube_length = util.compute_total_arc_length(tube_coords)
     total_pylon_cost = sum(map(compute_pylon_cost, pylon_heights))
     total_tube_cost = compute_tube_cost(tube_length)
-    return [total_tube_cost, total_pylon_cost, tube_elevations]
+    if config.VISUAL_MODE and VISUALIZE_TUBE:
+        land_elevation_points = [arc_lengths, land_elevations]
+        plottable_land_elevation = [land_elevation_points, 'r-']
+        PLOT_QUEUE_ELEVATION_PROFILE.append(plottable_land_elevation)
+        tube_elevation_points = [arc_lengths, tube_elevations]
+        plottable_tube_elevation = [tube_elevation_points, 'b-']
+        PLOT_QUEUE_ELEVATION_PROFILE.append(plottable_tube_elevation)
+        are_axes_equal = False
+        print("total tube cost: " + str(total_tube_cost))
+        print("total pylon cost: " + str(total_pylon_cost))
+        visualize.plot_objects(PLOT_QUEUE_ELEVATION_PROFILE, are_axes_equal)        
+        PLOT_QUEUE_ELEVATION_PROFILE.pop()
+        PLOT_QUEUE_ELEVATION_PROFILE.pop()
+    return [total_tube_cost, total_pylon_cost, tube_curvature]
+
+def quick_build_tube(elevation_profile, tube_interpolator):
+    geospatials = [elevation_point["geospatial"] for elevation_point
+                   in elevation_profile]
+    land_elevations = [elevation_point["land_elevation"] for elevation_point
+                       in elevation_profile]
+    arc_lengths = [elevation_point["distance_along_path"] for elevation_point
+                   in elevation_profile]
+    arc_length_waypoints, tube_elevation_waypoints = \
+        tube_interpolate.get_tube_waypoints_v1(arc_lengths, land_elevations)
+    tube_elevations, tube_curvature = tube_interpolate.tube_pchip(
+         arc_length_waypoints, tube_elevation_waypoints, arc_lengths)
+    spatial_x_values, spatial_y_values = zip(*geospatials)
+    pylon_heights = util.subtract(tube_elevations, land_elevations)
+    tube_coords = zip(spatial_x_values, spatial_y_values, tube_elevations)
+    tube_length = util.compute_total_arc_length(tube_coords)
+    total_pylon_cost = sum(map(compute_pylon_cost, pylon_heights))
+    total_tube_cost = compute_tube_cost(tube_length)
+    if config.VISUAL_MODE and VISUALIZE_TUBE:
+        land_elevation_points = [arc_lengths, land_elevations]
+        plottable_land_elevation = [land_elevation_points, 'r-']
+        PLOT_QUEUE_ELEVATION_PROFILE.append(plottable_land_elevation)
+        tube_elevation_points = [arc_lengths, tube_elevations]
+        plottable_tube_elevation = [tube_elevation_points, 'b-']
+        PLOT_QUEUE_ELEVATION_PROFILE.append(plottable_tube_elevation)
+        are_axes_equal = False
+        print("total tube cost: " + str(total_tube_cost))
+        print("total pylon cost: " + str(total_pylon_cost))
+        visualize.plot_objects(PLOT_QUEUE_ELEVATION_PROFILE, are_axes_equal)        
+        PLOT_QUEUE_ELEVATION_PROFILE.pop()
+        PLOT_QUEUE_ELEVATION_PROFILE.pop()
+    return [total_tube_cost, total_pylon_cost, tube_curvature]
 

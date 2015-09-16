@@ -8,7 +8,6 @@ import numpy as np
 import math
 import config
 import curvature
-import util
 
 VISUALIZE_CONSTRAINT = False
 
@@ -38,9 +37,8 @@ def compute_angle_constraint(length_scale, interpolator, max_curvature,
     angle_constraint_in_degrees = 1
     effective_angle_in_degrees = 180 - angle_constraint_in_degrees
     effective_angle_in_radians = math.radians(effective_angle_in_degrees)
-    raw_point_b = [math.cos(effective_angle_in_radians) * length_scale,
-                   math.sin(effective_angle_in_radians) * length_scale]
-    point_b = util.round_nums(raw_point_b)
+    point_b = [math.cos(effective_angle_in_radians) * length_scale,
+               math.sin(effective_angle_in_radians) * length_scale]
     path_points = [point_a, origin, point_b]
     while True:
         is_curvature_acceptable = test_path_points(path_points, interpolator,
@@ -49,9 +47,8 @@ def compute_angle_constraint(length_scale, interpolator, max_curvature,
             angle_constraint_in_degrees += 1
             effective_angle_in_degrees = 180 - angle_constraint_in_degrees
             effective_angle_in_radians = math.radians(effective_angle_in_degrees)
-            raw_point_b = [math.cos(effective_angle_in_radians) * length_scale,
-                           math.sin(effective_angle_in_radians) * length_scale]
-            point_b = util.round_nums(raw_point_b)
+            point_b = [math.cos(effective_angle_in_radians) * length_scale,
+                       math.sin(effective_angle_in_radians) * length_scale]
             path_points = [point_a, origin, point_b]
         else:
             return angle_constraint_in_degrees

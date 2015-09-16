@@ -16,12 +16,11 @@ Last Modification Purpose:
     Moved degree constraint computations to independent module
 """
 
-# Our Modules
+# Custom Modules
 import abstract_edges
 import angle_constraint
 import cacher
 import config
-import curvature
 import elevation
 import landcover
 import parameters
@@ -60,9 +59,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                            parameters.PYLON_SPACING)        
         self.elevation_profile = elevation.get_elevation_profile_v2(
                                      geospatials_grid, distances)
-    def build_tube(self):
-        tube_cost, pylon_cost, tube_elevations = tube.quick_build_tube_v1(
-                                                 self.elevation_profile)
+    def build_tube(self, tube_interpolator):
+        tube_cost, pylon_cost = tube.quick_build_tube(self.elevation_profile,
+                                                           tube_interpolator)
         self.pylon_cost = pylon_cost
         self.tube_cost = tube_cost
             
@@ -114,7 +113,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def build_tubes(self):
         for spatial_edges_set in self.filtered_edges_sets:
             for spatial_edge in spatial_edges_set:
-                spatial_edge.build_tube()
+                spatial_edge.build_tube(self.tube_interpolator)
 
     def finish_edges_sets(self):
         util.smart_print("Now computing land costs...")
@@ -131,8 +130,10 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         if self.TUBE_READY:
             self.build_tubes()
     
-    def __init__(self, spatial_lattice, spatial_interpolator):
+    def __init__(self, spatial_lattice, spatial_interpolator,
+                                           tube_interpolator):
         self.spatial_interpolator = spatial_interpolator
+        self.tube_interpolator = tube_interpolator
         self.spatial_base_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
         spatial_degree_constraint = self.compute_spatial_degree_constraint(
                                                            spatial_lattice)
