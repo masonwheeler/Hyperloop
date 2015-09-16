@@ -25,27 +25,29 @@ def pair_analysis(start, end):
     """
     cacher.create_necessaryfolders(start, end)
     time_a = time.time()
-    spatial_graphs_sets = spatial.city_pair_to_spatial_graphs_sets(start, end)
-    #spatial_graphs = spatial_graphs_sets.selected_graphs
-    #start = spatial_graphs_sets.start
-    #end = spatial_graphs_sets.end
-    #start_latlng = spatial_graphs_sets.start_latlng
-    #end_latlng = spatial_graphs_sets.end_latlng
-    ##print("num graphs: " + str(len(spatial_graphs)))
+    spatial_paths_set_2d = spatial.city_pair_to_spatial_paths_set_2d(start, end)
+    spatial_paths_2d = spatial_paths_set_2d.paths
+    start = spatial_paths_set_2d.start
+    end = spatial_paths_set_2d.end
+    start_latlng = spatial_paths_set_2d.start_latlng
+    end_latlng = spatial_paths_set_2d.end_latlng
+    print("num paths: " + str(len(spatial_paths_2d)))
     #complete_routes = [routes.graph_to_route(graph,
     #                  parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,
     #                  parameters.MAX_LINEAR_ACCEL, config.JERK_TOL)
     #                  for graph in spatial_graphs]
     #cacher.save_routes(complete_routes, start, end, start_latlng, end_latlng)
     """
-    for i in range(len(complete_routes)):
+    index = 1
+    for route in complete_routes:
         print ("(triptime, comfort rating, pylon cost, tube cost, land cost) \
-                of route "+ str(i) +" is:" +
-                str([complete_routes[i].trip_time,
-                     complete_routes[i].comfort_rating,
-                     complete_routes[i].pylon_cost,
-                     complete_routes[i].tube_cost,
-                     complete_routes[i].land_cost]))
+                of route "+ index +" is:" +
+                str([route.trip_time,
+                     route.comfort_rating,
+                     route.pylon_cost,
+                     route.tube_cost,
+                     route.land_cost]))
+        index += 1
     """
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."

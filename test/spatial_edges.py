@@ -26,6 +26,7 @@ import elevation
 import landcover
 import parameters
 import proj
+import time
 import tube
 import util
 
@@ -116,15 +117,27 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                 spatial_edge.build_tube()
 
     def finish_edges_sets(self):
+        util.smart_print("Now computing land costs...")
+        t1 = time.time()
         self.compute_land_costs()
+        t2 = time.time()
+        util.smart_print("Finished computing land costs in: " + str(t2 - t1)
+                         + " seconds.")
+        util.smart_print("Now fetching land elevation...")
         self.build_elevation_profiles()
+        t3 = time.time()
+        util.smart_print("Finished fetching land elevation in: " + str(t3 - t2)
+                         + " seconds.")
         if self.TUBE_READY:
             self.build_tubes()
     
     def __init__(self, spatial_lattice, spatial_interpolator):
         self.spatial_interpolator = spatial_interpolator
+        self.spatial_base_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
         spatial_degree_constraint = self.compute_spatial_degree_constraint(
                                                            spatial_lattice)
+        util.smart_print("The edge degree constraint is: " +
+                         str(spatial_degree_constraint))
         self.start = spatial_lattice.start
         self.end = spatial_lattice.end
         self.start_latlng = spatial_lattice.start_latlng

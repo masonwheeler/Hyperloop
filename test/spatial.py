@@ -49,7 +49,7 @@ def build_spatial_lattice(route_directions):
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
                                              route_directions, 6, 4)
     util.smart_print("With a base resolution of: " +
-                     str(route_spatial_lattice.SPATIAL_BASE_RESOLUTION))
+                str(route_spatial_lattice.SPATIAL_BASE_RESOLUTION)+ " meters.")
     util.smart_print("The spatial lattice spacing parallel to the route is: " +
                      str(route_spatial_lattice.spatial_x_spacing) + " meters.")
     util.smart_print("And perpendicular to the route is: " +
@@ -139,16 +139,28 @@ def build_spatial_paths_3d(route_spatial_paths_set_2d):
                 route_spatial_paths_set_3d.get_plottable_paths()            
     return route_spatial_paths_set_3d
 
+
 def city_pair_to_spatial_graphs_sets(start, end):
     route_directions = build_directions(start, end)
     route_spatial_lattice = build_spatial_lattice(route_directions)
     route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
-    #route_spatial_graphs_sets = build_spatial_graphs_sets(
-    #                                 route_spatial_edges_sets)
-    #route_spatial_paths_set_2d = build_spatial_paths_set_2d(
-    #                                 route_spatial_graphs_sets)
+    route_spatial_graphs_sets = build_spatial_graphs_sets(
+                                     route_spatial_edges_sets)
+    if config.VISUAL_MODE:
+        are_axes_equal = True
+        visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
+    return route_spatial_graphss_sets
+
+def city_pair_to_spatial_paths_set_2d(start, end):
+    route_directions = build_directions(start, end)
+    route_spatial_lattice = build_spatial_lattice(route_directions)
+    route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
+    route_spatial_graphs_sets = build_spatial_graphs_sets(
+                                     route_spatial_edges_sets)
+    route_spatial_paths_set_2d = build_spatial_paths_set_2d(
+                                      route_spatial_graphs_sets)
     #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
     if config.VISUAL_MODE:
         are_axes_equal = True
         visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
-    return 0 #route_spatial_graphs_sets
+    return route_spatial_paths_set_2d

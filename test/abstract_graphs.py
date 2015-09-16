@@ -146,9 +146,9 @@ class AbstractGraphsSets(object):
 
     def test_graph_pair_compatibility(self, graph_a, graph_b):
         angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
+        angles_compatible = angle_difference < self.degree_constraint
         end_points_match = graph_a.end_id == graph_b.start_id
-        graph_pair_compatible = (end_points_match and
-                                 angle_difference < self.degree_constraint)
+        graph_pair_compatible = (end_points_match and angles_compatible)
         return graph_pair_compatible
 
     def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):
@@ -171,14 +171,13 @@ class AbstractGraphsSets(object):
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
-                                        graphs_set_builder):
+                                           graphs_set_builder, interpolator):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
         self.degree_constraint = edges_sets.degree_constraint
-        self.interpolator = edges_sets.interpolator
-        base_graphs_sets = [edges_set_to_graphs_set(edges_set,
-                                                    self.interpolator)
-                            for edges_set in edges_sets.final_edges_sets]
+        self.interpolator = interpolator
+        base_graphs_sets = [edges_set_to_graphs_set(edges_set, interpolator)
+                            for edges_set in edges_sets.filtered_edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,
                                  AbstractGraphsSets.graphs_set_updater)

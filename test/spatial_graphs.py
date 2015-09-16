@@ -80,7 +80,7 @@ class SpatialGraph(abstract.AbstractGraph):
 
 
 class SpatialGraphsSet(abstract.AbstractGraphsSet):
-    NUM_FRONTS_TO_SELECT = 1
+    NUM_FRONTS_TO_SELECT = 3
     SPATIAL_GRAPH_FILTER_MIN_NUM_EDGES = 3
 
     def get_spatial_graphs_cost_time(self, spatial_graphs,
@@ -145,10 +145,14 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         self.start_latlng = spatial_edges_sets.start_latlng
         self.end_latlng = spatial_edges_sets.end_latlng
         self.projection = spatial_edges_sets.projection
+        self.spatial_interpolator = spatial_edges_sets.spatial_interpolator
+        self.spatial_base_resolution = \
+            spatial_edges_sets.spatial_base_resolution
         abstract.AbstractGraphsSets.__init__(self, spatial_edges_sets,
                             SpatialGraphsSet.init_from_spatial_edges_set,
                             SpatialGraphsSets.merge_two_spatial_graphs,
-                            SpatialGraphsSet)
+                            SpatialGraphsSet,
+                            self.spatial_interpolator)
 
     def get_plottable_graphs(self, color_string):
         plottable_graphs = []

@@ -20,14 +20,15 @@ import cacher
 import config
 
 class SpatialPath2d(abstract_paths.AbstractPath):
-    def __init__(self, spatial_graph, spatial_interpolator):
+    def __init__(self, spatial_graph, spatial_interpolator, base_resolution):
         abstract_paths.AbstractPath.__init__(self, spatial_graph.geospatials,
-                                                   spatial_interpolator)        
+                                       spatial_interpolator, base_resolution)
         self.land_cost = spatial_graph.land_cost
-        #self.path_geospatials = self.path_coordinates
+        self.path_geospatials = self.path_coordinates
+  
         #self.path_latlngs = spatial_graph.geospatials_to_latlngs(
         #                                      self.path_geospatials)
-        #self.land_cost = landcover.get_land_cost(self.path_latlngs)
+        #land_cost_v2 = landcover.get_land_cost(self.path_latlngs)
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
     def __init__(self, spatial_graphs_sets):
@@ -36,10 +37,13 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
         self.start_latlng = spatial_graphs_sets.start_latlng
         self.end_latlng = spatial_graphs_sets.end_latlng
         self.projection = spatial_graphs_sets.projection
-        self.spatial_interpolator = spatial_graphs_sets.interpolator
+        self.spatial_interpolator = spatial_graphs_sets.spatial_interpolator
+        self.spatial_base_resolution = \
+            spatial_graphs_sets.spatial_base_resolution
         abstract_paths.AbstractPathsSet.__init__(self,
                    spatial_graphs_sets,
                    self.spatial_interpolator,
+                   self.spatial_base_resolution,
                    SpatialPath2d)
 
     def get_plottable_graphs(self, color_string):

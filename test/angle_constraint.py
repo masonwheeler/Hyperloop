@@ -47,8 +47,6 @@ def compute_angle_constraint(length_scale, interpolator, max_curvature,
                                                     max_curvature, max_error)
         if is_curvature_acceptable:
             angle_constraint_in_degrees += 1
-            ##util.smart_print("current angle: " +
-            ##                 str(angle_constraint_in_degrees))
             effective_angle_in_degrees = 180 - angle_constraint_in_degrees
             effective_angle_in_radians = math.radians(effective_angle_in_degrees)
             raw_point_b = [math.cos(effective_angle_in_radians) * length_scale,
