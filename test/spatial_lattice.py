@@ -42,8 +42,8 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
         spline_geospatials = spatial_slice_bounds["spline_geospatials"]
         directions_geospatials = spatial_slice_bounds["directions_geospatials"]
         spatial_slice_geospatials, distances = util.build_grid(
-                                            directions_geospatials,
                                             spline_geospatials,
+                                            directions_geospatials,
                                             spatial_slice_y_spacing)
         point_id = slice_start_id
         lattice_y_coord = 0

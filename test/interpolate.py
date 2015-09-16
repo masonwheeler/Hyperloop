@@ -130,7 +130,7 @@ def iterative_smoothing_interpolation_2d(x_array, y_array, initial_end_weights,
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
                                                   s_values, curvature_threshold)
-        test_smoothing_factor *= 2.0
+        test_smoothing_factor *= 5.0
         set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
         return [x_spline, y_spline]
     else:

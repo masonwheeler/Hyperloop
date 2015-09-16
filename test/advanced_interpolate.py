@@ -283,80 +283,24 @@ def parametric_extended_quintic(points, num_samples_per_partition=25,
     sampled_y_vals = evaluate_coeffs_standard(partitions_sampled_s_vals,
                                               y_quintic_coeffs)
     interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    #points_differences = points - interpolated_points
+    #x_differences, y_differences = np.transpose(points_differences)
+    #points_distances = np.hypot(x_differences, y_differences)
+    #print("largest distance: " + str(np.amax(points_distances)))
     quintic_curvature_array = compute_quintic_curvature(
                                   partitions_sampled_s_vals,
                                            x_quintic_coeffs,
                                            y_quintic_coeffs)
     return [interpolated_points, quintic_curvature_array]
-"""
-def scipy_quintic(points, num_samples_per_partition=25,
-                          num_s_vals_per_x_val=15):
-    points = interpolate.sample_path(points, 1280)
-    s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
-    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
-    sampled_s_vals = util.fast_concat(partitions_sampled_s_vals)
-    points_x_vals, points_y_vals = np.transpose(points)
-    x_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals,
-                                                  points_x_vals, k=5)
-    y_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals,
-                                                  points_y_vals, k=5)
-    sampled_x_vals = x_spline(sampled_s_vals)
-    sampled_y_vals = y_spline(sampled_s_vals)
-    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
-    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
-                                                                   y_spline,
-                                                             sampled_s_vals)
-    return [interpolated_points, curvature_array_2d]
 
-def scipy_cubic(points, num_samples_per_partition=25,
-                          num_s_vals_per_x_val=15):
-    points = interpolate.sample_path(points, 2560)
-    s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
-    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
-    sampled_s_vals = util.fast_concat(partitions_sampled_s_vals)
-    points_x_vals, points_y_vals = np.transpose(points)
-    x_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals, points_x_vals)
-    y_spline = scipy.interpolate.InterpolatedUnivariateSpline(s_vals, points_y_vals)
-
-    sampled_x_vals = x_spline(sampled_s_vals)
-    sampled_y_vals = y_spline(sampled_s_vals)
-    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
-    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
-                                                                   y_spline,
-                                                             sampled_s_vals)
-    return [interpolated_points, curvature_array_2d]
-
-def scipy_pchip(points, num_samples_per_partition=25,
-                          num_s_vals_per_x_val=15):
-    points = interpolate.sample_path(points, 2560)
-    s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
-    partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
-    sampled_s_vals = util.fast_concat(partitions_sampled_s_vals)
-    points_x_vals, points_y_vals = np.transpose(points)
-    x_spline = scipy.interpolate.PchipInterpolator(s_vals, points_x_vals)
-    y_spline = scipy.interpolate.PchipInterpolator(s_vals, points_y_vals)
-
-    sampled_x_vals = x_spline(sampled_s_vals)
-    sampled_y_vals = y_spline(sampled_s_vals)
-    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
-    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
-                                                                   y_spline,
-                                                             sampled_s_vals)
-    return [interpolated_points, curvature_array_2d]
-"""
 def scipy_smoothing(points, num_samples_per_partition=25,
                           num_s_vals_per_x_val=15):
     points = interpolate.sample_path(points, 160)
+    points_array = np.array([np.array(point) for point in points])
     s_vals = np.arange(len(points))
-    #s_vals = np.array([num_s_vals_per_x_val * n for n in range(len(points))])
-    #partitions_sampled_s_vals = sample_s_vals(s_vals, num_samples_per_partition)
-    #sampled_s_vals = np.array(util.fast_concat(partitions_sampled_s_vals))
     points_x_vals, points_y_vals = np.transpose(points)
-    end_weights = 10**4
-    smoothing_factor = 10**5
-    #print(points_x_vals)
-    #print(points_y_vals)
-    #print(s_vals)
+    end_weights = 10
+    smoothing_factor = 8*10**3
     x_spline, y_spline = interpolate.smoothing_splines_2d(points_x_vals,
                                                           points_y_vals,
                                                                  s_vals,
@@ -365,57 +309,12 @@ def scipy_smoothing(points, num_samples_per_partition=25,
     sampled_x_vals = x_spline(s_vals)
     sampled_y_vals = y_spline(s_vals)
     interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    points_differences = interpolated_points - points_array 
+    x_differences, y_differences = np.transpose(points_differences)
+    points_distances = np.hypot(x_differences, y_differences)
+    print("largest distance: " + str(np.amax(points_distances)))
     curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
                                                                    y_spline,
                                                                      s_vals)
-    print(curvature_array_2d)
-    print("spline max curvature: " + str(np.amax(curvature_array_2d)))
     return [interpolated_points, curvature_array_2d]
 
-# Test quint(t, x, v1, v2):
-"""
-t = [i for i in range(6)]
-x = [random.uniform(-10,10) for i in range(len(t))]
-v1 = random.uniform(-10,10)
-v2 = random.uniform(-10,10)
-print "x is:"
-print x
-print "t is:"
-print t
-print "(v1, v2) is:"
-print [v1, v2]
-
-polys = quint(t, x, v1, v2)
-
-t_m = [[t[i]+(m/100.)*(t[i+1]-t[i]) for m in range(100)] for i in range(len(t)-1)]
-x_m = [[np.dot(polys[i],[1,time,time**2,time**3,time**4,time**5]) for time in t_m[i]] for i in range(len(t_m))]
-t_m = sum(t_m, [])
-x_m = sum(x_m, [])
-
-print "x_m is:"
-print x_m
-print "t_m is:"
-print t_m
-plt.plot(t_m, x_m, t, x)
-plt.show()
-"""
-
-# Test join_indices(N):
-# should get 5,5,5,3,3,...
-# print [join_indices(n) for n in range(30)]
-
-
-# Test super_quint(sp, vp, s, K):
-# t_points = sorted(list(set([random.uniform(-100,100) for i in range(50)])))
-# x_points = [random.uniform(-10,10) for i in range(len(t_points))]
-
-# t, x = super_quint(t_points, x_points, 10)
-
-# plt.plot(t, x, '.', t_points, x_points, 'o')
-# plt.show()
-
-
-# Test para_super_q(x, M):
-#x_points = [random.uniform(-100,100) for i in range(40)]
-#y_points = [random.uniform(-100,100) for i in range(40)]
-#x = np.transpose([x_points, y_points])

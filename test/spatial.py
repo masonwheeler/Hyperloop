@@ -29,7 +29,7 @@ if config.VISUAL_MODE:
     VISUALIZE_DIRECTIONS = False
     VISUALIZE_SPLINE = False
     VISUALIZE_LATTICE = False
-    VISUALIZE_EDGES = False
+    VISUALIZE_EDGES = True
     VISUALIZE_GRAPHS = False
     VISUALIZE_COST_TIME_SCATTERPLOT = False
     VISUALIZE_PATHS_2D = False
@@ -46,7 +46,7 @@ def build_spatial_lattice(route_directions):
     """Build lattice between directions points and spline points
     """
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
-                                             route_directions, 8, 6)
+                                             route_directions, 9, 6)
     if config.VISUAL_MODE:
         if VISUALIZE_SPLINE:
             plottable_spline = route_spatial_lattice.get_plottable_spline('r-')
@@ -139,8 +139,7 @@ def city_pair_to_spatial_graphs_sets(start, end):
     #route_spatial_paths_set_2d = build_spatial_paths_set_2d(
     #                                 route_spatial_graphs_sets)
     #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
-    #if config.VISUAL_MODE:
-    #    are_axes_equal = True
-    #    visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D,
-    #                                            are_axes_equal)
+    if config.VISUAL_MODE:
+        are_axes_equal = True
+        visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
     return 0 #route_spatial_graphs_sets

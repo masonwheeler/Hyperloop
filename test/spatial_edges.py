@@ -90,7 +90,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
         max_curvature = curvature.compute_curvature_threshold(
-            parameters.MAX_SPEED / 2.0, parameters.MAX_LATERAL_ACCEL)
+            parameters.MAX_SPEED / 10.0, parameters.MAX_LATERAL_ACCEL)
         degree_constraint = angle_constraint.compute_degree_constraint(
                                               length_scale, max_curvature)
         return degree_constraint                                                
@@ -116,10 +116,10 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         self.build_tubes()
     
     def __init__(self, spatial_lattice, spatial_interpolator):
-        spatial_degree_constraint = 25
+        spatial_degree_constraint = 10
         spatial_degree_constraint_v2 = self.compute_spatial_degree_constraint(
                                                               spatial_lattice)
-        print("degree_constraint v2: " + str(spatial_degree_constraint_v2))
+        #print("degree_constraint v2: " + str(spatial_degree_constraint_v2))
         self.start = spatial_lattice.start
         self.end = spatial_lattice.end
         self.start_latlng = spatial_lattice.start_latlng
