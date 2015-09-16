@@ -14,7 +14,6 @@ Citations:
 # Standard Modules:
 import math
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 import scipy.interpolate 
 
@@ -293,8 +292,7 @@ def parametric_extended_quintic(points, num_samples_per_partition=25,
                                            y_quintic_coeffs)
     return [interpolated_points, quintic_curvature_array]
 
-def scipy_smoothing(points, num_samples_per_partition=25,
-                          num_s_vals_per_x_val=15):
+def scipy_smoothing(points):
     points = interpolate.sample_path(points, 160)
     points_array = np.array([np.array(point) for point in points])
     s_vals = np.arange(len(points))
@@ -318,3 +316,25 @@ def scipy_smoothing(points, num_samples_per_partition=25,
                                                                      s_vals)
     return [interpolated_points, curvature_array_2d]
 
+def scipy_smoothing_v2(points):
+    points = interpolate.sample_path(points, 160)
+    points_array = np.array([np.array(point) for point in points])
+    s_vals = np.arange(len(points))
+    points_x_vals_array, points_y_vals_array = np.transpose(points)
+    initial_end_weights = 10**3
+    initial_smoothing_factor = 10**4
+    max_error = 100
+    x_spline, y_spline = interpolate.smoothing_interpolation_with_max_error(
+                            points_x_vals_array,
+                            points_y_vals_array,
+                            s_vals,
+                            initial_end_weights,
+                            initial_smoothing_factor,
+                            max_error)
+    sampled_x_vals = x_spline(s_vals)
+    sampled_y_vals = y_spline(s_vals)
+    interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                                   y_spline,
+                                                                     s_vals)
+    return [interpolated_points, curvature_array_2d]

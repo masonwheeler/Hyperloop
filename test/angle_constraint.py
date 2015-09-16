@@ -37,7 +37,8 @@ def compute_degree_constraint(length_scale, max_curvature):
     print("maximum allowed curvature: " + str(max_curvature))
     print("length scale: " + str(length_scale))
     #interpolator_v1 = advanced_interpolate.parametric_extended_quintic
-    interpolator_v2 = advanced_interpolate.scipy_smoothing
+    #interpolator_v2 = advanced_interpolate.scipy_smoothing
+    interpolator_v3 = advanced_interpolate.scipy_smoothing_v2
     origin = [0, 0]
     point_a = [length_scale, 0]
     angle_constraint_in_degrees = 1
@@ -50,8 +51,10 @@ def compute_degree_constraint(length_scale, max_curvature):
     while True:
         #is_curvature_acceptable = test_path_points(path_points,
         #                              interpolator_v1, max_curvature)
+        #is_curvature_acceptable = test_path_points(path_points,
+        #                              interpolator_v2, max_curvature)
         is_curvature_acceptable = test_path_points(path_points,
-                                      interpolator_v2, max_curvature)
+                                      interpolator_v3, max_curvature)
         if is_curvature_acceptable:
             angle_constraint_in_degrees += 1
             print("current angle: " + str(angle_constraint_in_degrees))
