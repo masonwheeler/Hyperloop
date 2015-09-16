@@ -120,11 +120,11 @@ def route_2d_to_route_3d(route_2d, elevation_tradeoff):
     ##print(len(arclengths2))
     ##print(len(land_elevations1))
     ##print(len(land_elevations2))
-    waypoint_arclengths, waypoint_land_elevations = \
+    waypoint_arclengths, waypoint_tube_elevations = \
         landscape.match_landscape(arclengths, land_elevations,
                                   "elevation", elevation_tradeoff)
     tube_elevation_spline = PchipInterpolator(waypoint_arclengths,
-                                              waypoint_land_elevations)
+                                              waypoint_tube_elevations)
 
     tube_elevations = tube_elevation_spline(arclengths)
     

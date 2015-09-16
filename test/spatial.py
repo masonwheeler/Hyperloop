@@ -73,6 +73,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
                                 spatial_interpolate.scipy_smoothing)
+    if not route_spatial_edges_sets.TUBE_READY:
+        route_spatial_edges_sets.build_tubes()
     if config.VISUAL_MODE:
         if VISUALIZE_EDGES:
             plottable_edges = route_spatial_edges_sets.get_plottable_edges('k-')

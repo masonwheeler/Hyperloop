@@ -88,6 +88,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     MIN_SPEED = parameters.MAX_SPEED / 2.0
+    TUBE_READY = False
 
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
@@ -117,7 +118,8 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def finish_edges_sets(self):
         self.compute_land_costs()
         self.build_elevation_profiles()
-        self.build_tubes()
+        if self.TUBE_READY:
+            self.build_tubes()
     
     def __init__(self, spatial_lattice, spatial_interpolator):
         self.spatial_interpolator = spatial_interpolator
@@ -130,7 +132,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         self.projection = spatial_lattice.projection
         abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
                                  SpatialEdge, spatial_degree_constraint)
-        #self.finish_edges_sets()
+        self.finish_edges_sets()
 
     def get_plottable_edges(self, color_string):
         plottable_edges = []
