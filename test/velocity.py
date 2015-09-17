@@ -14,16 +14,11 @@ Last Modification Purpose: Created Module.
 import numpy as np
 
 # Our Modules
-import abstract
-import comfort
 import config
-import interpolate
-
 
 def velocities_to_velocity_pairs(velocities):
     velocity_pairs = util.to_pairs(velocities)
     return velocity_pairs
-
 
 def time_elapsed_to_velocity(velocity_pair, time_elapsed):
     start_velocity, end_velocity = velocity_pair
@@ -36,7 +31,6 @@ def time_elapsed_to_velocity(velocity_pair, time_elapsed):
     velocity_time = start_velocity_time + time_elapsed
     velocity = [velocity_time, velocity_val]
     return velocity
-
 
 def sample_velocity_pair(velocity_pair, time_step_size, time_elapsed):
     sampled_velocities = []
@@ -51,7 +45,6 @@ def sample_velocity_pair(velocity_pair, time_step_size, time_elapsed):
     time_elapsed -= velocity_pair_time_difference
     return [sampled_velocities, time_elapsed]
 
-
 def sample_velocities(velocities_by_time, time_step_size):
     time_elapsed = 0
     velocities = []
@@ -60,7 +53,6 @@ def sample_velocities(velocities_by_time, time_step_size):
                                                                 time_elapsed)
         velocities += sampled_velocities
     return velocities
-
 
 def velocities_by_arclength_to_time_checkpoints_array(velocities_by_arc_length,
                                                       velocity_arc_length_step_size):
@@ -77,13 +69,11 @@ def velocities_by_arclength_to_time_checkpoints_array(velocities_by_arc_length,
     time_check_points_array = np.insert(times, 0, 0)
     return time_check_points_array
 
-
 def compute_trip_time(velocities_by_arc_length, velocity_arc_length_step_size):
     time_checkpoints_array = velocities_by_arclength_to_time_checkpoints_array(
         velocities_by_arc_length, velocity_arc_length_step_size)
     trip_time = np.sum(time_checkpoints_array)
     return trip_time
-
 
 def reparametrize_velocities(velocities_by_arc_length, velocity_arclength_step_size,
                              time_step_size):
@@ -94,7 +84,6 @@ def reparametrize_velocities(velocities_by_arc_length, velocity_arclength_step_s
     sampled_velocities_by_time = sample_velocities(velocities_by_time)
     return sampled_velocities_by_time
 
-
 def compute_local_trip_time_excess(max_allowed_velocities,
                                    velocity_arc_length_step_size):
     num_velocities = max_allowed_velocities.size
@@ -102,12 +91,10 @@ def compute_local_trip_time_excess(max_allowed_velocities,
     max_possible_velocities.fill(config.MAX_SPEED)
     minimum_possible_trip_time = compute_trip_time(max_possible_velocities,
                                                    velocity_arc_length_step_size)
-    ##print("max allowed velocities: " + str(max_allowed_velocities))
     minimum_allowed_trip_time = compute_trip_time(max_allowed_velocities,
                                                   velocity_arc_length_step_size)
     local_trip_time_excess = minimum_allowed_trip_time - minimum_possible_trip_time
     return local_trip_time_excess
-
 
 def compute_max_endpoint_velocities(max_linear_accel, max_possible_velocity,
                                     velocity_arclength_step_size):
@@ -118,7 +105,6 @@ def compute_max_endpoint_velocities(max_linear_accel, max_possible_velocity,
         velocity = np.sqrt(2 * velocity_arc_length_step_size * max_linear_accel
                            + np.square(current_velocity))
     return max_end_point_velocities
-
 
 def global_max_allowed_velocities(local_max_allowed_velocities,
                                   max_end_point_velocities):

@@ -180,7 +180,6 @@ def curvature_array_to_max_allowed_vels(curvature_array, accel_constraint):
     )
     return max_allowed_vels
 
-
 def vertical_curvature_array_to_max_allowed_vels(vertical_curvature_array):
     max_allowed_vels = curvature_array_to_max_allowed_vels(
         vertical_curvature_array, config.VERTICAL_ACCEL_CONSTRAINT)
