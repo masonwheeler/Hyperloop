@@ -13,11 +13,11 @@ import parameters
 class VelocityProfile(object):
 
     MIN_VELOCITY = 10 #Meters/Second
-
-    def sort_velocities_indices(velocities_indices):    
-        sorted_velocities_indices = sorted(velocities_indices,
-                                  key=lambda i: velocities[i])
-        sorted_interior_velocities_indices = [index + 1 for index in
+    
+    def sort_velocities_indices(self, velocities_indices):
+        sorted_max_velocities_indices = sorted(velocities_indices,
+                                  key=lambda i: self.max_velocities[i])
+        sorted_interior_max_velocities_indices = [index + 1 for index in
                                               sorted_velocities_indices]
         return sorted_interior_velocities_indices
     
@@ -68,7 +68,8 @@ class VelocityProfile(object):
                                                                     trial_index)
         forward_compatibility = self.test_velocity_indices_pair(trial_index,
                                                               forward_index)
-        velocity_index_compatible = backward_compatibility and forward_compatiblity
+        velocity_index_compatible = (backward_compatibility and
+                                      forward_compatiblity)
         self.selected_velocities_indices.pop(position_of_trial_index)
         return velocity_index_compatible
 
@@ -82,40 +83,39 @@ class VelocityProfile(object):
                 return True
         return False    
 
-    def get_velocity_profile_waypoints(self, arc_lengths, max_velocities)
-        self.arc_lengths = arc_lengths
-        self.max_velocities = max_velocities
+    def get_velocity_profile_waypoints(self)
         self.selected_velocities_indices = []
         start_velocity_index = 0
-        self.selected_velocities_indices.append(start_velocity_index)
-        final_velocity_index = len(velocities) - 1
-        self.selected_velocities_indices.append(final_velocity_index)
-        interior_velocities = velocities[1: len(velocities) - 1]
-        self.sorted_interior_velocities_indices = self.sort_velocities_indices(
-                                                           interior_velocities)
-        self.index_pairs_tested = [[0 for i in range(len(velocities))]
-                                      for j in range(len(velocities))]
+        self.selected_max_velocities_indices.append(start_velocity_index)
+        final_velocity_index = len(self.max_velocities) - 1
+        self.selected_max_velocities_indices.append(final_velocity_index)
+        interior_max_velocities = max_velocities[1: final_velocity_index]
+        self.sorted_interior_max_velocities_indices = \
+            self.sort_velocities_indices(interior_max_velocities)
+        self.index_pairs_tested = [[0 for i in range(len(self.max_velocities))]
+                                      for j in range(len(self.max_velocities))]
         while True:
-            added_compatible_vel = self.add_compatible_velocity_to_profile()
-            if added_compatible_vel:
+            added_compatible_velocity = \
+                self.add_compatible_velocity_to_profile()
+            if added_compatible_velocity:
                 pass
             else:
                 break
-        waypoint_arc_lengths = [arc_lengths[index] for index
-                                in selected_velocities_indices]
-        waypoint_velocities = [velocities[index] for index
-                               in selected_velocities_indices]
-        return [waypoint_arc_lengths, waypoint_velocities]
+        waypoint_arc_lengths = [self.arc_lengths[index] for index
+                                in self.selected_velocities_indices]
+        waypoint_max_velocities = [self.max_velocities[index] for index
+                               in self.selected_velocities_indices]
+        return [waypoint_arc_lengths, waypoint_max_velocities]
         
     def interpolate_velocity_waypoints_v1(self, waypoint_arc_lengths,
-                                                waypoint_velocities):                
+                                             waypoint_max_velocities):
         velocity_spline = scipy.interpolate.PchipInterpolator(
-                        waypoint_arc_lengths, waypoint_velocities)
+                        waypoint_arc_lengths, waypoint_max_velocities)
         return velocity_spline
             
     def build_velocities_by_arc_length_v1(self, arc_lengths, max_velocities):
         waypoint_arc_lengths, waypoint_velocities = \
-            self.get_velocity_profile_waypoints(arc_lengths, max_velocities)
+            self.get_velocity_profile_waypoints()
         velocity_spline = self.interpolate_velocity_waypoints_v1(
                         waypoint_arc_lengths, waypoint_velocities)
         unconstrained_velocities_by_arc_length = velocity_spline(arc_lengths)
@@ -147,7 +147,7 @@ class VelocityProfile(object):
         return max_velocities
     
     def __init__(self, spatial_path_3d):
-        arc_lengths = spatial_path_3d.arc_lengths
+        self.arc_lengths = spatial_path_3d.arc_lengths
         self.max_velocities = self.compute_spatial_path_3d_max_velocities_v1(
                                                       spatial_path_3d.coords)
         self.velocities_by_arc_length = self.build_velocities_by_arc_length_v1(

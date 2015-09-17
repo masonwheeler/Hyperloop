@@ -20,14 +20,6 @@ import proj
 import util
 
 
-def sort_indices(z, Type):
-    z_indices = range(len(z))
-    if Type == "elevation":
-        return sorted(z_indices, key=lambda i: z[i], reverse=True)
-    elif Type == "velocity":
-        return sorted(z_indices, key=lambda i: z[i], reverse=False)
-
-
 def gen_landscape(x, Type):
     s = [0] * len(x)
     for i in range(0, len(x) - 1):
@@ -45,6 +37,12 @@ def gen_landscape(x, Type):
 
     return [s, z]
 
+def sort_indices(z, Type):
+    z_indices = range(len(z))
+    if Type == "elevation":
+        return sorted(z_indices, key=lambda i: z[i], reverse=True)
+    elif Type == "velocity":
+        return sorted(z_indices, key=lambda i: z[i], reverse=False)
 
 def match_landscape(s, z, Type, tradeoffs):
     # the profile initializes as delta-z.
