@@ -8,6 +8,7 @@ Last Modification Purpose: To implement a non naive tube/pylon cost method.
 
 # Custom Modules
 import config
+import curvature
 import parameters
 import pylon_cost
 import tube_cost
@@ -30,15 +31,15 @@ def quick_build_tube(elevation_profile, tube_interpolator):
         tube_interpolate.get_tube_waypoints_v1(arc_lengths, land_elevations)
     tube_elevations, tube_curvature = tube_interpolate.tube_pchip(
          arc_length_waypoints, tube_elevation_waypoints, arc_lengths)
-    max_allowed_vels = curvature.curvature_array_to_max_allowed_vels(
-                       tube_curvature, parameters.MAX_VERTICAL_ACCEL)
-    arc_length_step_size = arc_lengths[0]
+    max_allowed_vels = curvature.curvature_array_to_bounded_max_allowed_vels(
+      tube_curvature, parameters.MAX_VERTICAL_ACCEL, parameters.MAX_SPEED)
+    arc_length_step_size = arc_lengths[1]
     time = velocity.compute_trip_time(max_allowed_vels, arc_length_step_size)
     spatial_x_values, spatial_y_values = zip(*geospatials)
     pylon_heights = util.subtract(tube_elevations, land_elevations)
     total_pylon_cost = pylon_cost.compute_pylons_total_cost_v1(pylon_heights)
     tube_coords = zip(spatial_x_values, spatial_y_values, tube_elevations)
-    total_tube_cost = tube_cost.compute_tube_cost(tube_coords)
+    total_tube_cost = tube_cost.compute_tube_cost_v1(tube_coords)
     if config.VISUAL_MODE and VISUALIZE_TUBE:
         land_elevation_points = [arc_lengths, land_elevations]
         plottable_land_elevation = [land_elevation_points, 'r-']

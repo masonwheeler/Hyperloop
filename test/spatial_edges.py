@@ -61,8 +61,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         self.elevation_profile = elevation.get_elevation_profile_v2(
                                      geospatials_grid, distances)
     def build_tube(self, tube_interpolator):
-        tube_cost, pylon_cost = tube.quick_build_tube(self.elevation_profile,
-                                                           tube_interpolator)
+        tube_cost, pylon_cost, time = tube.quick_build_tube(
+                                   self.elevation_profile, tube_interpolator)
+        self.time = time
         self.pylon_cost = pylon_cost
         self.tube_cost = tube_cost
             

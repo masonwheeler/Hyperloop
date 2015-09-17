@@ -180,6 +180,17 @@ def curvature_array_to_max_allowed_vels(curvature_array, accel_constraint):
     )
     return max_allowed_vels
 
+def curvature_array_to_bounded_max_allowed_vels(curvature_array,
+    accel_constraint, max_possible_vel):
+    curvature_array_length = curvature_array.size
+    max_possible_vels = np.empty(curvature_array_length)
+    max_possible_vels.fill(max_possible_vel)
+    max_allowed_vels = curvature_array_to_max_allowed_vels(curvature_array,
+                                                          accel_constraint)
+    
+    bounded_max_allowed_vels = np.minimum(max_allowed_vels, max_possible_vels)
+    return bounded_max_allowed_vels
+
 def vertical_curvature_array_to_max_allowed_vels(vertical_curvature_array):
     max_allowed_vels = curvature_array_to_max_allowed_vels(
         vertical_curvature_array, config.VERTICAL_ACCEL_CONSTRAINT)

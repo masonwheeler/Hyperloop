@@ -4,6 +4,7 @@ Original Developer: Jonathan Ward
 
 # Custom Modules:
 import parameters
+import util
 
 def compute_tube_cost_v1(tube_coords):
     tube_length = util.compute_total_arc_length(tube_coords)

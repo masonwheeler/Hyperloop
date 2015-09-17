@@ -12,6 +12,7 @@ Last Modification Purpose: Created Module.
 
 # Standard Modules
 import numpy as np
+import time
 
 # Our Modules
 import config
