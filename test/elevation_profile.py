@@ -7,6 +7,7 @@ import numpy as np
 import scipy.interpolate
 
 #Custom Modules:
+import clothoid
 import config
 import parameters
 
@@ -20,11 +21,29 @@ class TubeElevationProfile(object):
                                               sorted_elevations_indices]
         return sorted_interior_elevations_indices
 
-    def test_elevations_pair_v1(self, elevation_a, arc_length_a,
-                                      elevation_b, arc_length_b):
-         
+    def test_land_elevations_pair_v1(self, elevation_a, arc_length_a,
+                                           elevation_b, arc_length_b):
+        elevation_difference = elevation_b - elevation_a
+        arc_length_difference = arc_length_b - arc_length_a
+        slope = np.absolute(elevation_difference / arc_length_difference)
+        is_elevation_pair_valid = slope < self.slope_constraint
+        return is_elevation_pair_valid
     
-    def test_elevation_indices_pair(self, elevation_index_a, elevation_index_b):
+    def test_land_elevations_pair_v2(self, elevation_a, arc_length_a,
+                                           elevation_b, arc_length_b):
+        theta_0 = 0
+        theta_1 = 0
+        start_curvature, curvature_per_length, length = \
+            clothoid.build_clothoid(arc_length_a, elevation_a, theta_0,
+                                    arc_length_b, elevation_b, theta_1)
+        extremal_curvatures = [start_curvature,
+                               start_curvature + length * curvature_per_length]
+        largest_curvature = max(np.absolute(extremal_curvatures))
+        is_elevation_pair_valid = largest_curvature < self.curvature_tolerance
+        return is_elevation_pair_valid
+    
+    def test_land_elevation_indices_pair(self, elevation_index_a,
+                                               elevation_index_b):
         if self.index_pairs_tested[elevation_index_a][elevation_index_b]:
             return True
         else:
@@ -34,11 +53,11 @@ class TubeElevationProfile(object):
             arc_length_a = self.arc_lengths[elevation_index_a]
             elevation_b = self.land_elevations[elevation_index_b]
             arc_length_b = self.arc_lengths[elevation_index_b]
-            are_elevations_compatible = self.test_elevations_pair_v1(
-                elevation_a, arc_length_a, elevation_b, arc_length_b)
+            are_elevations_compatible = self.test_land_elevations_pair_v1(
+                     elevation_a, arc_length_a, elevation_b, arc_length_b)
             return arc_elevations_compatible
     
-    def test_elevation_index(self, elevation_index):
+    def test_land_elevation_index(self, elevation_index):
         position_of_trial_index = util.sorted_insert(elevation_index,
                                     self.selected_elevations_indices)
         backward_index = self.selected_elevations_indices[
@@ -46,19 +65,20 @@ class TubeElevationProfile(object):
         trial_index = self.selected_elevations_indices[position_of_trial_index]
         forward_index = self.selected_elevations_indices[
                                   position_of_trial_index + 1]
-        backward_compatibility = self.test_elevation_indices_pair(
-                                          backward_index, trial_index)
-        forward_compatibility = self.test_elevation_indices_pair(trial_index,
-                                                               forward_index)
+        backward_compatibility = self.test_land_elevation_indices_pair(
+                                           backward_index, trial_index)
+        forward_compatibility = self.test_land_elevation_indices_pair(
+                                           trial_index, forward_index)
         elevation_index_compatible = (backward_compatibility and
                                        forward_compatiblity)
         self.selected_elevations_indices.pop(position_of_trial_index)
         return elevation_index_compatible        
         
-    def add_compatible_land_elevation_to_profile(self):
+    def add_compatible_land_elevation_to_waypoints(self):
         for i in range(len(self.sorted_interior_elevations_indices)):
             trial_index = self.sorted_interior_elevations_indices[i]
-            is_trial_index_compatible = self.test_elevation_index(trial_index)
+            is_trial_index_compatible = self.test_land_elevation_index(
+                                                           trial_index)
             if is_trial_index_compatible:
                 trial_index = sorted_interior_elevations_indices.pop(i)
                 util.sorted_insert(trial_index, selected_elevations_indices)
@@ -78,7 +98,7 @@ class TubeElevationProfile(object):
                                       for j in range(len(self.land_elevations))]
         while True:
             added_compatible_elevation = \
-                self.add_compatible_elevation_to_profile()
+                self.add_compatible_land_elevation_to_waypoints()
             if added_compatible_elevation:
                 pass
             else:
@@ -99,11 +119,21 @@ class TubeElevationProfile(object):
         waypoint_arc_lengths, waypoint_land_elevations = \
             self.get_elevation_profile_waypoints()
         tube_elevation_spline = self.interpolate_elevation_waypoints_v1(
-                        waypoint_arc_lengths, waypoint_land_elevations)
+                              waypoint_arc_lengths, waypoint_land_elevations)
         tube_elevations = tube_elevation_spline(self.arc_lengths)
-        return tube_elevations
+        return [tube_elevations, tube_elevation_spline]
         
-
+    #def __init__(self, elevation_profile, curvature_constraint):
+    def __init__(self, elevation_profile, slope_constraint):
+        #self.curvature_constraint = curvature_constraint
+        self.slope_constraint = slope_constraint        
+        self.arc_lengths = [elevation_point["arcLength"]
+                            for elevation_point in elevation_profile]
+        self.land_elevations = [elevation_point["landElevation"]
+                                for elevation_point in elevation_profile]
+        self.tube_elevations, self.tube_elevation_spline = \
+            self.build_tube_elevations_v1()
+        
 
 
 

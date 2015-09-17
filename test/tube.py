@@ -23,9 +23,9 @@ PLOT_QUEUE_ELEVATION_PROFILE = []
 def quick_build_tube(elevation_profile, tube_interpolator):
     geospatials = [elevation_point["geospatial"] for elevation_point
                    in elevation_profile]
-    land_elevations = [elevation_point["land_elevation"] for elevation_point
+    land_elevations = [elevation_point["landElevation"] for elevation_point
                        in elevation_profile]
-    arc_lengths = [elevation_point["distance_along_path"] for elevation_point
+    arc_lengths = [elevation_point["distanceAlongPath"] for elevation_point
                    in elevation_profile]
     arc_length_waypoints, tube_elevation_waypoints = \
         tube_interpolate.get_tube_waypoints_v1(arc_lengths, land_elevations)
