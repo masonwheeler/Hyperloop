@@ -23,6 +23,7 @@ import spatial_graphs
 import spatial_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
+import tube
 import util
 
 if config.VISUAL_MODE:
@@ -72,7 +73,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
     """
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
-                                spatial_interpolate.scipy_smoothing)
+                                spatial_interpolate.scipy_smoothing,
+                                              tube.quick_build_tube)
     if not route_spatial_edges_sets.TUBE_READY:
         route_spatial_edges_sets.build_tubes()
     if config.VISUAL_MODE:

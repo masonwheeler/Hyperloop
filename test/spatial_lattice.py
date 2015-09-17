@@ -94,18 +94,15 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
                         directions_geospatials, self.SPATIAL_BASE_RESOLUTION)
         return sampled_directions_geospatials
    
-    def smart_sample_nth_points(points, n_stride):
+    def smart_sample_nth_points(self, points, n_stride):
         """
         Takes every nth point in a list as well as the last point.
-
-        Used in core.build_lattice()
         """
         end_point = points[-1]
         sampled_points = points[::n_stride]
         sampled_points.append(end_point)
         return sampled_points
         
-
     def get_spatial_slices_directions_geospatials(self,
             sampled_directions_geospatials, spatial_x_spacing):
         spatial_slices_directions_geospatials = self.smart_sample_nth_points(

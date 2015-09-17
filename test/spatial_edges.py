@@ -21,6 +21,7 @@ import abstract_edges
 import angle_constraint
 import cacher
 import config
+import curvature
 import elevation
 import landcover
 import parameters
@@ -156,9 +157,10 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                 plottable_edges.append(plottable_edge)
         return plottable_edges
 
-def get_spatial_edges_sets(spatial_lattice, spatial_interpolator):
+def get_spatial_edges_sets(spatial_lattice, spatial_interpolator,
+                                               tube_interpolator):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",
                                                SpatialEdgesSets,
-                        [spatial_lattice, spatial_interpolator],
+     [spatial_lattice, spatial_interpolator, tube_interpolator],
                                       config.SPATIAL_EDGES_FLAG)
     return spatial_edges_sets
