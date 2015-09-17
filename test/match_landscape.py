@@ -11,12 +11,13 @@ Last Modification Purpose: To clarify naming and add docstrings
 import numpy as np
 
 # Our Modules
-import util
-import config
 import clothoid
+import config
+import curvature
+import elevation
 import parameters
 import proj
-import elevation
+import util
 
 
 def sort_indices(z, Type):
@@ -37,7 +38,7 @@ def gen_landscape(x, Type):
         z = elevation.usgs_elevation(xlnglat)
 
     elif Type == "velocity":
-        R = [util.points_to_radius(x[i - 1:i + 2])
+        R = [curvature.points_to_radius(x[i - 1:i + 2])
              for i in range(1, len(x) - 1)]
         z = [0] + [min(np.sqrt(r * parameters.MAX_LATERAL_ACCEL),
                        parameters.MAX_SPEED) for r in R] + [0]

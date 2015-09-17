@@ -7,8 +7,8 @@ class AbstractPath(object):
                                                 base_resolution):
         self.graph_coordinates = graph_physical_coordinates
         self.interpolator = interpolator
-        self.path_coordinates = interpolator(self.graph_coordinates,
-                                                    base_resolution)
+        self.path_coordinates, self.path_curvature = interpolator(
+                          self.graph_coordinates, base_resolution)
 
     def to_plottable(self, color_string):
         """Return the physical coordinates of the path in a plottable format
