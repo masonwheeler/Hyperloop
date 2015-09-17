@@ -179,3 +179,39 @@ def path_to_route(path):
     print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
     print "entire process took " + str(time.time() - start) + " seconds."
     return route
+
+"""
+def graph_to_route_2d(graph, M):
+    graph_geospatials = graph.geospatials
+    route_2d = interp.para_super_q(graph_geospatials, M)
+    return route_2d
+
+def graph_to_route(graph, elevation_tradeoff, comfort_tradeoff1, comfort_tradeoff2):
+    start = time.time()
+    ##print "computing data for a new route..."
+    x = graph.geospatials
+    graph_spacing = np.linalg.norm([x[2][0] - x[1][0], x[2][1] - x[1][1]])
+    M = int(graph_spacing / (parameters.PYLON_SPACING * 4))
+    ##print "interpolation sampling per edge is " + str(M)
+    t_a = time.time()
+    route_2d = graph_to_route_2d(graph, M)
+    t_b = time.time()
+    ##print "computed 2d route in: " + str(t_b - t_a) + " seconds."
+    route_3d, land_elevations = route_2d_to_route_3d(route_2d, elevation_tradeoff)
+    t_c = time.time()
+    ##print "computed 3d route in: " + str(t_c - t_b) + " seconds."
+    route_4d = route_3d_to_route_4d(route_3d, comfort_tradeoff1,
+                                              comfort_tradeoff2)    
+    t_d = time.time()
+    ##print "computed 4d route in: " + str(t_d - t_c) + " seconds."
+    comfort, t, x, y, z, vx, vy, vz, ax, ay, az = \
+         comfort_analysis_of_route_4d(route_4d)
+    t_e = time.time()
+    ##print "completed comfort analysis in: " + str(t_e - t_d) + " seconds."
+    route = Route(comfort, t, x, y, z, vx, vy, vz, ax, ay, az,
+                             graph.land_cost, land_elevations)
+    t_f = time.time()
+    ##print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
+    ##print "entire process took " + str(time.time() - start) + " seconds."
+    return route
+"""

@@ -243,7 +243,7 @@ def smart_print(string):
 # Other Operations:
 
 def sorted_insert(value, ordered_values):
-    """Place index in sorted list of integers while preserving the order
+    """Place value in sorted list of integers while preserving the order
     """
     for i in xrange(len(ordered_values)):
         if value <= ordered_values[i]:
