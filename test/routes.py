@@ -105,14 +105,6 @@ class Route:
 def route_2d_to_route_3d(route_2d):#, elevation_tradeoff):
     arclengths, land_elevations = landscape.gen_landscape(route_2d,
                                                             "elevation")
-    ##arclengths2 = [elevation_point["distance_along_path"] for elevation_point
-    ##                                                    in elevation_profile]
-    ##land_elevations2 = [elevation_point["land_elevation"] for elevation_point
-    ##                                                    in elevation_profile]
-    ##print(len(arclengths1))
-    ##print(len(arclengths2))
-    ##print(len(land_elevations1))
-    ##print(len(land_elevations2))
     waypoint_arclengths, waypoint_tube_elevations = \
         landscape.match_landscape_v1(arclengths, land_elevations,
                                   "elevation")#, elevation_tradeoff)
@@ -120,13 +112,6 @@ def route_2d_to_route_3d(route_2d):#, elevation_tradeoff):
                                               waypoint_tube_elevations)
 
     tube_elevations = tube_elevation_spline(arclengths)
-    
-    #start_arclength = arclengths[0]
-    #end_arclength = arclengths[-1]
-    #pylons_arclengths = np.arange(start_arclength, end_arclength,
-    #                              parameters.PYLON_SPACING)
-    #pylons_top_height_above_sealevel = tube_elevation_spline(pylons_arclengths)
-
     geospatials_x_vals, geospatials_y_vals = np.transpose(route_2d)
     route_3d = np.transpose([geospatials_x_vals,
                              geospatials_y_vals,

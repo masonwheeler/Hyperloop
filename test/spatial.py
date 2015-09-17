@@ -161,7 +161,7 @@ def city_pair_to_spatial_paths_set_2d(start, end):
                                      route_spatial_edges_sets)
     route_spatial_paths_set_2d = build_spatial_paths_set_2d(
                                       route_spatial_graphs_sets)
-    #route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
+    route_spatial_paths_3d = build_spatial_paths_3d(route_spatial_paths_set_2d)
     if config.VISUAL_MODE:
         are_axes_equal = True
         visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)

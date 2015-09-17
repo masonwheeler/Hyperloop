@@ -21,10 +21,10 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
     def __init__(self, spatial_path_2d, tube_builder):
         self.land_cost = spatial_path_2d.land_cost
         self.path_latlngs = spatial_path_2d.path_latlngs
-        self.tube_options = tube_builder(spatial_path_2d)
+        self.paths = tube_builder(spatial_path_2d)
 
 
 class SpatialPathsSets3d(abstract_paths.AbstractPathsSets):
     def __init__(self, spatial_paths_set_2d):
-        pass                
+        
         

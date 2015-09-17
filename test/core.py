@@ -33,7 +33,7 @@ def pair_analysis(start, end):
     end_latlng = spatial_paths_set_2d.end_latlng
     print("num paths: " + str(len(spatial_paths_2d)))
     complete_routes = [routes.path_to_route(path) for path in spatial_paths_2d]
-    #cacher.save_routes(complete_routes, start, end, start_latlng, end_latlng)
+    cacher.save_routes(complete_routes, start, end, start_latlng, end_latlng)
     """
     index = 1
     for route in complete_routes:
