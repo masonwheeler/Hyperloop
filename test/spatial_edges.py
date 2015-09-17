@@ -57,7 +57,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         geospatials_grid, distances = util.build_grid(
                                            self.start_point.geospatial,
                                            self.end_point.geospatial,
-                                           parameters.PYLON_SPACING)        
+                                           parameters.PYLON_SPACING) 
         self.elevation_profile = elevation.get_elevation_profile_v2(
                                      geospatials_grid, distances)
     def build_tube(self, tube_interpolator):
@@ -90,7 +90,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     MIN_SPEED = parameters.MAX_SPEED / 2.0
-    TUBE_READY = False
+    TUBE_READY = True
 
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
