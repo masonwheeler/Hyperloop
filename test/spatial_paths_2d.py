@@ -38,6 +38,7 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
         self.end_latlng = spatial_graphs_sets.end_latlng
         self.projection = spatial_graphs_sets.projection
         self.spatial_interpolator = spatial_graphs_sets.spatial_interpolator
+        self.tube_builder = spatial_graphs_sets.tube_builder
         self.spatial_base_resolution = \
             spatial_graphs_sets.spatial_base_resolution
         abstract_paths.AbstractPathsSet.__init__(self,

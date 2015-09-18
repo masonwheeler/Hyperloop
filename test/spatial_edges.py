@@ -60,12 +60,19 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                            parameters.PYLON_SPACING) 
         self.elevation_profile = elevation.get_elevation_profile_v2(
                                      geospatials_grid, distances)
-    def build_tube(self, tube_interpolator):
-        tube_cost, pylon_cost, time = tube.quick_build_tube(
-                                   self.elevation_profile, tube_interpolator)
+    def build_tube(self, tube_builder):
+        time, pylon_cost, tube_cost = tube_builder(self.elevation_profile)
         self.time = time
         self.pylon_cost = pylon_cost
         self.tube_cost = tube_cost
+    
+    def build_tube_v2(self, tube_builder):
+        tube_profile = tube_builder(self.elevation_profile)
+        self.tube_cost = tube.compute_tube_cost(tube_profile)        
+        self.pylon_cost = tube.compute_pylon_cost(tube_profile)
+        tube_curvature = tube_profile.curvature
+        arc_lengths = tube_profile.arc_lengths
+        self.time = velocity.curvature_to_time(tube_curvature, arc_lengths)
             
     def __init__(self, start_point, end_point):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)
@@ -133,9 +140,9 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
             self.build_tubes()
     
     def __init__(self, spatial_lattice, spatial_interpolator,
-                                           tube_interpolator):
+                                                tube_builder):
         self.spatial_interpolator = spatial_interpolator
-        self.tube_interpolator = tube_interpolator
+        self.tube_builder = tube_builder
         self.spatial_base_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
         spatial_degree_constraint = self.compute_spatial_degree_constraint(
                                                            spatial_lattice)
@@ -159,7 +166,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         return plottable_edges
 
 def get_spatial_edges_sets(spatial_lattice, spatial_interpolator,
-                                               tube_interpolator):
+                                               tube_builder):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",
                                                SpatialEdgesSets,
      [spatial_lattice, spatial_interpolator, tube_interpolator],

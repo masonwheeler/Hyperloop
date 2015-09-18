@@ -12,7 +12,7 @@ import config
 import parameters
 
 #Fix Spatial_Elevation_Profile
-class TubeElevationProfile(object):
+class TubeProfile(object):
 
     def sort_elevations_indices(elevations_indices):
         sorted_land_elevations_indices = sorted(elevations_indices,

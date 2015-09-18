@@ -4,6 +4,8 @@ Original Developer:
 """
 
 import abstract_paths
+import cacher
+import config
 
 class SpatialPath3d(abstract_paths.AbstractPath):
 
@@ -26,5 +28,18 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
 
 class SpatialPathsSets3d(abstract_paths.AbstractPathsSets):
     def __init__(self, spatial_paths_set_2d):
-        
-        
+        self.start = spatial_paths_set_2d.start
+        self.end = spatial_paths_set_2d.end
+        self.start_latlng = spatial_paths_set_2d.start_latlng
+        self.end_latlng = spatial_paths_set_2d.end_latlng
+        self.tube_builder = spatial_paths_set_2d.tube_builder
+        #self.spatial_paths_sets = abstract_paths.AbstractPathsSets.__init__(
+        #                                                               self,
+                                                             
+def get_spatial_paths_sets_3d(spatial_paths_set_2d):
+    spatial_paths_set_3d = cacher.get_object("spatial_paths_3d",
+                                             SpatialPathsSets3d,
+                                             [spatial_paths_set_2d],
+                                             config.SPATIAL_PATHS_3D_FLAG)
+    return spatial_paths_set_3d
+ 

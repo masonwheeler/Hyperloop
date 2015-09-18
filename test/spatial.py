@@ -133,15 +133,15 @@ def build_spatial_paths_set_2d(route_spatial_graphs_sets):
 def build_spatial_paths_3d(route_spatial_paths_set_2d):
     """Build the best tube elevation options for a given 2d spatial path
     """
-    route_spatial_paths_set_3d = spatial_paths_2d.get_spatial_paths_2d(
-                                            route_spatial_paths_set_2d)
+    route_spatial_paths_sets_3d = spatial_paths_3d.get_spatial_paths_sets_3d(
+                                                  route_spatial_paths_set_2d)
     if config.VISUAL_MODE:
         if VISUALIZE_PATHS_3D:
             plottable_paths_3d = \
                 route_spatial_paths_set_3d.get_plottable_paths()            
     return route_spatial_paths_set_3d
 
-
+"""
 def city_pair_to_spatial_graphs_sets(start, end):
     route_directions = build_directions(start, end)
     route_spatial_lattice = build_spatial_lattice(route_directions)
@@ -152,6 +152,7 @@ def city_pair_to_spatial_graphs_sets(start, end):
         are_axes_equal = True
         visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
     return route_spatial_graphss_sets
+"""
 
 def city_pair_to_spatial_paths_set_2d(start, end):
     route_directions = build_directions(start, end)
