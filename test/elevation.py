@@ -37,8 +37,8 @@ def get_elevation_profile(geospatials, distances):
     for i in range(len(geospatials)):
         elevation_point = {"latlng": latlngs[i],
                            "geospatial": geospatials[i],
-                           "land_elevation": elevations[i],
-                           "distance_along_path": distances[i]}
+                           "landElevation": elevations[i],
+                           "distanceAlongPath": distances[i]}
         elevation_profile.append(elevation_point)
     return elevation_profile
 
