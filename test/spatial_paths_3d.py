@@ -9,8 +9,7 @@ import config
 
 class SpatialPath3d(abstract_paths.AbstractPath):
 
-    def __init__(self, tube_coordinates, pylons, path_latlngs, pylon_cost,
-                                                    tube_cost, land_cost):
+    def __init__(self, tube_profile, path_latlngs, land_cost):
         self.land_cost = land_cost               
         self.path_latlngs = path_latlngs
         self.pylons = pylons
@@ -20,10 +19,15 @@ class SpatialPath3d(abstract_paths.AbstractPath):
 
 class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
 
+    def build_paths(self):
+        self.paths = [SpatialPath3d(tube_profile, self.path_latlngs,
+                      self.land_cost) for tube_profile in self.tube_profiles]
+
     def __init__(self, spatial_path_2d, tube_builder):
         self.land_cost = spatial_path_2d.land_cost
         self.path_latlngs = spatial_path_2d.path_latlngs
-        self.paths = tube_builder(spatial_path_2d)
+        self.path_geospatials
+        self.tube_profiles = tube_builder(spatial_path_2d)
 
 
 class SpatialPathsSets3d(abstract_paths.AbstractPathsSets):
@@ -31,14 +35,20 @@ class SpatialPathsSets3d(abstract_paths.AbstractPathsSets):
     NAME = "spatial_paths_3d"
     FLAG = cacher.SPATIAL_PATHS_3D_FLAG
 
+    def build_paths_sets(self, spatial_paths_2d):
+        self.paths_sets = [SpatialPathsSet3d(spatial_path_2d, self.tube_builder)
+                           for  spatial_path_2d in spatial_paths_2d]      
+        
+    def select_paths(self):
+        
+
     def __init__(self, spatial_paths_set_2d):
         self.start = spatial_paths_set_2d.start
         self.end = spatial_paths_set_2d.end
         self.start_latlng = spatial_paths_set_2d.start_latlng
         self.end_latlng = spatial_paths_set_2d.end_latlng
         self.tube_builder = spatial_paths_set_2d.tube_builder
-        #self.spatial_paths_sets = abstract_paths.AbstractPathsSets.__init__(
-        #                                                               self,
+        
                                                              
 def get_spatial_paths_sets_3d(*args):
     spatial_paths_set_3d = cacher.get_object(SpatialPathsSets3d.NAME,

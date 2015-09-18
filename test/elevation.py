@@ -14,6 +14,7 @@ import simplejson
 # Our Modules
 import config
 import usgs
+import util
 
 
 def usgs_elevation(latlngs):
@@ -53,3 +54,13 @@ def get_elevation_profile_v2(geospatials, latlngs, arc_lengths):
                            "arcLength": arc_lengths[i]}
         elevation_profile.append(elevation_point)
     return elevation_profile
+
+def merge_elevation_profiles(elevation_profile_a, elevation_profile_b):
+    boundary_point = elevation_profile_a[-1]
+    arc_length_offset = boundary_point["arcLength"]
+    for elevation_point in elevation_profile_b:
+        elevation_point["arcLength"] += arc_length_offset
+    merged_elevation_profile = util.smart_concat(elevation_profile_a,
+                                                 elevation_profile_b)
+    return merged_elevation_profile
+    

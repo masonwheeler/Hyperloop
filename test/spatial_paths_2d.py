@@ -20,14 +20,24 @@ import cacher
 import config
 
 class SpatialPath2d(abstract_paths.AbstractPath):
+
+    def get_latlngs(self, geospatials_to_latlngs):        
+        self.latlngs = geospatials_to_latlngs(self.geospatials)
+
+    def compute_land_cost(self):              
+        self.land_cost = landcover.get_land_cost(self.path_latlngs)
+
+    def get_elevation_profile(self, geospatials_to_latlngs):
+        sampled_geospatials = interpolate.sample_points(self.geospatials)
+        sampled_latlngs = geospatials_to_latlngs
+        #elevation_profile = elevation.get_elevation_profile(sampled_geospatials,                        
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution):
         abstract_paths.AbstractPath.__init__(self, spatial_graph.geospatials,
                                        spatial_interpolator, base_resolution)
         self.land_cost = spatial_graph.land_cost
+        self.elevation_profile = spatial_graph.elevation_profile 
         self.geospatials = self.path_coordinates  
-        #self.path_latlngs = spatial_graph.geospatials_to_latlngs(
-        #                                      self.path_geospatials)
-        #land_cost_v2 = landcover.get_land_cost(self.path_latlngs)
+
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
 
