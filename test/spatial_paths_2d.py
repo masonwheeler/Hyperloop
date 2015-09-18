@@ -30,6 +30,10 @@ class SpatialPath2d(abstract_paths.AbstractPath):
         #land_cost_v2 = landcover.get_land_cost(self.path_latlngs)
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
+
+    NAME = "spatial_paths_2d"
+    FLAG = cacher.SPATIAL_PATHS_2D_FLAG
+    
     def __init__(self, spatial_graphs_sets):
         self.start = spatial_graphs_sets.start
         self.end = spatial_graphs_sets.end
@@ -60,9 +64,9 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
             plottable_paths.append(plottable_path)
         return plottable_paths
        
-def get_spatial_paths_set_2d(spatial_graphs_sets):
-    spatial_paths_set_2d = cacher.get_object("spatial_paths_2d",
+def get_spatial_paths_set_2d(*args):
+    spatial_paths_set_2d = cacher.get_object(SpatialPathsSet2d.NAME,
                                              SpatialPathsSet2d,
-                                             [spatial_graphs_sets],
-                                             config.SPATIAL_PATHS_2D_FLAG)
+                                             args,
+                                             SpatialPathsSet2d.FLAG)
     return spatial_paths_set_2d

@@ -143,6 +143,8 @@ class Directions(object):
 def get_directions(*args):
     """Fetchs Directions if already cached, else builds Directions.
     """
-    directions = cacher.get_object(Directions.NAME, Directions,
-                                   args, Directions.FLAG)
+    directions = cacher.get_object(Directions.NAME,
+                                   Directions,
+                                   args,
+                                   Directions.FLAG)
     return directions

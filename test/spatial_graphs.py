@@ -118,7 +118,10 @@ class SpatialGraphsSet(abstract.AbstractGraphsSet):
 
 
 class SpatialGraphsSets(abstract.AbstractGraphsSets):
-    
+   
+    NAME = "spatial_graphs"
+    FLAG = cacher.SPATIAL_GRAPHS_FLAG
+ 
     @staticmethod
     def merge_two_spatial_graphs(spatial_graph_a, spatial_graph_b):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
@@ -172,7 +175,9 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         return scatterplot
         
 
-def get_spatial_graphs_sets(spatial_edges_sets):
-    spatial_graphs_sets = cacher.get_object("spatial_graphs_sets",
-        SpatialGraphsSets, [spatial_edges_sets], config.SPATIAL_GRAPHS_FLAG)
+def get_spatial_graphs_sets(*args):
+    spatial_graphs_sets = cacher.get_object(SpatialGraphsSets.NAME
+                                            SpatialGraphsSets,
+                                            args,
+                                            SpatialGraphsSets.FLAG)
     return spatial_graphs_sets

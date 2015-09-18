@@ -16,19 +16,20 @@ Last Modification Purpose:
     Moved degree constraint computations to independent module
 """
 
-# Custom Modules
+# Standard Modules:
+import time
+
+# Custom Modules:
 import abstract_edges
 import angle_constraint
 import cacher
-import config
 import curvature
 import elevation
 import landcover
 import parameters
-import proj
-import time
 import tube
 import util
+
 
 class SpatialEdge(abstract_edges.AbstractEdge):
 
@@ -39,7 +40,8 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     def get_latlngs(self, geospatials_to_latlngs):
         self.latlngs = geospatials_to_latlngs(self.geospatials)
 
-    def get_coords(self, geospatials_to_latlngs):
+    def get_coordinates(self, geospatials_to_latlngs):
+        self.geospatials_to_latlngs = geospatials_to_latlngs
         self.get_geospatials()
         self.get_latlngs(geospatials_to_latlngs)
 
@@ -52,9 +54,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
             landcover_geospatials, distances = util.build_grid(
                                                self.start_point.geospatial,
                                                self.end_point.geospatial,
-                                               config.LAND_POINT_SPACING)
-            landcover_latlngs = proj.geospatials_to_latlngs(landcover_geospatials,
-                                                             config.PROJ)
+                                               landcover.LAND_POINT_SPACING)
+            landcover_latlngs = self.geospatials_to_latlngs(
+                                               landcover_geospatials)
             self.land_cost = landcover.get_land_cost(landcover_latlngs)
 
     def get_elevation_profile(self):
@@ -100,6 +102,9 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     MIN_SPEED = parameters.MAX_SPEED / 2.0
     TUBE_READY = True
+
+    NAME = "spatial_edges"
+    FLAG = cacher.SPATIAL_EDGES_FLAG    
 
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
@@ -159,9 +164,10 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         self.end = spatial_lattice.end
         self.start_latlng = spatial_lattice.start_latlng
         self.end_latlng = spatial_lattice.end_latlng
-        self.projection = spatial_lattice.projection
+        self.geospatials_to_latlngs = spatial_lattice.geospatials_to_latlngs
         abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
                                  SpatialEdge, spatial_degree_constraint)
+        self.build_coordinates()
         self.finish_edges_sets()
 
     def get_plottable_edges(self, color_string):
@@ -172,10 +178,9 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                 plottable_edges.append(plottable_edge)
         return plottable_edges
 
-def get_spatial_edges_sets(spatial_lattice, spatial_interpolator,
-                                               tube_builder):
-    spatial_edges_sets = cacher.get_object("spatial_edges_sets",
-                                               SpatialEdgesSets,
-     [spatial_lattice, spatial_interpolator, tube_builder],
-                                      config.SPATIAL_EDGES_FLAG)
+def get_spatial_edges_sets(*args):
+    spatial_edges_sets = cacher.get_object(SpatialEdgesSets.NAME,
+                                           SpatialEdgesSets,
+                                           args,
+                                           SpatialEdgesSets.FLAG)
     return spatial_edges_sets

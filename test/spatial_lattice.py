@@ -67,6 +67,9 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
     SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR = 10**13
     SPATIAL_BASE_RESOLUTION = 100 #Meters
     
+    NAME = "spatial_lattice"
+    FLAG = cacher.SPATIAL_LATTICE_FLAG
+
     def get_spatial_splines(self, sampled_directions_geospatials):
         geospatials_x_values = [geospatial[0] for geospatial
                                 in sampled_directions_geospatials]
@@ -201,8 +204,9 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
         plottable_lattice = [lattice_points, color_string]
         return plottable_lattice     
             
-def get_spatial_lattice(directions, spatial_x_spacing, spatial_y_spacing):
-    lattice = cacher.get_object("spatial_lattice", SpatialLattice,
-                 [directions, spatial_x_spacing, spatial_y_spacing],
-                 config.SPATIAL_LATTICE_FLAG)    
+def get_spatial_lattice(*args):
+    lattice = cacher.get_object(SpatialLattice.NAME,
+                                SpatialLattice,
+                                args,
+                                SpatialLattice.FLAG)
     return lattice
