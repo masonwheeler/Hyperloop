@@ -149,6 +149,7 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         self.end_latlng = spatial_edges_sets.end_latlng
         self.geospatials_to_latlngs = spatial_edges_sets.geospatials_to_latlngs
         self.spatial_interpolator = spatial_edges_sets.spatial_interpolator
+        self.tube_builder = spatial_edges_sets.tube_builder
         self.spatial_base_resolution = \
             spatial_edges_sets.spatial_base_resolution
         abstract.AbstractGraphsSets.__init__(self, spatial_edges_sets,
@@ -176,7 +177,7 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         
 
 def get_spatial_graphs_sets(*args):
-    spatial_graphs_sets = cacher.get_object(SpatialGraphsSets.NAME
+    spatial_graphs_sets = cacher.get_object(SpatialGraphsSets.NAME,
                                             SpatialGraphsSets,
                                             args,
                                             SpatialGraphsSets.FLAG)

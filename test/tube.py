@@ -20,12 +20,12 @@ import visualize
 VISUALIZE_TUBE = True
 PLOT_QUEUE_ELEVATION_PROFILE = []
 
-def quick_build_tube(elevation_profile, tube_interpolator):
+def quick_build_tube(elevation_profile):
     geospatials = [elevation_point["geospatial"] for elevation_point
                    in elevation_profile]
     land_elevations = [elevation_point["landElevation"] for elevation_point
                        in elevation_profile]
-    arc_lengths = [elevation_point["distanceAlongPath"] for elevation_point
+    arc_lengths = [elevation_point["arcLength"] for elevation_point
                    in elevation_profile]
     arc_length_waypoints, tube_elevation_waypoints = \
         tube_interpolate.get_tube_waypoints_v1(arc_lengths, land_elevations)

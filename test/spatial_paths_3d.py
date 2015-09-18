@@ -27,6 +27,10 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
 
 
 class SpatialPathsSets3d(abstract_paths.AbstractPathsSets):
+
+    NAME = "spatial_paths_3d"
+    FLAG = cacher.SPATIAL_PATHS_3D_FLAG
+
     def __init__(self, spatial_paths_set_2d):
         self.start = spatial_paths_set_2d.start
         self.end = spatial_paths_set_2d.end
@@ -36,10 +40,10 @@ class SpatialPathsSets3d(abstract_paths.AbstractPathsSets):
         #self.spatial_paths_sets = abstract_paths.AbstractPathsSets.__init__(
         #                                                               self,
                                                              
-def get_spatial_paths_sets_3d(spatial_paths_set_2d):
-    spatial_paths_set_3d = cacher.get_object("spatial_paths_3d",
+def get_spatial_paths_sets_3d(*args):
+    spatial_paths_set_3d = cacher.get_object(SpatialPathsSets3d.NAME,
                                              SpatialPathsSets3d,
-                                             [spatial_paths_set_2d],
-                                             config.SPATIAL_PATHS_3D_FLAG)
+                                             args,
+                                             SpatialPathsSets3d.FLAG)
     return spatial_paths_set_3d
  

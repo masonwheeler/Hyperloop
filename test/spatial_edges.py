@@ -60,12 +60,14 @@ class SpatialEdge(abstract_edges.AbstractEdge):
             self.land_cost = landcover.get_land_cost(landcover_latlngs)
 
     def get_elevation_profile(self):
-        geospatials_grid, distances = util.build_grid(
+        geospatials, arc_lengths = util.build_grid(
                                            self.start_point.geospatial,
                                            self.end_point.geospatial,
-                                           parameters.PYLON_SPACING) 
+                                           parameters.PYLON_SPACING)
+        latlngs = self.geospatials_to_latlngs(geospatials)
         self.elevation_profile = elevation.get_elevation_profile_v2(
-                                     geospatials_grid, distances)
+                                     geospatials, latlngs, arc_lengths)
+
     def build_tube(self, tube_builder):
         time, pylon_cost, tube_cost = tube_builder(self.elevation_profile)
         self.time = time
@@ -74,11 +76,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     
     def build_tube_v2(self, tube_builder):
         tube_profile = tube_builder(self.elevation_profile)
-        self.tube_cost = tube.compute_tube_cost(tube_profile)        
-        self.pylon_cost = tube.compute_pylon_cost(tube_profile)
-        tube_curvature = tube_profile.curvature
-        arc_lengths = tube_profile.arc_lengths
-        self.time = velocity.curvature_to_time(tube_curvature, arc_lengths)
+        self.time = tube_profile.time
+        self.tube_cost = tube_profile.tube_cost       
+        self.pylon_cost = tube_profile.pylon_cost
             
     def __init__(self, start_point, end_point):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)
@@ -101,7 +101,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     MIN_SPEED = parameters.MAX_SPEED / 2.0
-    TUBE_READY = True
+    TUBE_READY = False
 
     NAME = "spatial_edges"
     FLAG = cacher.SPATIAL_EDGES_FLAG    
@@ -134,7 +134,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def build_tubes(self):
         for spatial_edges_set in self.filtered_edges_sets:
             for spatial_edge in spatial_edges_set:
-                spatial_edge.build_tube(self.tube_interpolator)
+                spatial_edge.build_tube_v2(self.tube_builder)
 
     def finish_edges_sets(self):
         util.smart_print("Now computing land costs...")

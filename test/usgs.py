@@ -174,8 +174,8 @@ def get_partition_elevations(latlngs_partition):
     coord_zipfile = coordstring + ".zip"
     coord_folder_name = coordstring + "/"
 
-    url = config.USGS_FTP_PATH + coord_zipfile
-    download_directory = config.CWD + config.USGS_FOLDER
+    url = USGS_FTP_PATH + coord_zipfile
+    download_directory = config.CWD + USGS_FOLDER
     zip_file_path = download_directory + coord_zipfile
     unzip_directory = download_directory + coord_folder_name
     img_file_name = get_img_file_name(coordstring)

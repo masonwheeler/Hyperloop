@@ -54,7 +54,7 @@ COST_TABLE = {11: 300,  # Open Water
 def cost_density_to_local_cost(cost_density):
     """Takes the cost per unit area and outputs the land acquisition cost
     """
-    length = config.LAND_POINT_SPACING
+    length = LAND_POINT_SPACING
     width = 2.0 * parameters.LAND_PADDING
     area = length * width
     local_cost = cost_density * area * 10

@@ -24,6 +24,7 @@ import spatial_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
 import tube
+import tube_profile
 import util
 
 if config.VISUAL_MODE:
@@ -74,7 +75,9 @@ def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
                                 spatial_interpolate.scipy_smoothing,
-                                              tube.quick_build_tube)
+                                           tube_profile.TubeProfile)
+                                              #tube.quick_build_tube)
+                                            
     if not route_spatial_edges_sets.TUBE_READY:
         route_spatial_edges_sets.build_tubes()
     if config.VISUAL_MODE:
@@ -139,7 +142,7 @@ def build_spatial_paths_3d(route_spatial_paths_set_2d):
         if VISUALIZE_PATHS_3D:
             plottable_paths_3d = \
                 route_spatial_paths_set_3d.get_plottable_paths()            
-    return route_spatial_paths_set_3d
+    return route_spatial_paths_sets_3d
 
 """
 def city_pair_to_spatial_graphs_sets(start, end):

@@ -14,7 +14,7 @@ import simplejson
 # Our Modules
 import config
 import usgs
-import proj
+
 
 def usgs_elevation(latlngs):
     """Fetches elevations from usgs dataset for a list of lat lng pairs
@@ -28,30 +28,28 @@ def usgs_windowed_elevation(latlngs):
     elevations = usgs.get_elevations(latlngs)
     return elevations
 
-def get_elevation_profile(geospatials, distances):
+def get_elevation_profile(geospatials, latlngs, arc_lengths):
     """Build elevation profile for a list of geospatials
     """
-    latlngs = proj.geospatials_to_latlngs(geospatials, config.PROJ)
     elevations = usgs_elevation(latlngs)
     elevation_profile = []
     for i in range(len(geospatials)):
         elevation_point = {"latlng": latlngs[i],
                            "geospatial": geospatials[i],
                            "landElevation": elevations[i],
-                           "distanceAlongPath": distances[i]}
+                           "arcLength": arc_lengths[i]}
         elevation_profile.append(elevation_point)
     return elevation_profile
 
-def get_elevation_profile_v2(geospatials, distances):
+def get_elevation_profile_v2(geospatials, latlngs, arc_lengths):
     """Build elevation profile for a list of geospatials
     """
-    latlngs = proj.geospatials_to_latlngs(geospatials, config.PROJ)
     elevations = usgs_windowed_elevation(latlngs)
     elevation_profile = []
     for i in range(len(geospatials)):
         elevation_point = {"latlng": latlngs[i],
                            "geospatial": geospatials[i],
                            "landElevation": elevations[i],
-                           "distanceAlongPath": distances[i]}
+                           "arcLength": arc_lengths[i]}
         elevation_profile.append(elevation_point)
     return elevation_profile
