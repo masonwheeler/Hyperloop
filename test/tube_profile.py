@@ -16,7 +16,9 @@ import tube_cost
 import util
 import velocity
 
-#Fix Spatial_Elevation_Profile
+import math
+import time
+
 class TubeProfile(object):
 
     def sort_elevations_indices(self, interior_land_elevations):
@@ -148,14 +150,23 @@ class TubeProfile(object):
     def build_pylons(self):
         self.pylon_heights = util.subtract(self.tube_elevations,
                                           self.land_elevations)
-        self.pylon_cost = pylon_cost.compute_pylons_total_cost_v1(
-                                                     self.pylon_heights)
+        pylon_costs = [pylon_cost.compute_pylon_cost_v1(pylon_height)
+                       for pylon_height in self.pylon_heights]
+        self.pylons = [{"geospatial" : self.geospatials[i],
+                        "latlng" : self.latlngs[i],
+                        "landElevation" : self.land_elevations[i],
+                        "pylonHeight" : self.pylon_heights[i],
+                        "pylonCost" : pylon_costs[i]}
+                        for i in range(len(self.pylon_heights))]
+        self.pylon_cost = sum(pylon_costs)
+
+    def get_tube_coords(self):
+        geospatial_x_vals, geospatial_y_vals = zip(*self.geospatials)
+        self.tube_coords = zip(geospatial_x_vals, geospatial_y_vals,
+                                                    self.tube_elevations)
 
     def compute_tube_cost(self):
-        geospatial_x_vals, geospatial_y_vals = zip(*self.geospatials)
-        tube_coords = zip(geospatial_x_vals, geospatial_y_vals,
-                                          self.tube_elevations)
-        self.tube_cost = tube_cost.compute_tube_cost_v1(tube_coords)
+        self.tube_cost = tube_cost.compute_tube_cost_v1(self.tube_coords)
   
         
     #def __init__(self, elevation_profile, curvature_constraint):
@@ -167,6 +178,8 @@ class TubeProfile(object):
             parameters.MAX_VERTICAL_ACCEL / parameters.MAX_SPEED**2
         self.geospatials = [elevation_point["geospatial"]
                             for elevation_point in elevation_profile]
+        self.latlngs = [elevation_point["latlng"]
+                        for elevation_point in elevation_profile]
         self.arc_lengths = [elevation_point["arcLength"]
                             for elevation_point in elevation_profile]
         self.land_elevations = [elevation_point["landElevation"]
@@ -174,6 +187,7 @@ class TubeProfile(object):
         self.tube_elevations, self.tube_elevation_spline = \
             self.build_tube_elevations_v1()
         self.compute_time_v1()
+        self.get_tube_coords()
         self.compute_tube_cost()
         self.build_pylons()
         

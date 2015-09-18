@@ -34,16 +34,20 @@ class SpatialPath2d(abstract_paths.AbstractPath):
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution):
         abstract_paths.AbstractPath.__init__(self, spatial_graph.geospatials,
                                        spatial_interpolator, base_resolution)
+        self.geospatials = self.path_coordinates 
         self.land_cost = spatial_graph.land_cost
         self.elevation_profile = spatial_graph.elevation_profile 
-        self.geospatials = self.path_coordinates  
 
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
 
     NAME = "spatial_paths_2d"
     FLAG = cacher.SPATIAL_PATHS_2D_FLAG
-    
+   
+    def get_paths_latlngs(self):
+        for path in self.paths:
+            path.get_latlngs(self.geospatials_to_latlngs)
+ 
     def __init__(self, spatial_graphs_sets):
         self.start = spatial_graphs_sets.start
         self.end = spatial_graphs_sets.end
@@ -55,10 +59,11 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
         self.spatial_base_resolution = \
             spatial_graphs_sets.spatial_base_resolution
         abstract_paths.AbstractPathsSet.__init__(self,
-                   spatial_graphs_sets,
-                   self.spatial_interpolator,
-                   self.spatial_base_resolution,
-                   SpatialPath2d)
+                                  spatial_graphs_sets,
+                            self.spatial_interpolator,
+                         self.spatial_base_resolution,
+                                        SpatialPath2d)
+        self.get_paths_latlngs()
 
     def get_plottable_graphs(self, color_string):
         plottable_graphs = []

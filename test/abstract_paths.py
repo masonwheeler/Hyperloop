@@ -22,10 +22,7 @@ class AbstractPath(object):
 class AbstractPathsSet(object):
     def __init__(self, graphs_sets, interpolator, base_resolution,
                                                      path_builder):
-        self.underlying_graphs = graphs_sets.selected_graphs
+        self.graphs = graphs_sets.selected_graphs
         self.paths = [path_builder(graph, interpolator, base_resolution)
-                      for graph in self.underlying_graphs]
+                      for graph in self.graphs]
 
-class AbstractPathsSets(object):
-    def __init__(self, graphs_sets):
-        pass

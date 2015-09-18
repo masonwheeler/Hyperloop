@@ -16,6 +16,7 @@ import config
 import usgs
 import util
 
+import time
 
 def usgs_elevation(latlngs):
     """Fetches elevations from usgs dataset for a list of lat lng pairs
@@ -58,9 +59,16 @@ def get_elevation_profile_v2(geospatials, latlngs, arc_lengths):
 def merge_elevation_profiles(elevation_profile_a, elevation_profile_b):
     boundary_point = elevation_profile_a[-1]
     arc_length_offset = boundary_point["arcLength"]
+    shifted_elevation_profile_b = []
     for elevation_point in elevation_profile_b:
-        elevation_point["arcLength"] += arc_length_offset
+        shifted_elevation_point = {
+            "latlng": elevation_point["latlng"],
+            "geospatial": elevation_point["geospatial"],
+            "landElevation": elevation_point["landElevation"],
+            "arcLength": elevation_point["arcLength"] + arc_length_offset}
+        shifted_elevation_profile_b.append(shifted_elevation_point)
+    shifted_arc_lengths_b = [ep["arcLength"] for ep in elevation_profile_b]
     merged_elevation_profile = util.smart_concat(elevation_profile_a,
-                                                 elevation_profile_b)
+                                         shifted_elevation_profile_b)
     return merged_elevation_profile
     
