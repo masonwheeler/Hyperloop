@@ -144,7 +144,7 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         self.end = spatial_edges_sets.end
         self.start_latlng = spatial_edges_sets.start_latlng
         self.end_latlng = spatial_edges_sets.end_latlng
-        self.projection = spatial_edges_sets.projection
+        self.geospatials_to_latlngs = spatial_edges_sets.geospatials_to_latlngs
         self.spatial_interpolator = spatial_edges_sets.spatial_interpolator
         self.spatial_base_resolution = \
             spatial_edges_sets.spatial_base_resolution

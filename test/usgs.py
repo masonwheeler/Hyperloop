@@ -26,6 +26,14 @@ import numpy as np
 import pyproj
 
 
+####################
+#For USGS-Elevation#
+####################
+
+USGS_FTP_PATH = "ftp://rockyftp.cr.usgs.gov/vdelivery/Datasets/Staged/Elevation/13/IMG/"
+USGS_FOLDER = "/usgs/"
+
+
 def get_bounding_coordinates(latlng_coord):
     """Get the top left corner of the latlng tile which the coord falls in
     """
@@ -110,8 +118,8 @@ def get_elevation(latlng_coord):
     coord_zipfile = coordstring + ".zip"
     coord_folder_name = coordstring + "/"
 
-    url = config.USGS_FTP_PATH + coord_zipfile
-    download_directory = config.CWD + config.USGS_FOLDER
+    url = USGS_FTP_PATH + coord_zipfile
+    download_directory = config.CWD + USGS_FOLDER
     zip_file_path = download_directory + coord_zipfile
     unzip_directory = download_directory + coord_folder_name
     img_file_name = get_img_file_name(coordstring)

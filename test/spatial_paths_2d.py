@@ -25,8 +25,8 @@ class SpatialPath2d(abstract_paths.AbstractPath):
                                        spatial_interpolator, base_resolution)
         self.land_cost = spatial_graph.land_cost
         self.geospatials = self.path_coordinates  
-        self.path_latlngs = spatial_graph.geospatials_to_latlngs(
-                                              self.path_geospatials)
+        #self.path_latlngs = spatial_graph.geospatials_to_latlngs(
+        #                                      self.path_geospatials)
         #land_cost_v2 = landcover.get_land_cost(self.path_latlngs)
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
@@ -35,7 +35,7 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
         self.end = spatial_graphs_sets.end
         self.start_latlng = spatial_graphs_sets.start_latlng
         self.end_latlng = spatial_graphs_sets.end_latlng
-        self.projection = spatial_graphs_sets.projection
+        self.geospatials_to_latlngs = spatial_graphs_sets.geospatials_to_latlngs
         self.spatial_interpolator = spatial_graphs_sets.spatial_interpolator
         self.tube_builder = spatial_graphs_sets.tube_builder
         self.spatial_base_resolution = \

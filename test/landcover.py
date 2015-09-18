@@ -17,6 +17,39 @@ import geotiff
 import parameters
 import util
 
+#######################################
+#For NLCD (National Landcover Dataset)#
+#######################################
+
+LAND_COVER_GEOTIFF_FILE_PATH = "/nlcd/us.tif"
+
+################
+#Land Cost Data#
+################
+
+LAND_POINT_SPACING = 30.0  # spacing for land cost sampling (in meters)
+
+# See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
+# Note the omission of Alaska only values (please enter values in USD/
+# meter^2.)
+# Open Water Cost: http://www.dot.state.fl.us/planning/policy/costs/Bridges.pdf
+COST_TABLE = {11: 300,  # Open Water
+              12: 4,  # Perennial Ice/Snow
+              21: 10,  # Developed, Open Space
+              22: 20,  # Developed, Low Intensity
+              23: 50,  # Developed, Medium Intensity
+              24: 120,  # Developed, High Intensity
+              31: 4,  # Barren Land
+              41: 4,  # Deciduous Forest
+              42: 4,  # Evergreen Forest
+              43: 4,  # Mixed Forest
+              52: 4,  # Shrub/Scrub
+              71: 4,  # Grassland/Herbaceous
+              81: 2,  # Pasture/Hay
+              82: 2,  # Cultivated Crops
+              90: 4,  # Woody Wetlands
+              95: 4}  # Emergent Herbaceous Wetlands
+
 
 def cost_density_to_local_cost(cost_density):
     """Takes the cost per unit area and outputs the land acquisition cost
@@ -30,7 +63,7 @@ def cost_density_to_local_cost(cost_density):
 def get_landcover_pixel_values(landcover_latlngs):
     """Fetches the cost per unit area at each input lat lng point
     """
-    geotiff_file_path = config.CWD + config.GEOTIFF_FILE_PATH
+    geotiff_file_path = config.CWD + LAND_COVER_GEOTIFF_FILE_PATH
     landcover_lnglats = util.swap_pairs(landcover_latlngs)
     landcover_pixel_values = geotiff.get_geotiff_pixel_vals_with_projection(
                                         geotiff_file_path, landcover_lnglats)
@@ -39,7 +72,7 @@ def get_landcover_pixel_values(landcover_latlngs):
 def pixel_values_to_cost_densities(landcover_pixel_values):
     """Maps the land cover pixel values to the corresponding costs
     """
-    landcover_cost_densities = [config.COST_TABLE[pixel_val] for pixel_val
+    landcover_cost_densities = [COST_TABLE[pixel_val] for pixel_val
                                 in landcover_pixel_values]
     return landcover_cost_densities
 

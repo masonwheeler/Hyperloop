@@ -11,24 +11,24 @@ Last Modification Purpose: Created Module
 """
 
 
-#
-# Engineering Parameters
-#
+########################
+#Engineering Parameters#
+########################
 
 PYLON_SPACING = 100.0 #Meters
 MAX_SPEED = 330.0 #Meters/Second
 
-#
-# Comfort Parameters
-#
+####################
+#Comfort Parameters#
+####################
 
 MAX_LINEAR_ACCEL = 0.5 * 9.81 #Meters/Second^2
 MAX_LATERAL_ACCEL = 0.5 * 9.81 #Meters/Second^2
 MAX_VERTICAL_ACCEL = 0.3 * 9.81 #Meters/Second^2
 
-#
-# Financial Parameters
-#
+######################
+#Financial Parameters#
+######################
 
 LAND_PADDING = 30.0 #Meters
 RIGHT_OF_WAY_LAND_COST = 0.0 #Dollars
@@ -36,3 +36,9 @@ TUNNELING_COST_PER_METER = 10000.0 #Dollars/Meter
 PYLON_BASE_COST = 2000.0 #Dollars
 PYLON_COST_PER_METER = 10000.0 #Dollars
 TUBE_COST_PER_METER = 1000.0 #Dollars
+
+#########
+#Testing#
+#########
+
+JERK_TOL = 2

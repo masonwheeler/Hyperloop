@@ -20,9 +20,11 @@ import config
 
 # Points Operations:
 
+NDIGITS = 6  # the number of digits used for rounding
+
 def round_num(num):
     """Rounds number to predefined number of places"""
-    return round(num, config.NDIGITS)
+    return round(num, NDIGITS)
 
 
 def round_nums(nums):
