@@ -34,6 +34,9 @@ import util
 
 class Directions(object):
 
+    NAME = "directions"
+    FLAG = cacher.DIRECTIONS_FLAG
+
     def http_to_string(self, http_data):
         """Reads HTTP bytecode response and converts it to a string"""
         byte_data = http_data.read()
@@ -137,9 +140,9 @@ class Directions(object):
                                       self.latlngs, self.projection)
 
 
-def get_directions(start, end):
+def get_directions(*args):
     """Fetchs Directions if already cached, else builds Directions.
     """
-    directions = cacher.get_object("directions", Directions,
-                                   [start, end], config.DIRECTIONS_FLAG)
+    directions = cacher.get_object(Directions.NAME, Directions,
+                                   args, Directions.FLAG)
     return directions

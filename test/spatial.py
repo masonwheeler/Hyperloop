@@ -41,6 +41,7 @@ def build_directions(start, end):
     """Build Directions Object
     """
     route_directions = directions.get_directions(start, end)
+    #route_directions = directions.Directions.get_directions(start, end)
     return route_directions
 
 def build_spatial_lattice(route_directions):
