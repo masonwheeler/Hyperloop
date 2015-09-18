@@ -36,8 +36,12 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         self.geospatials = [self.start_point.geospatial,
                             self.end_point.geospatial]
 
-    def get_latlngs(self):
-        self.latlngs = [self.start_point.latlng, self.end_point.latlng]
+    def get_latlngs(self, geospatials_to_latlngs):
+        self.latlngs = geospatials_to_latlngs(self.geospatials)
+
+    def get_coords(self, geospatials_to_latlngs):
+        self.get_geospatials()
+        self.get_latlngs(geospatials_to_latlngs)
 
     def compute_land_cost(self):
         edge_is_in_right_of_way = (self.start_point.is_in_right_of_way and
@@ -78,8 +82,6 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)
         self.start_point = start_point
         self.end_point = end_point
-        self.get_geospatials()
-        self.get_latlngs()
 
     def to_abstract_edge(self):
         abstract_edge = abstract_edges.AbstractEdge(self.start_point,
@@ -108,6 +110,11 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                               length_scale, self.spatial_interpolator,
                                     max_curvature, spatial_resolution)
         return degree_constraint            
+
+    def build_coordinates(self):
+        for spatial_edges_set in self.filtered_edges_sets:
+            for spatial_edge in spatial_edges_set:
+                spatial_edge.get_coordinates(self.geospatials_to_latlngs)
 
     def build_elevation_profiles(self):
         for spatial_edges_set in self.filtered_edges_sets:
@@ -169,6 +176,6 @@ def get_spatial_edges_sets(spatial_lattice, spatial_interpolator,
                                                tube_builder):
     spatial_edges_sets = cacher.get_object("spatial_edges_sets",
                                                SpatialEdgesSets,
-     [spatial_lattice, spatial_interpolator, tube_interpolator],
+     [spatial_lattice, spatial_interpolator, tube_builder],
                                       config.SPATIAL_EDGES_FLAG)
     return spatial_edges_sets

@@ -18,6 +18,18 @@ import dill as pickle
 import config
 
 
+############################
+#Cache Overwriting Switches#
+############################
+
+USE_CACHED_DIRECTIONS = True
+USE_CACHED_SPATIAL_LATTICE = True
+USE_CACHED_SPATIAL_EDGES = True
+USE_CACHED_SPATIAL_GRAPHS = True
+USE_CACHED_SPATIAL_PATHS_2D = True
+USE_CACHED_SPATIAL_PATHS_3D = False
+
+
 def create_basefolders():
     """Creates the cache and save folders"""
     cache_directory = config.CWD + "/cache/"
@@ -170,3 +182,37 @@ def save_routes(routes, start, end, start_lat_lng, end_lat_lng):
     save_path = config.DROPBOX_DIRECTORY + filename 
     with open(save_path, 'w') as file_path:
         json.dump(city_pair, file_path)
+
+###################
+#Overwriting Bools#
+###################
+
+DIRECTIONS_BOOLS = [USE_CACHED_DIRECTIONS]
+SPATIAL_LATTICE_BOOLS = DIRECTIONS_BOOLS + [USE_CACHED_SPATIAL_LATTICE]
+SPATIAL_EDGES_BOOLS = SPATIAL_LATTICE_BOOLS + [USE_CACHED_SPATIAL_EDGES]
+SPATIAL_GRAPHS_BOOLS = SPATIAL_EDGES_BOOLS + [USE_CACHED_SPATIAL_GRAPHS]
+SPATIAL_PATHS_2D_BOOLS = SPATIAL_GRAPHS_BOOLS + [USE_CACHED_SPATIAL_PATHS_2D]
+SPATIAL_PATHS_3D_BOOLS = SPATIAL_PATHS_2D_BOOLS + [USE_CACHED_SPATIAL_PATHS_3D]
+
+###################
+#Overwriting Flags#
+###################
+
+DIRECTIONS_FLAG = all(DIRECTIONS_BOOLS)
+SPATIAL_LATTICE_FLAG = all(SPATIAL_LATTICE_BOOLS)
+SPATIAL_EDGES_FLAG = all(SPATIAL_EDGES_BOOLS)
+SPATIAL_GRAPHS_FLAG = all(SPATIAL_GRAPHS_BOOLS)
+SPATIAL_PATHS_2D_FLAG = all(SPATIAL_PATHS_2D_BOOLS)
+SPATIAL_PATHS_3D_FLAG = all(SPATIAL_PATHS_3D_BOOLS)
+
+###############################
+#Uninitialized Directory Paths#
+###############################
+
+CACHE_DIRECTORY = ""
+SAVE_DIRECTORY = ""
+WORKING_CACHE_NAME = ""
+WORKING_SAVE_DIR_NAME = ""
+WORKING_CACHE_DIRECTORY = ""
+WORKING_SAVE_DIRECTORY = ""
+WORKING_GRAPHS_DIRECTORY = ""

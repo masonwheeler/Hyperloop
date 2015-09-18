@@ -24,10 +24,9 @@ class SpatialPath2d(abstract_paths.AbstractPath):
         abstract_paths.AbstractPath.__init__(self, spatial_graph.geospatials,
                                        spatial_interpolator, base_resolution)
         self.land_cost = spatial_graph.land_cost
-        self.geospatials = self.path_coordinates
-  
-        #self.path_latlngs = spatial_graph.geospatials_to_latlngs(
-        #                                      self.path_geospatials)
+        self.geospatials = self.path_coordinates  
+        self.path_latlngs = spatial_graph.geospatials_to_latlngs(
+                                              self.path_geospatials)
         #land_cost_v2 = landcover.get_land_cost(self.path_latlngs)
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):

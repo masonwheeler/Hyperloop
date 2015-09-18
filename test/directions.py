@@ -122,6 +122,10 @@ class Directions(object):
         directions_latlngs = util.round_points(raw_latlngs)
         return directions_latlngs
 
+    def geospatials_to_latlngs(self, geospatials):
+        latlngs = proj.geospatials_to_latlngs(geospatials, self.projection)
+        return latlngs        
+
     def __init__(self, start, end):
         self.start = start
         self.end = end

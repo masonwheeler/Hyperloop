@@ -29,7 +29,6 @@ class SpatialPoint(abstract_lattice.AbstractPoint):
         abstract_lattice.AbstractPoint.__init__(self, point_id, lattice_x_coord,
                              lattice_y_coord, spatial_x_coord, spatial_y_coord)
         self.geospatial = geospatial
-        self.latlng = proj.geospatial_to_latlng(geospatial, config.PROJ)
         self.is_in_right_of_way = is_in_right_of_way
 
 
@@ -138,7 +137,8 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
                                     "spline_geospatials":
                                     spatial_slices_spline_points[i],
                                     "y_spacing":
-                                    spatial_y_spacing}
+                                    spatial_y_spacing
+                                    }
             spatial_slices_bounds.append(spatial_slice_bounds)
         return spatial_slices_bounds        
 
@@ -148,7 +148,7 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
         self.end = directions.end
         self.start_latlng = directions.start_latlng
         self.end_latlng = directions.end_latlng
-        self.projection = directions.projection
+        self.geospatials_to_latlngs = directions.geospatials_to_latlngs
         self.directions_geospatials = directions.geospatials
         directions_s_value_step_size = 2**spatial_x_spacing_power
         self.spatial_x_spacing = 2**spatial_x_spacing_power * \
