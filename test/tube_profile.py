@@ -16,17 +16,15 @@ import tube_cost
 import util
 import velocity
 
-import math
-import time
 
 class TubeProfile(object):
 
     def sort_elevations_indices(self, interior_land_elevations):
         interior_land_elevations_indices = range(len(interior_land_elevations))
         sorted_interior_land_elevations_indices = sorted(
-                        interior_land_elevations_indices,
-               key=lambda i: interior_land_elevations[i],
-                                            reverse=True)
+                            interior_land_elevations_indices,
+                   key=lambda i: interior_land_elevations[i],
+                                                reverse=True)
         sorted_interior_land_elevations_indices = [index + 1 for index in 
                                   sorted_interior_land_elevations_indices]
         return sorted_interior_land_elevations_indices

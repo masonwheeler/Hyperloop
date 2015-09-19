@@ -7,21 +7,26 @@ import numpy as np
 import scipy.interpolate
 
 # Custom Modules:
+import clothoid
 import config
+import curvature
 import parameters
+import util
+import velocity
 
 class VelocityProfile(object):
 
     MIN_VELOCITY = 10 #Meters/Second
     
-    def sort_velocities_indices(self, velocities_indices):
-        sorted_max_velocities_indices = sorted(velocities_indices,
-                                  key=lambda i: self.max_velocities[i])
+    def sort_velocities_indices(self, interior_max_velocities):
+        interior_max_velocities_indices = range(len(interior_max_velocities))
+        sorted_interior_max_velocities_indices = sorted(
+                             interior_max_velocities_indices,
+                     key=lambda i: interior_max_velocities[i])
         sorted_interior_max_velocities_indices = [index + 1 for index in
-                                              sorted_velocities_indices]
-        return sorted_interior_velocities_indices
+                                  sorted_interior_max_velocities_indices]
+        return sorted_interior_max_velocities_indices
     
-    ""#
     def test_velocities_pair_v1(self, velocity_a, arc_length_a,
                                       velocity_b, arc_length_b):
         velocity_difference = velocity_b - velocity_a
@@ -40,7 +45,6 @@ class VelocityProfile(object):
         is_velocity_pair_compatible = \
             arc_length_difference < arc_length_tolerance
         return is_velocity_pair_compatible
-    ""#
             
     def test_velocity_indices_pair(self, velocity_index_a, velocity_index_b):
         if self.index_pairs_tested[velocity_index_a][velocity_index_b]:
