@@ -60,7 +60,7 @@ class SpatiotemporalPathsSet4d(object):
         velocity_profiles = [velocity_profile]
         return velocity_profiles
 
-    def build_paths(self, spatial_path_3d):
+    def build_paths(self, spatial_path_3d, velocity_profiles):
         self.paths = [SpatiotemporalPath4d(velocity_profile, spatial_path_3d)
                       for velocity_profile in velocity_profiles]
     
