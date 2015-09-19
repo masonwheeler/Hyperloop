@@ -9,7 +9,7 @@ Last Modification Purpose: To clarify naming.
 
 # Standard Modules:
 import os
-import json
+import time
 #import cPickle as pickle
 #import pickle
 import dill as pickle
@@ -148,15 +148,20 @@ def get_object(object_name, compute_function, compute_args, flag):
     """Either computes the object or loads a cached version"""
     if is_object_cached(object_name) and flag:
         print object_name + " exists."
+        start = time.time()
         loaded_object = load_object(object_name)
-        print "Loaded " + object_name
+        end = time.time()
+        print "Loaded " + object_name + " in " + str(end - start) + "seconds."
         return loaded_object
     else:
         print "Computing " + object_name + "..."
         computed_object = compute_function(*compute_args)
         print object_name + " computed."
         if config.CACHE_MODE:
+            start = time.time()
             cache_object(computed_object, object_name)
+            end = time.time()
+            print "Cached " + object_name + " in " + str(end - start) + " secs."
         return computed_object
 
 ###################

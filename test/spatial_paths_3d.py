@@ -25,17 +25,18 @@ class SpatialPathsSet3d(object):
   
     def build_tube_profiles_v1(self):
         tube_profile = self.tube_builder(self.elevation_profile)
-        self.tube_profiles = [tube_profile]
+        tube_profiles = [tube_profile]
+        return tube_profiles
 
-    def build_paths(self, spatial_path_2d):
+    def build_paths(self, spatial_path_2d, tube_profiles):
         self.paths = [SpatialPath3d(tube_profile, spatial_path_2d)
-                      for tube_profile in self.tube_profiles]
+                      for tube_profile in tube_profiles]
 
     def __init__(self, spatial_path_2d, tube_builder):
         self.tube_builder = tube_builder
         self.elevation_profile = spatial_path_2d.elevation_profile 
-        self.build_tube_profiles_v1()
-        self.build_paths(spatial_path_2d)
+        tube_profiles = self.build_tube_profiles_v1()
+        self.build_paths(spatial_path_2d, tube_profiles)
 
 
 class SpatialPathsSets3d(object):

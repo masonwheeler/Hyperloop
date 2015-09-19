@@ -57,16 +57,17 @@ class SpatiotemporalPathsSet4d(object):
 
     def build_velocity_profiles_v1(self, spatial_path_3d):
         velocity_profile = self.velocity_builder(spatial_path_3d)
-        self.velocity_profiles = [velocity_profile]
+        velocity_profiles = [velocity_profile]
+        return velocity_profiles
 
     def build_paths(self, spatial_path_3d):
         self.paths = [SpatiotemporalPath4d(velocity_profile, spatial_path_3d)
-                      for velocity_profile in self.velocity_profiles]
+                      for velocity_profile in velocity_profiles]
     
     def __init__(self, spatial_path_3d, velocity_builder):
         self.velocity_builder = velocity_builder
-        self.build_velocity_profiles_v1(spatial_path_3d)
-        self.build_paths(spatial_path_3d)
+        velocity_profiles = self.build_velocity_profiles_v1(spatial_path_3d)
+        self.build_paths(spatial_path_3d, velocity_profiles)
 
 
 class SpatiotemporalPathsSets4d(object):
@@ -80,7 +81,7 @@ class SpatiotemporalPathsSets4d(object):
                            for spatial_path_3d in spatial_paths_3d]
 
     def select_paths(self):
-        paths_lists = [paths_set.path for paths_set in self.paths_sets]
+        paths_lists = [paths_set.paths for paths_set in self.paths_sets]
         paths = util.fast_concat(paths_lists)
         self.selected_paths = paths
 

@@ -13,7 +13,6 @@ import elevation
 import interpolate
 import mergetree
 import paretofront
-import triptime
 import util
 import visualize
 
