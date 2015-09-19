@@ -21,6 +21,7 @@ class SpatialPath3d(abstract_paths.AbstractPath):
         self.tube_coords = tube_profile.tube_coords
         self.tube_cost = tube_profile.tube_cost
         self.land_elevations = tube_profile.land_elevations
+        self.arc_lengths = tube_profile.arc_lengths
 
 class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
   
@@ -39,7 +40,7 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
         self.land_cost = spatial_path_2d.land_cost
         self.latlngs = spatial_path_2d.latlngs
         self.geospatials = spatial_path_2d.geospatials
-        self.elevation_profile = spatial_path_2d.elevation_profile        
+        self.elevation_profile = spatial_path_2d.elevation_profile 
         self.build_tube_profiles_v1()
         self.build_paths()
 

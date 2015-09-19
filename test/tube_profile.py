@@ -174,14 +174,10 @@ class TubeProfile(object):
         #self.slope_constraint = slope_constraint
         self.max_curvature = \
             parameters.MAX_VERTICAL_ACCEL / parameters.MAX_SPEED**2
-        self.geospatials = [elevation_point["geospatial"]
-                            for elevation_point in elevation_profile]
-        self.latlngs = [elevation_point["latlng"]
-                        for elevation_point in elevation_profile]
-        self.arc_lengths = [elevation_point["arcLength"]
-                            for elevation_point in elevation_profile]
-        self.land_elevations = [elevation_point["landElevation"]
-                                for elevation_point in elevation_profile]
+        self.geospatials = elevation_profile.geospatials
+        self.latlngs = elevation_profile.latlngs
+        self.arc_lengths = elevation_profile.arc_lengths
+        self.land_elevations = elevation_profile.land_elevations
         self.tube_elevations, self.tube_elevation_spline = \
             self.build_tube_elevations_v1()
         self.compute_time_v1()

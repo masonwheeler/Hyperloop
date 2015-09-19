@@ -136,9 +136,9 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
                                     spatial_graph_b.latlngs)
         geospatials = util.smart_concat(spatial_graph_a.geospatials,
                                         spatial_graph_b.geospatials)
-        elevation_profile = elevation.merge_elevation_profiles(
-                             spatial_graph_a.elevation_profile,
-                             spatial_graph_b.elevation_profile)
+        elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
+                                              spatial_graph_a.elevation_profile,
+                                              spatial_graph_b.elevation_profile)
         merged_spatial_graph = SpatialGraph(merged_abstract_graph, pylon_cost,
                                             tube_cost, land_cost, latlngs,
                                             geospatials, elevation_profile)

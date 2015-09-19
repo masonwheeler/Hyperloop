@@ -18,6 +18,28 @@ class VelocityProfile(object):
 
     MIN_VELOCITY = 10 #Meters/Second
     
+
+    def compute_spatial_path_3d_curvature_v1(self, spatial_path_3d_tube_coords):
+        path_radii = curvature.points_list_to_radii(spatial_path_3d_tube_coords)
+        path_curvatures = [1.0 / radius for radius in path_radii]
+        return path_curvatures
+
+    def curvatures_to_max_velocities_v1(self, spatial_path_curvatures):
+        start_max_velocity = end_max_velocity = 0
+        interior_max_velocities = [
+                         min(np.sqrt(parameters.MAX_LATERAL_ACCEL / curvature),
+                             parameters.MAX_SPEED)
+                         for curvature in spatial_path_curvature]
+        max_velocities = [start_max_velocity] + interior_max_velocities \
+                                              + [end_max_velocity]
+        return max_velocities
+
+    def compute_spatial_path_3d_max_velocities_v1(self, spatial_path_3d_coords):
+        path_curvatures = self.compute_spatial_path_3d_curvature_v1(
+                                                 spatial_path_3d_coords)
+        max_velocities = self.curvatures_to_max_velocities_v1(path_curvatures)
+        return max_velocities
+
     def sort_velocities_indices(self, interior_max_velocities):
         interior_max_velocities_indices = range(len(interior_max_velocities))
         sorted_interior_max_velocities_indices = sorted(
@@ -129,33 +151,15 @@ class VelocityProfile(object):
         velocities_by_arc_length = np.max(min_velocities,
                   unconstrained_velocities_by_arc_length)
         return velocities_by_arc_length
-
-    def compute_spatial_path_3d_curvature_v1(self, spatial_path_3d_tube_coords):
-        path_radii = curvature.points_list_to_radii(spatial_path_3d_tube_coords)
-        path_curvatures = [1.0 / radius for radius in path_radii]
-        return path_curvatures
-
-    def curvatures_to_max_velocities_v1(self, spatial_path_curvatures):
-        start_max_velocity = end_max_velocity = 0
-        interior_max_velocities = [
-                         min(np.sqrt(parameters.MAX_LATERAL_ACCEL / curvature),
-                             parameters.MAX_SPEED)
-                         for curvature in spatial_path_curvature]
-        max_velocities = [start_max_velocity] + interior_max_velocities \
-                                              + [end_max_velocity]
-        return max_velocities
-
-    def compute_spatial_path_3d_max_velocities_v1(self, spatial_path_3d_coords):
-        path_curvatures = self.compute_spatial_path_3d_curvature_v1(
-                                                 spatial_path_3d_coords)
-        max_velocities = self.curvatures_to_max_velocities_v1(path_curvatures)
-        return max_velocities
     
     def __init__(self, spatial_path_3d):
         self.arc_lengths = spatial_path_3d.arc_lengths
         self.max_velocities = self.compute_spatial_path_3d_max_velocities_v1(
-                                                      spatial_path_3d.tube_coords)
+                                                 spatial_path_3d.tube_coords)
         self.velocities_by_arc_length = self.build_velocities_by_arc_length_v1(
-                                                  arc_lengths, max_velocities)
+                                         self.arc_lengths, self.max_velocities)
+        self.time_checkpoints = \
+            velocity.velocities_by_arc_length_to_time_checkpoints(
+                            velocities_by_arc_length, arc_lengths)         
                 
         

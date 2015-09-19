@@ -70,6 +70,21 @@ def velocities_by_arclength_to_time_checkpoints_array(velocities_by_arc_length,
     time_check_points_array = np.insert(times, 0, 0)
     return time_check_points_array
 
+def velocities_by_arc_length_to_time_checkpoints(velocities_by_arc_length,
+                                                             arc_lengths):
+    arc_lengths_a = arc_lengths[:-1]
+    arc_lengths_b = arc_lengths[1:]
+    arc_length_intervals = arc_lengths_b - arc_lengths_a
+    velocities_a = velocities_by_arc_length[:-1]
+    velocities_b = velocities_by_arc_length[1:]
+    velocities_sums = velocities_a + velocities_b
+    mean_velocities_intervals = np.divide(velocities_sums, 2)
+    interval_times = np.divide(arc_length_intervals,
+                      mean_velocities_by_arc_length)
+    interval_end_time_checkpoints = np.cumsum(interval_times)
+    time_checkpoints = np.insert(interval_end_time_checkpoints, 0, 0)
+    return time_checkpoints
+
 def compute_trip_time(velocities_by_arc_length, velocity_arc_length_step_size):
     time_checkpoints_array = velocities_by_arclength_to_time_checkpoints_array(
         velocities_by_arc_length, velocity_arc_length_step_size)
