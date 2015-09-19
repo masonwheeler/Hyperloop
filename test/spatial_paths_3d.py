@@ -27,7 +27,6 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
     def build_tube_profiles_v1(self):
         start = time.time()
         tube_profile = self.tube_builder(self.elevation_profile)
-        #print("building tube profile took: " + str(time.time() - start) + " seconds.")
         self.tube_profiles = [tube_profile]
 
     def build_paths(self):
@@ -40,8 +39,7 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
         self.land_cost = spatial_path_2d.land_cost
         self.latlngs = spatial_path_2d.latlngs
         self.geospatials = spatial_path_2d.geospatials
-        self.elevation_profile = spatial_path_2d.elevation_profile
-        #print("len elevation profile: " + str(len(self.elevation_profile)))
+        self.elevation_profile = spatial_path_2d.elevation_profile        
         self.build_tube_profiles_v1()
         self.build_paths()
 

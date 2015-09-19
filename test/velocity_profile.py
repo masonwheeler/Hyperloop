@@ -46,7 +46,8 @@ class VelocityProfile(object):
             arc_length_difference < arc_length_tolerance
         return is_velocity_pair_compatible
             
-    def test_velocity_indices_pair(self, velocity_index_a, velocity_index_b):
+    def test_velocity_indices_pair(self, velocity_index_a,
+                                               velocity_index_b):
         if self.index_pairs_tested[velocity_index_a][velocity_index_b]:
             return True
         else:
@@ -129,8 +130,8 @@ class VelocityProfile(object):
                   unconstrained_velocities_by_arc_length)
         return velocities_by_arc_length
 
-    def compute_spatial_path_3d_curvature_v1(self, spatial_path_3d_coords):
-        path_radii = curvature.points_list_to_radii(spatial_path_3d_coords)
+    def compute_spatial_path_3d_curvature_v1(self, spatial_path_3d_tube_coords):
+        path_radii = curvature.points_list_to_radii(spatial_path_3d_tube_coords)
         path_curvatures = [1.0 / radius for radius in path_radii]
         return path_curvatures
 
@@ -153,8 +154,8 @@ class VelocityProfile(object):
     def __init__(self, spatial_path_3d):
         self.arc_lengths = spatial_path_3d.arc_lengths
         self.max_velocities = self.compute_spatial_path_3d_max_velocities_v1(
-                                                      spatial_path_3d.coords)
+                                                      spatial_path_3d.tube_coords)
         self.velocities_by_arc_length = self.build_velocities_by_arc_length_v1(
                                                   arc_lengths, max_velocities)
-        
+                
         
