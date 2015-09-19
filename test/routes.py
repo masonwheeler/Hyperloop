@@ -121,10 +121,12 @@ def route_3d_to_route_4d(tube_coords):#, comfort_tradeoff1, comfort_tradeoff2):
 
 def comfort_analysis_of_route_4d(x):
     x, y, z, t = np.transpose(x)
-    vx, vy, vz, t = [util.numerical_derivative(x, t), util.numerical_derivative(
-        y, t), util.numerical_derivative(z, t), t]
-    ax, ay, az, t = [util.numerical_derivative(vx, t), util.numerical_derivative(
-        vy, t), util.numerical_derivative(vz, t), t]
+    vx, vy, vz, t = [util.numerical_derivative(x, t),
+                     util.numerical_derivative(y, t),
+                     util.numerical_derivative(z, t), t]
+    ax, ay, az, t = [util.numerical_derivative(vx, t),
+                     util.numerical_derivative(vy, t),
+                     util.numerical_derivative(vz, t), t]
 
     # break_up data into chunks for comfort evaluation:
     v = np.transpose([vx, vy, vz])

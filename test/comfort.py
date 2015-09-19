@@ -73,7 +73,7 @@ def weighting_factors(frequency):
     See (Gangadharan) equations (7) and (8) for weighting factors.
     """
     weighting_factors = [0, vertical_weighting_factor(frequency),
-                         horizontal_weighting_factor(frequency)]
+                            horizontal_weighting_factor(frequency)]
     return weighting_factors
 
 def frequency_weighted_rms(accel_frequency, time_interval, component):

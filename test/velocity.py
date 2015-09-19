@@ -55,26 +55,10 @@ def sample_velocities(velocities_by_time, time_step_size):
         velocities += sampled_velocities
     return velocities
 
-def velocities_by_arclength_to_time_checkpoints_array(velocities_by_arc_length,
-                                                      velocity_arc_length_step_size):
-    num_intervals = velocities_by_arc_length.size - 1
-    velocity_arc_length_step_size_array = np.empty(num_intervals)
-    velocity_arc_length_step_size_array.fill(velocity_arc_length_step_size)
-    padded_velocities = np.append(velocities_by_arc_length, 0.0)
-    shifted_velocities = np.insert(velocities_by_arc_length, 0, 0.0)
-    padded_velocities_sums = np.add(padded_velocities, shifted_velocities)
-    velocities_sums = padded_velocities_sums[1:-1]
-    mean_velocities_by_arc_length = np.divide(velocities_sums, 2)
-    times = np.divide(velocity_arc_length_step_size_array,
-                      mean_velocities_by_arc_length)
-    time_check_points_array = np.insert(times, 0, 0)
-    return time_check_points_array
 
 def velocities_by_arc_length_to_time_checkpoints(velocities_by_arc_length,
                                                              arc_lengths):
-    arc_lengths_a = arc_lengths[:-1]
-    arc_lengths_b = arc_lengths[1:]
-    arc_length_intervals = arc_lengths_b - arc_lengths_a
+    arc_length_intervals = np.ediff1(arc_lengths)
     velocities_a = velocities_by_arc_length[:-1]
     velocities_b = velocities_by_arc_length[1:]
     velocities_sums = velocities_a + velocities_b
