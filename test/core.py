@@ -26,13 +26,15 @@ def pair_analysis(start, end):
     """
     cacher.create_necessaryfolders(start, end)
     time_a = time.time()
-    spatial_paths_set_2d = spatial.city_pair_to_spatial_paths_set_2d(start, end)
-    spatial_paths_2d = spatial_paths_set_2d.paths
-    start = spatial_paths_set_2d.start
-    end = spatial_paths_set_2d.end
-    start_latlng = spatial_paths_set_2d.start_latlng
-    end_latlng = spatial_paths_set_2d.end_latlng
-    print("num paths: " + str(len(spatial_paths_2d)))
+    spatial_paths_set_3d = spatial.city_pair_to_spatial_paths_set_3d(start, end)
+    spatial_paths_3d = spatial_paths_set_3d.selected_paths
+    start = spatial_paths_set_3d.start
+    end = spatial_paths_set_3d.end
+    start_latlng = spatial_paths_set_3d.start_latlng
+    end_latlng = spatial_paths_set_3d.end_latlng
+    print("num paths: " + str(len(spatial_paths_3d)))
+    complete_routes = [routes.spatial_path_3d_to_route(spatial_path_3d)
+                       for spatial_path_3d in spatial_paths_3d]
     #complete_routes = [routes.path_to_route(path) for path in spatial_paths_2d]
     #complete_routes = [routes.graph_to_route(graph,
     #                  parameters.MAX_LINEAR_ACCEL/parameters.MAX_SPEED**2,        

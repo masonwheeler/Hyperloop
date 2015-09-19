@@ -20,6 +20,7 @@ class SpatialPath3d(abstract_paths.AbstractPath):
         self.total_pylon_cost = tube_profile.pylon_cost
         self.tube_coords = tube_profile.tube_coords
         self.tube_cost = tube_profile.tube_cost
+        self.land_elevations = tube_profile.land_elevations
 
 class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
   

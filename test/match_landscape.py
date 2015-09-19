@@ -12,7 +12,6 @@ import numpy as np
 
 # Our Modules
 import clothoid
-import config
 import curvature
 import elevation
 import parameters
@@ -153,7 +152,7 @@ def match_landscape_v1(s, z, Type):
             v = (z[j] + z[i]) / 2
 
             C = parameters.MAX_LINEAR_ACCEL / v
-            D = config.JERK_TOL / v**2
+            D = parameters.JERK_TOL / v**2
 
             def dz_tol(s):
                 if s < 2 * C / D:

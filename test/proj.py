@@ -14,6 +14,8 @@ import util
 import config
 
 
+PROJ = 0
+
 def get_omerc_proj(start_lon_lat, end_lon_lat):
     """Provides the Oblique Mercator Projection"""
     start_lon, start_lat = start_lon_lat
@@ -74,11 +76,9 @@ def geospatials_to_latlngs(geospatials, proj):
                for geospatial in geospatials]
     return latlngs
 
-
 def set_projection(start_lat_lng, end_lat_lng):
     """Sets the projection used for converting lat-lngs to geospatials"""
     #start_lon_lat, end_lon_lat = util.swap_pairs([start_lat_lng, end_lat_lng])
-    #config.PROJ = get_omerc_proj(start_lon_lat, end_lon_lat)
     projection = get_albers_proj()
     if config.VISUAL_MODE:
         print "start lat-lng: " + str(start_lat_lng)
