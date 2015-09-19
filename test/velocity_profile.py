@@ -53,10 +53,10 @@ class VelocityProfile(object):
                                       velocity_b, arc_length_b):
         velocity_difference = velocity_b - velocity_a
         arc_length_difference = arc_length_a - arc_length_b
-        mean_velocity = (velocity_a + velocity_b) / 2.0    
+        mean_vel = (velocity_a + velocity_b) / 2.0    
         
         variable_a = self.max_linear_accel / mean_vel
-        variable_b = self.jerk_tolerance / mean_vel**2
+        variable_b = self.jerk_tol / mean_vel**2
         
         threshold_arc_length = 2 * variable_a / variable_b
         if arc_length_difference > threshold_arc_length:
@@ -97,7 +97,7 @@ class VelocityProfile(object):
         forward_compatibility = self.test_velocity_indices_pair(trial_index,
                                                               forward_index)
         velocity_index_compatible = (backward_compatibility and
-                                      forward_compatiblity)
+                                      forward_compatibility)
         self.selected_max_velocities_indices.pop(position_of_trial_index)
         return velocity_index_compatible
 
@@ -131,9 +131,9 @@ class VelocityProfile(object):
             else:
                 break
         waypoint_arc_lengths = [self.arc_lengths[index] for index
-                                in self.selected_velocities_indices]
+                                in self.selected_max_velocities_indices]
         waypoint_max_velocities = [self.max_velocities[index] for index
-                               in self.selected_velocities_indices]
+                                   in self.selected_max_velocities_indices]
         return [waypoint_arc_lengths, waypoint_max_velocities]
         
     def interpolate_velocity_waypoints_v1(self, waypoint_arc_lengths,
@@ -150,11 +150,24 @@ class VelocityProfile(object):
         unconstrained_velocities_by_arc_length = velocity_spline(arc_lengths)
         min_velocities = np.empty(len(arc_lengths))
         min_velocities.fill(self.MIN_VELOCITY)
-        velocities_by_arc_length = np.max(min_velocities,
-                  unconstrained_velocities_by_arc_length)
+        velocities_by_arc_length = np.maximum(min_velocities,
+                      unconstrained_velocities_by_arc_length)
         return velocities_by_arc_length
     
-    def __init__(self, spatial_path_3d):
+    def __init__(self, spatial_path_3d,
+                 max_linear_accel=None,
+                         jerk_tol=None):
+
+        if max_linear_accel == None:
+            self.max_linear_accel = parameters.MAX_LINEAR_ACCEL
+        else:
+            max_linear_accel = max_linear_accel
+
+        if jerk_tol == None:
+            self.jerk_tol = parameters.JERK_TOL
+        else:
+            self.jerk_tol = jerk_tol
+
         self.arc_lengths = spatial_path_3d.arc_lengths
         self.max_velocities = self.compute_spatial_path_3d_max_velocities_v1(
                                                  spatial_path_3d.tube_coords)
@@ -162,7 +175,7 @@ class VelocityProfile(object):
                                          self.arc_lengths, self.max_velocities)
         self.time_checkpoints = \
             velocity.velocities_by_arc_length_to_time_checkpoints(
-                            velocities_by_arc_length, arc_lengths)
-        self.trip_time = time_checkpoints[-1]
+                      self.velocities_by_arc_length, self.arc_lengths)
+        self.trip_time = self.time_checkpoints[-1]
                 
         

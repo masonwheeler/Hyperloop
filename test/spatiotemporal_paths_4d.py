@@ -14,7 +14,7 @@ class SpatiotemporalPath4d(object):
 
     def compute_spatial_component_derivative(self, spatial_component_coords):
         spatial_component_derivative = util.numerical_derivative(
-                        spatial_component_coords, self.time_check_points)
+                        spatial_component_coords, self.time_checkpoints)
         return spatial_component_derivative
 
     def compute_spatial_velocities(self):
@@ -40,8 +40,8 @@ class SpatiotemporalPath4d(object):
         pass 
 
     def __init__(self, velocity_profile, spatial_path_3d):
-        self.time_check_points = velocity_profile.time_check_points
-        self.time_intervals = velocity_profile.time_intervals
+        self.time_checkpoints = velocity_profile.time_checkpoints
+        #self.time_intervals = velocity_profile.time_intervals
         self.trip_time = velocity_profile.trip_time
         self.land_cost = spatial_path_3d.land_cost
         self.latlngs = spatial_path_3d.latlngs
@@ -60,13 +60,13 @@ class SpatiotemporalPathsSet4d(object):
         self.velocity_profiles = [velocity_profile]
 
     def build_paths(self, spatial_path_3d):
-        self.paths = [Path4d(velocity_profile, spatial_path_3d)
+        self.paths = [SpatiotemporalPath4d(velocity_profile, spatial_path_3d)
                       for velocity_profile in self.velocity_profiles]
     
     def __init__(self, spatial_path_3d, velocity_builder):
         self.velocity_builder = velocity_builder
         self.build_velocity_profiles_v1(spatial_path_3d)
-        self.build_paths()
+        self.build_paths(spatial_path_3d)
 
 
 class SpatiotemporalPathsSets4d(object):
