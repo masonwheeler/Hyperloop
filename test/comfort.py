@@ -108,23 +108,3 @@ def sperling_comfort_index(vel, accel, time_interval, component):
     return sperling_comfort_index
 
 
-"""
-T = 300
-N = 10000
-al = [5*math.cos(2*math.pi*2*t/T) for t in np.linspace(0,T,N)]
-alf = np.fft.fft(al)/ N
-afw__r_m_s = fw__r_m_s(alf, T, 1)
-print 4.42*(afw__r_m_s)**0.3
-print 4.42*(w(2./T)[1]**2*(25/2.))**0.3
-"""
-
-# UNIT TEST (script #2):
-"""
-v = [[-3.83292, 2.99503, -3.05167],
-     [2.21044, -7.71139, 4.37497]]
-
-a = [[-1.86223, -8.09352, 9.76449], 
-     [-8.83573, 7.20539, -6.74363]]
-
-print comfort(v, a, 500, 2)
-"""

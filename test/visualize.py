@@ -9,30 +9,11 @@ Last Modification Purpose: To remove unnecessary functions and lines.
 
 # Standard Modules
 import matplotlib.pyplot as plt
-import numpy as np
 
-# Our Modules
-import config
-import interpolate
-import util
 
 PLOT_QUEUE_SPATIAL_2D = []
 PLOT_QUEUE_SCATTERPLOT = []
 
-def visualize_elevation_profile(elevation_profile, tube_elevations):
-    distances = []
-    land_elevations = []
-    num_points = len(elevation_profile)
-    s_values = np.arange(num_points)
-    for elevation_point in elevation_profile:
-        distance = elevation_point["distance_along_path"]
-        land_elevation = elevation_point["land_elevation"]
-        distances.append(distance)
-        land_elevations.append(land_elevation)
-    plt.plot(distances, land_elevations)
-    plt.plot(distances, tube_elevations, 'r-')
-    # plt.axis('equal')
-    plt.show()
 
 def plot_object(object_data, style):
     x_values, y_values = object_data
