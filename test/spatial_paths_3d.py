@@ -6,6 +6,7 @@ Original Developer:
 import abstract_paths
 import cacher
 import config
+import util
 
 import time
 
@@ -25,7 +26,7 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
     def build_tube_profiles_v1(self):
         start = time.time()
         tube_profile = self.tube_builder(self.elevation_profile)
-        print("building tube profile took: " + str(time.time() - start) + " seconds.")
+        #print("building tube profile took: " + str(time.time() - start) + " seconds.")
         self.tube_profiles = [tube_profile]
 
     def build_paths(self):
@@ -39,6 +40,7 @@ class SpatialPathsSet3d(abstract_paths.AbstractPathsSet):
         self.latlngs = spatial_path_2d.latlngs
         self.geospatials = spatial_path_2d.geospatials
         self.elevation_profile = spatial_path_2d.elevation_profile
+        #print("len elevation profile: " + str(len(self.elevation_profile)))
         self.build_tube_profiles_v1()
         self.build_paths()
 
@@ -64,6 +66,7 @@ class SpatialPathsSets3d(object):
         self.start_latlng = spatial_paths_set_2d.start_latlng
         self.end_latlng = spatial_paths_set_2d.end_latlng
         self.tube_builder = spatial_paths_set_2d.tube_builder
+        self.undersampling_factor = spatial_paths_set_2d.UNDERSAMPLING_FACTOR
         self.build_paths_sets(spatial_paths_set_2d.paths)
         self.select_paths()
         
