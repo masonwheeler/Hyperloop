@@ -160,6 +160,7 @@ class VelocityProfile(object):
                                          self.arc_lengths, self.max_velocities)
         self.time_checkpoints = \
             velocity.velocities_by_arc_length_to_time_checkpoints(
-                            velocities_by_arc_length, arc_lengths)         
+                            velocities_by_arc_length, arc_lengths)
+        self.trip_time = time_checkpoints[-1]
                 
         

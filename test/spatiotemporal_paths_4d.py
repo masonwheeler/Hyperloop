@@ -34,11 +34,12 @@ class SpatiotemporalPath4d(object):
                                                 self.z_component_velocities)
         
     def compute_comfort(self):
-        
+        pass 
 
     def __init__(self, velocity_profile, spatial_path_3d):
         self.time_check_points = velocity_profile.time_check_points
         self.time_intervals = velocity_profile.time_intervals
+        self.trip_time = velocity_profile.trip_time
         self.land_cost = spatial_path_3d.land_cost
         self.latlngs = spatial_path_3d.latlngs
         self.geospatials = spatial_path_3d.geospatials
@@ -77,15 +78,15 @@ class SpatiotemporalPathsSets4d(object):
 
     def select_paths(self):
         paths_lists = [paths_set.path for paths_set in self.paths_sets]
-        paths = util.fast_oncat(paths_lists)
+        paths = util.fast_concat(paths_lists)
         self.selected_paths = paths
 
-    def __init__(self, spatial_paths_sets_3d):
+    def __init__(self, spatial_paths_sets_3d, velocity_builder):
+        self.velocity_builder = velocity_builder
         self.start = spatial_paths_sets_3d.start
         self.end = spatial_paths_sets_3d.end
         self.start_latlng = spatial_paths_sets_3d.start_latlng
         self.end_latlng = spatial_paths_sets_3d.end_latlng        
-        self.velocity_builder = spatial_paths_sets_3d.velocity_builder
         self.undersampling_factor = spatial_paths_set_3d.undersampling_factor
         self.build_paths_sets(spatial_paths_sets_3d.selected_paths)
         self.select_paths()
