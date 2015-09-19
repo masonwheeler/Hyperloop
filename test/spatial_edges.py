@@ -65,16 +65,10 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                            self.end_point.geospatial,
                                            parameters.PYLON_SPACING)
         latlngs = self.geospatials_to_latlngs(geospatials)
-        self.elevation_profile = elevation.get_elevation_profile_v2(
-                                     geospatials, latlngs, arc_lengths)
-
-    def build_tube(self, tube_builder):
-        time, pylon_cost, tube_cost = tube_builder(self.elevation_profile)
-        self.time = time
-        self.pylon_cost = pylon_cost
-        self.tube_cost = tube_cost
+        self.elevation_profile = elevation.ElevationProfile(
+                          geospatials, latlngs, arc_lengths)
     
-    def build_tube_v2(self, tube_builder):
+    def build_tube(self, tube_builder):
         tube_profile = tube_builder(self.elevation_profile)
         self.time = tube_profile.time
         self.tube_cost = tube_profile.tube_cost       
@@ -134,7 +128,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def build_tubes(self):
         for spatial_edges_set in self.filtered_edges_sets:
             for spatial_edge in spatial_edges_set:
-                spatial_edge.build_tube_v2(self.tube_builder)
+                spatial_edge.build_tube(self.tube_builder)
 
     def finish_edges_sets(self):
         util.smart_print("Now computing land costs...")

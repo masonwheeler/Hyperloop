@@ -34,10 +34,10 @@ class SpatialPath2d(abstract_paths.AbstractPath):
     def get_elevation_profile(self, geospatials_to_latlngs):
         undersampled_latlngs = geospatials_to_latlngs(
                             self.undersampled_geospatials)
-        self.elevation_profile = elevation.get_elevation_profile(
-                                        self.undersampled_geospatials,
-                                                 undersampled_latlngs,
-                                                     self.arc_lengths)
+        self.elevation_profile = elevation.ElevationProfile(
+                                  self.undersampled_geospatials,
+                                           undersampled_latlngs,
+                                               self.arc_lengths)
 
     def undersample_geospatials(self, undersampling_factor):
         sample_spacing = parameters.PYLON_SPACING * undersampling_factor

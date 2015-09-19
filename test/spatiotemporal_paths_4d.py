@@ -2,8 +2,11 @@
 Original Developer: Jonathan Ward
 """
 
+# Standard Modules
 import numpy as np
 
+# Custom Modules:
+import cacher
 import comfort
 import util
 
@@ -52,9 +55,9 @@ class SpatiotemporalPath4d(object):
 
 class SpatiotemporalPathsSet4d(object):
 
-    def build_velocity_profiles_v1(self):
+    def build_velocity_profiles_v1(self, spatial_path_3d):
         velocity_profile = self.velocity_builder(spatial_path_3d)
-        self.velocity_profiles[velocity_profile]
+        self.velocity_profiles = [velocity_profile]
 
     def build_paths(self, spatial_path_3d):
         self.paths = [Path4d(velocity_profile, spatial_path_3d)
@@ -62,14 +65,14 @@ class SpatiotemporalPathsSet4d(object):
     
     def __init__(self, spatial_path_3d, velocity_builder):
         self.velocity_builder = velocity_builder
-        self.build_velocity_profiles_v1()
+        self.build_velocity_profiles_v1(spatial_path_3d)
         self.build_paths()
 
 
 class SpatiotemporalPathsSets4d(object):
     
     NAME = "spatiotemporal_paths_4d"
-    FLAG = cacher.SPATIOTEMPORAL_PATHS_4D
+    FLAG = cacher.SPATIOTEMPORAL_PATHS_4D_FLAG
     
     def build_paths_sets(self, spatial_paths_3d):
         self.paths_sets = [SpatiotemporalPathsSet4d(spatial_path_3d,
@@ -87,7 +90,7 @@ class SpatiotemporalPathsSets4d(object):
         self.end = spatial_paths_sets_3d.end
         self.start_latlng = spatial_paths_sets_3d.start_latlng
         self.end_latlng = spatial_paths_sets_3d.end_latlng        
-        self.undersampling_factor = spatial_paths_set_3d.undersampling_factor
+        self.undersampling_factor = spatial_paths_sets_3d.undersampling_factor
         self.build_paths_sets(spatial_paths_sets_3d.selected_paths)
         self.select_paths()
 
@@ -97,5 +100,5 @@ def get_spatiotemporal_paths_sets_4d(*args):
                                         SpatiotemporalPathsSets4d.NAME,
                                         SpatiotemporalPathsSets4d,
                                         args,
-                                        SpatiotemporalPathsSets.FLAG)
+                                        SpatiotemporalPathsSets4d.FLAG)
     return spatiotemporal_paths_sets_4d

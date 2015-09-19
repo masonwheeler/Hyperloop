@@ -142,8 +142,10 @@ class TubeProfile(object):
             curvature.curvature_array_to_bounded_max_allowed_vels(
                self.tube_curvature, parameters.MAX_VERTICAL_ACCEL,
                                     parameters.MAX_SPEED)
-        self.time = velocity.compute_trip_time(self.max_allowed_vels,
-                                          self.arc_lengths[1])
+        time_checkpoints = \
+            velocity.velocities_by_arc_length_to_time_checkpoints(
+                          self.max_allowed_vels, self.arc_lengths)
+        self.time = time_checkpoints[-1]
         
     def build_pylons(self):
         self.pylon_heights = util.subtract(self.tube_elevations,

@@ -29,7 +29,7 @@ class VelocityProfile(object):
         interior_max_velocities = [
                          min(np.sqrt(parameters.MAX_LATERAL_ACCEL / curvature),
                              parameters.MAX_SPEED)
-                         for curvature in spatial_path_curvature]
+                         for curvature in spatial_path_curvatures]
         max_velocities = [start_max_velocity] + interior_max_velocities \
                                               + [end_max_velocity]
         return max_velocities
@@ -85,38 +85,40 @@ class VelocityProfile(object):
         
     def test_velocity_index(self, velocity_index):
         position_of_trial_index = util.sorted_insert(velocity_index,
-                                  self.selected_velocities_indices)
-        backward_index = self.selected_velocities_indices[
-                                 posiition_of_trial_index - 1]
-        trial_index = self.selected_velocities_indices[posiition_of_trial_index]
-        forward_index = self.selected_velocities_indices[
-                                posiition_of_trial_index + 1]
+                                  self.selected_max_velocities_indices)
+        backward_index = self.selected_max_velocities_indices[
+                                     position_of_trial_index - 1]
+        trial_index = self.selected_max_velocities_indices[
+                                       position_of_trial_index]
+        forward_index = self.selected_max_velocities_indices[
+                                    position_of_trial_index + 1]
         backward_compatibility = self.test_velocity_indices_pair(backward_index,
                                                                     trial_index)
         forward_compatibility = self.test_velocity_indices_pair(trial_index,
                                                               forward_index)
         velocity_index_compatible = (backward_compatibility and
                                       forward_compatiblity)
-        self.selected_velocities_indices.pop(position_of_trial_index)
+        self.selected_max_velocities_indices.pop(position_of_trial_index)
         return velocity_index_compatible
 
     def add_compatible_velocity_to_profile(self):
-        for i in range(len(self.sorted_interior_velocities_indices)):
-            trial_index = self.sorted_interior_velocities_indices[i]
+        for i in range(len(self.sorted_interior_max_velocities_indices)):
+            trial_index = self.sorted_interior_max_velocities_indices[i]
             is_trial_index_compatible = self.test_velocity_index(trial_index)
             if is_trial_index_compatible:
-                trial_index = sorted_interior_velocities_indices.pop(i)
-                util.sorted_insert(trial_index, selected_velocities_indices)
+                trial_index = self.sorted_interior_max_velocities_indices.pop(i)
+                util.sorted_insert(trial_index,
+                                   self.selected_max_velocities_indices)
                 return True
-        return False    
+        return False
 
-    def get_velocity_profile_waypoints(self)
-        self.selected_velocities_indices = []
+    def get_velocity_profile_waypoints(self):
+        self.selected_max_velocities_indices = []
         start_velocity_index = 0
         self.selected_max_velocities_indices.append(start_velocity_index)
         final_velocity_index = len(self.max_velocities) - 1
         self.selected_max_velocities_indices.append(final_velocity_index)
-        interior_max_velocities = max_velocities[1: final_velocity_index]
+        interior_max_velocities = self.max_velocities[1: final_velocity_index]
         self.sorted_interior_max_velocities_indices = \
             self.sort_velocities_indices(interior_max_velocities)
         self.index_pairs_tested = [[0 for i in range(len(self.max_velocities))]

@@ -35,7 +35,7 @@ class SpatialPathsSet3d(object):
         self.tube_builder = tube_builder
         self.elevation_profile = spatial_path_2d.elevation_profile 
         self.build_tube_profiles_v1()
-        self.build_paths()
+        self.build_paths(spatial_path_2d)
 
 
 class SpatialPathsSets3d(object):

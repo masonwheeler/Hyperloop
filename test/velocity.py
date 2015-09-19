@@ -58,22 +58,16 @@ def sample_velocities(velocities_by_time, time_step_size):
 
 def velocities_by_arc_length_to_time_checkpoints(velocities_by_arc_length,
                                                              arc_lengths):
-    arc_length_intervals = np.ediff1(arc_lengths)
+    arc_length_intervals = np.ediff1d(arc_lengths)
     velocities_a = velocities_by_arc_length[:-1]
     velocities_b = velocities_by_arc_length[1:]
     velocities_sums = velocities_a + velocities_b
-    mean_velocities_intervals = np.divide(velocities_sums, 2)
+    mean_velocities = np.divide(velocities_sums, 2)
     interval_times = np.divide(arc_length_intervals,
-                      mean_velocities_by_arc_length)
+                                    mean_velocities)
     interval_end_time_checkpoints = np.cumsum(interval_times)
     time_checkpoints = np.insert(interval_end_time_checkpoints, 0, 0)
     return time_checkpoints
-
-def compute_trip_time(velocities_by_arc_length, velocity_arc_length_step_size):
-    time_checkpoints_array = velocities_by_arclength_to_time_checkpoints_array(
-        velocities_by_arc_length, velocity_arc_length_step_size)
-    trip_time = np.sum(time_checkpoints_array)
-    return trip_time
 
 def reparametrize_velocities(velocities_by_arc_length, velocity_arclength_step_size,
                              time_step_size):

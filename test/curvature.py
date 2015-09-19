@@ -270,6 +270,12 @@ def points_to_radius(three_points):
     else:
         return a * b * c / (4 * A)
 
+def points_list_to_radii(points_list):
+    points_triples = [points_list[i:i + 3] for i in range(len(points_list) - 3)]
+    radii = [points_to_radius(points_triple)
+             for points_triple in points_triples]
+    return radii
+
 def compute_naive_curvature(three_points):
     radius_of_curvature = points_to_radius(three_points)
     naive_curvature = 1.0 / radius_of_curvature
