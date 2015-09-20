@@ -24,8 +24,8 @@ def pair_analysis(start, end):
     time_a = time.time()
     paths_3d = spatial.city_pair_to_paths_3d(start, end)
     paths_4d = spatiotemporal.paths_3d_to_paths_4d(paths_3d)
-    #complete_routes = [routes.spatial_path_3d_to_route(spatial_path_3d)
-    #                   for spatial_path_3d in spatial_paths_3d]
+    complete_routes = [routes.spatiotemporal_path_4d_to_route(path_4d)
+                       for path_4d in paths_4d.selected_paths]
     #saver.save_routes(complete_routes, start, end, start_latlng, end_latlng)
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."

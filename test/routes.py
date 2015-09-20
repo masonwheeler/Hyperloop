@@ -8,7 +8,7 @@ Last Modification Purpose: To add classes providing useful structure.
 
 # Standard Modules:
 import numpy as np
-from scipy.interpolate import PchipInterpolator
+##from scipy.interpolate import PchipInterpolator
 
 # Our Modules
 import cacher
@@ -16,8 +16,8 @@ import comfort as cmft
 import config
 import elevation
 import landcover
-import interpolate
-import match_landscape as landscape
+##import interpolate
+##import match_landscape as landscape
 import parameters
 import proj
 import util
@@ -102,25 +102,10 @@ class Route:
 
 # Ancillary Functions:
 
-def route_3d_to_route_4d(tube_coords):#, comfort_tradeoff1, comfort_tradeoff2):
-    x = np.array([np.array(point) for point in tube_coords])
-    s, vland = landscape.gen_landscape(x, "velocity")
-    s_interp, v_interp = landscape.match_landscape_v1(
-        s, vland, "velocity")#, [comfort_tradeoff1, comfort_tradeoff2])
-    f = PchipInterpolator(s_interp, v_interp)
-    v = [max(10, f(s_val)) for s_val in s]
-
-    t = [0] * len(v)
-    t[1] = (s[1] - s[0]) / util.mean(v[0:2])
-    for i in range(2, len(v)):
-        t[i] = t[i - 1] + (s[i] - s[i - 1]) / v[i - 1]
-    t[-1] = t[-2] + (s[-1] - s[-2]) / util.mean(v[-2:len(v)])
-
-    x, y, z = np.transpose(x)
-    return np.transpose([x, y, z, t])
-
-def comfort_analysis_of_route_4d(x):
-    x, y, z, t = np.transpose(x)
+def comfort_analysis_of_spatiotemporal_path_4d(spatiotemporal_path_4d):
+    t = spatiotemporal_path_4d.time_checkpoints
+    tube_coords = spatiotemporal_path_4d.tube_coords
+    x, y, z = zip(*tube_coords)    
     vx, vy, vz, t = [util.numerical_derivative(x, t),
                      util.numerical_derivative(y, t),
                      util.numerical_derivative(z, t), t]
@@ -140,18 +125,16 @@ def comfort_analysis_of_route_4d(x):
                                            i][-1] - t_chunks[i][0], mu) for i in range(len(t_chunks))]
     return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
 
-def spatial_path_3d_to_route(spatial_path_3d):
+def spatiotemporal_path_4d_to_route(spatiotemporal_path_4d):
     start = time.time()
     print "computing data for a new route..."
     t_c = time.time()
-    tube_coords = spatial_path_3d.tube_coords
-    land_elevations = spatial_path_3d.land_elevations
-    land_cost = spatial_path_3d.land_cost
-    route_4d = route_3d_to_route_4d(tube_coords)
+    tube_coords = spatiotemporal_path_4d.tube_coords
+    land_elevations = spatiotemporal_path_4d.land_elevations
+    land_cost = spatiotemporal_path_4d.land_cost
     t_d = time.time()
-    print "computed 4d route in: " + str(t_d - t_c) + " seconds."
     comfort, t, x, y, z, vx, vy, vz, ax, ay, az = \
-         comfort_analysis_of_route_4d(route_4d)
+         comfort_analysis_of_spatiotemporal_path_4d(spatiotemporal_path_4d)
     t_e = time.time()
     print "completed comfort analysis in: " + str(t_e - t_d) + " seconds."
     route = Route(comfort, t, x, y, z, vx, vy, vz, ax, ay, az,
