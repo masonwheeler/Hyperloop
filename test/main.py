@@ -12,8 +12,13 @@ import os
 
 # Our Modules:
 import core
-#import util
 import config
+
+def fix_input_string(input_string):
+    """Convert the input into a string usable for web queries.
+    """
+    title_string = input_string.title()
+    return title_string.replace(" ", "_")
 
 if __name__ == "__main__":
     config.CWD = os.getcwd()

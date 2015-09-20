@@ -230,12 +230,6 @@ def compute_arc_lengths(points):
 
 # String Operations:
 
-def fix_input_string(input_string):
-    """Convert the input into a string usable for web queries.
-    """
-    title_string = input_string.title()
-    return title_string.replace(" ", "_")
-
 def smart_print(string):
     """Print the input string if verbose mode is turned on.
     """
@@ -252,14 +246,6 @@ def sorted_insert(value, ordered_values):
             ordered_values.insert(i, value)
             return i
 
-def break_up(data, n):
-    """Breaks up a list of data points into chunks n-elements long
-    """
-    n = max(1, n)
-    chunks = [data[i:i + n] for i in range(0, len(data), n)]
-    return chunks
-
-
 def numerical_derivative(f, t):
     """Implements a numerical derivative
     """
@@ -272,14 +258,3 @@ def numerical_derivative(f, t):
     df[N - 1] = (f[N - 1] - f[N - 2]) / (t[N - 1] - t[N - 2])
     return df
 
-def mean(vector):
-    """Computes the mean of a vector
-    """
-    return sum(vector) / len(vector)
-
-def LpNorm(t, x, p):
-    """Computes the discrete L^p norm of a given list of elements
-    """
-    summand = [(x[i]**p) * (t[i] - t[i - 1]) for i in range(1, len(t))]
-    riemann_sum = sum(summand) / t[-1]
-    return riemann_sum**(1. / p)

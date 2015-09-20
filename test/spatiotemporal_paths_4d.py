@@ -11,30 +11,6 @@ import comfort
 import util
 
 class SpatiotemporalPath4d(object):
-
-    def compute_spatial_component_derivative(self, spatial_component_coords):
-        spatial_component_derivative = util.numerical_derivative(
-                        spatial_component_coords, self.time_checkpoints)
-        return spatial_component_derivative
-
-    def compute_velocities_components(self):
-        x_component_coords = [tube_coord[0] for tube_coord in self.tube_coords]
-        self.velocities_x_components = \
-            self.compute_spatial_component_derivative(x_component_coords)
-        y_component_coords = [tube_coord[1] for tube_coord in self.tube_coords]
-        self.velocities_y_components = \
-            self.compute_spatial_component_derivative(y_component_coords)
-        z_component_coords = [tube_coord[2] for tube_coord in self.tube_coords]
-        self.velocities_z_components = \
-            self.compute_spatial_component_derivative(z_component_coords)
-
-    def compute_accelerations_components(self):
-        self.accelerations_x_components = \
-        self.compute_spatial_component_derivative(self.velocities_x_components)
-        self.accelerations_y_components = \
-        self.compute_spatial_component_derivative(self.velocities_y_components)
-        self.accelerations_z_components = \
-        self.compute_spatial_component_derivative(self.velocities_z_components)
         
     def compute_comfort(self):
         velocities = np.transpose([self.velocities_x_components,
@@ -55,7 +31,7 @@ class SpatiotemporalPath4d(object):
                                 for i in range(len(times_chunks))]
 
     def __init__(self, velocity_profile, spatial_path_3d):
-        self.time_checkpoints = velocity_profile.time_checkpoints
+        #self.time_checkpoints = velocity_profile.time_checkpoints
         #self.time_intervals = velocity_profile.time_intervals
         self.trip_time = velocity_profile.trip_time
         self.land_cost = spatial_path_3d.land_cost
@@ -66,8 +42,6 @@ class SpatiotemporalPath4d(object):
         self.tube_coords = spatial_path_3d.tube_coords
         self.tube_cost = spatial_path_3d.tube_cost
         self.land_elevations = spatial_path_3d.land_elevations
-        self.compute_velocities_components()
-        self.compute_accelerations_components()
         self.compute_comfort()
 
 
