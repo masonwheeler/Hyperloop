@@ -43,9 +43,16 @@ class SpatiotemporalPath4d(object):
         accelerations = np.transpose([self.accelerations_x_components,
                                    self.accelerations_y_components,
                                    self.accelerations_z_components])
-        
-
+        velocities_chunks = util.break_up(velocities, 500)
+        accelerations_chunks = util.break_up(accelerations, 500)
+        times_chunks = util.break_up(self.time_checkpoints, 500)
+        component = 1
         self.comfort_profile = [comfort.sperling_comfort_index(
+                                                    velocities_chunks[i],
+                                                 accelerations_chunks[i],
+                                times_chunks[i][-1] - times_chunks[i][0],
+                                                               component)
+                                for i in range(len(times_chunks))]
 
     def __init__(self, velocity_profile, spatial_path_3d):
         self.time_checkpoints = velocity_profile.time_checkpoints
@@ -61,6 +68,7 @@ class SpatiotemporalPath4d(object):
         self.land_elevations = spatial_path_3d.land_elevations
         self.compute_velocities_components()
         self.compute_accelerations_components()
+        self.compute_comfort()
 
 
 class SpatiotemporalPathsSet4d(object):

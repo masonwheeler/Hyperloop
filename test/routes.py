@@ -11,7 +11,6 @@ import numpy as np
 
 # Our Modules
 import cacher
-import comfort as cmft
 import config
 import elevation
 import landcover
@@ -94,33 +93,9 @@ class Route:
             }
         return route_dict
 
-
-# Ancillary Functions:
-
-def comfort_analysis_of_spatiotemporal_path_4d(spatiotemporal_path_4d):
-    t = spatiotemporal_path_4d.time_checkpoints
-    x, y, z = zip(*spatiotemporal_path_4d.tube_coords)
-    vx = spatiotemporal_path_4d.x_component_velocities
-    vy = spatiotemporal_path_4d.y_component_velocities
-    vz = spatiotemporal_path_4d.z_component_velocities    
-    ax = spatiotemporal_path_4d.x_component_accels
-    ay = spatiotemporal_path_4d.y_component_accels
-    az = spatiotemporal_path_4d.z_component_accels
-    
-    # break_up data into chunks for comfort evaluation:
-    v = np.transpose([vx, vy, vz])
-    a = np.transpose([ax, ay, az])
-    v_chunks = util.break_up(v, 500)
-    a_chunks = util.break_up(a, 500)
-    t_chunks = util.break_up(t, 500)
-
-    mu = 1
-    comfort = [cmft.sperling_comfort_index(v_chunks[i],
-                                           a_chunks[i],
-                                           t_chunks[i][-1] - t_chunks[i][0],
-                                           mu)
-               for i in range(len(t_chunks))]
-    return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
+#class RoutesV2(object):
+#    
+#    def __init__
 
 def spatiotemporal_path_4d_to_route(spatiotemporal_path_4d):
     start = time.time()
@@ -129,13 +104,18 @@ def spatiotemporal_path_4d_to_route(spatiotemporal_path_4d):
     tube_coords = spatiotemporal_path_4d.tube_coords
     land_elevations = spatiotemporal_path_4d.land_elevations
     land_cost = spatiotemporal_path_4d.land_cost
-    t_d = time.time()
-    comfort, t, x, y, z, vx, vy, vz, ax, ay, az = \
-         comfort_analysis_of_spatiotemporal_path_4d(spatiotemporal_path_4d)
+    t = spatiotemporal_path_4d.time_checkpoints
+    x, y, z = zip(*spatiotemporal_path_4d.tube_coords)
+    vx = spatiotemporal_path_4d.velocities_x_components
+    vy = spatiotemporal_path_4d.velocities_y_components
+    vz = spatiotemporal_path_4d.velocities_z_components
+    ax = spatiotemporal_path_4d.accelerations_x_components
+    ay = spatiotemporal_path_4d.accelerations_y_components
+    az = spatiotemporal_path_4d.accelerations_z_components
+    comfort_profile = spatiotemporal_path_4d.comfort_profile
     t_e = time.time()
-    print "completed comfort analysis in: " + str(t_e - t_d) + " seconds."
-    route = Route(comfort, t, x, y, z, vx, vy, vz, ax, ay, az,
-                                   land_cost, land_elevations)
+    route = Route(comfort_profile, t, x, y, z, vx, vy, vz, ax, ay, az,
+                                           land_cost, land_elevations)
     t_f = time.time()
     print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
     print "entire process took " + str(time.time() - start) + " seconds."
