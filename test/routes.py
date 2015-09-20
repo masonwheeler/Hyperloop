@@ -137,7 +137,7 @@ class RoutesSet(object):
                   in spatiotemporal_paths_sets_4d.selected_paths]
         routes_dicts_list = []
         for index in range(len(routes)):
-            routes_dicts_list.append(routes[i].as_dict, index)
+            routes_dicts_list.append(routes[i].as_dict, index + 1) 
         return routes_dicts_list
 
     def __init__(self, spatiotemporal_paths_sets_4d):
