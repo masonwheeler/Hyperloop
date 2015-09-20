@@ -17,27 +17,35 @@ class SpatiotemporalPath4d(object):
                         spatial_component_coords, self.time_checkpoints)
         return spatial_component_derivative
 
-    def compute_spatial_velocities(self):
+    def compute_velocities_components(self):
         x_component_coords = [tube_coord[0] for tube_coord in self.tube_coords]
-        self.x_component_velocities = self.compute_spatial_component_derivative(
-                                                           x_component_coords)
+        self.velocities_x_components = \
+            self.compute_spatial_component_derivative(x_component_coords)
         y_component_coords = [tube_coord[1] for tube_coord in self.tube_coords]
-        self.y_component_velocities = self.compute_spatial_component_derivative(
-                                                           y_component_coords)
+        self.velocities_y_components = \
+            self.compute_spatial_component_derivative(y_component_coords)
         z_component_coords = [tube_coord[2] for tube_coord in self.tube_coords]
-        self.z_component_velocities = self.compute_spatial_component_derivative(
-                                                           z_component_coords)
+        self.velocities_z_components = \
+            self.compute_spatial_component_derivative(z_component_coords)
 
-    def compute_spatial_accelerations(self):
-        self.x_component_accels = self.compute_spatial_component_derivative(
-                                                self.x_component_velocities)
-        self.y_component_accels = self.compute_spatial_component_derivative(
-                                                self.y_component_velocities)
-        self.z_component_accels = self.compute_spatial_component_derivative(
-                                                self.z_component_velocities)
+    def compute_accelerations_components(self):
+        self.accelerations_x_components = \
+        self.compute_spatial_component_derivative(self.velocities_x_components)
+        self.accelerations_y_components = \
+        self.compute_spatial_component_derivative(self.velocities_y_components)
+        self.accelerations_z_components = \
+        self.compute_spatial_component_derivative(self.velocities_z_components)
         
     def compute_comfort(self):
-        pass 
+        velocities = np.transpose([self.velocities_x_components,
+                                   self.velocities_y_components,
+                                   self.velocities_z_components])        
+        accelerations = np.transpose([self.accelerations_x_components,
+                                   self.accelerations_y_components,
+                                   self.accelerations_z_components])
+        
+
+        self.comfort_profile = [comfort.sperling_comfort_index(
 
     def __init__(self, velocity_profile, spatial_path_3d):
         self.time_checkpoints = velocity_profile.time_checkpoints
@@ -51,6 +59,8 @@ class SpatiotemporalPath4d(object):
         self.tube_coords = spatial_path_3d.tube_coords
         self.tube_cost = spatial_path_3d.tube_cost
         self.land_elevations = spatial_path_3d.land_elevations
+        self.compute_velocities_components()
+        self.compute_accelerations_components()
 
 
 class SpatiotemporalPathsSet4d(object):

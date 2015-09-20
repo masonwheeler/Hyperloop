@@ -8,7 +8,6 @@ Last Modification Purpose: To add classes providing useful structure.
 
 # Standard Modules:
 import numpy as np
-##from scipy.interpolate import PchipInterpolator
 
 # Our Modules
 import cacher
@@ -16,8 +15,6 @@ import comfort as cmft
 import config
 import elevation
 import landcover
-##import interpolate
-##import match_landscape as landscape
 import parameters
 import proj
 import util
@@ -32,7 +29,6 @@ class Route:
                                                              land_elevations):
 
         self.latlngs = self.compute_latlngs(x, y)
-        #self.land_cost = landcover.get_land_cost(self.latlngs)
         self.land_cost = land_cost
         self.tube_elevations = z
         self.pylons = self.compute_pylons(x, y, z, land_elevations)
@@ -52,7 +48,6 @@ class Route:
 
     def compute_pylons(self, x, y, z, land_elevations):
         geospatials = np.transpose([x, y])
-        #s, zland = landscape.gen_landscape(geospatials, "elevation")
 
         def pylon_cost(pylon_height):
             if pylon_height > 0:
@@ -104,15 +99,14 @@ class Route:
 
 def comfort_analysis_of_spatiotemporal_path_4d(spatiotemporal_path_4d):
     t = spatiotemporal_path_4d.time_checkpoints
-    tube_coords = spatiotemporal_path_4d.tube_coords
-    x, y, z = zip(*tube_coords)    
-    vx, vy, vz, t = [util.numerical_derivative(x, t),
-                     util.numerical_derivative(y, t),
-                     util.numerical_derivative(z, t), t]
-    ax, ay, az, t = [util.numerical_derivative(vx, t),
-                     util.numerical_derivative(vy, t),
-                     util.numerical_derivative(vz, t), t]
-
+    x, y, z = zip(*spatiotemporal_path_4d.tube_coords)
+    vx = spatiotemporal_path_4d.x_component_velocities
+    vy = spatiotemporal_path_4d.y_component_velocities
+    vz = spatiotemporal_path_4d.z_component_velocities    
+    ax = spatiotemporal_path_4d.x_component_accels
+    ay = spatiotemporal_path_4d.y_component_accels
+    az = spatiotemporal_path_4d.z_component_accels
+    
     # break_up data into chunks for comfort evaluation:
     v = np.transpose([vx, vy, vz])
     a = np.transpose([ax, ay, az])
@@ -121,8 +115,11 @@ def comfort_analysis_of_spatiotemporal_path_4d(spatiotemporal_path_4d):
     t_chunks = util.break_up(t, 500)
 
     mu = 1
-    comfort = [cmft.sperling_comfort_index(v_chunks[i], a_chunks[i], t_chunks[
-                                           i][-1] - t_chunks[i][0], mu) for i in range(len(t_chunks))]
+    comfort = [cmft.sperling_comfort_index(v_chunks[i],
+                                           a_chunks[i],
+                                           t_chunks[i][-1] - t_chunks[i][0],
+                                           mu)
+               for i in range(len(t_chunks))]
     return [comfort, t, x, y, z, vx, vy, vz, ax, ay, az]
 
 def spatiotemporal_path_4d_to_route(spatiotemporal_path_4d):
