@@ -7,22 +7,20 @@ Last Modification Purpose: To add classes providing useful structure.
 """
 
 # Standard Modules:
-import numpy as np
+#import numpy as np
 
 # Our Modules
-import cacher
-import config
-import elevation
-import landcover
-import parameters
-import proj
-import util
-import time
+#import cacher
+#import config
+#import elevation
+#import landcover
+#import parameters
+#import proj
+#import util
+#import time
 
-
-class Route:
-    """For storing a single route option
-    """
+"""
+class RouteV2:
 
     def __init__(self, comfort, t, x, y, z, vx, vy, vz, ax, ay, az, land_cost,
                                                              land_elevations):
@@ -92,11 +90,80 @@ class Route:
             "tripTime": self.trip_time
             }
         return route_dict
+"""
 
-#class RoutesV2(object):
-#    
-#    def __init__
+class Route(object):    
+    """For storing a single route option
+    """
+    def __init__(spatiotemporal_path_4d):
+        self.acceleration_profile = spatiotemporal_path_4d.acceleration_profile
+        self.comfort_rating = spatiotemporal_path_4d.comfort_rating
+        self.comfort_profile = spatiotemporal_path_4d.comfort_profile
+        self.land_cost = spatiotemporal_path_4d.land_cost
+        self.land_elevations = spatiotemporal_path_4d.land_elevations
+        self.latlngs = spatiotemporal_path_4d.latlngs
+        self.pylons = spatiotemporal_path_4d.pylons
+        self.pylon_cost = spatiotemporal_path_4d.pylon_cost
+        self.total_cost = spatiotemporal_path_4d.total_cost
+        self.trip_time = spatiotemporal_path_4d.trip_time
+        self.tube_cost = spatiotemporal_path_4d.tube_cost
+        self.tube_elevations = spatiotemporal_path_4d.tube_elevations
+        self.velocityProfile = spatiotemporal_path_4d.velocity_profile
 
+    def as_dict(self, index):
+        route_dict = {
+            "accelerationProfile": self.acceleration_profile,
+            "comfortProfile": self.comfort_profile,
+            "comfortRating": self.comfort_rating,
+            "index": index,
+            "landCost": self.land_cost,
+            "landElevations": self.land_elevations,
+            "latlngs": self.latlngs,
+            "pylons": self.pylons,
+            "pylonCost:" self.pylon_cost,
+            "totalCost:" self.total_cost,
+            "tripTime:" self.trip_time,
+            "tubeCost:" self.tube_cost,
+            "tubeElevations:" self.tube_elevations,
+            "velocityProfile:" self.velocity_profile
+            }
+        return route_dict
+
+
+class RoutesSet(object):
+
+    def build_routes_dicts_list(self, spatiotemporal_paths_sets_4d):
+        routes = [Route(spatial_path_4d) for spatial_path_4d
+                  in spatiotemporal_paths_sets_4d.selected_paths]
+        routes_dicts_list = []
+        for index in range(len(routes)):
+            routes_dicts_list.append(routes[i].as_dict, index)
+        return routes_dicts_list
+
+    def __init__(self, spatiotemporal_paths_sets_4d):
+        self.start = spatiotemporal_paths_sets_4d.start
+        self.end = spatiotemporal_paths_sets_4d.end
+        self.start_latlng = spatiotemporal_paths_sets_4d.start_latlng
+        self.end_latlng = spatiotemporal_paths_sets_4d.end_latlng
+        self.routes_dicts_list = self.build_routes_dicts_list(
+                            spatiotemporal_paths_sets_4d)
+    
+    def as_dict(self, routes_dicts_list):
+        routes_set_dict = {
+            "startCity": {
+                "name": self.start,
+                "coordinates": self.start_latlng
+                },
+            "endCity": {
+                "name": self.end,
+                "coordinates": end_lat_lng
+                },
+            "routes": self.routes_dicts_list
+            }
+        return routes_set_dict    
+              
+
+"""
 def spatiotemporal_path_4d_to_route(spatiotemporal_path_4d):
     start = time.time()
     print "computing data for a new route..."
@@ -120,4 +187,4 @@ def spatiotemporal_path_4d_to_route(spatiotemporal_path_4d):
     print "attached data to Route instance in: " + str(t_f - t_e) + " seconds."
     print "entire process took " + str(time.time() - start) + " seconds."
     return route
-
+"""
