@@ -13,36 +13,27 @@ import util
 class SpatiotemporalPath4d(object):
         
     def compute_comfort(self):
-        velocities = np.transpose([self.velocities_x_components,
-                                   self.velocities_y_components,
-                                   self.velocities_z_components])        
-        accelerations = np.transpose([self.accelerations_x_components,
-                                   self.accelerations_y_components,
-                                   self.accelerations_z_components])
-        velocities_chunks = util.break_up(velocities, 500)
-        accelerations_chunks = util.break_up(accelerations, 500)
-        times_chunks = util.break_up(self.time_checkpoints, 500)
-        component = 1
-        self.comfort_profile = [comfort.sperling_comfort_index(
-                                                    velocities_chunks[i],
-                                                 accelerations_chunks[i],
-                                times_chunks[i][-1] - times_chunks[i][0],
-                                                               component)
-                                for i in range(len(times_chunks))]
+        self.comfort_profile = []
+        self.comfort_rating = 0
+
+    def get_tube_elevations(self, tube_coords):
+        self.tube_elevations = [tube_coord[2] for tube_coord in tube_coords]        
 
     def __init__(self, velocity_profile, spatial_path_3d):
-        #self.time_checkpoints = velocity_profile.time_checkpoints
-        #self.time_intervals = velocity_profile.time_intervals
         self.trip_time = velocity_profile.trip_time
-        self.land_cost = spatial_path_3d.land_cost
+        self.speed_profile = velocity_profile.speed_profile
+        self.scalar_acceleration_profile = \
+            velocity_profile.scalar_acceleration_profile
+        self.land_cost = spatial_path_3d.land_cost      
         self.latlngs = spatial_path_3d.latlngs
         self.geospatials = spatial_path_3d.geospatials
         self.pylons = spatial_path_3d.pylons
-        self.total_pylon_cost = spatial_path_3d.total_pylon_cost
-        self.tube_coords = spatial_path_3d.tube_coords
-        self.tube_cost = spatial_path_3d.tube_cost
+        self.pylon_cost = spatial_path_3d.pylon_cost
+        self.tube_cost = spatial_path_3d.tube_cost        
+        self.total_cost = self.land_cost + self.pylon_cost + self.tube_cost
         self.land_elevations = spatial_path_3d.land_elevations
-        self.compute_comfort()
+        self.get_tube_elevations(spatial_path_3d.tube_coords)
+        self.compute_comfort(velocity_profile, tube_coords)
 
 
 class SpatiotemporalPathsSet4d(object):

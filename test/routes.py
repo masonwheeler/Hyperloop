@@ -96,7 +96,8 @@ class Route(object):
     """For storing a single route option
     """
     def __init__(spatiotemporal_path_4d):
-        self.acceleration_profile = spatiotemporal_path_4d.acceleration_profile
+        self.scalar_acceleration_profile = \
+            spatiotemporal_path_4d.acceleration_profile
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.land_cost = spatiotemporal_path_4d.land_cost
@@ -108,7 +109,7 @@ class Route(object):
         self.trip_time = spatiotemporal_path_4d.trip_time
         self.tube_cost = spatiotemporal_path_4d.tube_cost
         self.tube_elevations = spatiotemporal_path_4d.tube_elevations
-        self.velocityProfile = spatiotemporal_path_4d.velocity_profile
+        self.speed_profile = spatiotemporal_path_4d.velocity_profile
 
     def as_dict(self, index):
         route_dict = {

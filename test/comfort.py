@@ -116,15 +116,15 @@ class ComfortProfile(object):
 
         # Apply change of basis to write the acceleration in tangent, normal, binormal
         # (passenger) frame.
-        passenger_accels_vectors = [
+        self.passenger_accels_vectors = [
             np.dot(change_of_basis_matrix[i], accelerations_vectors[i])
             for i in range(len(accelerations_vectors))]
         (self.passenger_tangent_accels,
          self.passenger_normal_accels,
          self.passenger_binormal_accels) = \
-            np.transpose(passenger_accels_vectors)
+            np.transpose(self.passenger_accels_vectors)
         self.passenger_accels_magnitudes = [np.linalg.norm(accel_vector)
-                            for accel_vector in passenger_accels_vectors]
+                            for accel_vector in self.passenger_accels_vectors]
         
 
     def get_vertical_weighting_factor(self, frequency):
@@ -148,8 +148,8 @@ class ComfortProfile(object):
         vertical_weighting_factor = self.get_vertical_weighting_factor(
                                                                 frequency)
         lateral_weighting_factor = self.get_lateral_weighting_factor(frequency)
-        weighting_factors = [0, vertical_weighting_factor,
-                                 lateral_weighting_factor]
+        weighting_factors = np.array([0, vertical_weighting_factor,
+                                          lateral_weighting_factor])
         return weighting_factors
 
     def partition_list(self, a_list, partition_length):
@@ -161,22 +161,29 @@ class ComfortProfile(object):
         return partitions
 
     def partition_passenger_accelerations(self):
-        time_interval_partitions = self.partition_list(self.time_checkpoints,
-                                                       self.PARTITION_LENGTH)
-        self.passenger_tangent_accels_partitions = self.partition_list(
-                        self.passenger_tangent_accels, self.PARTITION_LENGTH)
+        """
+        With the Frenet-Serret frame currently used, the normal vector
+        is the vertical direction for the pod, and the binormal vector
+        is the lateral direction.
+        """
+        self.time_interval_partitions = self.partition_list(
+                    self.time_checkpoints, self.PARTITION_LENGTH)
         self.passenger_normal_accels_partitions = self.partition_list(
                         self.passenger_normal_accels, self.PARTITION_LENGTH)
         self.passenger_binormal_accels_partitions = self.partition_list(
                         self.passenger_binormal_accels, self.PARTITION_LENGTH)
+
+        self.passenger_accels_vectors_partitions = self.partition_list(
+                        self.passenger_accels_vectors, self.PARTITION_LENGTH)
         self.passenger_accels_magnitudes_partitions = self.partition_list(
                         self.passenger_accels_magnitudes, self.PARTITION_LENGTH)
     
     def compute_passenger_acceleration_frequencies(self):
-        self.passenger_tangent_accels_frequencies_partitions = [
-            np.fft.fft(passenger_tangent_accels_partition)
-            for passenger_tangent_accels_partition
-             in self.passenger_tangent_accels_partitions]
+        """
+        With the Frenet-Serret frame currently used, the normal vector
+        is the vertical direction for the pod, and the binormal vector
+        is the lateral direction.
+        """
         self.passenger_normal_accels_frequencies_partitions = [
             np.fft.fft(passenger_normal_accels_partition)
             for passenger_normal_accels_partition
@@ -185,25 +192,80 @@ class ComfortProfile(object):
             np.fft.fft(passenger_binormal_accels_partition)
             for passenger_binormal_accels_partition
              in self.passenger_binormal_accels_partitions]
+
+    def compute_passenger_acceleration_frequencies_v2(self):
         self.passenger_accels_magnitudes_frequencies_partitions = [
             np.fft.fft(passenger_accels_magnitudes_partition)
             for passenger_accels_magnitudes_partition
              in self.passenger_accels_magnitudes_partitions]
 
-    def compute_frequency_weighted_accelerations(self, frequencies_partitions):
-        frequency_widths = [float(len(frequencies_partition)) for
-                            frequencies_partition in frequencies_partitions]
-        frequency_half_widths = [int(math.float(frequency_width / 2.0))
-                                 for frequency_width in frequency_half_widths]
-        self.frequency_weighted_passenger_y_accels = \
-             [self.get_lateral_weighting_factor(frequency_index / time_interval)
-              * frequency_index for frequency_index in
-              range(-frequency_half_width, frequency_half_width + 1)]
-        self.frequency_weighted_passenger_z_accels = \
-             [self.get_lateral_weighting_factor(frequency) * frequency for
-              frequency in self.passenger_x_accel_frequencies]
-        
+    def compute_frequency_weighted_accelerations(self):
+        """
+        With the Frenet-Serret frame currently used, the normal vector
+        is the vertical direction for the pod, and the binormal vector
+        is the lateral direction.
+        """        
+        self.frequency_weighted_passenger_normal_accels_partitions = []
+        self.frequency_weighted_passenger_binormal_accels_partitions = []
+        for i in range(len(self.time_interval_partitions)):
+            time_interval_partition = self.time_interval_partitions[i]
+            time_interval = (time_interval_partition[-1] -
+                             time_interval_partition[0])
 
+            normal_frequencies_partition = \
+                self.passenger_normal_frequencies_partition[i]
+            normal_accels_frequencies_width = float(len(
+                                normal_frequencies_partition))
+            normal_accels_frequencies_half_width = \
+                                    int(math.float(frequency_width / 2.0))
+            normal_accels_frequencies_indices_range = \
+                    range(-normal_accels_frequencies_half_width,
+                           normal_accels_frequencies_half_width + 1)
+            frequency_weighted_acceleration = [
+                (self.get_vertical_weighting_factor(
+                    frequency_index / time_interval) *
+                    normal_frequencies_partition[frequency_index])
+                for frequency_index in normal_accels_frequencies_indices]
+            self.frequency_weighted_passenger_normal_accels_partitions.append(
+                frequency_weighted_acceleration)
+
+            binormal_frequencies_partition = \
+                self.passenger_normal_frequencies_partition[i]
+            binormal_accels_frequencies_width = float(len(
+                                binormal_frequencies_partition))
+            binormal_accels_frequencies_half_width = \
+                                    int(math.float(frequency_width / 2.0))
+            binormal_accels_frequencies_indices_range = \
+                    range(-binormal_accels_frequencies_half_width,
+                           binormal_accels_frequencies_half_width + 1)
+            frequency_weighted_acceleration = [
+                (self.get_vertical_weighting_factor(
+                    frequency_index / time_interval) *
+                    binormal_frequencies_partition[frequency_index])
+                for frequency_index in binormal_accels_frequencies_indices]
+            self.frequency_weighted_passenger_binormal_accels_partitions.append(
+                frequency_weighted_acceleration)
+
+    def compute_frequency_weighted_accelerations_v2(self):
+        self.frequency_weighted_passenger_accels_partitions = []
+        for i in range(len(self.time_interval_partitions)):
+            time_interval_partition = self.time_interval_partitions[i]
+            time_interval = (time_interval_partition[-1] -
+                             time_interval_partition[0])
+
+            passenger_accels_vectors_partition = \
+                self.passenger_accels_vectors_partitions[i]
+
+            accel_magnitude_frequency_partition = \
+                self.passenger_accels_magnitudes_frequencies_partitions[i]
+            frequencies_weights = [self.get_weighting_factors(frequency)
+                    for frequency in accel_magnitude_frequency_partition]
+            self.frequency_weighted_passenger_accels_partitions = \
+                [(np.dot(frequencies_weights[i],
+                         self.passenger_accels_vectors_partition[i]) 
+                for i in range(len(self.passenger_accels_frequencies
+              accels_magnitudes_frequencies_indices]
+        
     def compute_frequency_weighted_rms(self, accel_frequency, time_interval, component):
         """
         See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
@@ -243,7 +305,7 @@ class ComfortProfile(object):
         return riemann_sum**(1. / p)
 
     def comfort_profile_to_comfort_rating(self, comfort_profile):    
-        comfort_rating = compute_Lp_norm(t_comfort, comfort_profile,
+        comfort_rating = self.compute_Lp_norm(t_comfort, self.comfort_profile,
                                                  self.LP_NORM_POWER)
         return comfort_rating
 

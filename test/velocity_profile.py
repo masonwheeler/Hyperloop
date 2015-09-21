@@ -177,5 +177,7 @@ class VelocityProfile(object):
             velocity.velocities_by_arc_length_to_time_checkpoints(
                       self.velocities_by_arc_length, self.arc_lengths)
         self.trip_time = self.time_checkpoints[-1]
+        self.speed_profile = []
+        self.scalar_acceleration_profile = []
                 
         

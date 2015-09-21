@@ -15,7 +15,7 @@ class SpatialPath3d(object):
         self.latlngs = spatial_path_2d.latlngs
         self.geospatials = spatial_path_2d.geospatials
         self.pylons = tube_profile.pylons
-        self.total_pylon_cost = tube_profile.pylon_cost
+        self.pylon_cost = tube_profile.pylon_cost
         self.tube_coords = tube_profile.tube_coords
         self.tube_cost = tube_profile.tube_cost
         self.land_elevations = tube_profile.land_elevations
