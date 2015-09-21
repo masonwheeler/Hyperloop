@@ -33,6 +33,7 @@ import numpy as np
 class ComfortProfile(object):
 
     LP_NORM_POWER = 10
+    PARTITION_LENGTH = 500
 
     def numerical_derivative(self, f, t):
         """Implements a numerical derivative
@@ -53,18 +54,18 @@ class ComfortProfile(object):
 
     def compute_velocities_vectors(self, tube_coords):
         x_component_coords = [tube_coord[0] for tube_coord in tube_coords]
-        velocities_x_components = \
+        self.velocities_x_components = \
             self.compute__component_derivative(x_component_coords)
         y_component_coords = [tube_coord[1] for tube_coord in tube_coords]
-        velocities_y_components = \
+        self.velocities_y_components = \
             self.compute_component_derivative(y_component_coords)
         z_component_coords = [tube_coord[2] for tube_coord in tube_coords]
-        velocities_z_components = \
+        self.velocities_z_components = \
             self.compute__component_derivative(z_component_coords)
         self.velocities_vectors = np.transpose(np.array([
-                                      velocities_x_components,
-                                      velocities_y_components,
-                                      velocities_z_components])
+                                      self.velocities_x_components,
+                                      self.velocities_y_components,
+                                      self.velocities_z_components])
 
     def compute_accelerations_vectors(self):
         accelerations_x_components = \
@@ -115,9 +116,16 @@ class ComfortProfile(object):
 
         # Apply change of basis to write the acceleration in tangent, normal, binormal
         # (passenger) frame.
-        self.accelerations_vectors_in_passenger_frame = [
-                np.dot(change_of_basis_matrix[i], accelerations_vectors[i])
-                for i in range(len(accelerations_vectors))]
+        passenger_accels_vectors = [
+            np.dot(change_of_basis_matrix[i], accelerations_vectors[i])
+            for i in range(len(accelerations_vectors))]
+        (self.passenger_tangent_accels,
+         self.passenger_normal_accels,
+         self.passenger_binormal_accels) = \
+            np.transpose(passenger_accels_vectors)
+        self.passenger_accels_magnitudes = [np.linalg.norm(accel_vector)
+                            for accel_vector in passenger_accels_vectors]
+        
 
     def get_vertical_weighting_factor(self, frequency):
         vertical_weighting_factor = 0.588 * math.sqrt(
@@ -127,8 +135,10 @@ class ComfortProfile(object):
             )
         return vertical_weighting_factor
 
-    def get_horizontal_weighting_factor(self, frequency):
-        horizontal_weighting_factor = 1.25 * vertical_weighting_factor(frequency)
+    def get_lateral_weighting_factor(self, frequency):
+        vertical_weighting_factor = self.get_vertical_weighting_factor(
+                                                                frequency)
+        lateral_weighting_factor = 1.25 * vertical_weighting_factor
         return horizontal_weighting_factor
 
     def get_weighting_factors(self, frequency):
@@ -137,11 +147,62 @@ class ComfortProfile(object):
         """
         vertical_weighting_factor = self.get_vertical_weighting_factor(
                                                                 frequency)
-        horizontal_weighting_factor = self.get_horizontal_weighting_factor(
-                                                                    frequency)
+        lateral_weighting_factor = self.get_lateral_weighting_factor(frequency)
         weighting_factors = [0, vertical_weighting_factor,
-                                horizontal_weighting_factor]
+                                 lateral_weighting_factor]
         return weighting_factors
+
+    def partition_list(self, a_list, partition_length):
+        """Breaks up a list of data points into chunks n-elements long
+        """
+        partition_length = max(1, partition_length)
+        partitions = [a_list[i:i + partition_length] for i
+                      in range(0, len(a_list), partition_length)]
+        return partitions
+
+    def partition_passenger_accelerations(self):
+        time_interval_partitions = self.partition_list(self.time_checkpoints,
+                                                       self.PARTITION_LENGTH)
+        self.passenger_tangent_accels_partitions = self.partition_list(
+                        self.passenger_tangent_accels, self.PARTITION_LENGTH)
+        self.passenger_normal_accels_partitions = self.partition_list(
+                        self.passenger_normal_accels, self.PARTITION_LENGTH)
+        self.passenger_binormal_accels_partitions = self.partition_list(
+                        self.passenger_binormal_accels, self.PARTITION_LENGTH)
+        self.passenger_accels_magnitudes_partitions = self.partition_list(
+                        self.passenger_accels_magnitudes, self.PARTITION_LENGTH)
+    
+    def compute_passenger_acceleration_frequencies(self):
+        self.passenger_tangent_accels_frequencies_partitions = [
+            np.fft.fft(passenger_tangent_accels_partition)
+            for passenger_tangent_accels_partition
+             in self.passenger_tangent_accels_partitions]
+        self.passenger_normal_accels_frequencies_partitions = [
+            np.fft.fft(passenger_normal_accels_partition)
+            for passenger_normal_accels_partition
+             in self.passenger_normal_accels_partitions]
+        self.passenger_binormal_accels_frequencies_partitions = [
+            np.fft.fft(passenger_binormal_accels_partition)
+            for passenger_binormal_accels_partition
+             in self.passenger_binormal_accels_partitions]
+        self.passenger_accels_magnitudes_frequencies_partitions = [
+            np.fft.fft(passenger_accels_magnitudes_partition)
+            for passenger_accels_magnitudes_partition
+             in self.passenger_accels_magnitudes_partitions]
+
+    def compute_frequency_weighted_accelerations(self, frequencies_partitions):
+        frequency_widths = [float(len(frequencies_partition)) for
+                            frequencies_partition in frequencies_partitions]
+        frequency_half_widths = [int(math.float(frequency_width / 2.0))
+                                 for frequency_width in frequency_half_widths]
+        self.frequency_weighted_passenger_y_accels = \
+             [self.get_lateral_weighting_factor(frequency_index / time_interval)
+              * frequency_index for frequency_index in
+              range(-frequency_half_width, frequency_half_width + 1)]
+        self.frequency_weighted_passenger_z_accels = \
+             [self.get_lateral_weighting_factor(frequency) * frequency for
+              frequency in self.passenger_x_accel_frequencies]
+        
 
     def compute_frequency_weighted_rms(self, accel_frequency, time_interval, component):
         """
@@ -151,23 +212,23 @@ class ComfortProfile(object):
         time_interval = float(time_interval)
         frequency_half_width = int(math.floor(frequency_width / 2.0))
         accel_frequency_weighted = [
-            (weighting_factors(frequency_index / time_interval)[component]
+            (weighting_factors(frequency_index / time_interval)
              * accel_frequency[frequency_index]) for frequency_index
             in range(-frequency_half_width, frequency_half_width + 1)]
         frequency_weighted_r_m_s = np.sqrt(sum(
             [np.absolute(accel_val)**2 for accel_val in accel_frequency_weighted]))
         return frequency_weighted_r_m_s
 
-    def sperling_comfort_index(vel, accel, time_interval, component):
+    def compute_sperling_comfort_index(passenger_accels_vectors,
+                                                    time_interval):
         """
         2. Take Fast Fourier Transform of psnger accel:
               {ap_i}  -->  {ap_f}
         3. Apply weighting filter and sum results
               {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)|^2
         """
-        num_time_points = len(vel)
-        accel_passenger_components = accel_passenger(vel, accel, component)
-        accel_passenger_frequency = (np.fft.fft(accel_passenger_components) /
+        num_time_points = len(passenger_accels_component)
+        accel_passenger_frequency = (np.fft.fft(passenger_accels_component) /
                                      num_time_points)
         accel_frequency_weighted_r_m_s = frequency_weighted_rms(
             accel_passenger_frequency, time_interval, component)
@@ -185,14 +246,6 @@ class ComfortProfile(object):
         comfort_rating = compute_Lp_norm(t_comfort, comfort_profile,
                                                  self.LP_NORM_POWER)
         return comfort_rating
-
-    def partition_list(a_list, partition_length):
-        """Breaks up a list of data points into chunks n-elements long
-        """
-        partition_length = max(1, partition_length)
-        partitions = [a_list[i:i + partition_length] for i
-                      in range(0, len(a_list), partition_length)]
-        return partitions
 
     def __init__(self, velocity_profile, tube_coords):
         self.time_check_points = velocity_profile.time_check_points
