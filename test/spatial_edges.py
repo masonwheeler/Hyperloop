@@ -39,9 +39,14 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     def get_latlngs(self, geospatials_to_latlngs):
         self.latlngs = geospatials_to_latlngs(self.geospatials)
 
+    def compute_length(self):
+        spatial_vector = util.edge_to_vector(self.geospatials)
+        self.length = util.norm(spatial_vector)
+
     def get_coordinates(self, geospatials_to_latlngs):
         self.geospatials_to_latlngs = geospatials_to_latlngs
         self.get_geospatials()
+        self.compute_length()
         self.get_latlngs(geospatials_to_latlngs)
 
     def compute_land_cost(self):
@@ -144,7 +149,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                          + " seconds.")
         if self.TUBE_READY:
             self.build_tubes()
-    
+   
     def __init__(self, spatial_lattice, spatial_interpolator,
                                                 tube_builder):
         self.spatial_interpolator = spatial_interpolator

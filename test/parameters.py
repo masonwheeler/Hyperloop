@@ -22,7 +22,7 @@ MAX_SPEED = 330.0 #Meters/Second
 #Comfort Parameters#
 ####################
 
-MAX_LINEAR_ACCEL = 0.5 * 9.81 #Meters/Second^2
+MAX_LONGITUDINAL_ACCEL = 0.5 * 9.81 #Meters/Second^2
 MAX_LATERAL_ACCEL = 0.5 * 9.81 #Meters/Second^2
 MAX_VERTICAL_ACCEL = 0.3 * 9.81 #Meters/Second^2
 

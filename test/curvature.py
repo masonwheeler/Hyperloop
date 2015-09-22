@@ -192,20 +192,16 @@ def curvature_array_to_bounded_max_allowed_vels(curvature_array,
     return bounded_max_allowed_vels
 
 def vertical_curvature_array_to_max_allowed_vels(vertical_curvature_array):
-    max_allowed_vels = curvature_array_to_max_allowed_vels(
-        vertical_curvature_array, config.VERTICAL_ACCEL_CONSTRAINT)
+    max_allowed_vels = curvature_array_to_bounded_max_allowed_vels(
+            vertical_curvature_array, parameters.MAX_VERTICAL_ACCEL,
+                                      parameters.MAX_SPEED)
     return max_allowed_vels
-
 
 def lateral_curvature_array_to_max_allowed_vels(lateral_curvature_array):
-    max_allowed_vels = curvature_array_to_max_allowed_vels(
-        lateral_curvature_array, config.LATERAL_ACCEL_CONSTRAINT)
+    max_allowed_vels = curvature_array_to_bounded_max_allowed_vels(
+        lateral_curvature_array, parameters.MAX_LATERAL_ACCEL,
+                                 parameters.MAX_SPEED)
     return max_allowed_vels
-
-def curvature_array_3d_to_max_allowed_vels(curvature_array3d):
-    max_allowedvels = curvature_array_to_max_allowed_vels(
-        curvature_array3d, config.TOTAL_ACCEL_CONSTRAINT)
-    return max_allowedvels
 
 def effective_max_allowed_vels(x_spline, y_spline, z_spline, s_values):
     vertical_curvature_array, lateral_curvature_array = \

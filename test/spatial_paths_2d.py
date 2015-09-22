@@ -18,7 +18,6 @@ Last Modification Purpose:
 import abstract_paths
 import cacher
 import config
-
 import elevation
 import interpolate
 import parameters

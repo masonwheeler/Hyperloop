@@ -10,8 +10,6 @@ Last Modification Purpose: Added docstrings
 import math
 import itertools
 import operator
-from collections import OrderedDict
-import numpy as np
 
 # Our Modules
 import config
@@ -35,8 +33,6 @@ def round_nums(nums):
 def round_points(points):
     """
     Rounds the values in each point in a list of points
-
-    Used in directions.build_directions()
     """
     return [round_nums(point) for point in points]
 
@@ -52,32 +48,14 @@ def to_pairs(points):
 def swap_pair(pair):
     """
     Swaps a pair of points
-
-    Used in proj.py
     """
     return [pair[1], pair[0]]
 
 def swap_pairs(pairs):
     """
     Swaps pairs of points
-
-    Used in proj.py
     """
     return [[pair[1], pair[0]] for pair in pairs]
-
-# List Operations:
-
-"""
-def get_list_mean(in_list):
-    "Used in gen_velocity.py"
-    list_mean = sum(in_list) / float(len(in_list))
-    return list_mean
-"""
-
-def remove_duplicates(in_list):
-    """Used in directions.py"""
-    return list(OrderedDict.fromkeys(list(itertools.chain(*in_list))))
-
 
 # List of Lists Operations:
 
@@ -94,7 +72,7 @@ def list_of_lists_len(list_of_lists):
 # List Pair Operations:
 
 def smart_concat(list_a, list_b):
-    """Used in graphs.py"""
+    """Connects two lists without duplicating shared boundary point"""
     new_list = list_a + list_b[1:]
     return new_list
 
@@ -216,5 +194,3 @@ def sorted_insert(value, ordered_values):
         if value <= ordered_values[i]:
             ordered_values.insert(i, value)
             return i
-
-
