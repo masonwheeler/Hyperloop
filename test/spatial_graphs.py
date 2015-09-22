@@ -121,6 +121,7 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
    
     NAME = "spatial_graphs"
     FLAG = cacher.SPATIAL_GRAPHS_FLAG
+    IS_SKIPPED + cacher.SKIP_GRAPHS
  
     @staticmethod
     def merge_two_spatial_graphs(spatial_graph_a, spatial_graph_b):
@@ -181,5 +182,6 @@ def get_spatial_graphs_sets(*args):
     spatial_graphs_sets = cacher.get_object(SpatialGraphsSets.NAME,
                                             SpatialGraphsSets,
                                             args,
-                                            SpatialGraphsSets.FLAG)
+                                            SpatialGraphsSets.FLAG,
+                                            SpatialGraphsSets.IS_SKIPPED)
     return spatial_graphs_sets

@@ -97,7 +97,8 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     TUBE_READY = True
 
     NAME = "spatial_edges"
-    FLAG = cacher.SPATIAL_EDGES_FLAG    
+    FLAG = cacher.SPATIAL_EDGES_FLAG
+    IS_SKIPPED = cacher.SKIP_EDGES
 
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
@@ -175,5 +176,6 @@ def get_spatial_edges_sets(*args):
     spatial_edges_sets = cacher.get_object(SpatialEdgesSets.NAME,
                                            SpatialEdgesSets,
                                            args,
-                                           SpatialEdgesSets.FLAG)
+                                           SpatialEdgesSets.FLAG,
+                                           SpatialEdgesSets.IS_SKIPPED)
     return spatial_edges_sets

@@ -58,6 +58,7 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
 
     NAME = "spatial_paths_2d"
     FLAG = cacher.SPATIAL_PATHS_2D_FLAG
+    IS_SKIPPED = cacher.SKIP_PATHS_2D
    
     UNDERSAMPLING_FACTOR = 4
 
@@ -114,5 +115,6 @@ def get_spatial_paths_set_2d(*args):
     spatial_paths_set_2d = cacher.get_object(SpatialPathsSet2d.NAME,
                                              SpatialPathsSet2d,
                                              args,
-                                             SpatialPathsSet2d.FLAG)
+                                             SpatialPathsSet2d.FLAG,
+                                             SpatialPathsSet2d.IS_SKIPPED)
     return spatial_paths_set_2d

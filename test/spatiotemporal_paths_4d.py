@@ -58,6 +58,7 @@ class SpatiotemporalPathsSets4d(object):
     
     NAME = "spatiotemporal_paths_4d"
     FLAG = cacher.SPATIOTEMPORAL_PATHS_4D_FLAG
+    IS_SKIPPED = cacher.SKIP_PATHS_4D    
     
     def build_paths_sets(self, spatial_paths_3d):
         self.paths_sets = [SpatiotemporalPathsSet4d(spatial_path_3d,
@@ -85,5 +86,6 @@ def get_spatiotemporal_paths_sets_4d(*args):
                                         SpatiotemporalPathsSets4d.NAME,
                                         SpatiotemporalPathsSets4d,
                                         args,
-                                        SpatiotemporalPathsSets4d.FLAG)
+                                        SpatiotemporalPathsSets4d.FLAG,
+                                        SpatiotemporalPathsSets4d.IS_SKIPPED)
     return spatiotemporal_paths_sets_4d

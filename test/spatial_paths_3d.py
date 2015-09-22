@@ -43,6 +43,7 @@ class SpatialPathsSets3d(object):
 
     NAME = "spatial_paths_3d"
     FLAG = cacher.SPATIAL_PATHS_3D_FLAG
+    IS_SKIPPED = cacher.SKIP_PATHS_3D
 
     def build_paths_sets(self, spatial_paths_2d, tube_builder):
         ##print("Num paths: " + str(len(spatial_paths_2d)))
@@ -69,6 +70,7 @@ def get_spatial_paths_sets_3d(*args):
     spatial_paths_set_3d = cacher.get_object(SpatialPathsSets3d.NAME,
                                              SpatialPathsSets3d,
                                              args,
-                                             SpatialPathsSets3d.FLAG)
+                                             SpatialPathsSets3d.FLAG,
+                                             SpatialPathsSets3d.IS_SKIPPED)
     return spatial_paths_set_3d
  

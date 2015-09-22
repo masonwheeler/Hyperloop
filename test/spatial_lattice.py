@@ -69,6 +69,7 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
     
     NAME = "spatial_lattice"
     FLAG = cacher.SPATIAL_LATTICE_FLAG
+    IS_SKIPPED = cacher.SKIP_LATTICE
 
     def get_spatial_splines(self, sampled_directions_geospatials):
         geospatials_x_values = [geospatial[0] for geospatial
@@ -208,5 +209,6 @@ def get_spatial_lattice(*args):
     lattice = cacher.get_object(SpatialLattice.NAME,
                                 SpatialLattice,
                                 args,
-                                SpatialLattice.FLAG)
+                                SpatialLattice.FLAG,
+                                SpatialLattice.IS_SKIPPED)
     return lattice

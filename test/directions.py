@@ -36,6 +36,7 @@ class Directions(object):
 
     NAME = "directions"
     FLAG = cacher.DIRECTIONS_FLAG
+    IS_SKIPPED = cacher.SKIP_DIRECTIONS
 
     def http_to_string(self, http_data):
         """Reads HTTP bytecode response and converts it to a string"""
@@ -146,5 +147,6 @@ def get_directions(*args):
     directions = cacher.get_object(Directions.NAME,
                                    Directions,
                                    args,
-                                   Directions.FLAG)
+                                   Directions.FLAG
+                                   Directions.IS_SKIPPED)
     return directions
