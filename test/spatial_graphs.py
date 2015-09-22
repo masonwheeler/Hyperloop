@@ -80,7 +80,7 @@ class SpatialGraph(abstract.AbstractGraph):
 
 
 class SpatialGraphsSet(abstract.AbstractGraphsSet):
-    NUM_FRONTS_TO_SELECT = 3
+    NUM_FRONTS_TO_SELECT = 5
     SPATIAL_GRAPH_FILTER_MIN_NUM_EDGES = 3
 
     def get_spatial_graphs_cost_time(self, spatial_graphs,

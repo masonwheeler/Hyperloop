@@ -8,6 +8,7 @@ import numpy as np
 # Custom Modules:
 import cacher
 ##import comfort
+import paretofront
 import util
 
 class SpatiotemporalPath4d(object):
@@ -35,6 +36,9 @@ class SpatiotemporalPath4d(object):
         tube_coords = spatial_path_3d.tube_coords
         self.get_tube_elevations(tube_coords)
         self.compute_comfort(velocity_profile, tube_coords)
+    
+    def get_time_and_cost(self):
+        return [self.total_cost, self.trip_time]
 
 
 class SpatiotemporalPathsSet4d(object):
@@ -58,7 +62,7 @@ class SpatiotemporalPathsSets4d(object):
     
     NAME = "spatiotemporal_paths_4d"
     FLAG = cacher.SPATIOTEMPORAL_PATHS_4D_FLAG
-    IS_SKIPPED = cacher.SKIP_PATHS_4D    
+    IS_SKIPPED = cacher.SKIP_PATHS_4D
     
     def build_paths_sets(self, spatial_paths_3d):
         self.paths_sets = [SpatiotemporalPathsSet4d(spatial_path_3d,
@@ -68,7 +72,15 @@ class SpatiotemporalPathsSets4d(object):
     def select_paths(self):
         paths_lists = [paths_set.paths for paths_set in self.paths_sets]
         paths = util.fast_concat(paths_lists)
-        self.selected_paths = paths
+        print "num paths: " + str(len(paths))
+        paths_times_and_costs = [path.get_time_and_cost() for path in paths]
+        minimize_time = True
+        minimize_cost = True
+        front = paretofront.ParetoFront(paths_times_and_costs, minimize_time,
+                                                               minimize_cost)
+        selected_paths_indices = front.fronts_indices[-1]
+        self.selected_paths = [paths[i] for i in selected_paths_indices]
+        print "num paths selected: " + str(len(self.selected_paths))
 
     def __init__(self, spatial_paths_sets_3d, velocity_builder):
         self.velocity_builder = velocity_builder
