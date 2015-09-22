@@ -27,8 +27,8 @@ USE_CACHED_SPATIAL_LATTICE = True
 USE_CACHED_SPATIAL_EDGES = True
 USE_CACHED_SPATIAL_GRAPHS = True
 USE_CACHED_SPATIAL_PATHS_2D = True
-USE_CACHED_SPATIAL_PATHS_3D = False
-USE_CACHED_SPATIOTEMPORAL_PATHS_4D = False
+USE_CACHED_SPATIAL_PATHS_3D = True
+USE_CACHED_SPATIOTEMPORAL_PATHS_4D = True
 
 
 def create_basefolders():
@@ -144,25 +144,30 @@ def is_object_saved(object_name):
     return object_saved
 
 
-def get_object(object_name, compute_function, compute_args, flag):
+def get_object(object_name, compute_function, compute_args, flag, is_skipped):
     """Either computes the object or loads a cached version"""
-    if is_object_cached(object_name) and flag:
-        print object_name + " exists."
-        start = time.time()
-        loaded_object = load_object(object_name)
-        end = time.time()
-        print "Loaded " + object_name + " in " + str(end - start) + "seconds."
-        return loaded_object
+    if is_skipped:
+        return None
     else:
-        print "Computing " + object_name + "..."
-        computed_object = compute_function(*compute_args)
-        print object_name + " computed."
-        if config.CACHE_MODE:
+        if is_object_cached(object_name) and flag:
+            print object_name + " exists."
             start = time.time()
-            cache_object(computed_object, object_name)
+            loaded_object = load_object(object_name)
             end = time.time()
-            print "Cached " + object_name + " in " + str(end - start) + " secs."
-        return computed_object
+            print "Loaded " + object_name + " in " + str(end - start) + " seconds."
+            return loaded_object
+        else:
+            print "Computing " + object_name + "..."
+            start = time.time()
+            computed_object = compute_function(*compute_args)
+            end = time.time()
+            print object_name + " computed in " + str(end - start) + " seconds."
+            if config.CACHE_MODE:
+                start = time.time()
+                cache_object(computed_object, object_name)
+                end = time.time()
+                print "Cached " + object_name + " in " + str(end - start) + " secs."
+            return computed_object
 
 ###################
 #Overwriting Bools#
@@ -188,6 +193,17 @@ SPATIAL_GRAPHS_FLAG = all(SPATIAL_GRAPHS_BOOLS)
 SPATIAL_PATHS_2D_FLAG = all(SPATIAL_PATHS_2D_BOOLS)
 SPATIAL_PATHS_3D_FLAG = all(SPATIAL_PATHS_3D_BOOLS)
 SPATIOTEMPORAL_PATHS_4D_FLAG = all(SPATIOTEMPORAL_PATHS_4D_BOOLS)
+
+####################
+#Skip Loading Flags#
+####################
+
+SKIP_DIRECTIONS = DIRECTIONS_FLAG and SPATIAL_LATTICE_FLAG
+SKIP_LATTICE = SKIP_DIRECTIONS and SPATIAL_EDGES_FLAG
+SKIP_EDGES = SKIP_LATTICE and SPATIAL_GRAPHS_FLAG
+SKIP_GRAPHS = SKIP_EDGES and SPATIAL_PATHS_2D_FLAG
+SKIP_PATHS_2D = SKIP_GRAPHS and SPATIAL_PATHS_3D_FLAG
+SKIP_PATHS_3D = SKIP_PATHS_2D and SPATIOTEMPORAL_PATHS_4D_FLAG
 
 ###############################
 #Uninitialized Directory Paths#

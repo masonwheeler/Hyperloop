@@ -152,8 +152,7 @@ class TubeProfile(object):
                                           self.land_elevations)
         pylon_costs = [pylon_cost.compute_pylon_cost_v1(pylon_height)
                        for pylon_height in self.pylon_heights]
-        self.pylons = [{"geospatial" : self.geospatials[i],
-                        "latlng" : self.latlngs[i],
+        self.pylons = [{"latlng" : self.latlngs[i],
                         "landElevation" : self.land_elevations[i],
                         "pylonHeight" : self.pylon_heights[i],
                         "pylonCost" : pylon_costs[i]}

@@ -12,7 +12,7 @@ class Route(object):
     """
     def __init__(self, spatiotemporal_path_4d):
         self.scalar_acceleration_profile = \
-            spatiotemporal_path_4d.scalar_acceleration_profile
+            spatiotemporal_path_4d.scalar_acceleration_profile      
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.land_cost = spatiotemporal_path_4d.land_cost
@@ -64,7 +64,7 @@ class RoutesSet(object):
         self.routes_dicts_list = self.build_routes_dicts_list(
                             spatiotemporal_paths_sets_4d)
     
-    def as_dict(self, routes_dicts_list):
+    def as_dict(self):
         routes_set_dict = {
             "startCity": {
                 "name": self.start,
@@ -72,7 +72,7 @@ class RoutesSet(object):
                 },
             "endCity": {
                 "name": self.end,
-                "coordinates": end_lat_lng
+                "coordinates": self.end_latlng
                 },
             "routes": self.routes_dicts_list
             }
