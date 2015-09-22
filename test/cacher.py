@@ -146,7 +146,7 @@ def is_object_saved(object_name):
 
 def get_object(object_name, compute_function, compute_args, flag, is_skipped):
     """Either computes the object or loads a cached version"""
-    if is_skipped:
+    if is_skipped and config.SKIPPING_MODE:
         return None
     else:
         if is_object_cached(object_name) and flag:
