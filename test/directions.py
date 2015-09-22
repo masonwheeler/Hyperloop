@@ -147,6 +147,6 @@ def get_directions(*args):
     directions = cacher.get_object(Directions.NAME,
                                    Directions,
                                    args,
-                                   Directions.FLAG
+                                   Directions.FLAG,
                                    Directions.IS_SKIPPED)
     return directions

@@ -43,7 +43,6 @@ def build_directions(start, end):
     """Build Directions Object
     """
     route_directions = directions.get_directions(start, end)
-    proj.PROJ = route_directions.projection
     return route_directions
 
 def build_spatial_lattice(route_directions):
@@ -51,13 +50,13 @@ def build_spatial_lattice(route_directions):
     """
     route_spatial_lattice = spatial_lattice.get_spatial_lattice(
                                              route_directions, 6, 4)
-    util.smart_print("With a base resolution of: " +
-                str(route_spatial_lattice.SPATIAL_BASE_RESOLUTION)+ " meters.")
-    util.smart_print("The spatial lattice spacing parallel to the route is: " +
-                     str(route_spatial_lattice.spatial_x_spacing) + " meters.")
-    util.smart_print("And perpendicular to the route is: " +
-                     str(route_spatial_lattice.spatial_y_spacing) + " meters.")
     if config.VISUAL_MODE:
+        util.smart_print("With a base resolution of: " +
+            str(route_spatial_lattice.SPATIAL_BASE_RESOLUTION)+ " meters.")
+        util.smart_print("The spatial lattice spacing parallel to the route is: " +
+            str(route_spatial_lattice.spatial_x_spacing) + " meters.")
+        util.smart_print("And perpendicular to the route is: " +
+            str(route_spatial_lattice.spatial_y_spacing) + " meters.")
         if VISUALIZE_SPLINE:
             plottable_spline = route_spatial_lattice.get_plottable_spline('r-')
             visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_spline)
@@ -78,8 +77,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
                                 spatial_interpolate.scipy_smoothing,
                                            tube_profile.TubeProfile)
                                             
-    if not route_spatial_edges_sets.TUBE_READY:
-        route_spatial_edges_sets.build_tubes()
+    #if not route_spatial_edges_sets.TUBE_READY:
+    #    route_spatial_edges_sets.build_tubes()
     if config.VISUAL_MODE:
         if VISUALIZE_EDGES:
             plottable_edges = route_spatial_edges_sets.get_plottable_edges('k-')
