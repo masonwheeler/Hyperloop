@@ -95,9 +95,9 @@ class RouteV2:
 class Route(object):    
     """For storing a single route option
     """
-    def __init__(spatiotemporal_path_4d):
+    def __init__(self, spatiotemporal_path_4d):
         self.scalar_acceleration_profile = \
-            spatiotemporal_path_4d.acceleration_profile
+            spatiotemporal_path_4d.scalar_acceleration_profile
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.land_cost = spatiotemporal_path_4d.land_cost
@@ -109,11 +109,11 @@ class Route(object):
         self.trip_time = spatiotemporal_path_4d.trip_time
         self.tube_cost = spatiotemporal_path_4d.tube_cost
         self.tube_elevations = spatiotemporal_path_4d.tube_elevations
-        self.speed_profile = spatiotemporal_path_4d.velocity_profile
+        self.speed_profile = spatiotemporal_path_4d.speed_profile
 
     def as_dict(self, index):
         route_dict = {
-            "accelerationProfile": self.acceleration_profile,
+            "accelerationProfile": self.scalar_acceleration_profile,
             "comfortProfile": self.comfort_profile,
             "comfortRating": self.comfort_rating,
             "index": index,
@@ -121,12 +121,12 @@ class Route(object):
             "landElevations": self.land_elevations,
             "latlngs": self.latlngs,
             "pylons": self.pylons,
-            "pylonCost:" self.pylon_cost,
-            "totalCost:" self.total_cost,
-            "tripTime:" self.trip_time,
-            "tubeCost:" self.tube_cost,
-            "tubeElevations:" self.tube_elevations,
-            "velocityProfile:" self.velocity_profile
+            "pylonCost": self.pylon_cost,
+            "totalCost": self.total_cost,
+            "tripTime": self.trip_time,
+            "tubeCost": self.tube_cost,
+            "tubeElevations": self.tube_elevations,
+            "speedProfile": self.speed_profile
             }
         return route_dict
 
@@ -138,7 +138,7 @@ class RoutesSet(object):
                   in spatiotemporal_paths_sets_4d.selected_paths]
         routes_dicts_list = []
         for index in range(len(routes)):
-            routes_dicts_list.append(routes[i].as_dict, index + 1) 
+            routes_dicts_list.append(routes[index].as_dict(index + 1))
         return routes_dicts_list
 
     def __init__(self, spatiotemporal_paths_sets_4d):

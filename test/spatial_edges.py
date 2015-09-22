@@ -27,7 +27,6 @@ import curvature
 import elevation
 import landcover
 import parameters
-import tube
 import util
 
 

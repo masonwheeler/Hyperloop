@@ -7,12 +7,12 @@ import numpy as np
 
 # Custom Modules:
 import cacher
-import comfort
+##import comfort
 import util
 
 class SpatiotemporalPath4d(object):
         
-    def compute_comfort(self):
+    def compute_comfort(self, velocity_profile, tube_coords):
         self.comfort_profile = []
         self.comfort_rating = 0
 
@@ -32,7 +32,8 @@ class SpatiotemporalPath4d(object):
         self.tube_cost = spatial_path_3d.tube_cost        
         self.total_cost = self.land_cost + self.pylon_cost + self.tube_cost
         self.land_elevations = spatial_path_3d.land_elevations
-        self.get_tube_elevations(spatial_path_3d.tube_coords)
+        tube_coords = spatial_path_3d.tube_coords
+        self.get_tube_elevations(tube_coords)
         self.compute_comfort(velocity_profile, tube_coords)
 
 
