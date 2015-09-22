@@ -32,7 +32,7 @@ class ElevationProfile(object):
             self.land_elevations = land_elevations
 
     @classmethod
-    def merge_two_elevation_profiles(elevation_profile_a, elevation_profile_b):
+    def merge_elevation_profiles(cls, elevation_profile_a, elevation_profile_b):
         merged_geospatials = util.smart_concat(elevation_profile_a.geospatials,
                                                elevation_profile_b.geospatials)
         merged_latlngs = util.smart_concat(elevation_profile_a.latlngs,

@@ -3,8 +3,10 @@ Original Developer:
     Jonathan Ward
 """
 
+# Custom Modules:
 import cacher
 import config
+import paretofront
 import util
 
 
@@ -20,6 +22,13 @@ class SpatialPath3d(object):
         self.tube_cost = tube_profile.tube_cost
         self.land_elevations = tube_profile.land_elevations
         self.arc_lengths = tube_profile.arc_lengths
+        self.min_time = tube_profile.min_time
+        print "min time"
+        print self.min_time / 60.0
+
+    def get_time_and_cost(self):
+        total_cost = self.land_cost + self.pylon_cost + self.tube_cost
+        return [self.min_time, total_cost]
 
 class SpatialPathsSet3d(object):
   
@@ -53,7 +62,21 @@ class SpatialPathsSets3d(object):
     def select_paths(self):
         paths_lists = [paths_set.paths for paths_set in self.paths_sets]
         paths = util.fast_concat(paths_lists)
-        self.selected_paths = paths
+        print "num paths: " + str(len(paths))
+        paths_times_and_costs = [path.get_time_and_cost() for path in paths]
+        minimize_time = True
+        minimize_cost = True
+        front = paretofront.ParetoFront(paths_times_and_costs, minimize_time,
+                                                               minimize_cost)
+        print "all times and costs"
+        print paths_times_and_costs
+        selected_paths_indices = front.fronts_indices[-1]
+        self.selected_paths = [paths[i] for i in selected_paths_indices]
+        selected_times_and_costs = [path.get_time_and_cost() for path
+                                    in self.selected_paths]
+        print "selected times and costs"
+        print selected_times_and_costs
+        print "num paths selected: " + str(len(self.selected_paths))
 
     def __init__(self, spatial_paths_set_2d):
         self.start = spatial_paths_set_2d.start

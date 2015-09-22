@@ -43,8 +43,6 @@ def round_points(points):
 def to_pairs(points):
     """
     Converts a list of points to a list of pairs of points
-
-    Used in core.build_lattice()
     """
     pairs = [points[i:i + 2] for i in range(len(points) - 1)]
     return pairs
@@ -69,11 +67,12 @@ def swap_pairs(pairs):
 
 # List Operations:
 
-
+"""
 def get_list_mean(in_list):
-    """Used in gen_velocity.py"""
+    "Used in gen_velocity.py"
     list_mean = sum(in_list) / float(len(in_list))
     return list_mean
+"""
 
 def remove_duplicates(in_list):
     """Used in directions.py"""
@@ -180,7 +179,6 @@ def sample_length(length, spacing):
     values = [index * spacing for index in range(num_points + 1)]
     return values
 
-
 def build_grid_1d(start_value, end_value, spacing):
     """Build a 1d grid of points in a given interval
     """
@@ -200,33 +198,6 @@ def edge_to_vector(edge):
     edge_start, edge_end = edge
     edge_vector = subtract(edge_end, edge_start)
     return edge_vector
-
-# Path Operations:
-
-
-def compute_arc_length_steps(points):
-    """Computes the arclength separations between each point in a path of points
-    """
-    pairs = to_pairs(points)
-    vectors = [edge_to_vector(pair) for pair in pairs]
-    arc_length_steps = [np.linalg.norm(vector) for vector in vectors]
-    return arc_length_steps
-
-def compute_total_arc_length(points):
-    """Compute the total arclength of the path defined by the points
-    """
-    arc_length_steps = compute_arc_length_steps(points)
-    total_arc_length = np.sum(arc_length_steps)
-    return total_arc_length
-
-def compute_arc_lengths(points):
-    """Compute the arclength along the path of each point in the path
-    """
-    arc_length_steps = compute_arc_length_steps(points)
-    arc_length_steps_array = np.array(arc_length_steps)
-    arc_lengths = np.cumsum(arc_length_steps_array)
-    padded_arc_lengths = np.insert(arc_lengths, 0, 0)
-    return padded_arc_lengths
 
 # String Operations:
 

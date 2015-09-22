@@ -13,9 +13,6 @@ import pyproj
 import util
 import config
 
-
-PROJ = 0
-
 def get_omerc_proj(start_lon_lat, end_lon_lat):
     """Provides the Oblique Mercator Projection"""
     start_lon, start_lat = start_lon_lat
@@ -32,7 +29,6 @@ def get_omerc_proj(start_lon_lat, end_lon_lat):
     omerc_proj = pyproj.Proj(parameter_string)
     return omerc_proj
 
-
 def get_albers_proj():
     """Provides the Albers Conical Projection"""
     albers_proj = pyproj.Proj("+proj=aea \
@@ -47,28 +43,23 @@ def get_albers_proj():
                               +no_defs")
     return albers_proj
 
-
 def get_usgs_proj():
     """Provides the standard USGS projection"""
     usgs_proj = pyproj.Proj(init='epsg:3857')
     return usgs_proj
 
-
 def latlng_to_geospatial(latlng, proj):
     """Converts latitude longitude coordinates to geospatial coordinates"""
     return proj(latlng[1], latlng[0])
-
 
 def geospatial_to_latlng(geospatial, proj):
     """Converts geospatial coordinates to latitude longitude coordinates"""
     lonlat = proj(geospatial[0], geospatial[1], inverse=True)
     return util.swap_pair(lonlat)
 
-
 def latlngs_to_geospatials(latlngs, proj):
     """Converts list of lat-lng coords to list of geospatial coords"""
     return [latlng_to_geospatial(latlng, proj) for latlng in latlngs]
-
 
 def geospatials_to_latlngs(geospatials, proj):
     """Converts list of geospatial coords to list of lat-lng coords"""

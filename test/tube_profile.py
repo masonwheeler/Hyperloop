@@ -135,7 +135,7 @@ class TubeProfile(object):
         tube_elevations = tube_elevation_spline(self.arc_lengths)
         return [tube_elevations, tube_elevation_spline]
 
-    def compute_time_v1(self):
+    def compute_min_time_v1(self):
         self.tube_curvature = curvature.compute_curvature_pchip(
                    self.tube_elevation_spline, self.arc_lengths)
         self.max_allowed_vels = \
@@ -145,7 +145,7 @@ class TubeProfile(object):
         time_checkpoints = \
             velocity.velocities_by_arc_length_to_time_checkpoints(
                           self.max_allowed_vels, self.arc_lengths)
-        self.time = time_checkpoints[-1]
+        self.min_time = time_checkpoints[-1]
         
     def build_pylons(self):
         self.pylon_heights = util.subtract(self.tube_elevations,
@@ -181,7 +181,7 @@ class TubeProfile(object):
         self.land_elevations = elevation_profile.land_elevations
         self.tube_elevations, self.tube_elevation_spline = \
             self.build_tube_elevations_v1()
-        self.compute_time_v1()
+        self.compute_min_time_v1()
         self.get_tube_coords()
         self.compute_tube_cost()
         self.build_pylons()
