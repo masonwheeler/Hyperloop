@@ -63,6 +63,8 @@ def velocities_by_arc_length_to_time_checkpoints(velocities_by_arc_length,
     velocities_b = velocities_by_arc_length[1:]
     velocities_sums = velocities_a + velocities_b
     mean_velocities = np.divide(velocities_sums, 2)
+    ##print "arc lengths size: " + str(arc_length_intervals.size)
+    ##print "mean velocities size: " + str(mean_velocities.size)
     interval_times = np.divide(arc_length_intervals,
                                     mean_velocities)
     interval_end_time_checkpoints = np.cumsum(interval_times)

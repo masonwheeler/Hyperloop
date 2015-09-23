@@ -75,9 +75,9 @@ def smart_concat(list_a, list_b):
     new_list = list_a + list_b[1:]
     return new_list
 
-def smart_concat_array(array_a, array_b):
+def concat_array(array_a, array_b):
     """Connects two lists without duplicating shared boundary point"""
-    new_array = np.concatenate((array_a, array_b[1:]))
+    new_array = np.concatenate((array_a, array_b))
     return new_array
 
 # Vector Operations:

@@ -6,8 +6,10 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: Changed Class attributes to Instance attributes.
 """
 
-# Custom Modules: 
+# Standard Modules:
+import numpy as np
 
+# Custom Modules: 
 import abstract_graphs
 import cacher
 import curvature
@@ -24,6 +26,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
     def compute_min_time_and_total_cost(self, spatial_curvature_array,
                                               tube_curvature_array,
                                               arc_lengths):
+        print "spatial curvature size: " + str(spatial_curvature_array.size)
+        print "arc lengths size: " + str(len(arc_lengths))
         max_allowed_vels = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
                                               spatial_curvature_array)
@@ -89,16 +93,22 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             spatial_graph_a.geospatials_partitions[-1]
         boundary_edge_geospatials_b = \
             spatial_graph_b.geospatials_partitions[0]
+        print "b num geospatials: "+ str(len(boundary_edge_geospatials_b))
         sampled_boundary_edge_geospatials_a, boundary_arc_lengths_a = \
             interpolate.sample_path(boundary_edge_geospatials_a, resolution)
         sampled_boundary_edge_geospatials_b, boundary_arc_lengths_b = \
             interpolate.sample_path(boundary_edge_geospatials_b, resolution)
+        print "b sampled geospatials: "+ str(len(sampled_boundary_edge_geospatials_b))
         boundary_a_length = len(boundary_arc_lengths_a)
+        boundary_b_length = len(boundary_arc_lengths_b)
+        print boundary_a_length
+        print boundary_b_length
         sampled_boundary_geospatials = util.smart_concat(
                                         sampled_boundary_edge_geospatials_a,
                                         sampled_boundary_edge_geospatials_b)
         interpolated_boundary_geospatials, spatial_boundary_curvature_array = \
             graph_interpolator(sampled_boundary_geospatials)
+        print "num boundary curvatures: " + str(spatial_boundary_curvature_array.size)
         spatial_curvature_array_a = spatial_graph_a.spatial_curvature_array
         spatial_curvature_array_b = spatial_graph_b.spatial_curvature_array
         boundary_curvatures_a = spatial_boundary_curvature_array[:
@@ -108,27 +118,33 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         if (spatial_curvature_array_a == None and
             spatial_curvature_array_b == None):
             merged_curvature_array = spatial_boundary_curvature_array
-        if (spatial_curvature_array_a != None and
+            print "branch 1"
+        elif (spatial_curvature_array_a != None and
             spatial_curvature_array_b != None):
             spatial_curvature_array_a[-boundary_a_length:] = \
             (spatial_curvature_array_a[-boundary_a_length:] +
              boundary_curvatures_a) / 2.0
-            spatial_curvature_array_b[:boundary_a_length] = \
-            (spatial_curvature_array_b[:boundary_a_length] +
+            spatial_curvature_array_b[:boundary_b_length] = \
+            (spatial_curvature_array_b[:boundary_b_length] +
              boundary_curvatures_b) / 2.0
-            merged_curvature_array = util.smart_concat_array(
+            merged_curvature_array = util.concat_array(
                                       spatial_curvature_array_a,
                                       spatial_curvature_array_b)
-        if (spatial_curvature_array_a != None and
-            spatial_curvature_array_b == None):             
-            merged_curvature_array = util.smart_concat_array(
+            print "branch 2"
+        elif (spatial_curvature_array_a != None and
+            spatial_curvature_array_b == None):
+            print "a size: " + str(spatial_curvature_array_a.size)
+            print "b size: " + str(boundary_curvatures_b.size)
+            merged_curvature_array = util.concat_array(
                                       spatial_curvature_array_a,
                                       boundary_curvatures_b)
-        if (spatial_curvature_array_a == None and
+            print "branch 3"
+        elif (spatial_curvature_array_a == None and
             spatial_curvature_array_b != None):             
-            merged_curvature_array = util.smart_concat_array(
+            merged_curvature_array = util.concat_array(
                                       boundary_curvatures_a,
                                       spatial_curvature_array_b)
+            print "branch 4"
         return merged_curvature_array
 
     @classmethod
@@ -146,10 +162,12 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                     spatial_graph_b.latlngs)
         geospatials_partitions = (spatial_graph_a.geospatials_partitions +
                                   spatial_graph_b.geospatials_partitions)
+        print "arclengths_a: "+ str(len(spatial_graph_a.elevation_profile.arc_lengths))
+        print "arclengths_b: "+ str(len(spatial_graph_b.elevation_profile.arc_lengths))
         elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
                                               spatial_graph_a.elevation_profile,
                                               spatial_graph_b.elevation_profile)
-        tube_curvature_array = util.smart_concat_array(
+        tube_curvature_array = util.concat_array(
                                spatial_graph_a.tube_curvature_array,
                                spatial_graph_b.tube_curvature_array)
         spatial_curvature_array = SpatialGraph.merge_spatial_curvature_arrays(
