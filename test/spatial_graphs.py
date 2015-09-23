@@ -70,11 +70,9 @@ class SpatialGraph(abstract.AbstractGraph):
         max_allowed_vels = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
                                               spatial_curvature_array)
-        time_checkpoints = velocity.max_allowed_vels_to_time_checkpoints(
-                                             max_allowed_vels, arc_lengths)
-        print(self.geospatials)
-        print(max_allowed_vels)
-        print(self.arc_lengths)
+        time_checkpoints = \
+            velocity.velocities_by_arc_length_to_time_checkpoints(
+                                        max_allowed_vels, arc_lengths)
         self.time = time_checkpoints[-1]
         self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
         return [self.total_cost, self.time]
@@ -160,9 +158,10 @@ class SpatialGraphsSets(abstract.AbstractGraphsSets):
         return merged_spatial_graph       
     
     def graph_interpolator(self, graph_geospatials):
-        interpolated_geospatials, curvature = self.spatial_interpolator(
-                       graph_geospatials, self.spatial_base_resolution)
-        return [interpolated_geospatials, curvature]
+        interpolated_geospatials, curvature, arc_lengths = \
+            self.spatial_interpolator(graph_geospatials,
+                                      self.spatial_base_resolution)
+        return [interpolated_geospatials, curvature, arc_lengths]
 
     def __init__(self, spatial_edges_sets):
         self.start = spatial_edges_sets.start
