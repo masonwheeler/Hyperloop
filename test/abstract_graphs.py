@@ -159,14 +159,10 @@ class AbstractGraphsSets(object):
                 if self.test_graph_pair_compatibility(graph_a, graph_b):
                     merged_graph = self.merge_graph_pair(graph_a, graph_b)
                     merged_graphs.append(merged_graph) 
-        num_edges_a = graphs_set_a.num_edges
-        num_edges_b = graphs_set_b.num_edges
-        merged_num_edges = num_edges_a + num_edges_b
         if (len(merged_graphs) == 0):
             return None
         else:
-            merged_graphs_set = self.graphs_set_builder(merged_graphs,
-                                  merged_num_edges, self.interpolator)
+            merged_graphs_set = self.graphs_set_builder(merged_graphs)
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
