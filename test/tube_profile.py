@@ -136,11 +136,11 @@ class TubeProfile(object):
         return [tube_elevations, tube_elevation_spline]
 
     def compute_min_time_v1(self):
-        self.tube_curvature = curvature.compute_curvature_pchip(
+        self.tube_curvature_array = curvature.compute_curvature_pchip(
                    self.tube_elevation_spline, self.arc_lengths)
         self.max_allowed_vels = \
             curvature.curvature_array_to_bounded_max_allowed_vels(
-               self.tube_curvature, parameters.MAX_VERTICAL_ACCEL,
+               self.tube_curvature_array, parameters.MAX_VERTICAL_ACCEL,
                                     parameters.MAX_SPEED)
         time_checkpoints = \
             velocity.velocities_by_arc_length_to_time_checkpoints(
