@@ -7,7 +7,6 @@ import interpolate
 import curvature
 
 def scipy_smoothing(points, resolution):
-    points, arc_lengths = interpolate.sample_path(points, resolution)
     points_array = np.array([np.array(point) for point in points])
     s_vals = np.arange(len(points))
     points_x_vals_array, points_y_vals_array = np.transpose(points)
@@ -26,5 +25,5 @@ def scipy_smoothing(points, resolution):
     curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
                                                                    y_spline,
                                                                      s_vals)
-    return [interpolated_points, curvature_array_2d, arc_lengths]
+    return [interpolated_points, curvature_array_2d]
 

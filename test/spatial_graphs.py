@@ -22,7 +22,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
     
     GRAPH_SAMPLE_SPACING = 1000 #Meters
 
-    def get_min_time_and_total_cost(self, spatial_curvature_array,
+    def compute_min_time_and_total_cost(self, spatial_curvature_array,
                                              tube_curvature_array):
         max_allowed_vels = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
@@ -32,7 +32,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                         max_allowed_vels, arc_lengths)
         self.min_time = time_checkpoints[-1]
         self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
-        return [self.min_time, self.total_cost]
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
                        latlngs, geospatials, elevation_profile,
@@ -54,8 +53,11 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             self.min_time = None
         else:
             self.spatial_curvature_array = spatial_curvature_array
-            self.get_min_time_and_total_cost(self.spatial_curvature_array,
+            self.compute_min_time_and_total_cost(self.spatial_curvature_array,
                                              self.tube_curvature_array)
+
+    def fetch_min_time_and_total_cost(self):
+        return [self.min_time, self.total_cost]
 
     @classmethod
     def init_from_spatial_edge(cls, spatial_edge):
@@ -168,18 +170,12 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
 
 class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
     NUM_FRONTS_TO_SELECT = 5
-    SPATIAL_GRAPH_FILTER_MIN_NUM_EDGES = 2
 
-    def get_spatial_graphs_cost_time(self, spatial_graphs,
-                                           spatial_graphs_num_edges,
-                                           spatial_interpolator):
-        if spatial_graphs_num_edges < self.SPATIAL_GRAPH_FILTER_MIN_NUM_EDGES:
-            return None
-        else:
-            spatial_graphs_costs_and_times = [spatial_graph.get_cost_and_time(
-                                              spatial_interpolator)
-                                            for spatial_graph in spatial_graphs]
-            return spatial_graphs_costs_and_times
+    def get_spatial_graphs_min_times_and_total_costs(self, spatial_graphs):
+        spatial_graphs_min_times_and_total_costs = \
+            [spatial_graph.fetch_min_time_and_total_cost()
+             for spatial_graph in spatial_graphs]
+        return spatial_graphs_min_times_and_total_costs
 
     def __init__(self, spatial_graphs, spatial_graphs_num_edges,
                                        spatial_interpolator):
