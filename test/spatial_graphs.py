@@ -89,13 +89,32 @@ class SpatialGraph(abstract.AbstractGraph):
                                   graph_interpolator(boundary_geospatials)       
         spatial_curvature_array_a = spatial_graph_a.spatial_curvature_array_a
         spatial_curvature_array_b = spatial_graph_b.spatial_curvature_array_b
+        boundary_curvatures_a = spatial_boundary_curvature_array[:
+                                        boundary_geospatials_a_length]
+        boundary_curvatures_b = spatial_boundary_curvature_array[
+                                        boundary_geospatials_a_length:]
         if (spatial_curvature_array_a == None and
             spatial_curvature_array_b == None):
             merged_curvature_array = spatial_boundary_curvature_array
         if (spatial_curvature_array_a != None and
             spatial_curvature_array_b != None):
-            merged_curvature_array = spatial_boundary_curvature_array
-        else:
+            spatial_curvature_array_a[-boundary_geospatials_a_length:] =
+            (spatial_curvature_array_a[-boundary_geospatials_a_length:] +
+             boundary_curvatures_a) / 2.0
+            spatial_curvature_array_b[:boundary_geospatials_a_length] =
+            (spatial_curvature_array_b[:boundary_geospatials_a_length] +
+             boundary_curvatures_b) / 2.0
+            merged_curvature_array = (spatial_curvature_array_a +
+                                      spatial_curvature_array_b)
+        if (spatial_curvature_array_a != None and
+            spatial_curvature_array_b == None):             
+            merged_curvature_array = (spatial_curvature_array_a +
+                                      boundary_curvatures_b)
+        if (spatial_curvature_array_a == None and
+            spatial_curvature_array_b != None):             
+            merged_curvature_array = (boundary_curvatures_a +
+                                      spatial_curvature_array_b)
+        return merged_curvature_array
 
     @classmethod
     def merge_two_spatial_graphs(cls, spatial_graph_a, spatial_graph_b):
