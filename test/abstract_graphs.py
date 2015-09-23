@@ -84,7 +84,8 @@ class AbstractGraphsSet(object):
         else:
             try:
                 self.front = paretofront.ParetoFront(self.graphs_a_b_vals,
-                                                     minimize_a_vals, minimize_b_vals)
+                                                     minimize_a_vals,
+                                                     minimize_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
                 current_num_fronts = 1
                 while (self.front.build_nextfront() and
@@ -98,14 +99,13 @@ class AbstractGraphsSet(object):
                 self.selected_graphs = self.unfiltered_graphs
                 return False
 
-    def __init__(self, graphs, graphs_num_edges, graphs_evaluator,
-                   graph_interpolator, minimize_a_vals, minimize_b_vals,
+    def __init__(self, graphs, graphs_evaluator,
+                   minimize_a_vals, minimize_b_vals,
                    num_fronts_to_select):
         self.front = None
         self.unfiltered_graphs = graphs
         self.num_edges = graphs_num_edges
-        self.graphs_a_b_vals = graphs_evaluator(graphs, graphs_num_edges,
-                                                graph_interpolator)
+        self.graphs_a_b_vals = graphs_evaluator(graphs)
         self.select_graphs(minimize_a_vals, minimize_b_vals, 
                                        num_fronts_to_select)
         self.minimize_a_vals = minimize_a_vals
@@ -171,12 +171,11 @@ class AbstractGraphsSets(object):
             return merged_graphs_set
 
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
-                                           graphs_set_builder, interpolator):
+                                                          graphs_set_builder):
         self.merge_graph_pair = merge_graph_pair
         self.graphs_set_builder = graphs_set_builder
         self.degree_constraint = edges_sets.degree_constraint
-        self.interpolator = interpolator
-        base_graphs_sets = [edges_set_to_graphs_set(edges_set, interpolator)
+        base_graphs_sets = [edges_set_to_graphs_set(edges_set)
                             for edges_set in edges_sets.filtered_edges_sets]
         graphs_sets_tree = mergetree.MasterTree(base_graphs_sets,
                                  self.merge_two_graphs_sets,

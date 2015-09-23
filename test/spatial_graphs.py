@@ -182,16 +182,13 @@ class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
         minimize_cost = True
         minimize_time = True        
         abstract_graphs.AbstractGraphsSet.__init__(self, spatial_graphs,
-                                                   spatial_graphs_num_edges,
-                                            self.get_spatial_graphs_cost_time,
-                                                   spatial_interpolator,
-                                                   minimize_cost,
-                                                   minimize_time,
-                                                   self.NUM_FRONTS_TO_SELECT)
+                      self.get_spatial_graphs_min_times_and_total_costs,
+                                                          minimize_cost,
+                                                          minimize_time,
+                                              self.NUM_FRONTS_TO_SELECT)
 
     @classmethod
-    def init_from_spatial_edges_set(cls, spatial_edges_set,
-                                         spatial_interpolator):
+    def init_from_spatial_edges_set(cls, spatial_edges_set):
         spatial_graphs = [SpatialGraph.init_from_spatial_edge(spatial_edge)
                                       for spatial_edge in spatial_edges_set]
         spatial_graphs_num_edges = 1
