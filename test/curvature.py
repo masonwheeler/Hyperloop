@@ -21,9 +21,8 @@ import math
 import numpy as np
 
 #Our Modules:
+import parameters
 import util
-import config
-
 
 def get_derivative_values(spline, s_values):
     first_deriv = spline.derivative(n=1)

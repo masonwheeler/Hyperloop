@@ -18,10 +18,8 @@ import parameters
 
 ########## For Edge Sampling ##########
 
-
 def points_to_edges(points):
     return util.to_pairs(points)
-
 
 def distance_along_edge_to_point(edge, distance_along_edge):
     edge_start, edge_end = edge
@@ -32,34 +30,42 @@ def distance_along_edge_to_point(edge, distance_along_edge):
     point = util.add(scaled_vector, edge_start)
     return point
 
-
-def sample_edge(edge, sample_spacing, distance_along_edge):
+def sample_edge(edge, sample_spacing, distance_along_edge, start_arc_length):
     edge_length = util.norm(util.edge_to_vector(edge))
     edge_points = []
+    edge_arc_lengths = []
     while distance_along_edge <= edge_length:
         point = distance_along_edge_to_point(edge, distance_along_edge)
         edge_points.append(point)
         distance_along_edge += sample_spacing
+        point_arc_length = distance_along_edge + start_arc_length)
+        edge_arc_lengths.append(point_arc_length)
     distance_along_edge -= edge_length
-    return [edge_points, distance_along_edge]
-
+    return [edge_points, edge_arc_lengths, distance_along_edge]
 
 def sample_edges(edges, sample_spacing):
     distance_along_edge = 0
     points = []
+    arc_lengths = []
     for edge in edges:
-        edge_points, distance_along_edge = sample_edge(edge, sample_spacing,
-                                                       distance_along_edge)
+        edge_points, edge_arc_lengths, distance_along_edge = \
+          sample_edge(edge, sample_spacing, distance_along_edge,
+                                            edge_arc_lengths[-1])       
         points += edge_points
-    return points
-
+        arc_lengths += edge_arc_lengths
+    return [points, arc_lengths]
 
 def sample_path(path_points, path_sample_spacing):
-    last_point = path_points[-1]
     path_edges = points_to_edges(path_points)
-    sampled_path_points = sample_edges(path_edges, path_sample_spacing)
+    sampled_path_points, sampled_arc_lengths = sample_edges(path_edges,
+                                                            path_sample_spacing)
+    path_vectors = [util.edge_to_vector(edge) for edge in path_edges]
+    edge_lengths = [util.norm(vector) for vector in path_vectors]
+    last_arc_length = sum(edge_lengths)   
+    last_point = path_points[-1]
+    sampled_arc_lengths.append(last_arc_length)
     sampled_path_points.append(last_point)
-    return sampled_path_points
+    return [sampled_path_points, sampled_arc_lengths]
 
 ########## Auxilary Functions ##########
 
