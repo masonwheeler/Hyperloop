@@ -12,7 +12,7 @@ Last Modification Purpose: Moved module specific settings to relevant modules
 ####################
 TESTING_MODE = True
 VISUAL_MODE = False
-CACHE_MODE = False
+CACHE_MODE = True
 VERBOSE_MODE = True
 TIMING_MODE = False
 USE_DROPBOX = False

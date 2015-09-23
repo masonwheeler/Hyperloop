@@ -41,8 +41,8 @@ class Directions(object):
     IS_SKIPPED = cacher.SKIP_DIRECTIONS
 
     def remove_duplicates(self, in_list):
-    """removes duplicates from a list while preserving order"""
-    return list(OrderedDict.fromkeys(list(itertools.chain(*in_list))))
+        """removes duplicates from a list while preserving order"""
+        return list(OrderedDict.fromkeys(list(itertools.chain(*in_list))))
 
     def http_to_string(self, http_data):
         """Reads HTTP bytecode response and converts it to a string"""

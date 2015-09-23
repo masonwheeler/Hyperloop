@@ -74,7 +74,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     
     def build_tube(self, tube_builder):
         tube_profile = tube_builder(self.elevation_profile)
-        self.time = tube_profile.time
+        self.min_time = tube_profile.min_time
         self.tube_cost = tube_profile.tube_cost       
         self.pylon_cost = tube_profile.pylon_cost
             
