@@ -93,8 +93,21 @@ class SpatialGraph(abstract.AbstractGraph):
                                               spatial_graph_a.elevation_profile,
                                               spatial_graph_b.elevation_profile)
         arc_lengths = self.elevation_profile.arc_lengths
-        interpolated_geospatials, spatial_curvature_array = \
-                                      graph_interpolator(self.geospatials)
+        boundary_edge_geospatials_a = \
+            spatial_graph_a.edges_geospatials_partitions[-1]
+        boundary_edge_geospatials_b = \
+            spatial_graph_b.edges_geospatials_partitions[0]
+        boundary_geospatials = (boundary_edge_geospatials_a +
+                                boundary_edge_geospatials_b)
+        interpolated_boundary_geospatials, spatial_boundary_curvature_array = \
+                                  graph_interpolator(boundary_geospatials)       
+        spatial_curvature_array_a = spatial_graph_a.spatial_curvature_array_a
+        spatial_curvature_array_b = spatial_graph_b.spatial_curvature_array_b
+        if (spatial_curvature_array_a == None or
+            spatial_curvature_array_b == None):
+            merged_curvature_array = spatial_boundary_curvature_array
+        else:
+            
         tube_curvature_array = util.smart_concat(
                                spatial_graph_a.tube_curvature_array,
                                spatial_graph_b.tube_curvature_array)
