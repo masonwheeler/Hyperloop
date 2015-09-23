@@ -3,16 +3,22 @@ Original Developer:
     Jonathan Ward
 """
 
+# Standard Modules:
 import numpy as np
 
+# Custom Modules:
 import math
 import config
 import curvature
+import interpolate
 
 VISUALIZE_CONSTRAINT = False
 
-def test_path_points(path_points, interpolator, max_curvature, max_error):
-    interpolated_points, curvature_array = interpolator(path_points, max_error)
+def test_path_points(path_points, interpolator, max_curvature, resolution):
+    sampled_path_points, arc_lengths = interpolate.sample_path(path_points,
+                                                               resolution)
+    interpolated_points, curvature_array = interpolator(sampled_path_points,
+                                                                 resolution)
     is_curvature_acceptable = curvature.test_curvature_validity(
                                  curvature_array, max_curvature)
     if config.VISUAL_MODE and VISUALIZE_CONSTRAINT:
@@ -21,8 +27,10 @@ def test_path_points(path_points, interpolator, max_curvature, max_error):
         plottable_path_points = [path_points_x_vals, path_points_y_vals]
         plottable_path = [plottable_path_points, 'r-']    
         visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_path)
-        interpolated_x_vals, interpolated_y_vals = np.transpose(interpolated_points)
-        plottable_interpolated_points = [interpolated_x_vals, interpolated_y_vals]
+        interpolated_x_vals, interpolated_y_vals = np.transpose(
+                                                interpolated_points)
+        plottable_interpolated_points = [interpolated_x_vals,
+                                         interpolated_y_vals]
         plottable_interpolation = [plottable_interpolated_points, 'b-']
         visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_interpolation)
         visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, False)

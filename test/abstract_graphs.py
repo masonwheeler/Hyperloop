@@ -104,7 +104,6 @@ class AbstractGraphsSet(object):
                    num_fronts_to_select):
         self.front = None
         self.unfiltered_graphs = graphs
-        self.num_edges = graphs_num_edges
         self.graphs_a_b_vals = graphs_evaluator(graphs)
         self.select_graphs(minimize_a_vals, minimize_b_vals, 
                                        num_fronts_to_select)

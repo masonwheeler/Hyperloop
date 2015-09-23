@@ -13,14 +13,13 @@ import cacher
 import curvature
 import elevation
 import mergetree
+import interpolate
 import util
 import velocity
 
 
 class SpatialGraph(abstract_graphs.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
-    
-    GRAPH_SAMPLE_SPACING = 1000 #Meters
 
     def compute_min_time_and_total_cost(self, spatial_curvature_array,
                                              tube_curvature_array):
@@ -34,7 +33,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
-                       latlngs, geospatials, elevation_profile,
+                       latlngs, geospatials_partitions, elevation_profile,
                        spatial_curvature_array=None, tube_curvature_array=None):
         abstract_graphs.AbstractGraph.__init__(self, abstract_graph.start_id,
                                                abstract_graph.end_id,
@@ -46,24 +45,28 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.tube_cost = tube_cost
         self.land_cost = land_cost  # The total cost of the land acquired       
         self.latlngs = latlngs  # The latitude longitude coordinates
-        self.geospatials = geospatials  # The geospatial coordinates
+        self.geospatials_partitions = geospatials_partitions
         self.elevation_profile = elevation_profile
         self.tube_curvature_array = tube_curvature_array
         if spatial_curvature_array == None:
             self.min_time = None
+            self.total_cost = None
         else:
             self.spatial_curvature_array = spatial_curvature_array
             self.compute_min_time_and_total_cost(self.spatial_curvature_array,
                                              self.tube_curvature_array)
 
     def fetch_min_time_and_total_cost(self):
-        return [self.min_time, self.total_cost]
+        if self.min_time == None or self.total_cost == None:
+            return None
+        else:
+            return [self.min_time, self.total_cost]
 
     @classmethod
     def init_from_spatial_edge(cls, spatial_edge):
         abstract_edge = spatial_edge.to_abstract_edge()
-        abstract_graph = abstract.AbstractGraph.init_from_abstract_edge(
-                                                          abstract_edge)
+        abstract_graph = abstract_graphs.AbstractGraph.init_from_abstract_edge(
+                                                                 abstract_edge)
         pylon_cost = spatial_edge.pylon_cost
         tube_cost = spatial_edge.tube_cost       
         land_cost = spatial_edge.land_cost
@@ -72,8 +75,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         elevation_profile = spatial_edge.elevation_profile
         tube_curvature_array = spatial_edge.tube_curvature_array
         data = cls(abstract_graph, pylon_cost, tube_cost, land_cost,
-            latlngs, geospatials_partitions, arc_lengths, elevation_profile,
-                                  tube_curvature_array=tube_curvature_array)
+                   latlngs, geospatials_partitions, elevation_profile,
+                            tube_curvature_array=tube_curvature_array)
         return data
 
     @staticmethod
@@ -89,7 +92,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             interpolate.sample_path(boundary_edge_geospatials_b, resolution)
         boundary_a_length = len(boundary_arc_lengths_a)
         sampled_boundary_geospatials = util.smart_concat(
-                                        sampled_boundary_edge_geospatials_a
+                                        sampled_boundary_edge_geospatials_a,
                                         sampled_boundary_edge_geospatials_b)
         (interpolated_boundary_geospatials, 
         spatial_boundary_curvature_array,
@@ -105,10 +108,10 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             merged_curvature_array = spatial_boundary_curvature_array
         if (spatial_curvature_array_a != None and
             spatial_curvature_array_b != None):
-            spatial_curvature_array_a[-boundary_a_length:] =
+            spatial_curvature_array_a[-boundary_a_length:] = \
             (spatial_curvature_array_a[-boundary_a_length:] +
              boundary_curvatures_a) / 2.0
-            spatial_curvature_array_b[:boundary_a_length] =
+            spatial_curvature_array_b[:boundary_a_length] = \
             (spatial_curvature_array_b[:boundary_a_length] +
              boundary_curvatures_b) / 2.0
             merged_curvature_array = (spatial_curvature_array_a +
@@ -128,8 +131,9 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                       graph_interpolator, resolution):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
         abstract_graph_b = spatial_graph_b.to_abstract_graph()
-        merged_abstract_graph = abstract.AbstractGraph.merge_abstract_graphs(
-                                          abstract_graph_a, abstract_graph_b)
+        merged_abstract_graph = \
+          abstract_graphs.AbstractGraph.merge_abstract_graphs(abstract_graph_a,
+                                                              abstract_graph_b)
         pylon_cost = spatial_graph_a.pylon_cost + spatial_graph_b.pylon_cost
         tube_cost = spatial_graph_a.tube_cost + spatial_graph_b.tube_cost
         land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost
@@ -140,7 +144,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
                                               spatial_graph_a.elevation_profile,
                                               spatial_graph_b.elevation_profile)
-        tube_curvature_array = util.smart_concat(
+        tube_curvature_array = util.smart_concat_array(
                                spatial_graph_a.tube_curvature_array,
                                spatial_graph_b.tube_curvature_array)
         spatial_curvature_array = SpatialGraph.merge_spatial_curvature_arrays(
@@ -151,12 +155,12 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         return merged_spatial_graph
 
     def to_abstract_graph(self):
-        abstract_graph = abstract.AbstractGraph(self.start_id,
-                                                self.end_id,
-                                                self.start_angle,
-                                                self.end_angle,
-                                                self.num_edges,
-                                                self.abstract_coords)
+        abstract_graph = abstract_graphs.AbstractGraph(self.start_id,
+                                                       self.end_id,
+                                                       self.start_angle,
+                                                       self.end_angle,
+                                                       self.num_edges,
+                                                       self.abstract_coords)
         return abstract_graph
 
     def to_plottable(self, color_string):
@@ -175,10 +179,12 @@ class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
         spatial_graphs_min_times_and_total_costs = \
             [spatial_graph.fetch_min_time_and_total_cost()
              for spatial_graph in spatial_graphs]
-        return spatial_graphs_min_times_and_total_costs
+        if spatial_graphs_min_times_and_total_costs[0] == None:
+            return None
+        else:
+            return spatial_graphs_min_times_and_total_costs
 
-    def __init__(self, spatial_graphs, spatial_graphs_num_edges,
-                                       spatial_interpolator):
+    def __init__(self, spatial_graphs):
         minimize_cost = True
         minimize_time = True        
         abstract_graphs.AbstractGraphsSet.__init__(self, spatial_graphs,
@@ -191,9 +197,7 @@ class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
     def init_from_spatial_edges_set(cls, spatial_edges_set):
         spatial_graphs = [SpatialGraph.init_from_spatial_edge(spatial_edge)
                                       for spatial_edge in spatial_edges_set]
-        spatial_graphs_num_edges = 1
-        data = cls(spatial_graphs, spatial_graphs_num_edges,
-                                   spatial_interpolator)
+        data = cls(spatial_graphs)
         return data
 
 
