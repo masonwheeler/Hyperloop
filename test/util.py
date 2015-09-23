@@ -24,11 +24,9 @@ def round_num(num):
     """Rounds number to predefined number of places"""
     return round(num, NDIGITS)
 
-
 def round_nums(nums):
     """Rounds a list of numbers"""
     return [round_num(num) for num in nums]
-
 
 def round_points(points):
     """
@@ -133,7 +131,6 @@ def sample_vector(vector, spacing):
     point_vectors = [scale(index, unit_vector) for index in point_indices]
     return [point_vectors, point_distances]
 
-
 def build_grid(start_point, end_point, spacing):
     """Builds a grid of points between the start and end point.
     """
@@ -148,7 +145,6 @@ def build_grid(start_point, end_point, spacing):
         grid = [add(point_vector, start_point)
                 for point_vector in point_vectors]
         return [grid, point_distances]
-
 
 def sample_length(length, spacing):
     """sample values within a given length at a regular spacing

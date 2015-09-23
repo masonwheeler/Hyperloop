@@ -64,13 +64,13 @@ class SpatialGraph(abstract.AbstractGraph):
         return abstract_graph
 
     def get_cost_and_time(self, graph_interpolator):
-        interpolated_geospatials, spatial_curvature_array = graph_interpolator(
-                                                              self.geospatials)
+        interpolated_geospatials, spatial_curvature_array, arc_lengths = \
+                                      graph_interpolator(self.geospatials)
         max_allowed_vels = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
                                               spatial_curvature_array)
         time_checkpoints = velocity.max_allowed_vels_to_time_checkpoints(
-                                    max_allowed_vels, self.arc_lengths)
+                                             max_allowed_vels, arc_lengths)
         self.time = time_checkpoints[-1]
         self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
         return [self.total_cost, self.time]
