@@ -23,10 +23,8 @@ class SpatialGraph(abstract.AbstractGraph):
     
     GRAPH_SAMPLE_SPACING = 1000 #Meters
 
-    def get_min_time_and_total_cost(self, graph_interpolator):
-        arc_lengths = self.elevation_profile.arc_lengths
-        interpolated_geospatials, spatial_curvature_array= \
-                                      graph_interpolator(self.geospatials)
+    def get_min_time_and_total_cost(self, spatial_curvature_array,
+                                             tube_curvature_array):
         max_allowed_vels = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
                                               spatial_curvature_array)
@@ -52,11 +50,14 @@ class SpatialGraph(abstract.AbstractGraph):
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.geospatials = geospatials  # The geospatial coordinates
         self.elevation_profile = elevation_profile
+        self.tube_curvature_array = tube_curvature_array
         if spatial_curvature_array == None or tube_curvature_array == None:
             self.min_time = None
         else:
-            self.compute_time_and_cost(spatial_curvature_array,
-                                          tube_curvature_array)
+            self.spatial_curvature_array = spatial_curvature_array
+            self.tube_curvature_array = tube_curvature_array
+            self.get_min_time_and_total_cost(spatial_curvature_array,
+                                                tube_curvature_array)
 
     @classmethod
     def init_from_spatial_edge(cls, spatial_edge):
@@ -64,13 +65,15 @@ class SpatialGraph(abstract.AbstractGraph):
         abstract_graph = abstract.AbstractGraph.init_from_abstract_edge(
                                                           abstract_edge)
         pylon_cost = spatial_edge.pylon_cost
-        tube_cost = spatial_edge.tube_cost
+        tube_cost = spatial_edge.tube_cost       
         land_cost = spatial_edge.land_cost
         latlngs = spatial_edge.latlngs
         geospatials = spatial_edge.geospatials
         elevation_profile = spatial_edge.elevation_profile
+        tube_curvature_array = spatial_edge.tube_curvature_array
         data = cls(abstract_graph, pylon_cost, tube_cost, land_cost,
-                   latlngs, geospatials, arc_lengths, elevation_profile)
+                   latlngs, geospatials, arc_lengths, elevation_profile,
+                              tube_curvature_array=tube_curvature_array)
         return data
 
     @classmethod
@@ -86,18 +89,18 @@ class SpatialGraph(abstract.AbstractGraph):
                                     spatial_graph_b.latlngs)
         geospatials = util.smart_concat(spatial_graph_a.geospatials,
                                         spatial_graph_b.geospatials)
-        ##arc_lengths_a = spatial_graph_a.arc_lengths
-        ##arc_lengths_b = spatial_graph_b.arc_lengths
-        ##offset_arc_length = arc_lengths_a[-1]
-        ##shifted_arc_lengths_b = [arc_length + offset_arc_length for arc_length
-        ##                                                      in arc_lengths_b]
-        ##merged_arc_lengths = arc_lengths_a + shifted_arc_lengths_b
         elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
                                               spatial_graph_a.elevation_profile,
                                               spatial_graph_b.elevation_profile)
+        arc_lengths = self.elevation_profile.arc_lengths
+        interpolated_geospatials, spatial_curvature_array = \
+                                      graph_interpolator(self.geospatials)
+        tube_curvature_array = util.smart_concat(
+                               spatial_graph_a.tube_curvature_array,
+                               spatial_graph_b.tube_curvature_array)
         merged_spatial_graph = cls(merged_abstract_graph, pylon_cost,
-                                   tube_cost, land_cost, latlngs, geospatials,
-                                                            elevation_profile)
+           tube_cost, land_cost, latlngs, geospatials, elevation_profile,
+                           spatial_curvature_array, tube_curvature_array)
         return merged_spatial_graph
 
     def to_abstract_graph(self):
