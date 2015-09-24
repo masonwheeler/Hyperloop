@@ -11,6 +11,7 @@ Last Modification Purpose: Added MasterTree Class
 # Standard Modules:
 import collections
 import gc
+import sys
 
 # Custom Modules:
 import config
@@ -191,7 +192,7 @@ class MasterTree(object):
             next_branch_layer.append(merged_branch)
         return next_branch_layer    
     
-    @profile
+    ##@profile
     def merge_all_objects(self, objects, children_merger, data_updater):
         """Recursively merges objects until list is completely merged."""
         branch_layers = []
@@ -203,14 +204,15 @@ class MasterTree(object):
             last_branch_layer = branch_layers[-1]
             new_branch_layer = MasterTree.merge_branch_layer(last_branch_layer,
                                         children_merger, data_updater)
+            print "layer size: " + str(sys.getsizeof(new_branch_layer))
             branch_layers.append(new_branch_layer)
-            if layer_index > self.MAX_LAYER_DEPTH:
-                layer_index_to_free = layer_index - self.MAX_LAYER_DEPTH
-                print "freeing layer: " + str(layer_index_to_free)
-                layer_to_free = branch_layers[layer_index_to_free]
-                for merge_tree in layer_to_free:
-                    del merge_tree 
-                    gc.collect()
+            #if layer_index > self.MAX_LAYER_DEPTH:
+                #layer_index_to_free = layer_index - self.MAX_LAYER_DEPTH
+                #print "freeing layer: " + str(layer_index_to_free)
+                #layer_to_free = branch_layers[layer_index_to_free]
+                #for merge_tree in layer_to_free:
+                #    del merge_tree 
+                #    gc.collect()
             layer_index += 1
  
         top_branch_layer = branch_layers[-1]
