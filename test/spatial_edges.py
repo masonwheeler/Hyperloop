@@ -99,7 +99,6 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    MIN_SPEED = parameters.MAX_SPEED / 2.0
     TUBE_READY = True
 
     NAME = "spatial_edges"
@@ -109,7 +108,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.spatial_x_spacing
         max_curvature = curvature.compute_curvature_threshold(
-            self.MIN_SPEED, parameters.MAX_LATERAL_ACCEL)
+            parameters.MIN_SPEED, parameters.MAX_LATERAL_ACCEL)
         spatial_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
         degree_constraint = angle_constraint.compute_angle_constraint(
                               length_scale, self.spatial_interpolator,
