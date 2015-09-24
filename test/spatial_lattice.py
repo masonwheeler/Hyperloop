@@ -22,11 +22,12 @@ import util
 
 class SpatialPoint(abstract_lattice.AbstractPoint):
 
-    def __init__(self, point_id, lattice_x_coord, lattice_y_coord,
+    def __init__(self, point_id, abstract_x_coord, abstract_y_coord,
                                   geospatial, is_in_right_of_way):
         spatial_x_coord, spatial_y_coord = geospatial
-        abstract_lattice.AbstractPoint.__init__(self, point_id, lattice_x_coord,
-                             lattice_y_coord, spatial_x_coord, spatial_y_coord)
+        abstract_lattice.AbstractPoint.__init__(self, point_id,
+                            abstract_x_coord, abstract_y_coord,
+                              spatial_x_coord, spatial_y_coord)
         self.geospatial = geospatial
         self.is_in_right_of_way = is_in_right_of_way
 
@@ -34,8 +35,8 @@ class SpatialPoint(abstract_lattice.AbstractPoint):
 class SpatialSlice(abstract_lattice.AbstractSlice):
 
     @staticmethod
-    def spatial_slice_points_builder(lattice_x_coord, spatial_slice_bounds,
-                                                     slice_start_id):
+    def spatial_slice_points_builder(abstract_x_coord, spatial_slice_bounds,
+                                                             slice_start_id):
         spatial_slice_y_spacing = spatial_slice_bounds["y_spacing"]
         spline_geospatials = spatial_slice_bounds["spline_geospatials"]
         directions_geospatials = spatial_slice_bounds["directions_geospatials"]
@@ -44,21 +45,21 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
                                             directions_geospatials,
                                             spatial_slice_y_spacing)
         point_id = slice_start_id
-        lattice_y_coord = 0
+        abstract_y_coord = 0
         spatial_slice_points = []
         for spatial_slice_geospatial in spatial_slice_geospatials:
-            is_in_right_of_way = (lattice_y_coord == 0)
-            new_spatial_point = SpatialPoint(point_id, lattice_x_coord,
-                lattice_y_coord, spatial_slice_geospatial, is_in_right_of_way)
+            is_in_right_of_way = (abstract_y_coord == 0)
+            new_spatial_point = SpatialPoint(point_id, abstract_x_coord,
+                abstract_y_coord, spatial_slice_geospatial, is_in_right_of_way)
             spatial_slice_points.append(new_spatial_point)
             point_id += 1
-            lattice_y_coord += 1        
+            abstract_y_coord += 1        
         return [spatial_slice_points, point_id]        
 
-    def __init__(self, lattice_x_coord, spatial_slice_bounds, slice_start_id):
-        abstract_lattice.AbstractSlice.__init__(self, lattice_x_coord,
-                                        spatial_slice_bounds, slice_start_id,
-                                    SpatialSlice.spatial_slice_points_builder)
+    def __init__(self, abstract_x_coord, spatial_slice_bounds, slice_start_id):
+        abstract_lattice.AbstractSlice.__init__(self, abstract_x_coord,
+                                  spatial_slice_bounds, slice_start_id,
+                             SpatialSlice.spatial_slice_points_builder)
 
 
 class SpatialLattice(abstract_lattice.AbstractLattice):
@@ -190,19 +191,6 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
         spline_points = [x_array, y_array]
         plottable_spline = [spline_points, color_string]
         return plottable_spline
-
-    def get_plottable_lattice(self, color_string):
-        slices_physical_x_coords = [eachSlice.get_physical_x_coords()
-                                    for eachSlice in self.slices]
-        slices_physical_y_coords = [eachSlice.get_physical_y_coords()
-                                    for eachSlice in self.slices]
-        physical_x_coords = util.fast_concat(slices_physical_x_coords)
-        physical_y_coords = util.fast_concat(slices_physical_y_coords)
-        physical_x_coords_array = np.array(physical_x_coords)
-        physical_y_coords_array = np.array(physical_y_coords)
-        lattice_points = [physical_x_coords_array, physical_y_coords_array]
-        plottable_lattice = [lattice_points, color_string]
-        return plottable_lattice     
             
 def get_spatial_lattice(*args):
     lattice = cacher.get_object(SpatialLattice.NAME,
