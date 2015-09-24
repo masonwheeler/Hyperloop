@@ -2,15 +2,14 @@
 Original Developer: Jonathan Ward
 """
 
+# Custom Modules:
+import parameters
+import pylon_cost
+
 class PylonPoint(abstract.AbstractPoint):
 
-    def pylon_construction_cost(self, pylon_height):
-        pylon_cost = config.PYLON_BASE_COST + \
-            pylon_height * config.PYLON_COST_PER_METER
-        return pylon_cost
-
-    def __init__(self, pylon_id, lattice_x_coord, lattice_y_coord, distance_along_path,
-                 geospatial, latlng, land_elevation, pylon_height):
+    def __init__(self, pylon_id, abstract_x_coord, abstract_y_coord, arc_length,
+                       geospatial, latlng, land_elevation, pylon_height):
         self.pylon_height = pylon_height
         self.land_elevation = land_elevation
         self.latlng = latlng
@@ -18,7 +17,7 @@ class PylonPoint(abstract.AbstractPoint):
         x_value, y_value = geospatial
         z_value = tube_elevation
         self.tube_coords = [x_value, y_value, z_value]
-        self.pylon_cost = self.pylon_construction_cost(pylon_height)
+        self.pylon_cost = pylon_cost.compute_pylon_cost_v1(pylon_height)
         self.spatial_x_coord = distance_along_path
         self.spatial_y_coord = tube_elevation
         abstract.AbstractPoint.__init__(self, pylon_id, lattice_x_coord,
@@ -76,7 +75,7 @@ class PylonsLattice(abstract.AbstractLattice):
         relative_indices = range(-left_bound, right_bound + 1)
         window = [{"relative_index": relative_index,
                    "relative_elevation": self.circle_function(
-                       abs(relative_index * config.PYLON_SPACING), radius)}
+                       abs(relative_index * parameters.PYLON_SPACING), radius)}
                   for relative_index in relative_indices]
         return window
 

@@ -15,6 +15,9 @@ Last Modification Purpose:
     Moved get plottable lattice to subclasses
 """
 
+#Standard Modules:
+import numpy as np[
+
 class AbstractPoint(object):
     """Abstract object that represents a point.
 
@@ -67,4 +70,17 @@ class AbstractLattice(object):
             self.slices.append(new_slice)
             start_id = new_slice.end_id
             lattice_x_coord += 1
+
+    def get_plottable_lattice(self, color_string):
+        slices_physical_x_coords = [eachSlice.get_physical_x_coords()
+                                    for eachSlice in self.slices]
+        slices_physical_y_coords = [eachSlice.get_physical_y_coords()
+                                    for eachSlice in self.slices]
+        physical_x_coords = util.fast_concat(slices_physical_x_coords)
+        physical_y_coords = util.fast_concat(slices_physical_y_coords)
+        physical_x_coords_array = np.array(physical_x_coords)
+        physical_y_coords_array = np.array(physical_y_coords)
+        lattice_points = [physical_x_coords_array, physical_y_coords_array]
+        plottable_lattice = [lattice_points, color_string]
+        return plottable_lattice
 
