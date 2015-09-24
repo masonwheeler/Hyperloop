@@ -22,8 +22,9 @@ class ElevationProfile(object):
         land_elevations = usgs.get_elevations(self.latlngs)
         return land_elevations
 
-    def __init__(self, geospatials, latlngs, arc_lengths, land_elevations=None):
-        self.geospatials = geospatials
+    def __init__(self, geospatials_partitions, latlngs, arc_lengths,
+                                               land_elevations=None):
+        self.geospatials_partitions = [geospatials_partitions]
         self.latlngs = latlngs
         self.arc_lengths = arc_lengths
         if land_elevations == None:
@@ -33,8 +34,9 @@ class ElevationProfile(object):
 
     @classmethod
     def merge_elevation_profiles(cls, elevation_profile_a, elevation_profile_b):
-        merged_geospatials = util.smart_concat(elevation_profile_a.geospatials,
-                                               elevation_profile_b.geospatials)
+        merged_geospatials_partitions = (
+                    elevation_profile_a.geospatials_partitions +
+                    elevation_profile_b.geospatials_partitions)
         merged_latlngs = util.smart_concat(elevation_profile_a.latlngs,
                                            elevation_profile_b.latlngs)
         merged_land_elevations = util.smart_concat(

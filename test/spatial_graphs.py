@@ -36,8 +36,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
 
     def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
-                       latlngs, geospatials_partitions, elevation_profile,
-                       spatial_curvature_array=None, tube_curvature_array=None):
+                                             latlngs, elevation_profile,
+                spatial_curvature_array=None, tube_curvature_array=None):
         abstract_graphs.AbstractGraph.__init__(self, abstract_graph.start_id,
                                                abstract_graph.end_id,
                                                abstract_graph.start_angle,
@@ -48,7 +48,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.tube_cost = tube_cost
         self.land_cost = land_cost  # The total cost of the land acquired       
         self.latlngs = latlngs  # The latitude longitude coordinates
-        self.geospatials_partitions = geospatials_partitions
         self.elevation_profile = elevation_profile
         self.arc_lengths = elevation_profile.arc_lengths
         self.tube_curvature_array = tube_curvature_array
@@ -89,21 +88,17 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
     @staticmethod
     def merge_spatial_curvature_arrays(spatial_graph_a, spatial_graph_b,
                                          graph_interpolator, resolution):
-        boundary_edge_geospatials_a = \
-            spatial_graph_a.geospatials_partitions[-1]
-        boundary_edge_geospatials_b = \
-            spatial_graph_b.geospatials_partitions[0]
-        sampled_boundary_edge_geospatials_a, boundary_arc_lengths_a = \
-            interpolate.sample_path(boundary_edge_geospatials_a, resolution)
-        sampled_boundary_edge_geospatials_b, boundary_arc_lengths_b = \
-            interpolate.sample_path(boundary_edge_geospatials_b, resolution)
-        boundary_a_length = len(boundary_arc_lengths_a)
-        boundary_b_length = len(boundary_arc_lengths_b)
-        sampled_boundary_geospatials = util.smart_concat(
-                                        sampled_boundary_edge_geospatials_a,
-                                        sampled_boundary_edge_geospatials_b)
-        interpolated_boundary_geospatials, spatial_boundary_curvature_array = \
-            graph_interpolator(sampled_boundary_geospatials)
+        boundary_geospatials_a = \
+            spatial_graph_a.elevation_profile.geospatials_partitions[-1]
+        boundary_geospatials_b = \
+            spatial_graph_b.elevation_profile.geospatials_partitions[0]
+        boundary_a_length = len(boundary_geospatials_a)
+        boundary_b_length = len(boundary_geospatials_b)
+        merged_boundary_geospatials = util.smart_concat(
+                                        boundary_geospatials_a,
+                                        boundary_geospatials_b)
+        interpolated_boundary_geospatials, boundary_spatial_curvature_array = \
+            graph_interpolator(merged_boundary_geospatials)
         spatial_curvature_array_a = spatial_graph_a.spatial_curvature_array
         spatial_curvature_array_b = spatial_graph_b.spatial_curvature_array
         boundary_curvatures_a = spatial_boundary_curvature_array[:
@@ -149,8 +144,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost
         latlngs = util.smart_concat(spatial_graph_a.latlngs,
                                     spatial_graph_b.latlngs)
-        geospatials_partitions = (spatial_graph_a.geospatials_partitions +
-                                  spatial_graph_b.geospatials_partitions)
         elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
                                               spatial_graph_a.elevation_profile,
                                               spatial_graph_b.elevation_profile)
@@ -160,7 +153,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         spatial_curvature_array = SpatialGraph.merge_spatial_curvature_arrays(
             spatial_graph_a, spatial_graph_b, graph_interpolator, resolution)
         merged_spatial_graph = cls(merged_abstract_graph, pylon_cost,
-           tube_cost, land_cost, latlngs, geospatials_partitions,
+           tube_cost, land_cost, latlngs,
            elevation_profile, spatial_curvature_array, tube_curvature_array)
         return merged_spatial_graph
 
