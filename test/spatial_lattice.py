@@ -8,7 +8,6 @@ Last Modification Purpose: Added Iteratively Spline construction
 
 # Standard Modules:
 import numpy as np
-import time
 
 # Our Modules:
 import abstract_lattice
@@ -93,7 +92,7 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
         return [x_spline, y_spline]
     
     def sample_directions_geospatials(self, directions_geospatials):
-        sampled_directions_geospatials = interpolate.sample_path(
+        sampled_directions_geospatials, arc_lengths = interpolate.sample_path(
                         directions_geospatials, self.SPATIAL_BASE_RESOLUTION)
         return sampled_directions_geospatials
    

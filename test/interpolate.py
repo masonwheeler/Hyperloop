@@ -51,9 +51,9 @@ def sample_edges(edges, sample_spacing):
     for edge in edges:
         edge_points, edge_arc_lengths, distance_along_edge = \
         sample_edge(edge, sample_spacing, distance_along_edge, start_arc_length)
-        start_arc_length = edge_arc_lengths[-1]
         points += edge_points
         arc_lengths += edge_arc_lengths
+        start_arc_length = arc_lengths[-1]
     return [points, arc_lengths]
 
 def sample_path(path_points, path_sample_spacing):
@@ -161,7 +161,6 @@ def error_test_2d(x_spline, y_spline, s_values, max_error, x_array, y_array):
     ##print("is error valid: " + str(is_error_valid))
     return is_error_valid
 
-##import time
 def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
              initial_end_weights, initial_smoothing_factor, max_error):
     x_spline, y_spline = smoothing_splines_2d(x_array, y_array, s_values,
@@ -170,11 +169,9 @@ def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
                                    x_array, y_array)
     smoothing_multiple = 2.0
     test_smoothing_factor = initial_smoothing_factor
-    ##print "array size: " 
-    ##print x_array.size
     if is_error_valid:
         while not is_error_valid:
-            ##print(test_smoothing_factor)
+            print(test_smoothing_factor)
             test_smoothing_factor *= 1.0 / smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_error_valid = error_test_2d(x_spline, y_spline, s_values,
@@ -183,12 +180,11 @@ def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
         set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
     else:
         while is_error_valid:
-            ##print(test_smoothing_factor)
+            print(test_smoothing_factor)
             test_smoothing_factor *= smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_error_valid = error_test_2d(x_spline, y_spline, s_values,
                                            max_error, x_array, y_array)
-    #time.sleep(1)
     return [x_spline, y_spline]
 
 ########## For Interpolating Splines ##########

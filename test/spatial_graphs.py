@@ -77,12 +77,11 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         tube_cost = spatial_edge.tube_cost       
         land_cost = spatial_edge.land_cost
         latlngs = spatial_edge.latlngs
-        geospatials_partitions = [spatial_edge.geospatials]
         elevation_profile = spatial_edge.elevation_profile        
         tube_curvature_array = spatial_edge.tube_curvature_array
         data = cls(abstract_graph, pylon_cost, tube_cost, land_cost,
-                   latlngs, geospatials_partitions, elevation_profile,
-                            tube_curvature_array=tube_curvature_array)
+                   latlngs, elevation_profile,
+                   tube_curvature_array=tube_curvature_array)
         return data
 
     @staticmethod
@@ -101,13 +100,13 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             graph_interpolator(merged_boundary_geospatials)
         spatial_curvature_array_a = spatial_graph_a.spatial_curvature_array
         spatial_curvature_array_b = spatial_graph_b.spatial_curvature_array
-        boundary_curvatures_a = spatial_boundary_curvature_array[:
+        boundary_curvatures_a = boundary_spatial_curvature_array[:
                                         boundary_a_length]
-        boundary_curvatures_b = spatial_boundary_curvature_array[
+        boundary_curvatures_b = boundary_spatial_curvature_array[
                                         -boundary_b_length:]
         if (spatial_curvature_array_a == None and
             spatial_curvature_array_b == None):
-            merged_curvature_array = spatial_boundary_curvature_array
+            merged_curvature_array = boundary_spatial_curvature_array
         elif (spatial_curvature_array_a != None and
               spatial_curvature_array_b != None):
             spatial_curvature_array_a[-boundary_a_length:] = \

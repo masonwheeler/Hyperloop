@@ -68,9 +68,10 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                            self.start_point.geospatial,
                                            self.end_point.geospatial,
                                            parameters.PYLON_SPACING)
+        geospatials_partitions = [geospatials]
         latlngs = self.geospatials_to_latlngs(geospatials)
         self.elevation_profile = elevation.ElevationProfile(
-                          geospatials, latlngs, arc_lengths)
+            geospatials_partitions, geospatials, latlngs, arc_lengths)
     
     def build_tube(self, tube_builder):
         tube_profile = tube_builder(self.elevation_profile)
@@ -136,19 +137,19 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                 spatial_edge.build_tube(self.tube_builder)
 
     def finish_edges_sets(self):
-        util.smart_print("Now computing land costs...")
-        t1 = time.time()
-        self.compute_land_costs()
-        t2 = time.time()
-        util.smart_print("Finished computing land costs in: " + str(t2 - t1)
-                         + " seconds.")
         util.smart_print("Now fetching land elevation...")
+        t1 = time.time()
         self.build_elevation_profiles()
-        t3 = time.time()
-        util.smart_print("Finished fetching land elevation in: " + str(t3 - t2)
+        t2 = time.time()
+        util.smart_print("Finished fetching land elevation in: " + str(t2 - t1)
                          + " seconds.")
         if self.TUBE_READY:
             self.build_tubes()
+        util.smart_print("Now computing land costs...")
+        self.compute_land_costs()
+        t3 = time.time()
+        util.smart_print("Finished computing land costs in: " + str(t3 - t2)
+                         + " seconds.")
    
     def __init__(self, spatial_lattice, spatial_interpolator,
                                                 tube_builder):

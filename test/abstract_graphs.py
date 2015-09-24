@@ -160,6 +160,7 @@ class AbstractGraphsSets(object):
                     merged_graph = self.merge_graph_pair(graph_a, graph_b)
                     merged_graphs.append(merged_graph) 
         if (len(merged_graphs) == 0):
+            print "none compatible"
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs)
