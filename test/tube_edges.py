@@ -2,24 +2,31 @@
 Original Developer: Jonathan Ward
 """
 
-class TubeEdge(abstract.AbstractEdge):
+# Custom Modules:
+import abstract_edges
+import angle_constraint
+import curvature
+import parameters
+import pylon_cost
+import tube_cost
 
-    def tube_cost(self, start_pylon, end_pylon):
-        start_tube_coords = start_pylon.tube_coords
-        end_tube_coords = end_pylon.tube_coords
-        tube_vector = util.edge_to_vector([start_tube_coords, end_tube_coords])
-        tube_length = util.norm(tube_vector)
-        tube_cost = tube_length * config.TUBE_COST_PER_METER
-        return tube_cost
+def compute_tube_degree_constraint(pylon_arc_length_spacing,
+                                     pylon_height_step_size,
+                                          tube_interpolator):
+    length_scale = pylon_arc_length_spacing
+    resolution = pylon_height_step_size
+    max_curvature = curvature.compute_curvature_threshold(parameters.MAX_SPEED,
+                                                 parameters.MAX_VERTICAL_ACCEL)
+    degree_constraint = angle_constraint.compute_angle_constraint(
+           length_scale, tube_interpolator, max_curvature, resolution)
+    return degree_constraint       
 
-    def pylon_cost(self, start_pylon, end_pylon):
-        total_pylon_cost = start_pylon.pylon_cost + end_pylon.pylon_cost
-        return total_pylon_cost
+class TubeEdge(abstract_edges.AbstractEdge):
 
     def __init__(self, start_pylon, end_pylon):
         abstract.AbstractEdge.__init__(self, start_pylon, end_pylon)
         self.tube_coords = [start_pylon.tube_coords, end_pylon.tube_coords]
-        self.tube_cost = self.tube_cost(start_pylon, end_pylon)
+        self.tube_cost = tube_cost.compute_pylon_cost(self.tube_coords)
         self.pylon_cost = self.pylon_cost(start_pylon, end_pylon)
 
 
