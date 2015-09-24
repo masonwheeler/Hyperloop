@@ -172,7 +172,7 @@ def parametric_splines_vertical_and_lateral_curvatures(x_spline, y_spline,
 def curvature_array_to_max_allowed_vels(curvature_array, accel_constraint):
     curvature_array_length = curvature_array.size
     accel_constraint_array = np.empty(curvature_array_length)
-    accel_constraint_array.fill(accel_constraint)
+    accel_constraint_array.fill(accel_constraint)    
     max_allowed_vels = np.sqrt(
         np.divide(accel_constraint_array,
                   curvature_array)
@@ -228,7 +228,6 @@ def effective_max_allowed_vels_1d(z_spline, s_values):
 def compute_curvature_threshold(speed, max_acceleration):
     curvature_threshold = max_acceleration / speed**2
     return curvature_threshold
-
 
 def test_curvature_validity(curvature_array, curvature_threshhold):
     curvature_size = curvature_array.size

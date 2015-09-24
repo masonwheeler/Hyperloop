@@ -26,12 +26,17 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
     def compute_min_time_and_total_cost(self, spatial_curvature_array,
                                               tube_curvature_array,
                                               arc_lengths):
-        max_allowed_vels = \
+        max_allowed_vels_lateral = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
                                               spatial_curvature_array)
+        max_allowed_vels_vertical = \
+            curvature.vertical_curvature_array_to_max_allowed_vels(
+                                              tube_curvature_array)
+        effective_max_allowed_vels = np.minimum(max_allowed_vels_vertical,
+                                                max_allowed_vels_lateral)
         time_checkpoints = \
             velocity.velocities_by_arc_length_to_time_checkpoints(
-                                        max_allowed_vels, arc_lengths)
+                              effective_max_allowed_vels, arc_lengths)
         self.min_time = time_checkpoints[-1]
         self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
 
@@ -175,7 +180,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
 
 
 class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
-    NUM_FRONTS_TO_SELECT = 5
+    NUM_FRONTS_TO_SELECT = 3
 
     def get_spatial_graphs_min_times_and_total_costs(self, spatial_graphs):
         spatial_graphs_min_times_and_total_costs = \
