@@ -49,7 +49,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.land_cost = land_cost  # The total cost of the land acquired       
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.elevation_profile = elevation_profile
-        self.arc_lengths = elevation_profile.arc_lengths
+        arc_lengths = elevation_profile.arc_lengths
         self.tube_curvature_array = tube_curvature_array
         self.spatial_curvature_array = spatial_curvature_array
         if self.spatial_curvature_array == None:
@@ -58,7 +58,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         else:
             self.compute_min_time_and_total_cost(self.spatial_curvature_array,
                                                  self.tube_curvature_array,
-                                                 self.arc_lengths)
+                                                 arc_lengths)
 
     def fetch_min_time_and_total_cost(self):
         if self.min_time == None or self.total_cost == None:
