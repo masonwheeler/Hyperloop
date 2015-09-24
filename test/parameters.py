@@ -37,8 +37,14 @@ PYLON_BASE_COST = 2000.0 #Dollars
 PYLON_COST_PER_METER = 10000.0 #Dollars
 TUBE_COST_PER_METER = 1000.0 #Dollars
 
-#########
-#Testing#
-#########
+#########################
+#Tube Profile Parameters#
+#########################
+PYLON_HEIGHT_STEP_SIZE = 10.0 #Meters
 
+##########################
+#Speed Profile Parameters#
+##########################
+
+MIN_SPEED = MAX_SPEED / 2.0
 JERK_TOL = 2

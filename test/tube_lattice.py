@@ -3,10 +3,12 @@ Original Developer: Jonathan Ward
 """
 
 # Custom Modules:
+import abstract_lattice
 import parameters
 import pylon_cost
+import util
 
-class PylonPoint(abstract.AbstractPoint):
+class PylonPoint(abstract_lattice.AbstractPoint):
 
     def __init__(self, pylon_id, abstract_x_coord, abstract_y_coord, arc_length,
                        geospatial, latlng, land_elevation, pylon_height):
@@ -20,11 +22,11 @@ class PylonPoint(abstract.AbstractPoint):
         self.pylon_cost = pylon_cost.compute_pylon_cost_v1(pylon_height)
         self.spatial_x_coord = distance_along_path
         self.spatial_y_coord = tube_elevation
-        abstract.AbstractPoint.__init__(self, pylon_id, lattice_x_coord,
-            lattice_y_coord, self.spatial_x_coord, self.spatial_y_coord)
+        abstract_lattice.AbstractPoint.__init__(self, pylon_id, lattice_x_coord,
+                    lattice_y_coord, self.spatial_x_coord, self.spatial_y_coord)
 
 
-class PylonSlice(abstract.AbstractSlice):
+class PylonSlice(abstract_lattice.AbstractSlice):
 
     @staticmethod
     def pylon_slice_points_builder(abstract_x_coord, pylon_slice_bounds,
@@ -62,7 +64,7 @@ class PylonSlice(abstract.AbstractSlice):
                                  PylonSlice.pylon_slice_points_builder)
 
 
-class PylonsLattice(abstract.AbstractLattice):
+class PylonsLattice(abstract_lattice.AbstractLattice):
 
     def circle_function(self, x, r):
         if x > r:
@@ -113,14 +115,14 @@ class PylonsLattice(abstract.AbstractLattice):
         for elevation_point in elevation_profile:
             distances.append(elevation_point["distance_along_path"])
             elevations.append(elevation_point["land_elevation"])
-        upper_speed = config.MAX_SPEED
+        max_speed = parameters.MAX_SPEED
         curvature_threshold_upper = interpolate.compute_curvature_threshold(
-            upper_speed, config.VERTICAL_ACCEL_CONSTRAINT)
+            max_speed, parameters.MAX_VERTICAL_ACCEL)
         radius_upper = 1.0 / curvature_threshold_upper
         envelope_upper = self.build_envelope(elevations, radius_upper)
-        lower_speed = config.MAX_SPEED / 1.2
+        min_speed = parameters.MIN_SPEED
         curvature_threshold_lower = interpolate.compute_curvature_threshold(
-            lower_speed, config.VERTICAL_ACCEL_CONSTRAINT)
+            min_speed, paramters.MAX_VERTICAL_ACCEL)
         radius_lower = 1.0 / curvature_threshold_lower
         envelope_lower = self.build_envelope(elevations, radius_lower)
         return [envelope_upper, envelope_lower]
@@ -135,7 +137,7 @@ class PylonsLattice(abstract.AbstractLattice):
             "geospatial": elevation_point["geospatial"],
             "latlng": elevation_point["latlng"],
             "land_elevation": land_elevation,
-            "pylon_height_step_size": config.PYLON_HEIGHT_STEP_SIZE
+            "pylon_height_step_size": parameters.PYLON_HEIGHT_STEP_SIZE
         }
         return pylons_slice_bounds
 
@@ -152,6 +154,6 @@ class PylonsLattice(abstract.AbstractLattice):
             self.build_pylons_envelopes(elevation_profile)
         pylons_slices_bounds = self.build_pylons_slices_bounds(
             elevation_profile, pylons_envelope_upper, pylons_envelope_lower)
-        abstract.AbstractLattice.__init__(self, pylons_slices_bounds,
-                                          PylonsSlice.pylons_builder)
+        abstract_lattice.AbstractLattice.__init__(self, pylons_slices_bounds,
+                                      PylonsSlice.pylon_slice_points_builder)
 
