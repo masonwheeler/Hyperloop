@@ -46,7 +46,8 @@ class SpatialPath2d(abstract_paths.AbstractPath):
                             in range(len(self.undersampled_geospatials))]
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution):
-        abstract_paths.AbstractPath.__init__(self, spatial_graph.geospatials,
+        graph_geospatials = spatial_graph.elevation_profile.geospatials
+        abstract_paths.AbstractPath.__init__(self, graph_geospatials,
                                        spatial_interpolator, base_resolution)
         self.geospatials = self.path_coordinates
         self.land_cost = spatial_graph.land_cost
