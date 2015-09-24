@@ -45,21 +45,21 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
                                             directions_geospatials,
                                             spatial_slice_y_spacing)
         point_id = slice_start_id
-        lattice_y_coord = 0
+        abstract_y_coord = 0
         spatial_slice_points = []
         for spatial_slice_geospatial in spatial_slice_geospatials:
-            is_in_right_of_way = (lattice_y_coord == 0)
+            is_in_right_of_way = (abstract_y_coord == 0)
             new_spatial_point = SpatialPoint(point_id, abstract_x_coord,
-                lattice_y_coord, spatial_slice_geospatial, is_in_right_of_way)
+                abstract_y_coord, spatial_slice_geospatial, is_in_right_of_way)
             spatial_slice_points.append(new_spatial_point)
             point_id += 1
-            lattice_y_coord += 1        
+            abstract_y_coord += 1        
         return [spatial_slice_points, point_id]        
 
     def __init__(self, abstract_x_coord, spatial_slice_bounds, slice_start_id):
         abstract_lattice.AbstractSlice.__init__(self, abstract_x_coord,
-                                        spatial_slice_bounds, slice_start_id,
-                                    SpatialSlice.spatial_slice_points_builder)
+                                  spatial_slice_bounds, slice_start_id,
+                             SpatialSlice.spatial_slice_points_builder)
 
 
 class SpatialLattice(abstract_lattice.AbstractLattice):

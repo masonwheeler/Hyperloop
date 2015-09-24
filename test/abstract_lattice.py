@@ -16,7 +16,7 @@ Last Modification Purpose:
 """
 
 #Standard Modules:
-import numpy as np[
+import numpy as np
 
 class AbstractPoint(object):
     """Abstract object that represents a point.
@@ -64,12 +64,12 @@ class AbstractLattice(object):
     def __init__(self, slices_bounds, slice_builder):
         self.slices = []
         start_id = 0
-        lattice_x_coord = 0
+        abstract_x_coord = 0
         for slice_bounds in slices_bounds:
-            new_slice = slice_builder(lattice_x_coord, slice_bounds, start_id)
+            new_slice = slice_builder(abstract_x_coord, slice_bounds, start_id)
             self.slices.append(new_slice)
             start_id = new_slice.end_id
-            lattice_x_coord += 1
+            abstract_x_coord += 1
 
     def get_plottable_lattice(self, color_string):
         slices_physical_x_coords = [eachSlice.get_physical_x_coords()

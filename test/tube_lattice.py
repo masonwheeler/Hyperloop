@@ -27,39 +27,39 @@ class PylonPoint(abstract.AbstractPoint):
 class PylonSlice(abstract.AbstractSlice):
 
     @staticmethod
-    def pylons_builder(lattice_x_coord, pylon_slice_bounds, shortest_pylon_id):
-        pylon_height_step_size = pylon_slice_bounds["pylon_height_step_size"]
-        tallest_pylon_height = pylon_slice_bounds["tallest_pylon_height"]
-        shortest_pylon_height = pylon_slice_bounds["shortest_pylon_height"]
-        distance_along_path = pylon_slice_bounds["distance_along_path"]
+    def pylon_slice_points_builder(abstract_x_coord, pylon_slice_bounds,
+                                                  slice_start_id):
+        pylon_height_step_size = pylon_slice_bounds["heightStepSize"]
+        max_height = pylon_slice_bounds["maxHeight"]
+        arc_length = pylon_slice_bounds["arcLength"]
         geospatial = pylon_slice_bounds["geospatial"]
         latlng = pylon_slice_bounds["latlng"]
         land_elevation = pylon_slice_bounds["land_elevation"]
-        shortest_pylon_height = 0
-        pylon_height_options = util.build_grid_1d(tallest_pylon_height,
-                         shortest_pylon_height, pylon_height_step_size)
-        pylon_ids = [index + shortest_pylon_id for index
-                     in range(len(pylon_height_options))]
-        pylons = []
-        for i in range(len(pylon_ids)):
-            pylon_id = pylon_ids[i]
-            pylon_lattice_x_coord = lattice_x_coord
-            pylon_lattice_y_coord = i
-            pylon_distance_along_path = distance_along_path
-            pylon_geospatial = geospatial
-            pylon_lat_lng = latlng
-            pylon_land_elevation = land_elevation
-            pylon_height = pylon_height_options[i]
-            new_pylon = PylonPoint(pylon_id,
-                                   pylon_lattice_x_coord,
-                                   pylon_lattice_y_coord,
-                                   pylon_distance_along_path,
-                                   pylon_geospatial,
-                                   pylon_lat_lng,
-                                   pylon_land_elevation,
-                                   pylon_height)
-            pylons.append(new_pylon)
-        return pylons
+
+        min_height = 0
+        pylon_heights = util.build_grid_1d(max_height, min_height,
+                                                  pylon_height_step_size)
+        point_id = slice_start_id
+        abstract_y_coord = 0
+        pylon_slice_points = []
+        for pylon_height in pylon_heights:
+            new_pylon_point = PylonPoint(point_id,
+                                         abstract_x_coord,
+                                         abstract_y_coord,
+                                         arc_length,
+                                         geospatial
+                                         latlng,
+                                         land_elevation
+                                         pylon_height)
+            pylon_slice_points.append(new_pylon_point)
+            point_id += 1
+            abstract_y_coord += 1
+        return [pylon_slice_points, point_id]
+
+    def __init__(self, abstract_x_coord, pylon_slice_bounds, slice_start_id):
+        abstract_lattice.AbstractSlice.__init__(self, abstract_x_coord,
+                                    pylon_slice_bounds, slice_start_id,
+                                 PylonSlice.pylon_slice_points_builder)
 
 
 class PylonsLattice(abstract.AbstractLattice):
