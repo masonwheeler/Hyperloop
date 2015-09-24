@@ -185,7 +185,7 @@ class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
             return None
         else:
             return spatial_graphs_min_times_and_total_costs
-
+   
     def __init__(self, spatial_graphs):
         minimize_cost = True
         minimize_time = True        

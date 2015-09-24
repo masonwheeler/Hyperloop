@@ -165,7 +165,7 @@ class AbstractGraphsSets(object):
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs)
             return merged_graphs_set
-
+    
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
                                                           graphs_set_builder):
         self.merge_graph_pair = merge_graph_pair

@@ -11,6 +11,7 @@ Last Modification Purpose: Added MasterTree Class
 # Standard Modules:
 import collections
 
+# Custom Modules:
 import config
 
 class MergeTree(object):
@@ -152,6 +153,9 @@ class MergeTree(object):
 class MasterTree(object):
     """Wrapper class which merges all objects
     """
+
+    MAX_LAYER_DEPTH = 2
+
     @staticmethod
     def objects_to_leaves(objects, data_updater):
         """Takes list of objects and initializes a list of MergeTrees."""
@@ -184,19 +188,32 @@ class MasterTree(object):
             merged_branch = MergeTree(left_branch, right_branch, data,
                                       children_merger, data_updater)
             next_branch_layer.append(merged_branch)
-        return next_branch_layer
-
-    @staticmethod
-    def merge_all_objects(objects, children_merger, data_updater):
+        return next_branch_layer    
+    
+    def merge_all_objects(self, objects, children_merger, data_updater):
         """Recursively merges objects until list is completely merged."""
-        branch_layer = MasterTree.objects_to_leaves(objects, data_updater)
+        branch_layers = []
+        new_branch_layer = MasterTree.objects_to_leaves(objects, data_updater)
+        branch_layers.append(branch_layer)
+        layer_index = 0
         while len(branch_layer) > 1:
-            branch_layer = MasterTree.merge_branch_layer(branch_layer,
+            last_branch_layer = branch_layers[-1]
+            new_branch_layer = MasterTree.merge_branch_layer(last_branch_layer,
                                         children_merger, data_updater)
-        merged_objects = branch_layer[0]
+            branch_layers.append(new_branch_layer)
+            layer_index += 1
+            if layer_index > self.MAX_LAYER_DEPTH:
+                layer_index_to_free = layer_index - self.MAX_LAYER_DEPTH
+                layer_to_free = branch_layers[layer_index_to_free]
+                for merge_tree in layer_to_free:
+                    merge_tree.data = None
+                
+        top_branch_layer = branch_layers[-1]
+        merged_objects = top_branch_layer[0]
         return merged_objects
 
+    @profile
     def __init__(self, objects_to_merge, children_merger, data_updater):
-        root_merge_tree = MasterTree.merge_all_objects(objects_to_merge,
+        root_merge_tree = self.merge_all_objects(objects_to_merge,
                                           children_merger, data_updater)
         self.root = root_merge_tree.data

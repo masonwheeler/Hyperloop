@@ -38,7 +38,6 @@ if config.VISUAL_MODE:
     VISUALIZE_PATHS_3D = True
 
 
-import proj
 def build_directions(start, end):
     """Build Directions Object
     """
