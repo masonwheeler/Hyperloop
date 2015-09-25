@@ -35,13 +35,13 @@ def sample_edge(edge, sample_spacing, distance_along_edge, start_arc_length):
     edge_points = []
     edge_arc_lengths = []
     while distance_along_edge <= edge_length:
+        point_arc_length = distance_along_edge + start_arc_length
+        edge_arc_lengths.append(point_arc_length)
         point = distance_along_edge_to_point(edge, distance_along_edge)
         edge_points.append(point)
         distance_along_edge += sample_spacing
-        point_arc_length = distance_along_edge + start_arc_length
-        edge_arc_lengths.append(point_arc_length)
     distance_along_edge -= edge_length
-    return [edge_points, edge_arc_lengths, distance_along_edge]
+    return [edge_points, edge_arc_lengths, distance_along_edge, edge_length]
 
 def sample_edges(edges, sample_spacing):
     distance_along_edge = 0
@@ -49,20 +49,18 @@ def sample_edges(edges, sample_spacing):
     points = []
     arc_lengths = []    
     for edge in edges:
-        edge_points, edge_arc_lengths, distance_along_edge = \
+        edge_points, edge_arc_lengths, distance_along_edge, edge_length = \
         sample_edge(edge, sample_spacing, distance_along_edge, start_arc_length)
         points += edge_points
         arc_lengths += edge_arc_lengths
-        start_arc_length = arc_lengths[-1]
-    return [points, arc_lengths]
+        start_arc_length += edge_length
+    last_arc_length = start_arc_length
+    return [points, arc_lengths, last_arc_length]
 
 def sample_path(path_points, path_sample_spacing):
     path_edges = points_to_edges(path_points)
-    sampled_path_points, sampled_arc_lengths = sample_edges(path_edges,
-                                                            path_sample_spacing)
-    path_vectors = [util.edge_to_vector(edge) for edge in path_edges]
-    edge_lengths = [util.norm(vector) for vector in path_vectors]
-    last_arc_length = sum(edge_lengths)   
+    sampled_path_points, sampled_arc_lengths, last_arc_length = \
+                    sample_edges(path_edges, path_sample_spacing)
     last_point = path_points[-1]
     sampled_arc_lengths.append(last_arc_length)
     sampled_path_points.append(last_point)
@@ -156,9 +154,7 @@ def error_test_2d(x_spline, y_spline, s_values, max_error, x_array, y_array):
     y_differences = interpolated_y_array - y_array
     points_errors = np.hypot(x_differences, y_differences)
     largest_error = np.amax(points_errors)
-    ##print("largest error: " + str(largest_error))
     is_error_valid = (largest_error <= max_error)   
-    ##print("is error valid: " + str(is_error_valid))
     return is_error_valid
 
 def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
