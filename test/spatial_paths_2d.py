@@ -15,6 +15,7 @@ Last Modification Purpose:
     Created Module
 """
 
+# Custom Modules:
 import abstract_paths
 import cacher
 import config
@@ -30,33 +31,41 @@ class SpatialPath2d(abstract_paths.AbstractPath):
         self.latlngs = geospatials_to_latlngs(self.geospatials)
 
     def compute_land_cost(self):
-        print "graph land cost: " + str(self.land_cost)
+        ##needs to handle right of way
         self.land_cost = landcover.get_land_cost(self.latlngs)
-        print "path land cost: " + str(self.land_cost)
 
     def get_elevation_profile(self, geospatials_to_latlngs):
         undersampled_latlngs = geospatials_to_latlngs(
                             self.undersampled_geospatials)
         self.elevation_profile = elevation.ElevationProfile(
-                                  self.undersampled_geospatials,
+                                           self.geospatials,
                                            undersampled_latlngs,
                                                self.arc_lengths)
 
-    def undersample_geospatials(self, undersampling_factor):
+    def undersample_graph_geospatials(self, graph_geospatials,
+                                         undersampling_factor):
         sample_spacing = parameters.PYLON_SPACING * undersampling_factor
-        self.undersampled_geospatials, arc_lengths = interpolate.sample_path(
-                                            self.geospatials, sample_spacing)
-        self.arc_lengths = [sample_spacing * (i + 1) for i
-                            in range(len(self.undersampled_geospatials))]
+        undersampled_graph_geospatials, undersampled_arc_lengths = \
+                    interpolate.sample_path(graph_geospatials, sample_spacing)
+        return undersampled_graph_geospatials
 
-    def __init__(self, spatial_graph, spatial_interpolator, base_resolution):
-        ##print "graph min time: " + str(spatial_graph.min_time/60.0)
+    def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
+                                                       undersampling_factor):
         graph_geospatials = spatial_graph.elevation_profile.geospatials
-        abstract_paths.AbstractPath.__init__(self, graph_geospatials,
-                                       spatial_interpolator, base_resolution)
-        self.geospatials = self.path_coordinates
+        undersampled_graph_geospatials = self.undersample_graph_geospatials(
+                                    graph_geospatials, undersampling_factor)
+        self.geospatials, self.spatial_curvature_array = \
+           spatial_interpolator(undersampled_graph_geospatials, base_resolution)
+        #Use underlying graph data:
         self.land_cost = spatial_graph.land_cost
-        self.elevation_profile = spatial_graph.elevation_profile        
+        self.elevation_profile = spatial_graph.elevation_profile
+
+    def to_plottable(self, color_string):
+    """Return the physical coordinates of the path in a plottable format
+    """
+        path_points = zip(*self.geospatials)
+        plottable_path = [path_points, color_string]
+        return plottable_path
 
 
 class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
@@ -66,10 +75,6 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
     IS_SKIPPED = cacher.SKIP_PATHS_2D
    
     UNDERSAMPLING_FACTOR = 4
-
-    def undersample_paths_geospatials(self):
-        for path in self.paths:
-            path.undersample_geospatials(self.UNDERSAMPLING_FACTOR)
     
     def get_paths_latlngs(self):
         for path in self.paths:
@@ -78,10 +83,6 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
     def get_paths_elevation_profiles(self):
         for path in self.paths:
             path.get_elevation_profile(self.geospatials_to_latlngs)
-
-    def get_paths_land_costs(self):
-        for path in self.paths:
-            path.compute_land_cost()
  
     def __init__(self, spatial_graphs_sets):
         self.start = spatial_graphs_sets.start
@@ -93,14 +94,10 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
         self.tube_builder = spatial_graphs_sets.tube_builder
         self.spatial_base_resolution = \
             spatial_graphs_sets.spatial_base_resolution
-        abstract_paths.AbstractPathsSet.__init__(self,
-                                  spatial_graphs_sets,
-                            self.spatial_interpolator,
-                         self.spatial_base_resolution,
-                                        SpatialPath2d)
+        self.graphs = spatial_graphs_sets.graphs
+        self.paths = [SpatialPath2d(graph, self.spatial_interpolator,
+             self.spatial_base_resolution, self.UNDERSAMPLING_FACTOR)
         self.get_paths_latlngs()
-        self.undersample_paths_geospatials()
-        ##self.get_paths_land_costs() #needs to handle right of way
         self.get_paths_elevation_profiles()        
 
     def get_plottable_graphs(self, color_string):
@@ -116,7 +113,8 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
             plottable_path = path.to_plottable(color_string)
             plottable_paths.append(plottable_path)
         return plottable_paths
-       
+
+
 def get_spatial_paths_set_2d(*args):
     spatial_paths_set_2d = cacher.get_object(SpatialPathsSet2d.NAME,
                                              SpatialPathsSet2d,

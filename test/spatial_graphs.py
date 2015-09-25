@@ -69,9 +69,9 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         if self.min_time == None or self.total_cost == None:
             return None
         else:
-            time = round(self.min_time / 60.0, 3)
+            min_time = round(self.min_time / 60.0, 3)
             total_cost = round(self.total_cost / 10.0**6, 3)
-            return [time, total_cost]
+            return [min_time, total_cost]
 
     @classmethod
     def init_from_spatial_edge(cls, spatial_edge):

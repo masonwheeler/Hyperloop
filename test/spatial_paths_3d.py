@@ -3,6 +3,9 @@ Original Developer:
     Jonathan Ward
 """
 
+# Standard Modules:
+import numpy as np
+
 # Custom Modules:
 import cacher
 import config
@@ -42,13 +45,16 @@ class SpatialPath3d(object):
         self.tube_cost = tube_profile.tube_cost
         self.land_elevations = tube_profile.land_elevations
         self.arc_lengths = tube_profile.arc_lengths
-        self.min_time = tube_profile.min_time
-        print "min time"
-        print self.min_time / 60.0
+        self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
+        self.tube_curvature_array = tube_profile.tube_curvature_array
+        self.compute_min_time_and_total_cost(self.spatial_curvature_array,
+                                                self.tube_curvature_array,
+                                                         self.arc_lengths)
 
-    def get_time_and_cost(self):
-        total_cost = self.land_cost + self.pylon_cost + self.tube_cost
-        return [self.min_time, total_cost]
+    def fetch_min_time_and_total_cost(self):
+        min_time = round(self.min_time / 60.0, 3)
+        total_cost = round(self.total_cost / 10.0**6, 3)
+        return [min_time, total_cost]
 
 
 class SpatialPathsSet3d(object):
@@ -93,7 +99,8 @@ class SpatialPathsSets3d(object):
         paths_lists = [paths_set.paths for paths_set in self.paths_sets]
         paths = util.fast_concat(paths_lists)
         print "num paths 3d: " + str(len(paths))
-        paths_times_and_costs = [path.get_time_and_cost() for path in paths]
+        paths_times_and_costs = [path.fetch_min_time_and_total_cost()
+                                 for path in paths]
         minimize_time = True
         minimize_cost = True
         front = paretofront.ParetoFront(paths_times_and_costs, minimize_time,
