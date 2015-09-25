@@ -155,13 +155,13 @@ class VelocityProfile(object):
         return velocities_by_arc_length
     
     def __init__(self, spatial_path_3d,
-                 max_linear_accel=None,
+                 max_longitudinal_accel=None,
                          jerk_tol=None):
 
-        if max_linear_accel == None:
-            self.max_linear_accel = parameters.MAX_LINEAR_ACCEL
+        if max_longitudinal_accel == None:
+            self.max_longitudinal_accel = parameters.MAX_LONGITUDINAL_ACCEL
         else:
-            max_linear_accel = max_linear_accel
+            self.max_longitudinal_accel = max_longitudinal_accel
 
         if jerk_tol == None:
             self.jerk_tol = parameters.JERK_TOL

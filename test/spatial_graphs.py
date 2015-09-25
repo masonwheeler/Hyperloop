@@ -115,11 +115,11 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         elif (spatial_curvature_array_a != None and
               spatial_curvature_array_b != None):
             spatial_curvature_array_a[-boundary_a_length:] = \
-            (spatial_curvature_array_a[-boundary_a_length:] +
-             boundary_curvatures_a) / 2.0
+                np.maximum(spatial_curvature_array_a[-boundary_a_length:],
+                           boundary_curvatures_a)
             spatial_curvature_array_b[:boundary_b_length] = \
-            (spatial_curvature_array_b[:boundary_b_length] +
-             boundary_curvatures_b) / 2.0
+                np.maximum(spatial_curvature_array_b[:boundary_b_length],
+                           boundary_curvatures_b)
             merged_curvature_array = util.smart_concat_array(
                                       spatial_curvature_array_a,
                                       spatial_curvature_array_b)

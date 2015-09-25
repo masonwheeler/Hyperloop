@@ -20,6 +20,7 @@ import cacher
 import config
 import elevation
 import interpolate
+import landcover
 import parameters
 
 class SpatialPath2d(abstract_paths.AbstractPath):
@@ -27,8 +28,10 @@ class SpatialPath2d(abstract_paths.AbstractPath):
     def get_latlngs(self, geospatials_to_latlngs):        
         self.latlngs = geospatials_to_latlngs(self.geospatials)
 
-    def compute_land_cost(self):              
-        self.land_cost = landcover.get_land_cost(self.path_latlngs)
+    def compute_land_cost(self):
+        print "graph land cost: " + str(self.land_cost)
+        self.land_cost = landcover.get_land_cost(self.latlngs)
+        print "path land cost: " + str(self.land_cost)
 
     def get_elevation_profile(self, geospatials_to_latlngs):
         undersampled_latlngs = geospatials_to_latlngs(
@@ -46,6 +49,7 @@ class SpatialPath2d(abstract_paths.AbstractPath):
                             in range(len(self.undersampled_geospatials))]
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution):
+        ##print "graph min time: " + str(spatial_graph.min_time/60.0)
         graph_geospatials = spatial_graph.elevation_profile.geospatials
         abstract_paths.AbstractPath.__init__(self, graph_geospatials,
                                        spatial_interpolator, base_resolution)
@@ -76,7 +80,7 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
 
     def get_paths_land_costs(self):
         for path in self.paths:
-            path.compute_land_cost(self.geospatials_to_latlngs)
+            path.compute_land_cost()
  
     def __init__(self, spatial_graphs_sets):
         self.start = spatial_graphs_sets.start
@@ -95,7 +99,8 @@ class SpatialPathsSet2d(abstract_paths.AbstractPathsSet):
                                         SpatialPath2d)
         self.get_paths_latlngs()
         self.undersample_paths_geospatials()
-        self.get_paths_elevation_profiles()
+        ##self.get_paths_land_costs() #needs to handle right of way
+        self.get_paths_elevation_profiles()        
 
     def get_plottable_graphs(self, color_string):
         plottable_graphs = []
