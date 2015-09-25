@@ -68,10 +68,10 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                            self.start_point.geospatial,
                                            self.end_point.geospatial,
                                            parameters.PYLON_SPACING)
-        geospatials_partitions = [geospatials]
         latlngs = self.geospatials_to_latlngs(geospatials)
         self.elevation_profile = elevation.ElevationProfile(
-            geospatials_partitions, geospatials, latlngs, arc_lengths)
+                          geospatials, latlngs, arc_lengths,
+                          geospatials_partitions=[geospatials])
     
     def build_tube(self, tube_builder):
         tube_profile = tube_builder(self.elevation_profile)

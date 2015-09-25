@@ -160,7 +160,6 @@ class TubeProfile(object):
         self.pylon_cost = sum(pylon_costs)
 
     def get_tube_coords(self):
-        print self.geospatials
         geospatial_x_vals, geospatial_y_vals = zip(*self.geospatials)
         self.tube_coords = zip(geospatial_x_vals, geospatial_y_vals,
                                                     self.tube_elevations)

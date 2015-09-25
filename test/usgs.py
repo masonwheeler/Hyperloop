@@ -37,7 +37,8 @@ USGS_FOLDER = "/usgs/"
 def get_bounding_coordinates(latlng_coord):
     """Get the top left corner of the latlng tile which the coord falls in
     """
-    lat, lng = latlng_coord
+    ##print latlng_coord
+    lat, lng = latlng_coord       
     lat_bound = int(math.ceil(lat))
     lng_bound = int(math.ceil(abs(lng)))    
     return [lat_bound, lng_bound]

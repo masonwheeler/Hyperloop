@@ -40,8 +40,8 @@ class SpatialPath2d(abstract_paths.AbstractPath):
 
     def undersample_geospatials(self, undersampling_factor):
         sample_spacing = parameters.PYLON_SPACING * undersampling_factor
-        self.undersampled_geospatials = interpolate.sample_path(
-                                   self.geospatials, sample_spacing)
+        self.undersampled_geospatials, arc_lengths = interpolate.sample_path(
+                                            self.geospatials, sample_spacing)
         self.arc_lengths = [sample_spacing * (i + 1) for i
                             in range(len(self.undersampled_geospatials))]
 
