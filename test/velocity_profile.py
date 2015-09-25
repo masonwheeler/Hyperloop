@@ -55,7 +55,7 @@ class VelocityProfile(object):
         arc_length_difference = arc_length_a - arc_length_b
         mean_vel = (velocity_a + velocity_b) / 2.0    
         
-        variable_a = self.max_linear_accel / mean_vel
+        variable_a = self.max_longitudinal_accel / mean_vel
         variable_b = self.jerk_tol / mean_vel**2
         
         threshold_arc_length = 2 * variable_a / variable_b

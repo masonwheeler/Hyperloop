@@ -19,6 +19,9 @@ import velocity
 
 class TubeProfile(object):
 
+    DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
+                             parameters.MAX_SPEED**2)
+
     def sort_elevations_indices(self, interior_land_elevations):
         interior_land_elevations_indices = range(len(interior_land_elevations))
         sorted_interior_land_elevations_indices = sorted(
@@ -34,7 +37,7 @@ class TubeProfile(object):
         elevation_difference = elevation_b - elevation_a
         arc_length_difference = arc_length_b - arc_length_a
         slope = np.absolute(elevation_difference / arc_length_difference)
-        is_elevation_pair_valid = slope < self.slope_constraint
+        is_elevation_pair_valid = slope < self.max_slope
         return is_elevation_pair_valid
     
     def test_land_elevations_pair_v1(self, elevation_a, arc_length_a,
@@ -166,15 +169,15 @@ class TubeProfile(object):
 
     def compute_tube_cost(self):
         self.tube_cost = tube_cost.compute_tube_cost_v1(self.tube_coords)
-  
         
-    #def __init__(self, elevation_profile, curvature_constraint):
-    #def __init__(self, elevation_profile, slope_constraint):
-    def __init__(self, elevation_profile):
-        #self.curvature_constraint = curvature_constraint
-        #self.slope_constraint = slope_constraint
-        self.max_curvature = \
-            parameters.MAX_VERTICAL_ACCEL / parameters.MAX_SPEED**2
+    def __init__(self, elevation_profile,
+                      max_curvature=None,
+                          max_slope=None):
+        self.max_slope = max_slope
+        if max_curvature == None:
+            self.max_curvature = self.DEFAULT_MAX_CURVATURE
+        else:
+            self.max_curvature = max_curvature
         self.geospatials = elevation_profile.geospatials
         self.latlngs = elevation_profile.latlngs
         self.arc_lengths = elevation_profile.arc_lengths
@@ -185,27 +188,3 @@ class TubeProfile(object):
         self.get_tube_coords()
         self.compute_tube_cost()
         self.build_pylons()
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -23,6 +23,7 @@ import interpolate
 import landcover
 import parameters
 
+
 class SpatialPath2d(abstract_paths.AbstractPath):
 
     def get_latlngs(self, geospatials_to_latlngs):        
