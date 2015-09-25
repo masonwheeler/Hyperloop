@@ -138,17 +138,9 @@ class TubeProfile(object):
         tube_elevations = tube_elevation_spline(self.arc_lengths)
         return [tube_elevations, tube_elevation_spline]
 
-    def compute_min_time_v1(self):
+    def compute_curvature(self):
         self.tube_curvature_array = curvature.compute_curvature_pchip(
-                   self.tube_elevation_spline, self.arc_lengths)
-        self.max_allowed_vels = \
-            curvature.curvature_array_to_bounded_max_allowed_vels(
-               self.tube_curvature_array, parameters.MAX_VERTICAL_ACCEL,
-                                    parameters.MAX_SPEED)
-        time_checkpoints = \
-            velocity.velocities_by_arc_length_to_time_checkpoints(
-                          self.max_allowed_vels, self.arc_lengths)
-        self.min_time = time_checkpoints[-1]
+                             self.tube_elevation_spline, self.arc_lengths)
         
     def build_pylons(self):
         self.pylon_heights = util.subtract(self.tube_elevations,
@@ -184,7 +176,22 @@ class TubeProfile(object):
         self.land_elevations = elevation_profile.land_elevations
         self.tube_elevations, self.tube_elevation_spline = \
             self.build_tube_elevations_v1()
-        self.compute_min_time_v1()
+        self.compute_curvature()
         self.get_tube_coords()
         self.compute_tube_cost()
         self.build_pylons()
+
+    def get_plottable_tube_profile(self, color_string):
+        tube_profile_points = [self.arc_lengths, self.tube_elevations]        
+        plottable_tube_profile = [tube_profile_points, color_string]
+        return plottable_tube_profile
+
+    def get_plottable_land_profile(self, color_string):
+        land_profile_points = [self.arc_lengths, self.land_elevations]
+        plottable_land_profile = [land_profile_points, color_string]
+        return plottable_land_profile
+
+    def get_plottable_tube_curvature(self, color_string):
+        tube_curvature_points = [self.arc_lengths, self.tube_curvature_array]
+        plottable_tube_curvature = [tube_curvature_points, color_string]
+        return plottable_tube_curvature
