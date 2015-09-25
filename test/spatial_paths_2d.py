@@ -35,12 +35,12 @@ class SpatialPath2d(object):
         sample_spacing = parameters.PYLON_SPACING * undersampling_factor
         undersampled_graph_geospatials, self.arc_lengths = \
                     interpolate.sample_path(graph_geospatials, sample_spacing)
-        print self.arc_lengths
         return undersampled_graph_geospatials
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
                                undersampling_factor, geospatials_to_latlngs):
         graph_geospatials = spatial_graph.elevation_profile.geospatials
+        self.undersampling_factor = undersampling_factor
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
         undersampled_graph_geospatials = self.undersample_graph_geospatials(
                                     graph_geospatials, undersampling_factor)        

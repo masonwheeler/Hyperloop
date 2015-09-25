@@ -32,10 +32,12 @@ class SpatialPath3d(object):
             velocity.velocities_by_arc_length_to_time_checkpoints(
                             effective_max_allowed_vels, arc_lengths)
         self.min_time = time_checkpoints[-1]
-        self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
+        normed_pylon_cost = self.pylon_cost * self.undersampling_factor
+        self.total_cost = normed_pylon_cost + self.tube_cost + self.land_cost
 
 
     def __init__(self, tube_profile, spatial_path_2d):
+        self.undersampling_factor = spatial_path_2d.undersampling_factor
         self.land_cost = spatial_path_2d.land_cost
         self.latlngs = spatial_path_2d.latlngs
         self.geospatials = spatial_path_2d.geospatials
@@ -92,11 +94,12 @@ class SpatialPathsSets3d(object):
 
     def build_paths_sets(self, spatial_paths_2d, tube_builder):
         print("Num paths 2d: " + str(len(spatial_paths_2d)))
-        self.paths_sets = [SpatialPathsSet3d(spatial_path_2d, tube_builder)
-                           for spatial_path_2d in spatial_paths_2d]      
+        paths_sets = [SpatialPathsSet3d(spatial_path_2d, tube_builder)
+                           for spatial_path_2d in spatial_paths_2d]
+        return paths_sets
         
-    def select_paths(self):
-        paths_lists = [paths_set.paths for paths_set in self.paths_sets]
+    def select_paths(self, paths_sets):
+        paths_lists = [paths_set.paths for paths_set in paths_sets]
         paths = util.fast_concat(paths_lists)
         print "num paths 3d: " + str(len(paths))
         paths_times_and_costs = [path.fetch_min_time_and_total_cost()
@@ -105,14 +108,8 @@ class SpatialPathsSets3d(object):
         minimize_cost = True
         front = paretofront.ParetoFront(paths_times_and_costs, minimize_time,
                                                                minimize_cost)
-        ##print "all times and costs"
-        ##print paths_times_and_costs
         selected_paths_indices = front.fronts_indices[-1]
         self.selected_paths = [paths[i] for i in selected_paths_indices]
-        ##selected_times_and_costs = [path.get_time_and_cost() for path
-        ##                            in self.selected_paths]
-        ##print "selected times and costs"
-        ##print selected_times_and_costs
         print "num paths 3d selected: " + str(len(self.selected_paths))
 
     def __init__(self, spatial_paths_set_2d):
@@ -122,8 +119,9 @@ class SpatialPathsSets3d(object):
         self.end_latlng = spatial_paths_set_2d.end_latlng
         tube_builder = spatial_paths_set_2d.tube_builder
         self.undersampling_factor = spatial_paths_set_2d.UNDERSAMPLING_FACTOR
-        self.build_paths_sets(spatial_paths_set_2d.paths, tube_builder)
-        self.select_paths()
+        paths_sets = self.build_paths_sets(spatial_paths_set_2d.paths,
+                                                         tube_builder)
+        self.select_paths(paths_sets)
         
                                                              
 def get_spatial_paths_sets_3d(*args):

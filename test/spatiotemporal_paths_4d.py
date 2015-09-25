@@ -22,18 +22,20 @@ class SpatiotemporalPath4d(object):
         self.tube_elevations = [tube_coord[2] for tube_coord in tube_coords]        
 
     def __init__(self, velocity_profile, spatial_path_3d):
-        self.trip_time = velocity_profile.trip_time
-        ##print self.trip_time / 60.0
-        self.speed_profile = velocity_profile.speed_profile
-        self.scalar_acceleration_profile = \
-            velocity_profile.scalar_acceleration_profile
+        #self.trip_time = velocity_profile.trip_time
+        #self.speed_profile = velocity_profile.speed_profile
+        #self.scalar_acceleration_profile = \
+        #    velocity_profile.scalar_acceleration_profile
+        self.speed_profile = []
+        self.scalar_acceleration_profile = []
+        self.trip_time = spatial_path_3d.min_time
         self.land_cost = spatial_path_3d.land_cost      
         self.latlngs = spatial_path_3d.latlngs
         self.geospatials = spatial_path_3d.geospatials
         self.pylons = spatial_path_3d.pylons
         self.pylon_cost = spatial_path_3d.pylon_cost
         self.tube_cost = spatial_path_3d.tube_cost        
-        self.total_cost = self.land_cost + self.pylon_cost + self.tube_cost
+        self.total_cost = spatial_path_3d.total_cost
         self.land_elevations = spatial_path_3d.land_elevations
         tube_coords = spatial_path_3d.tube_coords
         self.get_tube_elevations(tube_coords)
@@ -46,8 +48,9 @@ class SpatiotemporalPath4d(object):
 class SpatiotemporalPathsSet4d(object):
 
     def build_velocity_profiles_v1(self, spatial_path_3d):
-        velocity_profile = self.velocity_builder(spatial_path_3d)
-        velocity_profiles = [velocity_profile]
+        #velocity_profile = self.velocity_builder(spatial_path_3d)
+        #velocity_profiles = [velocity_profile]
+        velocity_profiles = [0]
         return velocity_profiles
 
     def build_paths(self, spatial_path_3d, velocity_profiles):
@@ -74,21 +77,18 @@ class SpatiotemporalPathsSets4d(object):
     def select_paths(self):
         paths_lists = [paths_set.paths for paths_set in self.paths_sets]
         paths = util.fast_concat(paths_lists)
-        ##print "num paths: " + str(len(paths))
+        """"
         paths_times_and_costs = [path.get_time_and_cost() for path in paths]
         minimize_time = True
         minimize_cost = True
         front = paretofront.ParetoFront(paths_times_and_costs, minimize_time,
                                                                minimize_cost)
-        ##print "all times and costs"
-        ##print paths_times_and_costs
         selected_paths_indices = front.fronts_indices[-1]
         self.selected_paths = [paths[i] for i in selected_paths_indices]
         selected_times_and_costs = [path.get_time_and_cost() for path
                                     in self.selected_paths]
-        ##print "selected times and costs"
-        ##print selected_times_and_costs
-        ##print "num paths selected: " + str(len(self.selected_paths))
+        """
+        self.selected_paths = paths
 
     def __init__(self, spatial_paths_sets_3d, velocity_builder):
         self.velocity_builder = velocity_builder

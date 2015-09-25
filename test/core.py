@@ -23,11 +23,9 @@ def pair_analysis(start, end):
     cacher.create_necessaryfolders(start, end)
     time_a = time.time()
     paths_3d = spatial.city_pair_to_paths_3d(start, end)
-    for path in paths_3d.selected_paths:
-        print "min time: " + str(path.min_time / 60.0)        
-    #paths_4d = spatiotemporal.paths_3d_to_paths_4d(paths_3d)
-    #routes_set = routes.RoutesSet(paths_4d)
-    #saver.save_routes_set(routes_set)
+    paths_4d = spatiotemporal.paths_3d_to_paths_4d(paths_3d)
+    routes_set = routes.RoutesSet(paths_4d)
+    saver.save_routes_set(routes_set)
     time_b = time.time()
     print "City pair analysis took " + str(time_b - time_a) + " seconds."
     return 0
