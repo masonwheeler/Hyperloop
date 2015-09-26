@@ -12,70 +12,34 @@ Last Modification Purpose: Created Module.
 
 # Standard Modules
 import numpy as np
-import time
-
-# Our Modules
-import config
-
-def velocities_to_velocity_pairs(velocities):
-    velocity_pairs = util.to_pairs(velocities)
-    return velocity_pairs
-
-def time_elapsed_to_velocity(velocity_pair, time_elapsed):
-    start_velocity, end_velocity = velocity_pair
-    start_velocity_time, start_velocity_val = start_velocity
-    end_velocity_time, end_velocity_val = end_velocity
-    velocity_difference = end_velocity_val - start_velocity_val
-    time_difference = end_velocity_time - start_velocity_time
-    relative_velocity_val = time_elapsed * velocity_difference / time_difference
-    velocity_val = start_velocity_val + relative_velocity_val
-    velocity_time = start_velocity_time + time_elapsed
-    velocity = [velocity_time, velocity_val]
-    return velocity
-
-def sample_velocity_pair(velocity_pair, time_step_size, time_elapsed):
-    sampled_velocities = []
-    start_velocity, end_velocity = velocity_pair
-    start_velocity_time, start_velocity_val = start_velocity
-    end_velocity_time, end_velocity_val = end_velocity
-    velocity_pairtime_difference = end_velocity_time - start_velocity_time
-    while time_elapsed <= velocity_pair_time_difference:
-        velocity = time_elapsed_to_velocity(velocity_pair, time_elapsed)
-        sampled_velocities.append(velocity)
-        time_elapsed += time_step_size
-    time_elapsed -= velocity_pair_time_difference
-    return [sampled_velocities, time_elapsed]
-
-def sample_velocities(velocities_by_time, time_step_size):
-    time_elapsed = 0
-    velocities = []
-    for velocity_pair in velocity_pairs:
-        sampled_velocities, time_elapsed = sample_velocity_pair(velocity_pair,
-                                                                time_elapsed)
-        velocities += sampled_velocities
-    return velocities
 
 
-def velocities_by_arc_length_to_time_checkpoints(velocities_by_arc_length,
-                                                             arc_lengths):
+def velocities_by_arc_length_to_times_by_arc_length(velocities_by_arc_length,
+                                                                 arc_lengths):
     arc_length_intervals = np.ediff1d(arc_lengths)
     velocities_a = velocities_by_arc_length[:-1]
     velocities_b = velocities_by_arc_length[1:]
     velocities_sums = velocities_a + velocities_b
     mean_velocities = np.divide(velocities_sums, 2)
-    ##print "arc lengths size: " + str(arc_length_intervals.size)
-    ##print "mean velocities size: " + str(mean_velocities.size)
     interval_times = np.divide(arc_length_intervals,
                                     mean_velocities)
-    interval_end_time_checkpoints = np.cumsum(interval_times)
-    time_checkpoints = np.insert(interval_end_time_checkpoints, 0, 0)
-    return time_checkpoints
+    cumulative_interval_times = np.cumsum(interval_times)
+    times_by_arc_length = np.insert(cumulative_interval_times, 0, 0)
+    return times_by_arc_length
 
-def reparametrize_velocities(velocities_by_arc_length, velocity_arclength_step_size,
-                             time_step_size):
-    time_checkpoints_array = velocities_by_arclength_to_time_checkpoints_array(
-        velocities_by_arc_length, velocity_arclength_step_size)
-    times_elapsed = np.cumsum(time_checkpoints_array)
+def velocities_by_arc_length_to_velocities_by_time(velocities_by_arc_length,
+                                                arc_lengths, time_step_size):
+    times_by_arc_length = velocities_by_arc_length_to_times_by_arc_length(
+                                        velocities_by_arc_length, arc_lengths)
+    trip_time = times_by_arc_length[-1]
+    time_differences = np.ediff1d(times_by_arc_lengths)
+    velocity_differences = np.ediff1d(velocities_by_arc_length)
+    num_time_steps = int(trip_time / time_step_size)
+    time_steps = np.empty(num_time_steps)
+    time_steps.fill(time_step_size)
+    cumulative_time_steps = np.cumsum(time_steps)
+    times_indices = np.searchsorted(times_by_arc_length, cumulative_time_steps)
+
     velocities_by_time = np.array([times_elapsed, velocities_by_arc_length]).T
     sampled_velocities_by_time = sample_velocities(velocities_by_time)
     return sampled_velocities_by_time

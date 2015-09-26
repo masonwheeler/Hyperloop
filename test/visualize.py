@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 
 PLOT_QUEUE_SPATIAL_2D = []
 PLOT_QUEUE_SCATTERPLOT = []
-
+ELEVATION_PROFILE_PLOT_QUEUE = []
+CURVATURE_PROFILE_PLOT_QUEUE = []
 
 def plot_object(object_data, style):
     x_values, y_values = object_data

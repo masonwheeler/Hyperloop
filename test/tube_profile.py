@@ -15,7 +15,9 @@ import pylon_cost
 import tube_cost
 import util
 import velocity
+import visualize
 
+VISUALIZE_PROFILES = True
 
 class TubeProfile(object):
 
@@ -180,6 +182,27 @@ class TubeProfile(object):
         self.get_tube_coords()
         self.compute_tube_cost()
         self.build_pylons()
+        if VISUALIZE_PROFILES:
+            plottable_tube_profile = self.get_plottable_tube_profile('r-')
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                       plottable_tube_profile)
+            plottable_land_profile = self.get_plottable_land_profile('b-')
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                       plottable_land_profile)
+            are_elevation_axes_equal = False
+            visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                                                 are_elevation_axes_equal)
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+
+            plottable_tube_curvature = self.get_plottable_tube_curvature('g-')
+            visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
+                                        plottable_tube_curvature)
+            are_curvature_axes_equal = False
+            visualize.plot_objects(visualize.CURVATURE_PROFILE_PLOT_QUEUE,
+                                                 are_curvature_axes_equal)
+            visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
+             
 
     def get_plottable_tube_profile(self, color_string):
         tube_profile_points = [self.arc_lengths, self.tube_elevations]        
