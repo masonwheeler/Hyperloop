@@ -34,15 +34,23 @@ def velocities_by_arc_length_to_velocities_by_time(velocities_by_arc_length,
     trip_time = times_by_arc_length[-1]
     time_differences = np.ediff1d(times_by_arc_lengths)
     velocity_differences = np.ediff1d(velocities_by_arc_length)
+    slopes = np.divide(velocity_differences, time_differences)
     num_time_steps = int(trip_time / time_step_size)
     time_steps = np.empty(num_time_steps)
     time_steps.fill(time_step_size)
     cumulative_time_steps = np.cumsum(time_steps)
-    times_indices = np.searchsorted(times_by_arc_length, cumulative_time_steps)
-
-    velocities_by_time = np.array([times_elapsed, velocities_by_arc_length]).T
-    sampled_velocities_by_time = sample_velocities(velocities_by_time)
-    return sampled_velocities_by_time
+    selected_indices = np.searchsorted(times_by_arc_length,
+                                       cumulative_time_steps)
+    selected_times_by_arc_length = times_by_arc_length[selected_indices]
+    selected_velocities_by_arc_length = velocities_by_arc_length[
+                                                    selected_indices]
+    selected_slopes = slopes[selected_indices]
+    excess_times = np.subtract(cumulative_time_steps,
+                               selected_times_by_arc_length)
+    excess_velocities = np.multiply(excess_times, selected_slopes)
+    velocities_by_time = np.add(excess_velocities, 
+                                selected_velocities_by_arc_length)
+    return velocities_by_time
 
 def compute_local_trip_time_excess(max_allowed_velocities,
                                    velocity_arc_length_step_size):
