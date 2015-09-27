@@ -17,13 +17,34 @@ def constrain_longitudinal_acceleration_for_velocities_by_arc_length(
     velocities_by_arc_length, arc_lengths, max_longitudinal_acceleration):
     num_velocities = velocities_by_arc_length.size
     arc_length_intervals = np.ediff1d(arc_lengths)
-    for i in range(num_velocities - 1):
-        velocity_a = velocities_by_arc_length[i]
-        velocity_b = velocities_by_arc_length[i + 1]
-        arc_length_interval = arc_length_intervals[i]
-        max_allowed_velocity_b = np.sqrt(velocity_a**2 + 
-            (max_longitudinal_acceleration * arc_length_interval))
-        
+    constraints_satisfied = False
+    while not constraints_satisfied:
+        forward_constraints_satisfied = True
+        backward_constraints_satisfied = True
+        for i in range(num_velocities - 1):
+            velocity_a = velocities_by_arc_length[i]
+            velocity_b = velocities_by_arc_length[i + 1]
+            arc_length_interval = arc_length_intervals[i]
+            max_allowed_velocity_b = np.sqrt(velocity_a**2 + 
+                (max_longitudinal_acceleration * arc_length_interval))
+            forward_constraint_satisfied = (velocity_b < max_allowed_velocity_b)
+            if not forward_constraint_satisfied:
+                velocities_by_arc_length[i + 1] = max_allowed_velocity_b
+                forward_constraints_satisfied = False
+        for i in reversed(range(num_velocities - 1)):
+            velocity_b = velocities_by_arc_length[i + 1]
+            velocity_a = velocities_by_arc_length[i]
+            arc_length_interval = arc_length_intervals[i]
+            max_allowed_velocity_a = np.sqrt(velocity_b**2 +
+                (max_longitudinal_acceleration * arc_length_interval))
+            backward_constraint_satisfied = (velocity_b <
+                                             max_allowed_velocity_b)
+            if not backward_constraint_satisfied:
+                velocities_by_arc_length[i] = max_allowed_velocity_a
+                backward_constraints_satisfied = False
+        constraints_satisfied = (forward_constraints_satisfied and
+                                backward_constraints_satisfied)
+    return velocities_by_arc_length        
 
 def velocities_by_arc_length_to_times_by_arc_length(velocities_by_arc_length,
                                                                  arc_lengths):
@@ -63,36 +84,3 @@ def velocities_by_arc_length_to_velocities_by_time(velocities_by_arc_length,
                                 selected_velocities_by_arc_length)
     return [velocities_by_time, cumulative_time_steps]
 
-def velocities_by_time_to_velocities_by_arc_length(
-
-def constrain_velocity_profile_longitudinal_accelerations(velocities_by_time,
-           time_step_size, max_longitudinal_acceleration, max_possible_speed):    
-    max_velocity_change = time_step_size * max_longitudinal_acceleration
-    num_relevant_time_steps = int(max_possible_speed / max_velocity_change)
-    num_velocities = velocities_by_time.size
-    constrained_velocities_by_time = np.empty(num_velocities)
-    constrained_velocities_by_time.fill(max_possible_speed)
-    for i in range(num_velocities):
-        num_previous_velocities = i
-        num_subsequent_velocities = (num_velocities - (i+1))
-        num_previous_relevant_velocities = min(num_relevant_time_steps,
-                                               num_previous_velocities)
-        num_subsequent_relevant_velocities = min(num_relevant_time_steps,
-                                               num_subsequent_velocities)
-        window = range(-num_previous_relevant_velocities,
-                      num_subsequent_relevant_velocities)
-        max_allowed_velocities = [abs(index) * max_velocity_change
-                                  for index in window]
-        first_relevant_index = i - num_previous_relevant_velocities
-        last_relevant_index = i + num_subsequent_relevant_velocities
-        constrained_velocities_by_time[first_relevant_index :
-                                       last_relevant_index] = \
-            np.minimum(constrained_velocities[first_relevant_index:
-                                               last_relevant_index],
-                       max_allowed_velociites)
-    return constrained_velocities
-    
-def compute_constrained_velocity_trip_time(constrained_velocities,
-                                                   time_step_size):
-    constrained_velocities_differences = np.ediff1(constrained_velocities)
-    np.multiply constrained_velocities_differences, time_step_size)
