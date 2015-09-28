@@ -26,10 +26,10 @@ class PylonPoint(abstract_lattice.AbstractPoint):
                     lattice_y_coord, self.spatial_x_coord, self.spatial_y_coord)
 
 
-class PylonSlice(abstract_lattice.AbstractSlice):
+class PylonsSlice(abstract_lattice.AbstractSlice):
 
     @staticmethod
-    def pylon_slice_points_builder(abstract_x_coord, pylon_slice_bounds,
+    def pylons_slice_points_builder(abstract_x_coord, pylon_slice_bounds,
                                                   slice_start_id):
         pylon_height_step_size = pylon_slice_bounds["heightStepSize"]
         max_height = pylon_slice_bounds["maxHeight"]
@@ -43,7 +43,7 @@ class PylonSlice(abstract_lattice.AbstractSlice):
                                                   pylon_height_step_size)
         point_id = slice_start_id
         abstract_y_coord = 0
-        pylon_slice_points = []
+        pylons_slice_points = []
         for pylon_height in pylon_heights:
             new_pylon_point = PylonPoint(point_id,
                                          abstract_x_coord,
@@ -53,10 +53,10 @@ class PylonSlice(abstract_lattice.AbstractSlice):
                                          latlng,
                                          land_elevation
                                          pylon_height)
-            pylon_slice_points.append(new_pylon_point)
+            pylons_slice_points.append(new_pylon_point)
             point_id += 1
             abstract_y_coord += 1
-        return [pylon_slice_points, point_id]
+        return [pylons_slice_points, point_id]
 
     def __init__(self, abstract_x_coord, pylon_slice_bounds, slice_start_id):
         abstract_lattice.AbstractSlice.__init__(self, abstract_x_coord,

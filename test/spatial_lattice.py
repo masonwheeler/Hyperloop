@@ -24,10 +24,10 @@ class SpatialPoint(abstract_lattice.AbstractPoint):
 
     def __init__(self, point_id, abstract_x_coord, abstract_y_coord,
                                   geospatial, is_in_right_of_way):
-        spatial_x_coord, spatial_y_coord = geospatial
+        physical_x_coord, physical_y_coord = geospatial
         abstract_lattice.AbstractPoint.__init__(self, point_id,
                             abstract_x_coord, abstract_y_coord,
-                              spatial_x_coord, spatial_y_coord)
+                            physical_x_coord, physical_y_coord)
         self.geospatial = geospatial
         self.is_in_right_of_way = is_in_right_of_way
 

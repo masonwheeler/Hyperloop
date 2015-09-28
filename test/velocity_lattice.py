@@ -2,28 +2,46 @@
 Original Developer: Jonathan Ward.
 """
 
-class Velocity(abstract.AbstractPoint):
+import abstract_lattice
+import parameters
+import util
 
-    def __init__(self, speed, distance_along_path, velocity_id):
-        velocity_coords = {"speed": speed,
-                           "distance_along_path":  distance_along_path}
-        abstract.AbstractPoint.__init__(velocity_coords, velocity_id)
+class SpeedPoint(abstract_lattice.AbstractPoint):
+
+    def __init__(self, point_id, abstract_x_coord, abstract_y_coord, 
+                                                  speed, arc_length):
+        physical_x_coord = arc_length
+        physical_y_coord = speed
+        abstract_lattice.AbstractPoint.__init__(self, point_id,
+                            abstract_x_coord, abstract_y_coord,
+                            physical_x_coord, physical_y_coord)
 
 
-class VelocitiesSlice(abstract.AbstractSlice):
+class SpeedsSlice(abstract.AbstractSlice):
 
-    def velocities_builder(self, velocities_slice_bounds, lowest_velocity_id):
-        max_speed = velocities_slice_bounds["max_speed"]
-        min_speed = velocities_slice_bounds["min_speed"]
-        speed_step_size = velocities_slice_bounds["speed_step_size"]
+    @staticmethod
+    def speeds_slice_points_builder(self, abstract_x_coord,
+                             speeds_slice_bounds, slice_start_id):
+        max_speed = speeds_slice_bounds["maxSpeed"]
+        min_speed = speeds_slice_bounds["minSpeed"]
+        arc_length = speeds_slice_bounds["arcLength"]
+        speed_step_size = speeds_slice_bounds["speedStepSize"]
         speed_difference = max_speed - min_speed
-        speed_options = util.build_grid2(speed_difference,
-                                         speeds_step_size, minimum_speed)
-        velocity_ids = [index + lowest_velocity_id for index
-                        in range(len(speed_options))]
-        velocity_options = [Velocity(speed_options[i], distance_along_path,
-                                     velocity_ids[i]) for i in range(len(velocity_ids))]
-        return velocity_options
+        speed_options = util.build_grid_1d(max_speed, min_speed,
+                                               speed_step_size)
+        point_id = slice_start_id
+        abstract_y_coord = 0
+        speeds_slice_points = []
+        for speed in speed_options:
+            new_speed_point = SpeedPoint(point_id,
+                                         abstract_x_coord,
+                                         abstract_y_coord,
+                                         speed,
+                                         arc_length)
+            speeds_slice_points.append(new_speed_point)
+            point_id += 1
+            abstract_y_coord += 1        
+        return speeds_slice_points
 
     def __init__(self, velocities_slice_bounds, lowest_velocity_id):
         abstract.AbstractSlice.__init__(velocities_slice_bounds,
