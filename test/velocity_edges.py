@@ -2,14 +2,15 @@
 Original Developer: Jonathan Ward
 """
 
-class VelocityProfileEdge(abstract.AbstractEdge):
+import abstract_edges
 
-    def __init__(self, start_velocity, end_velocity):
-        abstract.AbstractEdge.__init__(start_velocity, end_velocity)
+class SpeedProfileEdge(abstract_edges.AbstractEdge):
+
+    def __init__(self, start_speed_point, end_speed_point):
+        abstract.AbstractEdge.__init__(start_speed_point, end_speed_point)
 
 
-class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
-    velocity_profile_edge_degree_constraint = config.VELOCITY_PROFILE_DEGREE_CONSTRAINT
+class VelocityProfileEdgesSets(abstract_edges.AbstractEdgesSets):
 
     def velocity_profile_edge_builder(self, start_velocity, end_velocity):
         velocity_profile_edge = VelocityProfileEdge(
@@ -25,6 +26,3 @@ class VelocityProfileEdgesSets(abstract.AbstractEdgesSets):
 
     def __init__(self, velocities_lattice):
         abstract.AbstractEdgesSets.__init__(velocities_lattice,
-                                            self.velocity_profile_edge_builder,
-                                            self.                                       is_velocity_profile_edge_pair_compataible)
-
