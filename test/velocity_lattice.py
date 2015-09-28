@@ -17,7 +17,7 @@ class SpeedPoint(abstract_lattice.AbstractPoint):
                             physical_x_coord, physical_y_coord)
 
 
-class SpeedsSlice(abstract.AbstractSlice):
+class SpeedsSlice(abstract_lattice.AbstractSlice):
 
     @staticmethod
     def speeds_slice_points_builder(self, abstract_x_coord,
@@ -43,23 +43,22 @@ class SpeedsSlice(abstract.AbstractSlice):
             abstract_y_coord += 1        
         return speeds_slice_points
 
-    def __init__(self, velocities_slice_bounds, lowest_velocity_id):
-        abstract.AbstractSlice.__init__(velocities_slice_bounds,
-                                        lowest_velocity_id, self.velocities_builder)
+    def __init__(self, abstract_x_coord, speeds_slice_bounds, slice_start_id):
+        abstract_lattice.AbstractSlice.__init__(abstract_x_coord,
+                             speeds_slice_bounds, slice_start_id,
+                         SpeedsSlice.speeds_slice_points_builder)
 
-class VelocitiesLattice(abstract.AbstractLattice):
 
-    def max_allowed_velocities_to_velocity_slice_bounds(max_allowed_velocities):
-        num_arc_length_steps = max_allowed_velocities.length - 1
-        arc_length_steps_array = np.empty(num_arc_length_points)
-        arc_length_steps_array = np.fill(config.ARCLENGTH_STEP_SIZE)
-        partial_arc_length_array = np.cumsum(arc_length_steps_array)
-        arc_length_array = np.insert(partial_arc_length_array, 0, 0)
+class SpeedsLattice(abstract_lattice.AbstractLattice):
+
+
+    def max_allowed_velocities_to_velocity_slice_bounds(
+            max_allowed_velocities_by_arc_length, arc_lengths, speed_step_size):
         velocity_slices_bounds = []
         for i in range(len(max_allowed_velocities.length)):
             max_speed = max_allowed_velocities[i]
-            min_speed = config.SPEED_STEP_SIZE
-            speed_step_size = config.SPEED_STEP_SIZE
+            min_speed = speed_step_size
+            speed_step_size = paramete
             distance_along_path = arc_length_array[i]
             velocity_slice_bounds = {"max_speed": max_speed,
                                      "min_speed": min_speed,
