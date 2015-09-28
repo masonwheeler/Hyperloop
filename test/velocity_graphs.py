@@ -2,60 +2,67 @@
 Original Developer: Jonathan Ward
 """
 
-class VelocityProfileGraph(abstract.AbstractGraph):
-    velocity_arc_length_step_size = config.VELOCITY_ARC_LENGTH_STEP_SIZE
+import abstract_graphs
+import reparametrize_speeds
+import pod_orientation
 
-    def reparametrize_velocities(self, velocities_by_arclength):
-        velocities_by_time = reparametrize_velocities(velocities_by_arc_length,
-                                                      velocity_arc_length_step_size)
-        return velocities_by_time
+class SpeedProfileGraph(abstract_graphs.AbstractGraph):
 
-    def compute_comfort(self, velocities_by_time):
-        return comfort
+    def determine_pod_orientation(self):
 
-    def compute_trip_time(self, velocities_by_time):
-        return trip_time
+    def compute_comfort_rating_and_trip_time(self):
 
-    def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
-                 velocities_by_arclength):
-        abstract.AbstractGraph.__init__(start_id, end_id, start_angle, end_angle,
-                                        num_edges)
-        self.velocities_by_arc_length = velocities_by_arc_length
-        velocities_by_time = self.reparametrize_velocity(
-            velocities_by_in_arc_length)
-        self.velocities_by_time = velocities_by_time
-        self.comfort = self.compute_comfort(velocities_by_time)
-        self.triptime = self.compute_trip_time(velocities_by_time)
+    def __init__(self, abstract_graph, speeds_by_arc_length, arc_lengths)
+        abstract.AbstractGraph.__init__(self,
+                                        abstract_graph.start_id, 
+                                        abstract_graph.end_id,
+                                        abstract_graph.start_angle,
+                                        abstract_graph.end_angle
+                                        abstract_graph.abstract_coords)
+        self.speeds_by_arc_length = speeds_by_arc_length
+        self.arc_lengths = arc_lengths
 
     @classmethod
-    def init_from_velocity_profile_edge(cls, velocity_profile_edge):
-        start_id = velocity_profile_edge.start_id
-        end_id = velocity_profile_edge.end_id
-        start_angle = velocity_profile_edge.start_angle
-        end_angle = velocity_profile_edge.end_angle
-        num_edges = 1
-        velocities_by_arc_length = [velocity_profile_edge.start_velocity,
-                                    velocity_profile_edge.end_velocity]
-        data = cls(StartId, end_id, start_angle, end_angle, num_edges,
-                   velocities_by_arc_length)
+    def init_from_speed_profile_edge(cls, speed_profile_edge):
+        abstract_edge = speed_profile_edge.to_abstract_edge()
+        abstract_graph = abstract_graphs.AbstractGraph.init__from_abstract_edge(
+                                                                  abstract_edge)
+        speeds_by_arc_length = speed_profile_edge.speeds_by_arc_length
+        arc_lengths = speed_profile_edge.arc_lengths
+        data = cls(abstract_graph, speeds_by_arc_lengths, arc_lengths)
         return data
 
     @classmethod
-    def merge_two_velocity_profile_graphs(cls, velocity_profile_graph_a,
-                                          velocity_profile_graph_b):
-        start_id = velocity_profile_graph_a.start_id
-        end_id = velocity_profile_graph_b.end_id
-        start_angle = velocity_profile_graph_a.start_angle
-        end_angle = velocity_profile_graph_b.end_angle
-        num_edges = velocity_profile_graph_a.num_edges + \
-            velocity_profile_graph_b.num_edges
-        velocities_by_arc_length = velocity_profile_graph_a.velocities_by_arc_length + \
-            velocity_profile_graph_b.velocities_by_arc_length
-        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
-                   velocities_by_arc_length)
+    def merge_two_speed_profile_graphs(cls, speed_profile_graph_a,
+            speed_profile_graph_b, graph_interpolator, resolution):
+        abstract_graph_a = speed_profile_graph_a.to_abstract_graph()
+        abstract_graph_b = speed_profile_graph_b.to_abstract_graph()
+        merged_abstract_graph = \
+          abstract_graphs.AbstractGraph.merge_abstract_graphs(abstract_graph_a,
+                                                              abstract_graph_b)
+        speeds_by_arc_length = (speed_profile_graph_a.speeds_by_arc_length +
+                                speed_profile_graph_b.speeds_by_arc_length)
+        arc_lengths = (speed_profile_graph_a.arc_lengths +
+                       speed_profile_graph_b.arc_lengths)
+        data = cls(merged_abstract_graph, speeds_by_arc_length, arc_lengths)
         return data
 
-class VelocityProfileGraphsSet(abstract.AbstractGraphsSet):
+    def to_abstract_graph(self):
+        abstract_graph = abstract_graphs.AbstractGraph(self.start_id,
+                                                       self.end_id,
+                                                       self.start_angle,
+                                                       self.end_angle,
+                                                       self.abstract_coords)
+        return abstract_graph
+
+
+class SpeedProfileGraphsSet(abstract_graphs.AbstractGraphsSet):
+    NUM_FRONTS_TO_SELECT = 3
+
+    def fetch_speed_profile_graphs_comforts_and_trip_times(self,
+                                           speed_profile_graphs):
+        speed_profile_graphs_
+        
 
     def velocity_profile_graphs_comfort_triptime(self, velocity_profile_graphs):
         graphs_comfort_and_trip_time = [[graph.comfort, graph.triptime] for graph

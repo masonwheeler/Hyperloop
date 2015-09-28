@@ -47,7 +47,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                                abstract_graph.end_id,
                                                abstract_graph.start_angle,
                                                abstract_graph.end_angle,
-                                               abstract_graph.num_edges,
                                                abstract_graph.abstract_coords)
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
@@ -166,7 +165,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                                        self.end_id,
                                                        self.start_angle,
                                                        self.end_angle,
-                                                       self.num_edges,
                                                        self.abstract_coords)
         return abstract_graph
 

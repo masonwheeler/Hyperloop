@@ -23,13 +23,12 @@ import util
 
 class AbstractGraph(object):
 
-    def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
-                 abstract_coords):
+    def __init__(self, start_id, end_id, start_angle, end_angle,
+                                                abstract_coords):
         self.start_id = start_id
         self.end_id = end_id
         self.start_angle = start_angle
         self.end_angle = end_angle
-        self.num_edges = num_edges
         self.abstract_coords = abstract_coords
 
     @classmethod
@@ -38,11 +37,9 @@ class AbstractGraph(object):
         end_id = abstract_edge.end_id
         start_angle = abstract_edge.angle
         end_angle = abstract_edge.angle
-        num_edges = 1
         abstract_coords = [abstract_edge.start_abstract_coords,
                            abstract_edge.end_abstract_coords]
-        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
-                                                       abstract_coords)
+        data = cls(start_id, end_id, start_angle, end_angle, abstract_coords)
         return data
 
     @classmethod
@@ -51,11 +48,9 @@ class AbstractGraph(object):
         end_id = abstract_graph_b.end_id
         start_angle = abstract_graph_a.start_angle
         end_angle = abstract_graph_b.end_angle
-        num_edges = abstract_graph_a.num_edges + abstract_graph_b.num_edges
         abstract_coords = util.smart_concat(abstract_graph_a.abstract_coords,
                                             abstract_graph_b.abstract_coords)
-        data = cls(start_id, end_id, start_angle, end_angle, num_edges,
-                                                       abstract_coords)
+        data = cls(start_id, end_id, start_angle, end_angle, abstract_coords)
         return data
 
     def build_local_lattice(self, lattice_coords, spacing):
