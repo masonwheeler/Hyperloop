@@ -47,6 +47,11 @@ def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
                                      max_longitudinal_acceleration)
         max_squared_speeds = max_squared_speed_changes + squared_rel_min_speed
         max_speeds = np.sqrt(max_squared_speeds)
+        speeds_by_arc_length[min_relevant_index : max_relevant_index] = \
+            np.minimum(speeds_by_arc_length[min_relevant_index :
+                                            max_relevant_index],
+                       max_speeds)
+        """
         print rel_min_speed_index
         print rel_min_speed
         print relevant_arc_length_span
@@ -60,31 +65,8 @@ def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
         print max_squared_speed_changes
         print max_squared_speeds
         print max_speeds
-    
-    #num_speeds = speeds_by_arc_length.size
-    #arc_length_intervals = np.ediff1d(arc_lengths)
-    """
-    for i in xrange(num_speeds - 1):            
-        speed_a = speeds_by_arc_length[i]
-        speed_b = speeds_by_arc_length[i + 1]
-        arc_length_interval = arc_length_intervals[i]
-        max_allowed_speed_b = np.sqrt(speed_a**2 + 
-            2 * (max_longitudinal_acceleration * arc_length_interval))
-        forward_constraint_satisfied = (speed_b < max_allowed_speed_b)
-        if not forward_constraint_satisfied:
-            speeds_by_arc_length[i + 1] = max_allowed_speed_b
-    for i in reversed(xrange(num_speeds - 1)):
-        speed_b = speeds_by_arc_length[i + 1]
-        speed_a = speeds_by_arc_length[i]
-        arc_length_interval = arc_length_intervals[i]
-        max_allowed_speed_a = np.sqrt(speed_b**2 +
-            2 * (max_longitudinal_acceleration * arc_length_interval))
-        backward_constraint_satisfied = (speed_a <
-                                         max_allowed_speed_a)
-        if not backward_constraint_satisfied:
-            speeds_by_arc_length[i] = max_allowed_speed_a
-    """
-    raise ValueError 
+        print speeds_by_arc_length
+        """
     return speeds_by_arc_length        
 
 def speeds_by_arc_length_to_times_by_arc_length(speeds_by_arc_length,
@@ -130,7 +112,6 @@ def constrain_and_reparametrize_speeds_by_arc_length(speeds_by_arc_length,
     constrained_speeds_by_arc_length = \
         constrain_longitudinal_acceleration_for_speeds_by_arc_length(
             speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration)
-    raise ValueError
     speeds_by_time, cumulative_time_steps = \
         speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
                                         arc_lengths, time_step_size)
