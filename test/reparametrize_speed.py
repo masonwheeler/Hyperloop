@@ -10,15 +10,56 @@ Last Modified By: Jonathan Ward.
 Last Modification Purpose: Created Module.
 """
 
-# Standard Modules
+# Standard Modules:
+import math
 import numpy as np
 import scipy.signal
 
+# Custom Modules:
+import parameters
+
+
 def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
-    speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration,
-                                                           max_speed):
-    rel_min_speeds_indices = scipy.signal.argrelmin(speeds_by_arc_length)
-    rel_min_speeds = speeds_by_arc_length[rel_min_speeds_indices]
+    speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration):
+                                                         #  max_speed):
+    rel_min_speeds_indices_tuple = scipy.signal.argrelmin(speeds_by_arc_length)
+    rel_min_speeds_indices = rel_min_speeds_indices_tuple[0].tolist()
+    arc_length_step_size = arc_lengths[1]
+    for rel_min_speed_index in rel_min_speeds_indices:
+        rel_min_speed = speeds_by_arc_length[rel_min_speed_index]
+        squared_rel_min_speed = rel_min_speed**2
+        relevant_arc_length_span = ((parameters.MAX_SPEED**2 -rel_min_speed**2)/
+                                            (2 * max_longitudinal_acceleration))
+        relevant_arc_length_indices_span = int(relevant_arc_length_span/
+                                                   arc_length_step_size)
+        min_relevant_index = max(0, rel_min_speed_index -
+                                    relevant_arc_length_indices_span)
+        max_relevant_index = min(len(speeds_by_arc_length),
+            rel_min_speed_index + relevant_arc_length_indices_span)
+        min_relative_index = min_relevant_index - rel_min_speed_index
+        max_relative_index = max_relevant_index - rel_min_speed_index
+        relative_indices_range = range(min_relative_index, max_relative_index)
+        relative_indices_array = np.array(relative_indices_range)
+        absolute_relative_indices_array = np.absolute(relative_indices_array)
+        relative_distances_array = (absolute_relative_indices_array *
+                                                arc_length_step_size)
+        max_squared_speed_changes = (relative_distances_array * 2 *
+                                     max_longitudinal_acceleration)
+        max_squared_speeds = max_squared_speed_changes + squared_rel_min_speed
+        max_speeds = np.sqrt(max_squared_speeds)
+        print rel_min_speed_index
+        print rel_min_speed
+        print relevant_arc_length_span
+        print relevant_arc_length_indices_span
+        print min_relevant_index
+        print max_relevant_index
+        print min_relative_index
+        print max_relative_index
+        print absolute_relative_indices_array
+        print relative_distances_array
+        print max_squared_speed_changes
+        print max_squared_speeds
+        print max_speeds
     
     #num_speeds = speeds_by_arc_length.size
     #arc_length_intervals = np.ediff1d(arc_lengths)
@@ -43,9 +84,7 @@ def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
         if not backward_constraint_satisfied:
             speeds_by_arc_length[i] = max_allowed_speed_a
     """
-    constrained_speeds_by_arc_length = 
-    for i in range(speeds_by_arc_length.size):
-      
+    raise ValueError 
     return speeds_by_arc_length        
 
 def speeds_by_arc_length_to_times_by_arc_length(speeds_by_arc_length,
