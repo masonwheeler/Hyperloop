@@ -39,6 +39,7 @@ class SpatialPath2d(object):
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
                                undersampling_factor, geospatials_to_latlngs):
+        print spatial_graph.min_time / 60.0
         graph_geospatials = spatial_graph.elevation_profile.geospatials
         self.undersampling_factor = undersampling_factor
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths

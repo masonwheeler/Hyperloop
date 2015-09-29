@@ -14,7 +14,6 @@ import parameters
 import pylon_cost
 import tube_cost
 import util
-import velocity
 import visualize
 
 VISUALIZE_PROFILES = True
@@ -182,7 +181,7 @@ class TubeProfile(object):
         self.get_tube_coords()
         self.compute_tube_cost()
         self.build_pylons()
-        if VISUALIZE_PROFILES:
+        if VISUALIZE_PROFILES and config.VISUAL_MODE:
             plottable_tube_profile = self.get_plottable_tube_profile('r-')
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                                        plottable_tube_profile)

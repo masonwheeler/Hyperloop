@@ -12,7 +12,7 @@ import config
 import curvature
 import paretofront
 import util
-import velocity
+import reparametrize_speed
 
 
 class SpatialPath3d(object):
@@ -26,12 +26,14 @@ class SpatialPath3d(object):
         max_allowed_vels_vertical = \
             curvature.vertical_curvature_array_to_max_allowed_vels(
                                                     tube_curvature_array)
-        effective_max_allowed_vels = np.minimum(max_allowed_vels_vertical,
-                                                max_allowed_vels_lateral)
-        time_checkpoints = \
-            velocity.velocities_by_arc_length_to_time_checkpoints(
-                            effective_max_allowed_vels, arc_lengths)
-        self.min_time = time_checkpoints[-1]
+        effective_max_allowed_speeds_by_arc_length = np.minimum(
+            max_allowed_vels_vertical, max_allowed_vels_lateral)
+        time_step_size = 1 #second times
+        speeds_by_time, time_elapsed = \
+        reparametrize_speed.constrain_and_reparametrize_speeds_by_arc_length(
+                     effective_max_allowed_speeds_by_arc_length, arc_lengths,
+                           time_step_size, parameters.MAX_LONGITUDINAL_ACCEL)
+        self.min_time = time_elapsed
         normed_pylon_cost = self.pylon_cost * self.undersampling_factor
         self.total_cost = normed_pylon_cost + self.tube_cost + self.land_cost
 
