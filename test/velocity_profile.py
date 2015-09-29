@@ -12,7 +12,7 @@ import config
 import curvature
 import parameters
 import util
-import velocity
+import reparametrize_speed
 
 class VelocityProfile(object):
 
