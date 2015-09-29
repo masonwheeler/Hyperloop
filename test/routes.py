@@ -12,19 +12,19 @@ class Route(object):
     """
     def __init__(self, spatiotemporal_path_4d):
         self.scalar_acceleration_profile = \
-            spatiotemporal_path_4d.scalar_acceleration_profile      
-        self.comfort_rating = spatiotemporal_path_4d.comfort_rating
+            spatiotemporal_path_4d.scalar_acceleration_profile
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
+        self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.land_cost = spatiotemporal_path_4d.land_cost
         self.land_elevations = spatiotemporal_path_4d.land_elevations
         self.latlngs = spatiotemporal_path_4d.latlngs
         self.pylons = spatiotemporal_path_4d.pylons
         self.pylon_cost = spatiotemporal_path_4d.pylon_cost
+        self.speed_profile = spatiotemporal_path_4d.speed_profile
         self.total_cost = spatiotemporal_path_4d.total_cost
         self.trip_time = spatiotemporal_path_4d.trip_time
         self.tube_cost = spatiotemporal_path_4d.tube_cost
         self.tube_elevations = spatiotemporal_path_4d.tube_elevations
-        self.speed_profile = spatiotemporal_path_4d.speed_profile
 
     def as_dict(self, index):
         route_dict = {
@@ -37,11 +37,11 @@ class Route(object):
             "latlngs": self.latlngs,
             "pylons": self.pylons,
             "pylonCost": self.pylon_cost,
+            "speedProfile": self.speed_profile,
             "totalCost": self.total_cost,
             "tripTime": self.trip_time,
             "tubeCost": self.tube_cost,
-            "tubeElevations": self.tube_elevations,
-            "speedProfile": self.speed_profile
+            "tubeElevations": self.tube_elevations
             }
         return route_dict
 
