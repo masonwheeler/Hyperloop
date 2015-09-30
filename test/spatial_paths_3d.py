@@ -10,6 +10,7 @@ import numpy as np
 import cacher
 import config
 import curvature
+import parameters
 import paretofront
 import util
 import reparametrize_speed
