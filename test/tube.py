@@ -6,11 +6,21 @@ Original Developer: Jonathan Ward
 import config
 import parameters
 import tube_cost
-import tunneling_cost
 import util
 import visualize
 
+
 VISUALIZE_PROFILES = True
+
+
+class Pylon(object):
+    
+    def __init__(self, pylon_height, pylon_cost, latlng, geospatial)
+        self.pylon_height = pylon_height
+        self.pylon_cost = pylon_cost 
+        self.latlng = latlng
+        self.geospatial = geospatial
+
 
 class TubePoint(object):
 
@@ -24,15 +34,24 @@ class TubePoint(object):
             pylon_cost = height_cost + base_cost
         return pylon_cost
 
+    def build_pylon_at_tube_point(self):
+        pylon_at_tube_point = Pylon(self.pylon_height,
+                                    self.pylon_cost
+                                    self.latlng,
+                                    self.geospatial)
+        return pylon_at_tube_point
+
     def __init__(self, height_relative_to_ground, latlng, geospatial):
         self.latlng = latlng
         self.geospatial = geospatial
+        self.pylon_height = height_relative_to_ground
         self.is_underground = (height_relative_to_ground < 0)        
         self.pylon_cost = self.compute_pylon_cost(height_relative_to_ground)
 
+
 class TubeEdge(object):
 
-    def compute_tunneling_cost(self, tube_point_a, tube_point_b):
+    def compute_tunneling_cost(self, edge_length, tube_point_a, tube_point_b):
         if tube_point_a.is_underground and tube_point_b.is_underground:
             tunneling_cost = (self.edge_length * \
                               parameters.TUNNELING_COST_PER_METER)
@@ -46,16 +65,25 @@ class TubeEdge(object):
             tunneling_cost = 0.0
         return tunneling_cost
 
-    def compute_tube_cost(self):
-        tube_cost = self.edge_length * parameters.TUBE_COST_PER_METER
+    def compute_tube_cost(self, edge_length):
+        tube_cost = edge_length * parameters.TUBE_COST_PER_METER
         return tube_cost
 
+    def compute_edge_length(self, tube_point_a, tube_point_b):
+        edge_vector = util.subtract(tube_point_b.tube_coords,
+                                    tube_point_a.tube_coords)
+        edge_length = np.linalg.norm(edge_vector)
+        return edge_length          
+
     def __init__(self, tube_point_a, tube_point_b):
-        
+        edge_length = self.compute_edge_length(tube_point_a, tube_point_b)
+        self.tube_cost = self.compute_tube_cost(edge_length)
+        self.tunneling_cost = self.compute_tunneling_cost(edge_length)
+
 
 class Tube(object):
 
-    def build_tube_points(tube_profile):
+    def build_tube_points(self, tube_profile):
         tube_points_heights_relative_to_ground = util.subtract(
                                          tube_profile.tube_elevations,
                                          tube_profile.land_elevations)
@@ -68,22 +96,14 @@ class Tube(object):
             tube_points.append(tube_point)
         return tube_points
         
-    def build_tube_edges(tube_points):
+    def build_tube_edges(self, tube_points):
         tube_points_pairs = util.to_pairs(tube_points)
         tube_edges = [TubeEdge(pair[0], pair[1]) for pair in tube_points_pairs]
         return tube_edges
 
+    def select_tube_points_with_pylons(self, tube_points)
+
     def build_pylons(self):
-        self.pylon_heights = util.subtract(tube_profile.tube_elevations,
-                                           tube_profile.land_elevations)
-        pylon_costs = [pylon_cost.compute_pylon_cost_v1(pylon_height)
-                       for pylon_height in self.pylon_heights]
-        self.pylons = [{"latlng" : self.latlngs[i],
-                        "landElevation" : self.land_elevations[i],
-                        "pylonHeight" : self.pylon_heights[i],
-                        "pylonCost" : pylon_costs[i]}
-                        for i in range(len(self.pylon_heights))]
-        self.pylon_cost = sum(pylon_costs)
 
     def compute_tunneling_cost(self):
 
@@ -96,6 +116,8 @@ class Tube(object):
         self.compute_tube_cost(tube_profile)
         self.compute_tunneling_cost(tube_profile)
         self.build_pylons(tube_profile)
+
+    def visualize_tube(self, tube_profile)
         if VISUALIZE_PROFILES and config.VISUAL_MODE:
             plottable_tube_profile = self.get_plottable_tube_profile('r-')
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
