@@ -15,11 +15,10 @@ VISUALIZE_PROFILES = True
 
 class Pylon(object):
     
-    def __init__(self, pylon_height, pylon_cost, latlng, geospatial)
+    def __init__(self, pylon_height, pylon_cost, latlng):
         self.pylon_height = pylon_height
         self.pylon_cost = pylon_cost 
         self.latlng = latlng
-        self.geospatial = geospatial
 
 
 class TubePoint(object):
@@ -37,8 +36,7 @@ class TubePoint(object):
     def build_pylon_at_tube_point(self):
         pylon_at_tube_point = Pylon(self.pylon_height,
                                     self.pylon_cost
-                                    self.latlng,
-                                    self.geospatial)
+                                    self.latlng)
         return pylon_at_tube_point
 
     def __init__(self, height_relative_to_ground, latlng, geospatial):

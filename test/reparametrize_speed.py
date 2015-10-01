@@ -21,7 +21,6 @@ import parameters
 
 def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
     speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration):
-                                                         #  max_speed):
     rel_min_speeds_indices_tuple = scipy.signal.argrelmin(speeds_by_arc_length,
                                                                       order=5)
     rel_min_speeds_indices = rel_min_speeds_indices_tuple[0].tolist()
@@ -52,22 +51,6 @@ def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
             np.minimum(speeds_by_arc_length[min_relevant_index :
                                             max_relevant_index],
                        max_speeds)
-        """
-        print rel_min_speed_index
-        print rel_min_speed
-        print relevant_arc_length_span
-        print relevant_arc_length_indices_span
-        print min_relevant_index
-        print max_relevant_index
-        print min_relative_index
-        print max_relative_index
-        print absolute_relative_indices_array
-        print relative_distances_array
-        print max_squared_speed_changes
-        print max_squared_speeds
-        print max_speeds
-        print speeds_by_arc_length
-        """
     return speeds_by_arc_length        
 
 def speeds_by_arc_length_to_times_by_arc_length(speeds_by_arc_length,
@@ -110,9 +93,9 @@ def speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
 
 def constrain_and_reparametrize_speeds_by_arc_length(speeds_by_arc_length,
                arc_lengths, time_step_size, max_longitudinal_acceleration):
-    constrained_speeds_by_arc_length = speeds_by_arc_length#\
-    #    constrain_longitudinal_acceleration_for_speeds_by_arc_length(
-    #        speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration)
+    constrained_speeds_by_arc_length = \
+        constrain_longitudinal_acceleration_for_speeds_by_arc_length(
+            speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration)
     speeds_by_time, cumulative_time_steps = \
         speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
                                         arc_lengths, time_step_size)

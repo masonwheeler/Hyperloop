@@ -5,8 +5,15 @@ Original Developer: Jonathan Ward
 # Custom Modules:
 import abstract_lattice
 import parameters
-import pylon_cost
 import util
+
+class Pylon(object):
+
+    def __init__(self, pylon_height, pylon_cost, latlng):
+        self.pylon_height = pylon_height
+        self.pylon_cost = pylon_cost
+        self.latlng = latlng
+        
 
 class TubePoint(abstract_lattice.AbstractPoint):
 
