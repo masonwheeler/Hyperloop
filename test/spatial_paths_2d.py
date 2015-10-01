@@ -26,8 +26,7 @@ import parameters
 
 class SpatialPath2d(object):
 
-    def compute_land_cost(self):
-        ##needs to handle right of way
+    def compute_land_cost(self):        
         self.land_cost = landcover.get_land_cost(self.latlngs)
 
     def undersample_graph_geospatials(self, graph_geospatials,
@@ -38,8 +37,7 @@ class SpatialPath2d(object):
         return undersampled_graph_geospatials
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
-                               undersampling_factor, geospatials_to_latlngs):
-        print spatial_graph.min_time / 60.0
+                               undersampling_factor, geospatials_to_latlngs):       
         graph_geospatials = spatial_graph.elevation_profile.geospatials
         self.undersampling_factor = undersampling_factor
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
@@ -50,10 +48,14 @@ class SpatialPath2d(object):
         #Use underlying graph data:
         self.latlngs = geospatials_to_latlngs(self.geospatials)
         self.land_cost = spatial_graph.land_cost
-        self.elevation_profile = elevation.ElevationProfile(
-                                           self.geospatials,
-                                               self.latlngs,
-                                               self.arc_lengths)
+        self.pylon_cost = spatial_graph.pylon_cost
+        self.tube_cost = spatial_graph.tube_cost
+        self.total_cost = spatial_graph.total_cost
+        self.min_time = spatial_graph.min_time
+        #self.elevation_profile = elevation.ElevationProfile(
+        #                                   self.geospatials,
+        #                                       self.latlngs,
+        #                                       self.arc_lengths)
 
     def to_plottable(self, color_string):
         """Return the physical coordinates of the path in a plottable format

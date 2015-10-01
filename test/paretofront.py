@@ -10,6 +10,7 @@ Last Modification Purpose: To add comments.
 import scipy
 import numpy as np
 
+import time
 
 class ParetoFront(object):
     """
@@ -82,10 +83,25 @@ class ParetoFront(object):
             # To find the minimum x-value of the vertices with minimal y-values
             x_max_filter, _ = np.amin(y_min_vertices, axis=0)
             # Take the vertices which pass the x-value and y-value filters.
-            front_indices = np.where(np.logical_and(
+            front_indices_tuple = np.where(np.logical_and(
                 vertices[:, 0] <= x_max_filter,
                 vertices[:, 1] <= y_max_filter))
-            return front_indices
+            front_indices = front_indices_tuple[0]
+            reduced_vertices = vertices[front_indices]
+            sorted_reduced_vertices_indices = np.argsort(reduced_vertices[:, 0])
+            sorted_front_indices = front_indices[
+                     sorted_reduced_vertices_indices]
+            sorted_reduced_vertices = reduced_vertices[
+                           sorted_reduced_vertices_indices]
+            selected_indices = [0]
+            num_vertices = sorted_reduced_vertices.shape[0]
+            for i in range(num_vertices - 1):
+                vertex_a = sorted_reduced_vertices[i]
+                vertex_b = sorted_reduced_vertices[i + 1]
+                if vertex_b[1] < vertex_a[1]:
+                   selected_indices.append(i + 1)
+            selected_front_indices = sorted_front_indices[selected_indices]
+            return selected_front_indices
 
     def remove_frontindices(self, front_indices_rel_points):
         """Gives the indices of the points without the indices of the front."""
@@ -106,8 +122,8 @@ class ParetoFront(object):
         return sorted_unique_indices
 
     def __init__(self, points, x_reverse, y_reverse):
+        ##print points
         self.fronts_indices = []
-        self.x_reverse, self.y_reverse = x_reverse, y_reverse
         # Raw points array may contain duplicates
         raw_points_array = np.array([np.array(point) for point in points])
         # The indices of the unique points in the raw points array.
@@ -145,9 +161,10 @@ class ParetoFront(object):
             hull_indices = convex_hull.vertices
             # The vertices in the convex hull.
             hull_vertices = self.points_array[hull_indices]
+            ##print hull_vertices
             # The indices of the points in the pareto front in the hull array.
             front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
-                         hull_vertices, self.x_reverse, self.y_reverse)
+                         hull_vertices, x_reverse, y_reverse)
             # The indices of the points in the pareto front in the points
             # array.
             front_indices_rel_points = hull_indices[front_indices_rel_hull]

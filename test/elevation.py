@@ -26,10 +26,10 @@ class ElevationProfile(object):
 
     def __init__(self, geospatials, latlngs, arc_lengths,
                        land_elevations=None, geospatials_partitions=None):
-        self.geospatials_partitions = geospatials_partitions
         self.geospatials = geospatials
         self.latlngs = latlngs
         self.arc_lengths = arc_lengths
+        self.geospatials_partitions = geospatials_partitions
         if land_elevations == None:
             self.land_elevations = self.get_land_elevations()
         else:
