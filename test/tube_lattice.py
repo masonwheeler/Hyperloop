@@ -8,7 +8,7 @@ import parameters
 import pylon_cost
 import util
 
-class PylonPoint(abstract_lattice.AbstractPoint):
+class TubePoint(abstract_lattice.AbstractPoint):
 
     def __init__(self, pylon_id, abstract_x_coord, abstract_y_coord, arc_length,
                        geospatial, latlng, land_elevation, pylon_height):
@@ -26,10 +26,10 @@ class PylonPoint(abstract_lattice.AbstractPoint):
                     lattice_y_coord, self.spatial_x_coord, self.spatial_y_coord)
 
 
-class PylonsSlice(abstract_lattice.AbstractSlice):
+class TubePointsSlice(abstract_lattice.AbstractSlice):
 
     @staticmethod
-    def pylons_slice_points_builder(abstract_x_coord, pylon_slice_bounds,
+    def tube_points_slice_builder(abstract_x_coord, pylon_slice_bounds,
                                                   slice_start_id):
         pylon_height_step_size = pylon_slice_bounds["heightStepSize"]
         max_height = pylon_slice_bounds["maxHeight"]
@@ -64,7 +64,7 @@ class PylonsSlice(abstract_lattice.AbstractSlice):
                                  PylonSlice.pylon_slice_points_builder)
 
 
-class PylonsLattice(abstract_lattice.AbstractLattice):
+class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     def circle_function(self, x, r):
         if x > r:

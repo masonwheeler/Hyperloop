@@ -29,3 +29,6 @@ def compute_tube_cost_v1(tube_coords):
     tube_cost = parameters.TUBE_COST_PER_METER * tube_length
     return tube_cost
     
+def compute_tube_cost_v1(tube_profile):
+    tube_cost = parameters.TUBE_COST_PER_METER * tube_profile.tube_length
+    return tube_cost

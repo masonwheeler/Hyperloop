@@ -8,17 +8,11 @@ import scipy.interpolate
 
 #Custom Modules:
 import clothoid
-import config
 import curvature
 import parameters
-import pylon_cost
-import tube_cost
 import util
-import visualize
 
-VISUALIZE_PROFILES = True
-
-class TubeProfile(object):
+class TubeProfileMatchLandscapes(object):
 
     DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
                              parameters.MAX_SPEED**2)
@@ -143,26 +137,6 @@ class TubeProfile(object):
         self.tube_curvature_array = curvature.compute_curvature_pchip(
                              self.tube_elevation_spline, self.arc_lengths)
         
-    def build_pylons(self):
-        self.pylon_heights = util.subtract(self.tube_elevations,
-                                          self.land_elevations)
-        pylon_costs = [pylon_cost.compute_pylon_cost_v1(pylon_height)
-                       for pylon_height in self.pylon_heights]
-        self.pylons = [{"latlng" : self.latlngs[i],
-                        "landElevation" : self.land_elevations[i],
-                        "pylonHeight" : self.pylon_heights[i],
-                        "pylonCost" : pylon_costs[i]}
-                        for i in range(len(self.pylon_heights))]
-        self.pylon_cost = sum(pylon_costs)
-
-    def get_tube_coords(self):
-        geospatial_x_vals, geospatial_y_vals = zip(*self.geospatials)
-        self.tube_coords = zip(geospatial_x_vals, geospatial_y_vals,
-                                                    self.tube_elevations)
-
-    def compute_tube_cost(self):
-        self.tube_cost = tube_cost.compute_tube_cost_v1(self.tube_coords)
-        
     def __init__(self, elevation_profile,
                       max_curvature=None,
                           max_slope=None):
@@ -178,42 +152,4 @@ class TubeProfile(object):
         self.tube_elevations, self.tube_elevation_spline = \
             self.build_tube_elevations_v1()
         self.compute_curvature()
-        self.get_tube_coords()
-        self.compute_tube_cost()
-        self.build_pylons()
-        if VISUALIZE_PROFILES and config.VISUAL_MODE:
-            plottable_tube_profile = self.get_plottable_tube_profile('r-')
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                                       plottable_tube_profile)
-            plottable_land_profile = self.get_plottable_land_profile('b-')
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                                       plottable_land_profile)
-            are_elevation_axes_equal = False
-            visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
-                                                 are_elevation_axes_equal)
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
 
-            plottable_tube_curvature = self.get_plottable_tube_curvature('g-')
-            visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
-                                        plottable_tube_curvature)
-            are_curvature_axes_equal = False
-            visualize.plot_objects(visualize.CURVATURE_PROFILE_PLOT_QUEUE,
-                                                 are_curvature_axes_equal)
-            visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
-             
-
-    def get_plottable_tube_profile(self, color_string):
-        tube_profile_points = [self.arc_lengths, self.tube_elevations]        
-        plottable_tube_profile = [tube_profile_points, color_string]
-        return plottable_tube_profile
-
-    def get_plottable_land_profile(self, color_string):
-        land_profile_points = [self.arc_lengths, self.land_elevations]
-        plottable_land_profile = [land_profile_points, color_string]
-        return plottable_land_profile
-
-    def get_plottable_tube_curvature(self, color_string):
-        tube_curvature_points = [self.arc_lengths, self.tube_curvature_array]
-        plottable_tube_curvature = [tube_curvature_points, color_string]
-        return plottable_tube_curvature
