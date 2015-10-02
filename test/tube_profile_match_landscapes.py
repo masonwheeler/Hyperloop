@@ -148,4 +148,5 @@ class TubeProfileMatchLandscapes(object):
         self.tube_elevations, self.tube_elevation_spline = \
             self.build_tube_elevations()
         self.compute_curvature()
+        self.tube_points_to_pylon_points_ratio = 1
 
