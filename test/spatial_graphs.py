@@ -35,9 +35,9 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                               tube_curvature_array)
         effective_max_allowed_speeds_by_arc_length = np.minimum(
             max_allowed_vels_vertical, max_allowed_vels_lateral)
-        time_step_size = 1 #second times
+        time_step_size = 1 #Second
         speeds_by_time, time_elapsed = \
-        reparametrize_speed.constrain_and_reparametrize_speeds_by_arc_length(
+            reparametrize_speed.constrain_and_reparametrize_speeds(
                      effective_max_allowed_speeds_by_arc_length, arc_lengths,
                            time_step_size, parameters.MAX_LONGITUDINAL_ACCEL)
         self.min_time = time_elapsed
@@ -143,8 +143,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         abstract_graph_a = spatial_graph_a.to_abstract_graph()
         abstract_graph_b = spatial_graph_b.to_abstract_graph()
         merged_abstract_graph = \
-          abstract_graphs.AbstractGraph.merge_abstract_graphs(abstract_graph_a,
-                                                              abstract_graph_b)
+            abstract_graphs.AbstractGraph.merge_abstract_graphs(
+                                 abstract_graph_a, abstract_graph_b)
         pylon_cost = spatial_graph_a.pylon_cost + spatial_graph_b.pylon_cost
         tube_cost = spatial_graph_a.tube_cost + spatial_graph_b.tube_cost
         land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost

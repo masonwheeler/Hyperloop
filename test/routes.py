@@ -21,8 +21,8 @@ class Route(object):
         self.pylons = []#spatiotemporal_path_4d.pylons
         self.pylon_cost = 0#spatiotemporal_path_4d.pylon_cost
         self.speed_profile = []#spatiotemporal_path_4d.speed_profile
-        self.total_cost = spatiotemporal_path_4d.total_cost / 10.0**9
-        self.trip_time = spatiotemporal_path_4d.trip_time / 60.0
+        self.total_cost = round(spatiotemporal_path_4d.total_cost / 10.0**9, 3)
+        self.trip_time = round(spatiotemporal_path_4d.trip_time / 60.0, 3)
         self.tube_cost = 0#spatiotemporal_path_4d.tube_cost
         self.tube_elevations = []#spatiotemporal_path_4d.tube_elevations
 

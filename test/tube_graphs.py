@@ -2,22 +2,39 @@
 Original Developer: Jonathan Ward
 """
 
-class TubeGraph(abstract.AbstractGraph):
+# Custom Modules:
+import abstract_graphs
+import curvature
+import mergetree
+import parameters
+import reparametrize_speed
 
-    velocity_arc_length_step_size = config.VELOCITY_ARC_LENGTH_STEP_SIZE
 
-    def compute_triptime_excess(self, tube_coords, num_edges):
-        if num_edges < config.TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES:
+class TubeGraph(abstract_graphs.AbstractGraph):
+
+    def compute_min_time_and_total_tube_cost(self, tube_curvature_array,
+                                                            arc_lengths):
+        max_allowed_speeds = \
+            curvature.vertical_curvature_array_to_max_allowed_speeds(
+                                                    tube_curvature_array)
+        time_step_size = 1 #Second
+        speeds_by_time, time_elapsed = \
+            reparametrize_speed.constrain_and_reparametrize_speeds(
+                   max_allowed_speeds, arc_lengths, time_step_size,
+                                 parameters.MAX_LONGITUDINAL_ACCEL)
+        self.min_time = time_elapsed
+        self.total_cost = (self.pylon_cost + self.tube_cost
+                                      + self.tunneling_cost)
+
+    def fetch_min_time_and_total_cost(self):
+        if self.min_time == None or self.total_cost == None:
             return None
-        else:
-            z_values = [tube_coord[2] for tube_coord in tube_coords]
-            local_max_allowed_vels = interpolate.points_1d_local_max_allowed_vels(
-                z_values)
-            triptime_excess = velocity.compute_local_trip_time_excess(
-                local_max_allowed_vels, self.velocity_arc_length_step_size)
-            return triptime_excess
+        else: 
+            min_time = round(self.min_time / 60.0, 3)
+            total_cost = round(self.total_cost / 10.0**9, 3)
+        return [min_time, total_cost]
 
-    def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
+    def __init__(self, abstract_graph
                  tube_cost, pylon_cost, tube_coords):
         abstract.AbstractGraph.__init__(self, start_id, end_id,
                                         start_angle, end_angle, num_edges)
@@ -27,45 +44,49 @@ class TubeGraph(abstract.AbstractGraph):
         self.triptime_excess = self.compute_triptime_excess(
             tube_coords, num_edges)
 
-    def tube_cost_trip_time_excess(self):
-        cost_trip_time_excess = [self.tube_cost + self.pylon_cost,
-                                 self.triptime_excess]
-        #print("tube cost: " + str(self.tube_cost))
-        #print("pylon cost: " + str(self.pylon_cost))
-        #print("trip time excess: " + str(self.triptime_excess))
-        return cost_trip_time_excess
-
     @classmethod
     def init_from_tube_edge(cls, tube_edge):
-        start_id = tube_edge.start_id
-        end_id = tube_edge.end_id
-        start_angle = tube_edge.angle
-        end_angle = tube_edge.angle
-        num_edges = 1
-        tube_cost = tube_edge.tube_cost
+        abstract_edge = tube_edge.to_abstract_edge()
+        abstract_graph = abstract_graphs.AbstractGraph.init_from_abstract_edge(
+                                                                 abstract_edge)
         pylon_cost = tube_edge.pylon_cost
+        tube_cost = tube_edge.tube_cost
+        tunneling_cost = tube_edge.tunneling_cost
         tube_coords = tube_edge.tube_coords
-        data = cls(start_id, end_id, start_angle, end_angle, num_edges, tube_cost,
-                   pylon_cost, tube_coords)
+        data = cls(abstract_graph, pylon_cost, tube_cost, tunneling_cost,
+                   tube_coords)
         return data
+
+    @staticmethod
+    def merge_tube_curvature_arrays(tube_graph_a
 
     @classmethod
     def merge_two_tube_graphs(cls, tube_graph_a, tube_graph_b):
-        start_id = tube_graph_a.start_id
-        end_id = tube_graph_b.end_id
-        start_angle = tube_graph_a.start_angle
-        end_angle = tube_graph_b.end_angle
-        num_edges = tube_graph_a.num_edges + tube_graph_b.num_edges
-        tube_cost = tube_graph_a.tube_cost + tube_graph_b.tube_cost
+        abstract_graph_a = spatial_graph_a.to_abstract_graph()
+        abstract_graph_b = spatial_graph_b.to_abstract_graph()
+        merged_abstract_graph = \
+            abstract_graphs.AbstractGraph.merge_abstract_graphs(
+                                 abstract_graph_a, abstract_graph_b)
         pylon_cost = tube_graph_a.pylon_cost + tube_graph_b.pylon_cost
+        tube_cost = tube_graph_a.tube_cost + tube_graph_b.tube_cost
+        tunneling_cost = (tube_graph_a.tunneling_cost +
+                          tube_graph_b.tunneling_cost)
         tube_coords = util.smart_concat(tube_graph_a.tube_coords,
                                         tube_graph_b.tube_coords)
-        data = cls(start_id, end_id, start_angle, end_angle, num_edges, tube_cost,
-                   pylon_cost, tube_coords)
+        data = cls(merged_abstract_graph, pylon_cost, tube_cost, tunneling_cost,
+                   tube_coords)
         return data
 
+    def to_abstract_graph(self):
+        abstract_graph = abstract_graphs.AbstractGraph(self.start_id,
+                                                       self.end_id,
+                                                       self.start_angle,
+                                                       self.end_angle,
+                                                       self.abstract_coords)
+        return abstract_graph
 
-class TubeGraphsSet(abstract.AbstractGraphsSet):
+
+class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
 
     @staticmethod
     def is_graph_pair_compatible(graph_a, graph_b):
