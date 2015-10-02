@@ -10,7 +10,6 @@ import scipy.interpolate
 import clothoid
 import curvature
 import parameters
-import util
 
 class TubeProfileMatchLandscapes(object):
 
@@ -65,41 +64,30 @@ class TubeProfileMatchLandscapes(object):
             return are_elevations_compatible
     
     def test_land_elevation_index(self, elevation_index):
-        position_of_trial_index = util.sorted_insert(elevation_index,
-                                    self.selected_land_elevations_indices)
-        ##print "position of trial index: " + str(position_of_trial_index)
-        ##print "land elevations indices: " + str(self.selected_land_elevations_indices)
-        #position_of_trial_index = np.searchsorted(
-        #    self.selected_land_elevations_indices, [elevation_index])
-        backward_index = self.selected_land_elevations_indices[
-                                   position_of_trial_index - 1]
-        ##print "backward index: " + str(backward_index)
-        trial_index = elevation_index
-        ##print "trial index: " + str(trial_index)
-        #trial_index = self.selected_land_elevations_indices[
-        #                            position_of_trial_index]
-        forward_index = self.selected_land_elevations_indices[
-                                  position_of_trial_index]
-        ##print "forward index: " + str(forward_index)
-        backward_compatibility = self.test_land_elevation_indices_pair(
-                                           backward_index, trial_index)
-        forward_compatibility = self.test_land_elevation_indices_pair(
-                                           trial_index, forward_index)
-        elevation_index_compatible = (backward_compatibility and
-                                       forward_compatibility)
-        ##self.selected_land_elevations_indices.pop(position_of_trial_index)
-        return elevation_index_compatible        
+        [position_of_elevation_index] = np.searchsorted(
+            self.selected_land_elevations_indices, [elevation_index])
+        previous_elevation_index = self.selected_land_elevations_indices[
+                                   position_of_elevation_index - 1]
+        next_elevation_index = self.selected_land_elevations_indices[
+                                  position_of_elevation_index]
+        is_compatible_with_previous = self.test_land_elevation_indices_pair(
+                             previous_elevation_index, elevation_index)
+        is_compatible_with_next = self.test_land_elevation_indices_pair(
+                                    elevation_index, next_elevation_index)
+        is_elevation_index_compatible = (is_compatible_with_previous and
+                                         is_compatible_with_next)
+        return [is_elevation_index_compatible, position_of_elevation_index]
         
     def add_compatible_land_elevation_to_waypoints(self):
-        for i in range(len(self.sorted_interior_land_elevations_indices)):
-            trial_index = self.sorted_interior_land_elevations_indices[i]
-            is_trial_index_compatible = self.test_land_elevation_index(
-                                                           trial_index)
-            if is_trial_index_compatible:
-                trial_index = \
-                  self.sorted_interior_land_elevations_indices.pop(i)
-                util.sorted_insert(trial_index,
-                                   self.selected_land_elevations_indices)
+        for i in xrange(len(self.sorted_interior_land_elevations_indices)):
+            elevation_index = self.sorted_interior_land_elevations_indices[i]
+            is_elevation_index_compatible, position_of_elevation_index = \
+                self.test_land_elevation_index(elevation_index)
+            if is_elevation_index_compatible:
+                self.sorted_interior_land_elevations_indices.pop(i)
+                self.selected_land_elevations_indices = np.insert(
+                                self.selected_land_elevations_indices,
+                         position_of_elevation_index, elevation_index)
                 return True
         return False
 

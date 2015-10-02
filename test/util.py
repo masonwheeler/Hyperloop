@@ -187,28 +187,3 @@ def smart_print(string):
     if config.VERBOSE_MODE:
         print string
 
-# Other Operations:
-
-def sorted_insert(value, ordered_values):
-    [index] = np.searchsorted(ordered_values, [value])
-    return index
-
-def sorted_insert_v2(value, ordered_values):
-    """Place value in sorted list of integers while preserving the order
-    """
-    for index in xrange(len(ordered_values)):
-        if value <= ordered_values[index]:
-            ordered_values.insert(index, value)
-            print index
-            print ordered_values
-            return index
-
-
-
-
-
-
-
-
-
-
