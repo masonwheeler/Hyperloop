@@ -37,7 +37,7 @@ class TubePoint(object):
 
     def build_pylon_at_tube_point(self):
         pylon_at_tube_point = Pylon(self.pylon_height,
-                                    self.pylon_cost
+                                    self.pylon_cost,
                                     self.latlng)
         return pylon_at_tube_point
 
@@ -135,7 +135,7 @@ class Tube(object):
         self.tunneling_cost = self.compute_tunneling_cost(tube_edges)
         self.tube_cost = self.compute_tube_cost(tube_edges)
 
-    def visualize_tube(self, tube_profile)
+    def visualize_tube(self, tube_profile):
         if VISUALIZE_PROFILES and config.VISUAL_MODE:
             plottable_tube_profile = self.get_plottable_tube_profile('r-')
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(

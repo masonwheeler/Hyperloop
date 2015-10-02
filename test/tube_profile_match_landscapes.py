@@ -50,6 +50,7 @@ class TubeProfileMatchLandscapes(object):
     
     def test_land_elevation_indices_pair(self, elevation_index_a,
                                                elevation_index_b):
+        ##print (elevation_index_a, elevation_index_b)
         if self.index_pairs_tested[elevation_index_a][elevation_index_b]:
             return True
         else:
@@ -66,21 +67,27 @@ class TubeProfileMatchLandscapes(object):
     def test_land_elevation_index(self, elevation_index):
         position_of_trial_index = util.sorted_insert(elevation_index,
                                     self.selected_land_elevations_indices)
+        ##print "position of trial index: " + str(position_of_trial_index)
+        ##print "land elevations indices: " + str(self.selected_land_elevations_indices)
         #position_of_trial_index = np.searchsorted(
         #    self.selected_land_elevations_indices, [elevation_index])
         backward_index = self.selected_land_elevations_indices[
                                    position_of_trial_index - 1]
-        trial_index = self.selected_land_elevations_indices[
-                                    position_of_trial_index]
+        ##print "backward index: " + str(backward_index)
+        trial_index = elevation_index
+        ##print "trial index: " + str(trial_index)
+        #trial_index = self.selected_land_elevations_indices[
+        #                            position_of_trial_index]
         forward_index = self.selected_land_elevations_indices[
-                                  position_of_trial_index + 1]
+                                  position_of_trial_index]
+        ##print "forward index: " + str(forward_index)
         backward_compatibility = self.test_land_elevation_indices_pair(
                                            backward_index, trial_index)
         forward_compatibility = self.test_land_elevation_indices_pair(
                                            trial_index, forward_index)
         elevation_index_compatible = (backward_compatibility and
                                        forward_compatibility)
-        self.selected_land_elevations_indices.pop(position_of_trial_index)
+        ##self.selected_land_elevations_indices.pop(position_of_trial_index)
         return elevation_index_compatible        
         
     def add_compatible_land_elevation_to_waypoints(self):
