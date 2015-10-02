@@ -7,8 +7,6 @@ import abstract_edges
 import angle_constraint
 import curvature
 import parameters
-import pylon_cost
-import tube_cost
 
 
 def compute_tube_degree_constraint(pylon_arc_length_spacing,
@@ -22,14 +20,40 @@ def compute_tube_degree_constraint(pylon_arc_length_spacing,
            length_scale, tube_interpolator, max_curvature, resolution)
     return degree_constraint       
 
+
 class TubeEdge(abstract_edges.AbstractEdge):
 
-    def __init__(self, start_pylon, end_pylon):
-        abstract.AbstractEdge.__init__(self, start_pylon, end_pylon)
-        self.tube_coords = [start_pylon.tube_coords, end_pylon.tube_coords]
-        self.tube_cost = tube_cost.compute_pylon_cost(self.tube_coords)
-        self.pylons_costs = [pylon_cost.compute_pylon_cost(start_pylon),
-                             pylon_cost.compute_pylon_cost(end_pylon)]
+    def compute_tunneling_cost(self, edge_length, tube_point_a, tube_point_b):
+        if tube_point_a.is_underground and tube_point_b.is_underground:
+            tunneling_cost = (self.edge_length * \
+                              parameters.TUNNELING_COST_PER_METER)
+        if tube_point_a.is_underground and not tube_point_b.is_underground:
+            tunneling_cost = (0.5 * self.edge_length *
+                              parameters.TUNNELING_COST_PER_METER)
+        if not tube_point_a.is_underground and tube_point_b.is_underground:
+            tunneling_cost = (0.5 * self.edge_length *
+                              parameters.TUNNELING_COST_PER_METER)
+        if not tube_point_a.is_underground and not tube_point_b.is_underground:
+            tunneling_cost = 0.0
+        return tunneling_cost
+
+    def compute_tube_cost(self, edge_length):
+        tube_cost = edge_length * parameters.TUBE_COST_PER_METER
+        return tube_cost
+
+    def compute_edge_length(self, tube_point_a, tube_point_b):
+        edge_vector = util.subtract(tube_point_b.tube_coords,
+                                    tube_point_a.tube_coords)
+        edge_length = np.linalg.norm(edge_vector)
+        return edge_length
+
+    def __init__(self, tube_point_a, tube_point_b):
+        abstract.AbstractEdge.__init__(self, tube_point_a, tube_point_b)
+        edge_length = self.compute_edge_length(tube_point_a, tube_point_b)
+        self.tube_cost = self.compute_tube_cost(edge_length)
+        self.tunneling_cost = self.compute_tunneling_cost(edge_length)
+        self.pylons_cost = tube_point_a.pylon_cost + tube_point_b.pylon_cost
+
 
 class TubeEdgesSets(abstract.AbstractEdgesSets):
 

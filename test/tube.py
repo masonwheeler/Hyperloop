@@ -2,10 +2,12 @@
 Original Developer: Jonathan Ward
 """
 
+#Standard Modules:
+import numpy as np
+
 #Custom Modules:
 import config
 import parameters
-import tube_cost
 import util
 import visualize
 
@@ -27,7 +29,7 @@ class TubePoint(object):
         if self.is_underground:
             pylon_cost = 0
         else:
-            height_cost = (height_relative_to_ground * \
+            height_cost = (height_relative_to_ground * 
                            parameters.PYLON_COST_PER_METER)
             base_cost = parameters.PYLON_BASE_COST
             pylon_cost = height_cost + base_cost

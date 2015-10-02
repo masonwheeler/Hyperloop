@@ -4,8 +4,11 @@ Original Developer: Jonathan Ward
 
 # Custom Modules:
 import abstract_lattice
+import config
 import parameters
 import util
+import visualize
+
 
 class Pylon(object):
 
@@ -16,6 +19,22 @@ class Pylon(object):
         
 
 class TubePoint(abstract_lattice.AbstractPoint):
+
+    def compute_pylon_cost(self, height_relative_to_ground):
+        if self.is_undeground:
+            pylon_cost = 0
+        else:
+            height_cost = (height_relative_to_ground * 
+                           parameters.PYLON_COST_PER_METER)
+            base_cost = parameters.PYLON_BASE_COST
+            pylon_cost = height_cost + base_cost
+        return pylon_cost
+
+    def build_pylon_at_tube_point(self):
+        pylon_at_tube_point = Pylon(self.pylon_height,
+                                    self.pylon_cost,
+                                    self.latlng)
+        return pylon_at_tube_point
 
     def __init__(self, pylon_id, abstract_x_coord, abstract_y_coord, arc_length,
                        geospatial, latlng, land_elevation, pylon_height):
