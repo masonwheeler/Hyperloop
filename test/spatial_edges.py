@@ -74,7 +74,11 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                           geospatials_partitions=[geospatials])
     
     def build_tube(self, tube_builder):
-        tube_profile = tube_builder(self.elevation_profile)
+        DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
+                                 parameters.MAX_SPEED**2)
+        max_curvature = DEFAULT_MAX_CURVATURE * 0.01
+        tube_profile = tube_builder(self.elevation_profile, 
+                                    max_curvature=max_curvature)
         self.tube_curvature_array = tube_profile.tube_curvature_array
         self.pylon_cost = tube_profile.pylons_cost
         self.tube_cost = tube_profile.tube_cost       
