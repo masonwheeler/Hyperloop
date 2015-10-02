@@ -25,11 +25,11 @@ class Pylon(object):
 
 class TubePoint(object):
 
-    def compute_pylon_cost(self, height_relative_to_ground):
+    def compute_pylon_cost(self):
         if self.is_underground:
             pylon_cost = 0
         else:
-            height_cost = (height_relative_to_ground * 
+            height_cost = (self.pylon_height * 
                            parameters.PYLON_COST_PER_METER)
             base_cost = parameters.PYLON_BASE_COST
             pylon_cost = height_cost + base_cost
@@ -41,12 +41,12 @@ class TubePoint(object):
                                     self.latlng)
         return pylon_at_tube_point
 
-    def __init__(self, height_relative_to_ground, latlng, geospatial):
+    def __init__(self, tube_elevation, land_elevation, latlng, geospatial):
         self.latlng = latlng
         self.geospatial = geospatial
-        self.pylon_height = height_relative_to_ground
-        self.is_underground = (height_relative_to_ground < 0)        
-        self.pylon_cost = self.compute_pylon_cost(height_relative_to_ground)
+        self.pylon_height = tube_elevation - land_elevation
+        self.is_underground = (self.pylon_height < 0)        
+        self.pylon_cost = self.compute_pylon_cost()
 
 
 class TubeEdge(object):
@@ -70,10 +70,13 @@ class TubeEdge(object):
         return tube_cost
 
     def compute_edge_length(self, tube_point_a, tube_point_b):
-        edge_vector = util.subtract(tube_point_b.tube_coords,
-                                    tube_point_a.tube_coords)
+        tube_coords_a = [tube_point_a.geospatial[0], tube_point_b.geospatial[1],
+                         tube_point_a.tube_elevation]
+        tube_coords_b = [tube_point_b.geospatial[0], tube_point_b.geospatial[1],
+                         tube_point_b.tube_elevation]
+        edge_vector = util.subtract(tube_coords_a, tube_coords_b)
         edge_length = np.linalg.norm(edge_vector)
-        return edge_length          
+        return edge_length
 
     def __init__(self, tube_point_a, tube_point_b):
         edge_length = self.compute_edge_length(tube_point_a, tube_point_b)
@@ -84,15 +87,14 @@ class TubeEdge(object):
 class Tube(object):
 
     def build_tube_points(self, tube_profile):
-        tube_points_heights_relative_to_ground = util.subtract(
-                                         tube_profile.tube_elevations,
-                                         tube_profile.land_elevations)
         tube_points = []
-        for i in range(len(tube_points_heights_relative_to_ground)):
-            height = tube_points_heights_relative_to_ground[i]
+        for i in range(len(tube_profile.tube_elevations)):
+            tube_elevation = tube_profile.tube_elevations[i]
+            land_elevation = tube_profile.land_elevations[i]
             latlng = tube_profile.latlngs[i]
             geospatial = tube_profile.geospatials[i]
-            tube_point = TubePoint(height, latlng, geospatial)
+            tube_point = TubePoint(tube_elevation, land_elevation,
+                                               latlng, geospatial)
             tube_points.append(tube_point)
         return tube_points
         
@@ -108,7 +110,9 @@ class Tube(object):
         return tube_points_with_pylons
 
     def build_pylons(self, tube_points_with_pylons):
-        pass
+        pylons = [tube_point.build_pylon_at_tube_point()
+                  for tube_point in tube_points_with_pylons]
+        return pylons
 
     def compute_pylons_cost(self, tube_points_with_pylons):
         pylons_costs = [tube_point.pylon_cost for tube_point in

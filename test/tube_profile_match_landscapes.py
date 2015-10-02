@@ -49,7 +49,6 @@ class TubeProfileMatchLandscapes(object):
     
     def test_land_elevation_indices_pair(self, elevation_index_a,
                                                elevation_index_b):
-        ##print (elevation_index_a, elevation_index_b)
         if self.index_pairs_tested[elevation_index_a][elevation_index_b]:
             return True
         else:
