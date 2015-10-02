@@ -190,6 +190,10 @@ def smart_print(string):
 # Other Operations:
 
 def sorted_insert(value, ordered_values):
+    [index] = np.searchsorted(ordered_values, [value])
+    return index
+
+def sorted_insert_v2(value, ordered_values):
     """Place value in sorted list of integers while preserving the order
     """
     for i in xrange(len(ordered_values)):

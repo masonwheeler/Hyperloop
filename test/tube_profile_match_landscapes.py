@@ -66,6 +66,8 @@ class TubeProfileMatchLandscapes(object):
     def test_land_elevation_index(self, elevation_index):
         position_of_trial_index = util.sorted_insert(elevation_index,
                                     self.selected_land_elevations_indices)
+        #position_of_trial_index = np.searchsorted(
+        #    self.selected_land_elevations_indices, [elevation_index])
         backward_index = self.selected_land_elevations_indices[
                                    position_of_trial_index - 1]
         trial_index = self.selected_land_elevations_indices[
@@ -119,16 +121,16 @@ class TubeProfileMatchLandscapes(object):
                                     in self.selected_land_elevations_indices]
         return [waypoint_arc_lengths, waypoint_land_elevations]
 
-    def interpolate_tube_elevation_waypoints_v1(self, waypoint_arc_lengths,
+    def interpolate_tube_elevation_waypoints(self, waypoint_arc_lengths,
                                                  waypoint_land_elevations):
         tube_elevation_spline = scipy.interpolate.PchipInterpolator(
                             waypoint_arc_lengths, waypoint_land_elevations)
         return tube_elevation_spline
     
-    def build_tube_elevations_v1(self):
+    def build_tube_elevations(self):
         waypoint_arc_lengths, waypoint_land_elevations = \
             self.get_tube_elevation_profile_waypoints()
-        tube_elevation_spline = self.interpolate_tube_elevation_waypoints_v1(
+        tube_elevation_spline = self.interpolate_tube_elevation_waypoints(
                               waypoint_arc_lengths, waypoint_land_elevations)
         tube_elevations = tube_elevation_spline(self.arc_lengths)
         return [tube_elevations, tube_elevation_spline]
@@ -150,6 +152,6 @@ class TubeProfileMatchLandscapes(object):
         self.arc_lengths = elevation_profile.arc_lengths
         self.land_elevations = elevation_profile.land_elevations
         self.tube_elevations, self.tube_elevation_spline = \
-            self.build_tube_elevations_v1()
+            self.build_tube_elevations()
         self.compute_curvature()
 
