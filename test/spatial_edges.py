@@ -76,8 +76,9 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     def build_tube(self, tube_builder):
         tube_profile = tube_builder(self.elevation_profile)
         self.tube_curvature_array = tube_profile.tube_curvature_array
-        self.tube_cost = tube_profile.tube_cost       
         self.pylon_cost = tube_profile.pylons_cost
+        self.tube_cost = tube_profile.tube_cost       
+        self.tunneling_cost = tube_profile.tunneling_cost
             
     def __init__(self, start_point, end_point):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)

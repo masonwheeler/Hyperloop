@@ -41,19 +41,21 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                      effective_max_allowed_speeds_by_arc_length, arc_lengths,
                            time_step_size, parameters.MAX_LONGITUDINAL_ACCEL)
         self.min_time = time_elapsed
-        self.total_cost = self.pylon_cost + self.tube_cost + self.land_cost
+        self.total_cost = (self.land_cost + self.pylon_cost + self.tube_cost +
+                           self.tunneling_cost)
 
-    def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
-                                             latlngs, elevation_profile,
+    def __init__(self, abstract_graph, land_cost, pylon_cost, tube_cost,
+                             tunneling_cost, latlngs, elevation_profile,
                 spatial_curvature_array=None, tube_curvature_array=None):
         abstract_graphs.AbstractGraph.__init__(self, abstract_graph.start_id,
                                                abstract_graph.end_id,
                                                abstract_graph.start_angle,
                                                abstract_graph.end_angle,
                                                abstract_graph.abstract_coords)
+        self.land_cost = land_cost  # The total cost of the land acquired       
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
-        self.land_cost = land_cost  # The total cost of the land acquired       
+        self.tunneling_cost = tunneling_cost
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.elevation_profile = elevation_profile
         arc_lengths = elevation_profile.arc_lengths
@@ -80,14 +82,15 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         abstract_edge = spatial_edge.to_abstract_edge()
         abstract_graph = abstract_graphs.AbstractGraph.init_from_abstract_edge(
                                                                  abstract_edge)
-        pylon_cost = spatial_edge.pylon_cost
-        tube_cost = spatial_edge.tube_cost       
         land_cost = spatial_edge.land_cost
+        pylon_cost = spatial_edge.pylon_cost
+        tube_cost = spatial_edge.tube_cost
+        tunneling_cost = spatial_edge.tunneling_cost
         latlngs = spatial_edge.latlngs
         elevation_profile = spatial_edge.elevation_profile        
         tube_curvature_array = spatial_edge.tube_curvature_array
-        data = cls(abstract_graph, pylon_cost, tube_cost, land_cost,
-                   latlngs, elevation_profile,
+        data = cls(abstract_graph, land_cost, pylon_cost, tube_cost, 
+                   tunneling_cost, latlngs, elevation_profile,
                    tube_curvature_array=tube_curvature_array)
         return data
 
@@ -145,9 +148,11 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         merged_abstract_graph = \
             abstract_graphs.AbstractGraph.merge_abstract_graphs(
                                  abstract_graph_a, abstract_graph_b)
+        land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost
         pylon_cost = spatial_graph_a.pylon_cost + spatial_graph_b.pylon_cost
         tube_cost = spatial_graph_a.tube_cost + spatial_graph_b.tube_cost
-        land_cost = spatial_graph_a.land_cost + spatial_graph_b.land_cost
+        tunneling_cost = (spatial_graph_a.tunneling_cost +
+                          spatial_graph_b.tunneling_cost)
         latlngs = util.smart_concat(spatial_graph_a.latlngs,
                                     spatial_graph_b.latlngs)
         elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
@@ -158,9 +163,9 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                spatial_graph_b.tube_curvature_array)
         spatial_curvature_array = SpatialGraph.merge_spatial_curvature_arrays(
             spatial_graph_a, spatial_graph_b, graph_interpolator, resolution)
-        merged_spatial_graph = cls(merged_abstract_graph, pylon_cost,
-           tube_cost, land_cost, latlngs,
-           elevation_profile, spatial_curvature_array, tube_curvature_array)
+        merged_spatial_graph = cls(merged_abstract_graph, land_cost, pylon_cost,
+           tube_cost, tunneling_cost, latlngs,
+            elevation_profile, spatial_curvature_array, tube_curvature_array)
         return merged_spatial_graph
 
     def to_abstract_graph(self):
