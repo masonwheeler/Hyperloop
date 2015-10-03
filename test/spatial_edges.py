@@ -81,7 +81,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
                                     max_curvature=max_curvature)
         self.tube_curvature_array = tube_profile.tube_curvature_array
         self.pylon_cost = tube_profile.pylons_cost
-        self.tube_cost = tube_profile.tube_cost       
+        self.tube_cost = tube_profile.tube_cost 
         self.tunneling_cost = tube_profile.tunneling_cost
             
     def __init__(self, start_point, end_point):

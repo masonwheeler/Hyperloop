@@ -19,8 +19,8 @@ import reparametrize_speed
 class SpatialPath3d(object):
 
     def compute_min_time(self, spatial_curvature_array,
-                                                 tube_curvature_array,
-                                                          arc_lengths):
+                                  tube_curvature_array,
+                                           arc_lengths):
         max_allowed_vels_lateral = \
             curvature.lateral_curvature_array_to_max_allowed_vels(
                                                     spatial_curvature_array)
@@ -38,29 +38,23 @@ class SpatialPath3d(object):
 
 
     def __init__(self, tube_profile, spatial_path_2d):
-        #undersampling_factor = spatial_path_2d.undersampling_factor
         self.land_cost = spatial_path_2d.land_cost
+        self.pylon_cost = tube_profile.pylon_cost
+        self.tube_cost = tube_profile.tube_cost
+        self.tunneling_cost = tube_profile.tunneling_cost        
         self.latlngs = spatial_path_2d.latlngs
-        self.geospatials = spatial_path_2d.geospatials
         #self.pylons = tube_profile.pylons
         self.pylons = []
-        #undersampled_pylon_cost = tube_profile.pylon_cost
-        #self.pylon_cost = undersampled_pylon_cost * undersampling_factor
-        self.pylon_cost = spatial_path_2d.pylon_cost
-        #self.tube_coords = tube_profile.tube_coords
         self.tube_coords = []
-        #self.tube_cost = tube_profile.tube_cost
-        self.tube_cost = spatial_path_2d.tube_cost
         self.land_elevations = []#tube_profile.land_elevations
         self.arc_lengths = []#tube_profile.arc_lengths
-        #self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
-        #self.tube_curvature_array = tube_profile.tube_curvature_array
-        #self.min_time = self.compute_min_time(self.spatial_curvature_array,
-        #                                        self.tube_curvature_array,
-        #                                                 self.arc_lengths)
-        self.min_time = spatial_path_2d.min_time
-        #self.total_cost = normed_pylon_cost + self.tube_cost + self.land_cost
-        self.total_cost = spatial_path_2d.total_cost
+        self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
+        self.tube_curvature_array = tube_profile.tube_curvature_array
+        self.min_time = self.compute_min_time(self.spatial_curvature_array,
+                                                self.tube_curvature_array,
+                                                         self.arc_lengths)
+        #self.min_time = spatial_path_2d.min_time
+        #self.total_cost = spatial_path_2d.total_cost
 
     def fetch_min_time_and_total_cost(self):
         #print "min time in secs: " + str(self.min_time)
