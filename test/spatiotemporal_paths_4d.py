@@ -14,12 +14,9 @@ import util
 
 class SpatiotemporalPath4d(object):
         
-    def compute_comfort(self, velocity_profile, tube_coords):
+    def compute_comfort(self, velocity_profile):
         self.comfort_profile = []
         self.comfort_rating = 0
-
-    def get_tube_elevations(self, tube_coords):
-        self.tube_elevations = 0#[tube_coord[2] for tube_coord in tube_coords]        
 
     def __init__(self, velocity_profile, spatial_path_3d):
         #self.trip_time = velocity_profile.trip_time
@@ -28,18 +25,17 @@ class SpatiotemporalPath4d(object):
         #    velocity_profile.scalar_acceleration_profile
         self.speed_profile = []
         self.scalar_acceleration_profile = []
-        self.trip_time = spatial_path_3d.min_time
-        self.land_cost = spatial_path_3d.land_cost      
         self.latlngs = spatial_path_3d.latlngs
-        self.geospatials = spatial_path_3d.geospatials
         self.pylons = spatial_path_3d.pylons
+        self.land_cost = spatial_path_3d.land_cost      
         self.pylon_cost = spatial_path_3d.pylon_cost
-        self.tube_cost = spatial_path_3d.tube_cost        
+        self.tube_cost = spatial_path_3d.tube_cost
+        self.tunneling_cost = spatial_path_3d.tunneling_cost
         self.total_cost = spatial_path_3d.total_cost
+        self.trip_time = spatial_path_3d.min_time
         self.land_elevations = spatial_path_3d.land_elevations
-        tube_coords = spatial_path_3d.tube_coords
-        self.get_tube_elevations(tube_coords)
-        self.compute_comfort(velocity_profile, tube_coords)
+        self.tube_elevations = spatial_path_3d.tube_elevations
+        self.compute_comfort(velocity_profile)
     
     def get_time_and_cost(self):
         return [self.trip_time, self.total_cost]
@@ -96,7 +92,6 @@ class SpatiotemporalPathsSets4d(object):
         self.end = spatial_paths_sets_3d.end
         self.start_latlng = spatial_paths_sets_3d.start_latlng
         self.end_latlng = spatial_paths_sets_3d.end_latlng        
-        self.undersampling_factor = spatial_paths_sets_3d.undersampling_factor
         self.build_paths_sets(spatial_paths_sets_3d.selected_paths)
         self.select_paths()
 

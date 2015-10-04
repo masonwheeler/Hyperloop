@@ -14,15 +14,6 @@ import visualize
 
 VISUALIZE_PROFILES = True
 
-
-class Pylon(object):
-    
-    def __init__(self, pylon_height, pylon_cost, latlng):
-        self.pylon_height = pylon_height
-        self.pylon_cost = pylon_cost 
-        self.latlng = latlng
-
-
 class TubePoint(object):
 
     def compute_pylon_cost(self):
@@ -36,9 +27,9 @@ class TubePoint(object):
         return pylon_cost
 
     def build_pylon_at_tube_point(self):
-        pylon_at_tube_point = Pylon(self.pylon_height,
-                                    self.pylon_cost,
-                                    self.latlng)
+        pylon_at_tube_point = {"height": self.pylon_height,
+                               "cost": self.pylon_cost,
+                               "latlng": self.latlng}
         return pylon_at_tube_point
 
     def __init__(self, tube_elevation, land_elevation, latlng, geospatial):
@@ -91,9 +82,9 @@ class Tube(object):
 
     def build_tube_points(self, tube_profile):
         tube_points = []
-        for i in range(len(tube_profile.tube_elevations)):
-            tube_elevation = tube_profile.tube_elevations[i]
-            land_elevation = tube_profile.land_elevations[i]
+        for i in range(len(self.tube_elevations)):
+            tube_elevation = self.tube_elevations[i]
+            land_elevation = self.land_elevations[i]
             latlng = tube_profile.latlngs[i]
             geospatial = tube_profile.geospatials[i]
             tube_point = TubePoint(tube_elevation, land_elevation,
@@ -112,14 +103,14 @@ class Tube(object):
                                   tube_points_to_pylon_points_ratio]
         return tube_points_with_pylons
 
-    def build_pylons(self, tube_points_with_pylons):
+    def build_pylons(self):
         pylons = [tube_point.build_pylon_at_tube_point()
-                  for tube_point in tube_points_with_pylons]
+                  for tube_point in self.tube_points_with_pylons]
         return pylons
 
-    def compute_pylons_cost(self, tube_points_with_pylons):
+    def compute_pylons_cost(self):
         pylons_costs = [tube_point.pylon_cost for tube_point in
-                        tube_points_with_pylons]
+                        self.tube_points_with_pylons]
         pylons_cost = sum(pylons_costs)
         return pylons_cost
 
@@ -134,13 +125,16 @@ class Tube(object):
         return tube_cost
 
     def __init__(self, tube_profile):
+        self.arc_lengths = tube_profile.arc_lengths
+        self.land_elevations = tube_profile.land_elevations
+        self.tube_elevations = tube_profile.tube_elevations
         tube_points = self.build_tube_points(tube_profile)
         tube_edges = self.build_tube_edges(tube_points)  
-        tube_points_with_pylons = self.select_tube_points_with_pylons(
+        self.tube_points_with_pylons = self.select_tube_points_with_pylons(
             tube_points, tube_profile.tube_points_to_pylon_points_ratio)
-        self.pylons_cost = self.compute_pylons_cost(tube_points_with_pylons)
+        self.pylons_cost = self.compute_pylons_cost()
         self.tunneling_cost = self.compute_tunneling_cost(tube_edges)
-        self.tube_cost = self.compute_tube_cost(tube_edges)
+        self.tube_cost = self.compute_tube_cost(tube_edges)        
         self.tube_curvature_array = tube_profile.tube_curvature_array
 
     def visualize_tube(self, tube_profile):

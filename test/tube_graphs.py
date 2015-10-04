@@ -110,8 +110,7 @@ class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
                                             self.tubegraphs_cost_triptime_excess,
                                             self.is_graph_pair_compatible,
                                             minimize_cost,
-                                            minimize_triptime_excess,
-                                            graphs_num_edges)
+                                            minimize_triptime_excess)
 
     @classmethod
     def init_from_tube_edges_set(cls, tube_edges_set):
@@ -119,3 +118,21 @@ class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
         graphs_num_edges = 1
         return cls(tube_graphs, graphs_num_edges)
 
+
+class TubeGraphsSets(abstract_graphs.AbstractGraphsSets):
+
+    def tube_graph_interpolator(self, waypoint_tube_elevations,
+                                 waypoint_tube_arc_lengths):
+        interpolated_tube_elevations, tube_curvature_array = \
+            self.tube_interpolator(waypoint_tube_elevations,
+                                   waypoint_tube_arc_lengths)
+        return [interpolated_tube_elevations, tube_curvature_array]
+
+    def merge_two_tube_graphs(self, tube_graph_a, tube_graph_b):
+        merged_tube_graph = TubeGraph.merge_two_tube_graphs(
+            tube_graph_a, tube_graph_b, self.tube_graph_interpolator,
+                                 self.tube_elevation_resolution)
+        return merged_tube_graph
+
+    def __init__(self, tube_edges_sets, tube_interpolator):
+        self.tube_interpolator = tube_interpolator

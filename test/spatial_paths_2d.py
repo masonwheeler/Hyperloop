@@ -26,38 +26,14 @@ import parameters
 
 class SpatialPath2d(object):
 
-"""
-    def compute_land_cost(self):        
-        self.land_cost = landcover.get_land_cost(self.latlngs)
-
-    def undersample_graph_geospatials(self, graph_geospatials,
-                                         undersampling_factor):
-        sample_spacing = parameters.PYLON_SPACING * undersampling_factor
-        undersampled_graph_geospatials, self.arc_lengths = \
-                    interpolate.sample_path(graph_geospatials, sample_spacing)
-        return undersampled_graph_geospatials
-"""
-
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
                                                      geospatials_to_latlngs):
         graph_geospatials = spatial_graph.elevation_profile.geospatials
-        #self.undersampling_factor = undersampling_factor
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
-        #undersampled_graph_geospatials = self.undersample_graph_geospatials(
-        #                            graph_geospatials, undersampling_factor)        
-        #self.geospatials, self.spatial_curvature_array = \
-        #   spatial_interpolator(undersampled_graph_geospatials, base_resolution)
         self.geospatials, self.spatial_curvature_array = \
            spatial_interpolator(graph_geospatials, base_resolution)
         self.latlngs = geospatials_to_latlngs(self.geospatials)
         self.land_cost = spatial_graph.land_cost
-        """
-        self.pylon_cost = spatial_graph.pylon_cost
-        self.tube_cost = spatial_graph.tube_cost
-        self.tunneling_cost = spatial_graph.tunneling_cost
-        self.total_cost = spatial_graph.total_cost
-        self.min_time = spatial_graph.min_time
-        """
         self.elevation_profile = elevation.ElevationProfile(
                                                self.geospatials,
                                                    self.latlngs,

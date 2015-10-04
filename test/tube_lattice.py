@@ -10,46 +10,37 @@ import util
 import visualize
 
 
-class Pylon(object):
-
-    def __init__(self, pylon_height, pylon_cost, latlng):
-        self.pylon_height = pylon_height
-        self.pylon_cost = pylon_cost
-        self.latlng = latlng
-        
-
 class TubePoint(abstract_lattice.AbstractPoint):
 
-    def compute_pylon_cost(self, height_relative_to_ground):
+    def compute_pylon_cost(self):
         if self.is_undeground:
             pylon_cost = 0
         else:
-            height_cost = (height_relative_to_ground * 
+            height_cost = (self.pylon_height * 
                            parameters.PYLON_COST_PER_METER)
             base_cost = parameters.PYLON_BASE_COST
             pylon_cost = height_cost + base_cost
         return pylon_cost
 
     def build_pylon_at_tube_point(self):
-        pylon_at_tube_point = Pylon(self.pylon_height,
-                                    self.pylon_cost,
-                                    self.latlng)
+        pylon_at_tube_point = {"height": self.pylon_height,
+                               "cost": self.pylon_cost,
+                               "latlng": self.latlng}
         return pylon_at_tube_point
 
-    def __init__(self, pylon_id, abstract_x_coord, abstract_y_coord, arc_length,
-                       geospatial, latlng, land_elevation, pylon_height):
-        self.pylon_height = pylon_height
-        self.land_elevation = land_elevation
+    def __init__(self, point_id, abstract_x_coord, abstract_y_coord, arc_length,
+                       geospatial, latlng, tube_elevation, land_elevation):
+        self.arc_length = arc_length
         self.latlng = latlng
-        tube_elevation = land_elevation + pylon_height
-        x_value, y_value = geospatial
-        z_value = tube_elevation
-        self.tube_coords = [x_value, y_value, z_value]
-        self.pylon_cost = pylon_cost.compute_pylon_cost_v1(pylon_height)
-        self.spatial_x_coord = distance_along_path
-        self.spatial_y_coord = tube_elevation
-        abstract_lattice.AbstractPoint.__init__(self, pylon_id, lattice_x_coord,
-                    lattice_y_coord, self.spatial_x_coord, self.spatial_y_coord)
+        self.geospatial = geospatial
+        self.land_elevation = land_elevation
+        self.tube_elevtion = tube_elevation
+        self.pylon_height = tube_elevation - land_elevation
+        self.pylon_cost = self.compute_pylon_cost()
+        self.physical_x_coord = distance_along_path
+        self.physical_y_coord = tube_elevation
+        abstract_lattice.AbstractPoint.__init__(self, point_id, abstract_x_coord,
+                  abstract_y_coord, self.physical_x_coord, self.physical_y_coord)
 
 
 class TubePointsSlice(abstract_lattice.AbstractSlice):
