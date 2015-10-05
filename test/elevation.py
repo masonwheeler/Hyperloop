@@ -14,13 +14,11 @@ import util
 class ElevationProfile(object):
     
     def get_land_elevations(self):
-        ##print self.latlngs
         land_elevations = [usgs.get_elevation(latlng)
                            for latlng in self.latlngs]
         return land_elevations
     
     def get_land_elevations_v2(self):
-        ##print self.latlngs
         land_elevations = usgs.get_elevations(self.latlngs)
         return land_elevations
 

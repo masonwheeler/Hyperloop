@@ -23,7 +23,8 @@ import spatial_graphs
 import spatial_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
-import tube_profile
+#import tube_profile
+import tube_profile_greedy
 import util
 
 if config.VISUAL_MODE:
@@ -74,10 +75,7 @@ def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
                                 spatial_interpolate.scipy_smoothing,
-                                           tube_profile.tube_builder)
-    if route_spatial_edges_sets != None:                                        
-        if not route_spatial_edges_sets.TUBE_READY:
-            route_spatial_edges_sets.build_tubes()
+                       tube_greedy.elevation_profile_to_tube_graphs)
     if config.VISUAL_MODE:
         if VISUALIZE_EDGES:
             plottable_edges = route_spatial_edges_sets.get_plottable_edges('k-')
