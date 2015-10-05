@@ -164,7 +164,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         spatial_curvature_array = SpatialGraph.merge_spatial_curvature_arrays(
             spatial_graph_a, spatial_graph_b, graph_interpolator, resolution)
         merged_spatial_graph = cls(merged_abstract_graph, land_cost, pylon_cost,
-           tube_cost, tunneling_cost, latlngs,
+            tube_cost, tunneling_cost, latlngs,
             elevation_profile, spatial_curvature_array, tube_curvature_array)
         return merged_spatial_graph
 
