@@ -85,7 +85,17 @@ class TubePointsSlice(abstract_lattice.AbstractSlice):
 class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     def build_lower_tube_envelope(self, elevation_profile):
-        lower_tube_envelope = None
+        first_land_elevation = elevation_profile.land_elevations[0]
+        last_land_elevation = elevation_profile.land_elevations[-1]
+        land_elevation_difference = last_land_elevation - first_land_elevation
+        first_arc_length = elevation_profile.arc_lengths[0]
+        last_arc_length = elevation_profile.arc_lengths[-1]
+        arc_length_difference = last_arc_length - first_arc_length
+        lower_tube_envelope = []
+        for arc_length in elevation_profile.arc_lengths[0]:
+            lower_tube_envelope_point = (land_elevation_difference * 
+                ((arc_length - first_arc_length) / arc_length_difference))
+            lower_tube_envelope.append(lower_tube_envelope_point)
         return lower_tube_envelope
 
     def build_upper_tube_envelope(self, elevation_profile):
@@ -105,13 +115,16 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
                 "latlng" : elevation_profile.latlngs[i],
                 "landElevation" : elevation_profile.land_elevation[i]
                 }
-            tube_points_slices_bounds.append(tube_points_slice_bounds)            
+            tube_points_slices_bounds.append(tube_points_slice_bounds) 
         return tube_points_slices_bounds
 
-    def __init__(self, elevation_profile, elevation_step_size, 
-                                          arc_length_step_size):
+    def __init__(self, elevation_profile, elevation_step_size):
         lower_tube_enevelope = self.build_lower_tube_envelope(elevation_profile)
         upper_tube_enevelope = self.build_upper_tube_envelope(elevation_profile)
-        abstract_lattice.AbstractLattice.__init__(self, pylons_slices_bounds,
-                                      PylonsSlice.pylon_slice_points_builder)
+        tube_points_slices_bounds = tube_envelopes_to_tube_slice_bounds(
+            lower_tube_envelope, upper_tube_envelope, elevation_profile,
+                                                    elevation_step_size)
+        abstract_lattice.AbstractLattice.__init__(self,
+                             tube_points_slices_bounds,
+             TubePointsSlice.tube_points_slice_builder)
 
