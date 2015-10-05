@@ -66,7 +66,7 @@ class TubePointsSlice(abstract_lattice.AbstractSlice):
                                    abstract_x_coord,
                                    abstract_y_coord,
                                    arc_length,
-                                   geospatial
+                                   geospatial,
                                    latlng,
                                    tube_elevation,
                                    land_elevation)
@@ -84,7 +84,7 @@ class TubePointsSlice(abstract_lattice.AbstractSlice):
 
 class TubePointsLattice(abstract_lattice.AbstractLattice):
 
-    def build_lower_tube_envelope(self, elevation_profile):
+    def build_lower_tube_envelope_v1(self, elevation_profile):
         first_land_elevation = elevation_profile.land_elevations[0]
         last_land_elevation = elevation_profile.land_elevations[-1]
         land_elevation_difference = last_land_elevation - first_land_elevation
@@ -98,8 +98,24 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
             lower_tube_envelope.append(lower_tube_envelope_point)
         return lower_tube_envelope
 
+    def build_lower_tube_envelope_v2(self, elevation_profile):
+        lowest_land_elevation = min(elevation_profile.land_elevations)
+        lower_tube_envelope = ([lowest_land_elevation] *
+                               len(elevation_profile.land_elevations))
+        return lower_tube_envelope
+
     def build_upper_tube_envelope(self, elevation_profile):
-        upper_tube_envelope = None
+        land_elevation_peaks_indices = scipy(elevation_profile.land_elevations)
+        num_envelope_points = len(elevation_profile.land_elevations)
+        weights = np.arange(num_envelope_points)
+        peaks_weights = 100
+        remaining_weights = 1
+        for i in range(num_envelope_points):
+            if i in land_elevation_peaks_indices:
+                weights[i] = peaks_weights
+            else:
+                weights[i] = remaining_weights
+        upper_tube_envelope = interpolate_peaks(elevation_profile, weights)        
         return upper_tube_envelope
        
     def tube_envelopes_to_tube_slice_bounds(self, lower_tube_envelope,

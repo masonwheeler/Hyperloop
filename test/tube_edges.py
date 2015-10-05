@@ -58,10 +58,10 @@ class TubeEdge(abstract_edges.AbstractEdge):
         self.pylons_costs = [tube_point_a.pylon_cost, tube_point_b.pylon_cost]
 
 
-class TubeEdgesSets(abstract.AbstractEdgesSets):
+class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    def __init__(self, pylons_lattice, tube_degree_constraint):
-        abstract.AbstractEdgesSets.__init__(self, pylons_lattice,
-                                            TubeEdge,
-                                            tube_degree_constraint)
+    def __init__(self, tube_points_lattice, tube_degree_constraint):
+        abstract_edges.AbstractEdgesSets.__init__(self, tube_points_lattice,
+                                                                   TubeEdge,
+                                                     tube_degree_constraint)
 

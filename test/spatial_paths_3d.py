@@ -37,7 +37,7 @@ class SpatialPath3d(object):
         return time_elapsed
 
     def compute_total_cost(self):
-        total_cost = (self.land_cost + self.pylon_cost +
+        total_cost = (self.land_cost + (self.pylon_cost * 4) +
                       self.tube_cost + self.tunneling_cost)
         return total_cost
 
@@ -73,7 +73,7 @@ class SpatialPathsSet3d(object):
     def build_tube_profiles_v1(self, tube_builder, elevation_profile):
         tube_profiles = []
         for i in range(self.NUM_TUBE_PROFILES):
-            max_curvature = ((self.DEFAULT_MAX_CURVATURE * 0.01) *
+            max_curvature = ((self.DEFAULT_MAX_CURVATURE * 0.001) *
                              (float(i) / float(self.NUM_TUBE_PROFILES)))
             tube_profile = tube_builder(elevation_profile,
                               max_curvature=max_curvature)

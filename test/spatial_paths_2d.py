@@ -28,8 +28,8 @@ class SpatialPath2d(object):
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
                                                      geospatials_to_latlngs):
-        graph_geospatials = spatial_graph.elevation_profile.geospatials
-        self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
+        graph_geospatials = spatial_graph.elevation_profile.geospatials[::4]
+        self.arc_lengths = spatial_graph.elevation_profile.arc_lengths[::4]
         self.geospatials, self.spatial_curvature_array = \
            spatial_interpolator(graph_geospatials, base_resolution)
         self.latlngs = geospatials_to_latlngs(self.geospatials)

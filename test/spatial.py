@@ -24,7 +24,7 @@ import spatial_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
 #import tube_profile
-import tube_profile_greedy
+import tube_greedy
 import util
 
 if config.VISUAL_MODE:

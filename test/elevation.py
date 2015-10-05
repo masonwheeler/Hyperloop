@@ -58,4 +58,4 @@ class ElevationProfile(object):
                    land_elevations=merged_land_elevations,
                    geospatials_partitions=merged_geospatials_partitions)
         return data
-        
+    
