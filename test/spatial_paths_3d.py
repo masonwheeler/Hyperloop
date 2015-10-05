@@ -77,6 +77,7 @@ class SpatialPathsSet3d(object):
                              (float(i) / float(self.NUM_TUBE_PROFILES)))
             tube_profile = tube_builder(elevation_profile,
                               max_curvature=max_curvature)
+            tube_profile.visualize()
             tube_profiles.append(tube_profile)
         return tube_profiles
 

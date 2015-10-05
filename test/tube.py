@@ -12,8 +12,6 @@ import util
 import visualize
 
 
-VISUALIZE_PROFILES = True
-
 class TubePoint(object):
 
     def compute_pylon_cost(self):
@@ -137,27 +135,26 @@ class Tube(object):
         self.tube_cost = self.compute_tube_cost(tube_edges)        
         self.tube_curvature_array = tube_profile.tube_curvature_array
 
-    def visualize_tube(self, tube_profile):
-        if VISUALIZE_PROFILES and config.VISUAL_MODE:
-            plottable_tube_profile = self.get_plottable_tube_profile('r-')
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                                       plottable_tube_profile)
-            plottable_land_profile = self.get_plottable_land_profile('b-')
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                                       plottable_land_profile)
-            are_elevation_axes_equal = False
-            visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
-                                                 are_elevation_axes_equal)
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+    def visualize(self):
+        plottable_tube_profile = self.get_plottable_tube_profile('r-')
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                   plottable_tube_profile)
+        plottable_land_profile = self.get_plottable_land_profile('b-')
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                   plottable_land_profile)
+        are_elevation_axes_equal = False
+        visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                                             are_elevation_axes_equal)
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
 
-            plottable_tube_curvature = self.get_plottable_tube_curvature('g-')
-            visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
-                                        plottable_tube_curvature)
-            are_curvature_axes_equal = False
-            visualize.plot_objects(visualize.CURVATURE_PROFILE_PLOT_QUEUE,
-                                                 are_curvature_axes_equal)
-            visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
+        plottable_tube_curvature = self.get_plottable_tube_curvature('g-')
+        visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
+                                    plottable_tube_curvature)
+        are_curvature_axes_equal = False
+        visualize.plot_objects(visualize.CURVATURE_PROFILE_PLOT_QUEUE,
+                                             are_curvature_axes_equal)
+        visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
 
     def get_plottable_tube_profile(self, color_string):
         tube_profile_points = [self.arc_lengths, self.tube_elevations]
