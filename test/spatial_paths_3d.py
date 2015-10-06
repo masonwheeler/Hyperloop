@@ -78,6 +78,7 @@ class SpatialPathsSet3d(object):
             tube_profile = tube_builder(elevation_profile,
                               max_curvature=max_curvature)
             tube_profile.visualize()
+            print "dummy variable used: " + str(max_curvature)
             tube_profiles.append(tube_profile)
         return tube_profiles
 

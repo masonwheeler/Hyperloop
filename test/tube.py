@@ -11,6 +11,9 @@ import parameters
 import util
 import visualize
 
+import curvature
+#import reparametrize_speed
+
 
 class TubePoint(object):
 
@@ -156,6 +159,15 @@ class Tube(object):
                                              are_curvature_axes_equal)
         visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
 
+        plottable_speeds_by_arc_length = \
+            self.get_plottable_speeds_by_arc_length('c-')
+        visualize.SPEED_PROFILE_PLOT_QUEUE.append(
+                                  plottable_speeds_by_arc_length)
+        are_speed_axes_equal = False
+        visualize.plot_objects(visualize.SPEED_PROFILE_PLOT_QUEUE,
+                                             are_speed_axes_equal)
+        visualize.SPEED_PROFILE_PLOT_QUEUE.pop()
+
     def get_plottable_tube_profile(self, color_string):
         tube_profile_points = [self.arc_lengths, self.tube_elevations]
         plottable_tube_profile = [tube_profile_points, color_string]
@@ -170,4 +182,14 @@ class Tube(object):
         tube_curvature_points = [self.arc_lengths, self.tube_curvature_array]
         plottable_tube_curvature = [tube_curvature_points, color_string]
         return plottable_tube_curvature
-
+    
+    def get_plottable_speeds_by_arc_length(self, color_string):
+        max_allowed_speeds_by_arc_length = \
+            curvature.vertical_curvature_array_to_max_allowed_vels(
+                                             self.tube_curvature_array)
+        speeds_by_arc_length_points = [self.arc_lengths,
+                                       max_allowed_speeds_by_arc_length]  
+        plottable_speeds_by_arc_length = [speeds_by_arc_length_points,
+                                          color_string]
+        return plottable_speeds_by_arc_length
+    

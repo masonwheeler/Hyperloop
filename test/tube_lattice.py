@@ -104,7 +104,7 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
                                len(elevation_profile.land_elevations))
         return lower_tube_envelope
 
-    def build_upper_tube_envelope(self, elevation_profile):
+    def build_upper_tube_envelope_v1(self, elevation_profile):
         land_elevation_peaks_indices = scipy(elevation_profile.land_elevations)
         num_envelope_points = len(elevation_profile.land_elevations)
         weights = np.arange(num_envelope_points)
@@ -118,6 +118,12 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
         upper_tube_envelope = interpolate_peaks(elevation_profile, weights)        
         return upper_tube_envelope
        
+    def build_upper_tube_envelope_v2(self, elevation_profile):
+        highest_land_elevation = max(elevation_profile.land_elevations)
+        upper_tube_envelope = ([highest_land_elevation] *
+                               len(elevation_profile.land_elevations))
+        return upper_tube_envelope
+
     def tube_envelopes_to_tube_slice_bounds(self, lower_tube_envelope,
           upper_tube_envelope, elevation_profile, elevation_step_size):
         tube_points_slices_bounds = []
