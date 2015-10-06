@@ -18,6 +18,7 @@ import parameters
 
 ########## For Edge Sampling ##########
 
+
 def points_to_edges(points):
     return util.to_pairs(points)
 
@@ -106,7 +107,6 @@ def interpolate_points_1d(points1d):
         s_values, z_array)
     return [z_spline, s_values]
 
-
 def interpolating_splines_2d(x_array, y_array, s_values):
     x_spline = scipy.interpolate.InterpolatedUnivariateSpline(
         s_values, x_array)
@@ -114,14 +114,12 @@ def interpolating_splines_2d(x_array, y_array, s_values):
         s_values, y_array)
     return [x_spline, y_spline]
 
-
 def interpolate_points_2d(points2d):
     num_points = len(points2d)
     s_values = get_s_values(num_points)
     x_array, y_array = points_2d_to_arrays(points2d)
     x_spline, y_spline = interpolating_splines_2d(x_array, y_array, s_values)
     return [x_spline, y_spline, s_values]
-
 
 def interpolating_splines_3d(x_array, y_array, z_array, s_values):
     x_spline = scipy.interpolate.InterpolatedUnivariateSpline(
@@ -132,7 +130,6 @@ def interpolating_splines_3d(x_array, y_array, z_array, s_values):
         s_values, z_array)
     return [x_spline, y_spline, z_spline]
 
-
 def interpolate_points_3d(points3d):
     num_points = len(points3d)
     s_values = get_s_values(num_points)
@@ -140,7 +137,6 @@ def interpolate_points_3d(points3d):
     x_spline, y_spline, z_spline = interpolating_splines_3d(x_array, y_array,
                                                             z_array, s_values)
     return [x_spline, y_spline, z_spline, s_values]
-
 
 def points_1d_local_max_allowed_vels(points1d):
     z_spline, s_values = interpolate_points_1d(points1d)

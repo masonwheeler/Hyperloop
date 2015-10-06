@@ -8,6 +8,7 @@ Last Modification Purpose: To clarify module usage.
 """
 
 # Our Modules
+import parameters
 import usgs
 import util
 
@@ -27,11 +28,26 @@ class ElevationProfile(object):
         self.geospatials = geospatials
         self.latlngs = latlngs
         self.arc_lengths = arc_lengths
+        if geospatials_spatials == None:
+            geospatials_partitions = [geospatials]
         self.geospatials_partitions = geospatials_partitions
         if land_elevations == None:
             self.land_elevations = self.get_land_elevations()
         else:
             self.land_elevations = land_elevations
+
+    @classmethod
+    def init_from_geospatial_pair(self, start_geospatial, end_geospatial, 
+                                  elevation_points_to_pylon_points_ratio):
+        elevation_point_spacing = (parameters.PYLON_SPACING / 
+                                   elevation_points_to_pylon_points_ratio)
+        geospatials, arc_lengths = util.build_grid(
+                                      start_geospatial,
+                                        end_geospatial,
+                               elevation_point_spacing)
+        latlngs = self.geospatials_to_latlngs(geospatials)
+        data = cls(geospatials, latlngs, arc_lengths)
+        return data        
 
     @classmethod
     def merge_elevation_profiles(cls, elevation_profile_a, elevation_profile_b):

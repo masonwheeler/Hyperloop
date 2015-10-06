@@ -32,6 +32,8 @@ import util
 
 class SpatialEdge(abstract_edges.AbstractEdge):
 
+    ELEVATION_POINTS_TO_PYLON_POINTS_RATIO = 1
+
     def get_geospatials(self):
         self.geospatials = [self.start_point.geospatial,
                             self.end_point.geospatial]
@@ -64,14 +66,11 @@ class SpatialEdge(abstract_edges.AbstractEdge):
             self.land_cost = landcover.get_land_cost(landcover_latlngs)
 
     def get_elevation_profile(self):
-        geospatials, arc_lengths = util.build_grid(
-                                           self.start_point.geospatial,
-                                           self.end_point.geospatial,
-                                           parameters.PYLON_SPACING)
-        latlngs = self.geospatials_to_latlngs(geospatials)
-        self.elevation_profile = elevation.ElevationProfile(
-                          geospatials, latlngs, arc_lengths,
-                          geospatials_partitions=[geospatials])
+        
+        self.elevation_profile = \
+            elevation.ElevationProfile.init_from_geospatial_pair(
+              self.start_point.geospatial, self.end_point.geospatial,
+                         self.ELEVATION_POINTS_TO_PYLON_POINTS_RATIO)
     
     def build_tube(self, tube_builder):
         DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
