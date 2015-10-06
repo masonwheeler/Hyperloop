@@ -142,13 +142,41 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     def __init__(self, elevation_profile):
         elevation_step_size = parameters.PYLON_HEIGHT_STEP_SIZE
-        lower_tube_envelope = self.build_lower_tube_envelope_v2(
+        self.elevation_profile = elevation_profile
+        self.lower_tube_envelope = self.build_lower_tube_envelope_v2(
                                                    elevation_profile)
-        upper_tube_envelope = self.build_upper_tube_envelope_v2(
+        self.upper_tube_envelope = self.build_upper_tube_envelope_v2(
                                                    elevation_profile)
         tube_points_slices_bounds = self.tube_envelopes_to_tube_slice_bounds(
-            lower_tube_envelope, upper_tube_envelope, elevation_profile,
-                                                    elevation_step_size)
+                          self.lower_tube_envelope, self.upper_tube_envelope,
+                                 self.elevation_profile, elevation_step_size)
         abstract_lattice.AbstractLattice.__init__(self,
             tube_points_slices_bounds, TubePointsSlice)
+
+    def visualize(self):
+        lattice_axes_equal = False
+        arc_lengths = self.elevation_profile.arc_lengths
+        land_elevations = self.elevation_profile.land_elevations
+        land_elevations_points = [land_elevations, arc_lengths]
+        plottable_land_elevations = [land_elevations_points, 'b-']
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
+        
+        lower_tube_envelope_points = [self.lower_tube_envelope, arc_lengths]
+        plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                            plottable_lower_tube_envelope)
+
+        upper_tube_envelope_points = [self.upper_tube_envelope, arc_lengths]
+        plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                            plottable_upper_tube_envelope)
+
+        visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                               lattice_axes_equal)
+
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+
+
 

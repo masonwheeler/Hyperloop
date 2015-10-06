@@ -26,15 +26,13 @@ def elevation_profile_to_tube_graphs(elevation_profile,
                    tube_point_elevation_step_size=None):
     if tube_point_elevation_step_size == None:
         tube_point_elevation_step_size = parameters.PYLON_HEIGHT_STEP_SIZE
-    tube_point_arc_length_step_size = elevation_profile.arc_length_step_size
-    tube_angle_constraint = compute_tube_angle_constraint(tube_interpolator,
-            tube_point_arc_length_step_size, tube_point_elevation_step_size)
+    tube_point_arc_length_step_size = elevation_profile.elevation_point_spacing
+    tube_angle_constraint = compute_tube_angle_constraint(
+        tube_point_arc_length_step_size, tube_point_elevation_step_size)
     tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile)
-    print 1
+    tube_points_lattice.visualize()
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
                                              tube_angle_constraint)
-    print 2
     tube_graphs_sets = tube_graphs.TubeGraphsSets(tube_edges_sets)
-    print 3
     selected_tube_graphs = tube_graphs_sets.selected_graphs
     return selected_tube_graphs

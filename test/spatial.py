@@ -76,6 +76,9 @@ def build_spatial_edges_sets(route_spatial_lattice):
                                               route_spatial_lattice,
             smoothing_interpolate.bounded_error_graph_interpolation,
                        tube_greedy.elevation_profile_to_tube_graphs)
+    if route_spatial_edges_sets != None:
+        if not route_spatial_edges_sets.TUBE_READY:
+            route_spatial_edges_sets.build_tubes()
     if config.VISUAL_MODE:
         if VISUALIZE_EDGES:
             plottable_edges = route_spatial_edges_sets.get_plottable_edges('k-')

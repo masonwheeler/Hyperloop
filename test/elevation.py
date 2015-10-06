@@ -24,11 +24,13 @@ class ElevationProfile(object):
         return land_elevations
 
     def __init__(self, geospatials, latlngs, arc_lengths,
-                       land_elevations=None, geospatials_partitions=None):
+                 elevation_point_spacing,
+                 land_elevations=None, geospatials_partitions=None):
         self.geospatials = geospatials
         self.latlngs = latlngs
         self.arc_lengths = arc_lengths
-        if geospatials_spatials == None:
+        self.elevation_point_spacing = elevation_point_spacing
+        if geospatials_partitions == None:
             geospatials_partitions = [geospatials]
         self.geospatials_partitions = geospatials_partitions
         if land_elevations == None:
@@ -37,16 +39,16 @@ class ElevationProfile(object):
             self.land_elevations = land_elevations
 
     @classmethod
-    def init_from_geospatial_pair(self, start_geospatial, end_geospatial, 
-                                  elevation_points_to_pylon_points_ratio):
+    def init_from_geospatial_pair(cls, start_geospatial, end_geospatial, 
+          geospatials_to_latlngs, elevation_points_to_pylon_points_ratio):
         elevation_point_spacing = (parameters.PYLON_SPACING / 
                                    elevation_points_to_pylon_points_ratio)
         geospatials, arc_lengths = util.build_grid(
                                       start_geospatial,
                                         end_geospatial,
                                elevation_point_spacing)
-        latlngs = self.geospatials_to_latlngs(geospatials)
-        data = cls(geospatials, latlngs, arc_lengths)
+        latlngs = geospatials_to_latlngs(geospatials)
+        data = cls(geospatials, latlngs, arc_lengths, elevation_point_spacing)
         return data        
 
     @classmethod

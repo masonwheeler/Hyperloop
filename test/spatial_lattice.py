@@ -17,6 +17,7 @@ import curvature
 import interpolate
 import parameters
 import proj
+import smoothing_interpolate
 import util
 
 
@@ -84,12 +85,13 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
             self.SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR
         curvature_threshold = curvature.compute_curvature_threshold(
                  parameters.MAX_SPEED, parameters.MAX_LATERAL_ACCEL)
-        x_spline, y_spline = interpolate.iterative_smoothing_interpolation_2d(
-                                                                      x_array,
-                                                                      y_array,
-                                                          initial_end_weights,
-                                                     initial_smoothing_factor,
-                                                          curvature_threshold)
+        x_spline, y_spline = \
+            smoothing_interpolate.iterative_smoothing_interpolation_2d(
+                                                                   x_array,
+                                                                   y_array,
+                                                       initial_end_weights,
+                                                  initial_smoothing_factor,
+                                                       curvature_threshold)
         return [x_spline, y_spline]
     
     def sample_directions_geospatials(self, directions_geospatials):

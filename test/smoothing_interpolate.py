@@ -96,8 +96,7 @@ def bounded_error_graph_interpolation(graph_points, resolution):
     points_x_vals_array, points_y_vals_array = np.transpose(points_array)
     initial_end_weights = 10**3
     initial_smoothing_factor = 10**4
-    x_spline, y_spline = \
-        smoothing_interpolate.smoothing_interpolation_with_max_error(
+    x_spline, y_spline = smoothing_interpolation_with_max_error(
                                                    points_x_vals_array,
                                                    points_y_vals_array,
                                                                 s_vals,

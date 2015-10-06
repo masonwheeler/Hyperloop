@@ -70,14 +70,15 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         self.elevation_profile = \
             elevation.ElevationProfile.init_from_geospatial_pair(
               self.start_point.geospatial, self.end_point.geospatial,
-                         self.ELEVATION_POINTS_TO_PYLON_POINTS_RATIO)
+              self.geospatials_to_latlngs,           
+              self.ELEVATION_POINTS_TO_PYLON_POINTS_RATIO)
     
     def build_tube(self, tube_builder):
-        DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
-                                 parameters.MAX_SPEED**2)
-        max_curvature = DEFAULT_MAX_CURVATURE * 0.01
-        tube_profile = tube_builder(self.elevation_profile, 
-                                    max_curvature=max_curvature)
+        #DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
+        #                         parameters.MAX_SPEED**2)
+        #max_curvature = DEFAULT_MAX_CURVATURE * 0.01
+        tube_profile = tube_builder(self.elevation_profile)#,
+                                    #max_curvature=max_curvature)
         self.tube_curvature_array = tube_profile.tube_curvature_array
         self.pylon_cost = tube_profile.pylons_cost
         self.tube_cost = tube_profile.tube_cost 
@@ -103,7 +104,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    TUBE_READY = True
+    TUBE_READY = False
 
     NAME = "spatial_edges"
     FLAG = cacher.SPATIAL_EDGES_FLAG
@@ -146,16 +147,17 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         t2 = time.time()
         util.smart_print("Finished building elevation profiles in: " +
                          str(t2 - t1) + " seconds.")
-        util.smart_print("Now building tube profiles")
-        self.build_tubes()
-        t3 = time.time()
-        util.smart_print("Finished building tube profiles in: " + str(t3 - t2)
+        if self.TUBE_READY:
+            util.smart_print("Now building tube profiles")
+            self.build_tubes()
+            t3 = time.time()
+            util.smart_print("Finished building tube profiles in: " + str(t3 - t2)
                          + " seconds.")
         util.smart_print("Now computing land costs...")
         self.compute_land_costs()
-        t4 = time.time()
-        util.smart_print("Finished computing land costs in: " + str(t4 - t3)
-                         + " seconds.")
+        #t4 = time.time()
+        #util.smart_print("Finished computing land costs in: " + str(t4 - t3)
+        #                 + " seconds.")
    
     def __init__(self, spatial_lattice, spatial_interpolator,
                                                 tube_builder):
