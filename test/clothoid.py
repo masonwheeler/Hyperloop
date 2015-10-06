@@ -36,7 +36,7 @@ def S(t):
     return quad(SinF, 0, t, limit=50000)[0]
 
 
-def eval_x_ya_large(a, b, k):
+def eval_x_y_a_large(a, b, k):
     X, Y = [0] * (k + 1), [0] * (k + 1)
     s = a / m.fabs(a)
     z = m.sqrt(m.fabs(a)) / m.sqrt(m.pi)
@@ -66,7 +66,7 @@ def r_lommel(mu, nu, b):
     return r
 
 
-def eval_x_ya_zero(b, k):
+def eval_x_y_a_zero(b, k):
     X, Y = [0] * (k + 1), [0] * (k + 1)
     if m.fabs(b) < TOLERANCE:
         X[0] = 1 - (m.pow(b, 2) / 6) * (1 - m.pow(b, 2) / 20)
@@ -86,9 +86,8 @@ def eval_x_ya_zero(b, k):
                 + D * r_lommel(n + 0.5, 0.5, b))
     return [X, Y]
 
-
-def eval_x_ya_small(a, b, k, p):
-    X0, Y0 = eval_x_ya_zero(b, k + 4 * p + 2)
+def eval_x_y_a_small(a, b, k, p):
+    X0, Y0 = eval_x_y_a_zero(b, k + 4 * p + 2)
     X, Y = [0] * (k + 1), [0] * (k + 1)
     t = 1
     for j in range(k + 1):
@@ -101,13 +100,12 @@ def eval_x_ya_small(a, b, k, p):
             Y[j] += t * ((Y0[4 * n + j] + a * X0[4 * n + j + 2]) / (4 * n + 2))
     return [X, Y]
 
-
 def eval_x_y(a, b, c, k):
     X, Y = [0] * (k + 1), [0] * (k + 1)
     if m.fabs(a) < TOLERANCE:
-        X0, Y0 = eval_x_ya_small(a, b, k, 2)
+        X0, Y0 = eval_x_y_a_small(a, b, k, 2)
     else:
-        X0, Y0 = eval_x_ya_large(a, b, k)
+        X0, Y0 = eval_x_y_a_large(a, b, k)
     for j in range(k + 1):
         X[j] = X0[j] * m.cos(c) - Y0[j] * m.sin(c)
         Y[j] = X0[j] * m.sin(c) + Y0[j] * m.cos(c)

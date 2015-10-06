@@ -78,7 +78,7 @@ class TubePointsSlice(abstract_lattice.AbstractSlice):
     def __init__(self, abstract_x_coord, tube_points_slice_bounds,
                                              slice_start_point_id):
         abstract_lattice.AbstractSlice.__init__(self, abstract_x_coord,
-                              tube_points_slice_bounds, slice_start_id,
+                        tube_points_slice_bounds, slice_start_point_id,
                              TubePointsSlice.tube_points_slice_builder)
 
 
@@ -135,18 +135,20 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
                 "arcLength" : elevation_profile.arc_lengths[i],
                 "geospatial" : elevation_profile.geospatials[i],
                 "latlng" : elevation_profile.latlngs[i],
-                "landElevation" : elevation_profile.land_elevation[i]
+                "landElevation" : elevation_profile.land_elevations[i]
                 }
             tube_points_slices_bounds.append(tube_points_slice_bounds) 
         return tube_points_slices_bounds
 
-    def __init__(self, elevation_profile, elevation_step_size):
-        lower_tube_enevelope = self.build_lower_tube_envelope(elevation_profile)
-        upper_tube_enevelope = self.build_upper_tube_envelope(elevation_profile)
-        tube_points_slices_bounds = tube_envelopes_to_tube_slice_bounds(
+    def __init__(self, elevation_profile):
+        elevation_step_size = parameters.PYLON_HEIGHT_STEP_SIZE
+        lower_tube_envelope = self.build_lower_tube_envelope_v2(
+                                                   elevation_profile)
+        upper_tube_envelope = self.build_upper_tube_envelope_v2(
+                                                   elevation_profile)
+        tube_points_slices_bounds = self.tube_envelopes_to_tube_slice_bounds(
             lower_tube_envelope, upper_tube_envelope, elevation_profile,
                                                     elevation_step_size)
         abstract_lattice.AbstractLattice.__init__(self,
-                             tube_points_slices_bounds,
-             TubePointsSlice.tube_points_slice_builder)
+            tube_points_slices_bounds, TubePointsSlice)
 

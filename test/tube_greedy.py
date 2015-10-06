@@ -2,14 +2,36 @@
 Original Developer: Jonathan Ward
 """
 
-import tube_lattice
+import angle_constraint
+import curvature
+import parameters
 import tube_edges
 import tube_graphs
+import tube_interpolate
+import tube_lattice
 
 
-def elevation_profile_to_tube_graphs(elevation_profile):
-    tube_lattice = tube_lattice.TubePointsLattice(elevation_profile)
-    tube_edges_sets = tube_edges.TubeEdgesSets(tube_lattice)
+def compute_tube_angle_constraint(tube_interpolator,
+        tube_point_arc_length_step_size, tube_point_elevation_step_size):
+    length_scale = tube_point_arc_length_step_size
+    resolution = tube_point_elevation_step_size
+    max_curvature = curvature.compute_curvature_threshold(parameters.MAX_SPEED,
+                                                 parameters.MAX_VERTICAL_ACCEL)
+    tube_angle_constraint = angle_constraint.compute_angle_constraint(
+           length_scale, tube_interpolator, max_curvature, resolution)
+    return tube_angle_constraint
+
+def elevation_profile_to_tube_graphs(elevation_profile, tube_interpolator,
+                                          tube_point_elevation_step_size):
+    tube_point_arc_length_step_size = elevation_profile.arc_length_step_size
+    tube_angle_constraint = compute_tube_angle_constraint(tube_interpolator,
+            tube_point_arc_length_step_size, tube_point_elevation_step_size)
+    tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile)
+    print 1
+    tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
+                                             tube_angle_constraint)
+    print 2
     tube_graphs_sets = tube_graphs.TubeGraphsSets(tube_edges_sets)
+    print 3
     selected_tube_graphs = tube_graphs_sets.selected_graphs
     return selected_tube_graphs

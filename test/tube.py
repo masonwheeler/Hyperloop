@@ -12,7 +12,7 @@ import util
 import visualize
 
 import curvature
-#import reparametrize_speed
+import reparametrize_speed
 
 
 class TubePoint(object):
@@ -183,13 +183,22 @@ class Tube(object):
         plottable_tube_curvature = [tube_curvature_points, color_string]
         return plottable_tube_curvature
     
-    def get_plottable_speeds_by_arc_length(self, color_string):
-        max_allowed_speeds_by_arc_length = \
+    def compute_speeds(self):
+        self.speeds_by_arc_length = \
             curvature.vertical_curvature_array_to_max_allowed_vels(
                                              self.tube_curvature_array)
+        self.constrained_speeds_by_arc_length = \
+            reparametrize_speed.constrain_longitudinal_acceleration(
+            speeds_by_arc_length, self.arc_lengths)
+        self.speeds_by_time, self.cumulative_time_steps = \
+
+    def get_plottable_speeds(self, color_string):
+        speeds_by_arc_length = \
         speeds_by_arc_length_points = [self.arc_lengths,
-                                       max_allowed_speeds_by_arc_length]  
+                                       speeds_by_arc_length]  
         plottable_speeds_by_arc_length = [speeds_by_arc_length_points,
                                           color_string]
+        
+        
         return plottable_speeds_by_arc_length
     

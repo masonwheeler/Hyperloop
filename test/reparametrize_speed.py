@@ -19,8 +19,8 @@ import scipy.signal
 import parameters
 
 
-def constrain_longitudinal_acceleration_for_speeds_by_arc_length(
-    speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration):
+def constrain_longitudinal_acceleration(speeds_by_arc_length, arc_lengths):
+    max_longitudinal_acceleration = parameters.MAX_LONGITUDINAL_ACCEL
     rel_min_speeds_indices_tuple = scipy.signal.argrelmin(speeds_by_arc_length,
                                                                       order=5)
     rel_min_speeds_indices = rel_min_speeds_indices_tuple[0].tolist()
@@ -91,13 +91,12 @@ def speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
                                 selected_speeds_by_arc_length)
     return [speeds_by_time, cumulative_time_steps]
 
-def constrain_and_reparametrize_speeds(speeds_by_arc_length,
-               arc_lengths, time_step_size, max_longitudinal_acceleration):
-    constrained_speeds_by_arc_length = \
-        constrain_longitudinal_acceleration_for_speeds_by_arc_length(
-            speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration)
+def constrain_and_reparametrize_speeds(speeds_by_arc_length, arc_lengths,
+                                                          time_step_size):
+    constrained_speeds_by_arc_length = constrain_longitudinal_acceleration(
+        speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration)
     speeds_by_time, cumulative_time_steps = \
-        speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
-                                        arc_lengths, time_step_size)
+        speeds_by_arc_length_to_speeds_by_time(constrained_speeds_by_arc_length,
+                                                    arc_lengths, time_step_size)
     time_elapsed = cumulative_time_steps[-1]
     return [speeds_by_time, time_elapsed]
