@@ -13,7 +13,7 @@ import visualize
 class TubePoint(abstract_lattice.AbstractPoint):
 
     def compute_pylon_cost(self):
-        if self.is_undeground:
+        if self.is_underground:
             pylon_cost = 0
         else:
             height_cost = (self.pylon_height * 
@@ -34,10 +34,11 @@ class TubePoint(abstract_lattice.AbstractPoint):
         self.latlng = latlng
         self.geospatial = geospatial
         self.land_elevation = land_elevation
-        self.tube_elevtion = tube_elevation
+        self.tube_elevation = tube_elevation
         self.pylon_height = tube_elevation - land_elevation
+        self.is_underground = (self.pylon_height < 0)     
         self.pylon_cost = self.compute_pylon_cost()
-        self.physical_x_coord = distance_along_path
+        self.physical_x_coord = arc_length
         self.physical_y_coord = tube_elevation
         abstract_lattice.AbstractPoint.__init__(self, point_id, abstract_x_coord,
                   abstract_y_coord, self.physical_x_coord, self.physical_y_coord)
@@ -55,13 +56,15 @@ class TubePointsSlice(abstract_lattice.AbstractSlice):
         geospatial = tube_points_slice_bounds["geospatial"]
         latlng = tube_points_slice_bounds["latlng"]
         land_elevation = tube_points_slice_bounds["landElevation"]
-
-        tube_elevations = util.build_grid_1d(max_tube_elevation,
-            min_tube_elevation, tube_elevation_step_size)
+        print max_tube_elevation
+        print min_tube_elevation
+        tube_elevations = util.build_grid_1d(min_tube_elevation,
+            max_tube_elevation, tube_elevation_step_size)
         point_id = slice_start_point_id
         abstract_y_coord = 0
         tube_points = []
         for tube_elevation in tube_elevations:
+            print tube_elevation
             tube_point = TubePoint(point_id,
                                    abstract_x_coord,
                                    abstract_y_coord,
@@ -157,19 +160,22 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
         lattice_axes_equal = False
         arc_lengths = self.elevation_profile.arc_lengths
         land_elevations = self.elevation_profile.land_elevations
-        land_elevations_points = [land_elevations, arc_lengths]
+        land_elevations_points = [arc_lengths, land_elevations]
         plottable_land_elevations = [land_elevations_points, 'b-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
         
-        lower_tube_envelope_points = [self.lower_tube_envelope, arc_lengths]
+        lower_tube_envelope_points = [arc_lengths, self.lower_tube_envelope]
         plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                             plottable_lower_tube_envelope)
 
-        upper_tube_envelope_points = [self.upper_tube_envelope, arc_lengths]
+        upper_tube_envelope_points = [arc_lengths, self.upper_tube_envelope]
         plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                             plottable_upper_tube_envelope)
+
+        plottable_lattice = self.get_plottable_lattice('b-')
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_lattice)
 
         visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
                                lattice_axes_equal)

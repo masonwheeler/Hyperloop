@@ -30,7 +30,7 @@ def elevation_profile_to_tube_graphs(elevation_profile,
     tube_angle_constraint = compute_tube_angle_constraint(
         tube_point_arc_length_step_size, tube_point_elevation_step_size)
     tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile)
-    tube_points_lattice.visualize()
+    #tube_points_lattice.visualize()
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
                                              tube_angle_constraint)
     tube_graphs_sets = tube_graphs.TubeGraphsSets(tube_edges_sets)

@@ -18,6 +18,9 @@ Last Modification Purpose:
 #Standard Modules:
 import numpy as np
 
+#Custom Modules:
+import util
+
 class AbstractPoint(object):
     """Abstract object that represents a point.
 

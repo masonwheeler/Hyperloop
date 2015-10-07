@@ -2,12 +2,14 @@
 Original Developer: Jonathan Ward
 """
 
+# Standard Modules:
+import numpy as np
+
 # Custom Modules:
 import abstract_edges
 import angle_constraint
 import curvature
 import parameters
-
 
 
 class TubeEdge(abstract_edges.AbstractEdge):
@@ -35,15 +37,16 @@ class TubeEdge(abstract_edges.AbstractEdge):
                          tube_point_a.tube_elevation]
         tube_coords_b = [tube_point_b.geospatial[0], tube_point_b.geospatial[1],
                          tube_point_b.tube_elevation]
-        edge_vector = util.subtract(tube_coords_a, tube_coords_b)
+        edge_vector = np.subtract(tube_coords_a, tube_coords_b)
         edge_length = np.linalg.norm(edge_vector)
         return edge_length
 
     def __init__(self, tube_point_a, tube_point_b):
-        abstract.AbstractEdge.__init__(self, tube_point_a, tube_point_b)
+        abstract_edges.AbstractEdge.__init__(self, tube_point_a, tube_point_b)
         edge_length = self.compute_edge_length(tube_point_a, tube_point_b)
         self.tube_cost = self.compute_tube_cost(edge_length)
-        self.tunneling_cost = self.compute_tunneling_cost(edge_length)
+        self.tunneling_cost = self.compute_tunneling_cost(edge_length,
+                                               tube_point_a, tube_point_b)
         self.pylons_costs = [tube_point_a.pylon_cost, tube_point_b.pylon_cost]
 
 
