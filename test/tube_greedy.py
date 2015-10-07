@@ -23,13 +23,16 @@ def compute_tube_angle_constraint(tube_point_arc_length_step_size,
     return tube_angle_constraint
 
 def elevation_profile_to_tube_graphs(elevation_profile,
-                   tube_point_elevation_step_size=None):
-    if tube_point_elevation_step_size == None:
-        tube_point_elevation_step_size = parameters.PYLON_HEIGHT_STEP_SIZE
-    tube_point_arc_length_step_size = elevation_profile.elevation_point_spacing
+                   tube_points_elevation_step_size=None):
+    if tube_points_elevation_step_size == None:
+        tube_points_elevation_step_size = 10.0 #parameters.PYLON_HEIGHT_STEP_SIZE
+    num_elevation_points_per_tube_point = 2**3
+    tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile,
+        tube_points_elevation_step_size, num_elevation_points_per_tube_point)
+    tube_points_arc_length_step_size = tube_points_lattice.arc_length_step_size
     tube_angle_constraint = compute_tube_angle_constraint(
-        tube_point_arc_length_step_size, tube_point_elevation_step_size)
-    tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile)
+        tube_points_arc_length_step_size, tube_points_elevation_step_size)
+    print "tube angle constraint: " + str(tube_angle_constraint)
     #tube_points_lattice.visualize()
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
                                              tube_angle_constraint)

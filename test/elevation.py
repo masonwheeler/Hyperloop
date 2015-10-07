@@ -24,12 +24,12 @@ class ElevationProfile(object):
         return land_elevations
 
     def __init__(self, geospatials, latlngs, arc_lengths,
-                 elevation_point_spacing,
+                 arc_length_step_size,
                  land_elevations=None, geospatials_partitions=None):
         self.geospatials = geospatials
         self.latlngs = latlngs
         self.arc_lengths = arc_lengths
-        self.elevation_point_spacing = elevation_point_spacing
+        self.arc_length_step_size = arc_length_step_size
         if geospatials_partitions == None:
             geospatials_partitions = [geospatials]
         self.geospatials_partitions = geospatials_partitions
@@ -41,14 +41,14 @@ class ElevationProfile(object):
     @classmethod
     def init_from_geospatial_pair(cls, start_geospatial, end_geospatial, 
           geospatials_to_latlngs, elevation_points_to_pylon_points_ratio):
-        elevation_point_spacing = (parameters.PYLON_SPACING / 
+        arc_length_step_size = (parameters.PYLON_SPACING / 
                                    elevation_points_to_pylon_points_ratio)
         geospatials, arc_lengths = util.build_grid(
                                       start_geospatial,
                                         end_geospatial,
-                               elevation_point_spacing)
+                                  arc_length_step_size)
         latlngs = geospatials_to_latlngs(geospatials)
-        data = cls(geospatials, latlngs, arc_lengths, elevation_point_spacing)
+        data = cls(geospatials, latlngs, arc_lengths, arc_length_step_size)
         return data        
 
     @classmethod
@@ -72,8 +72,20 @@ class ElevationProfile(object):
                                  in elevation_profile_b.arc_lengths]
         merged_arc_lengths = util.smart_concat(elevation_profile_a.arc_lengths,
                                                          shifted_arc_lengths_b)
+        arc_length_step_size = elevation_profile_a.arc_length_step_size
         data = cls(merged_geospatials, merged_latlngs, merged_arc_lengths, 
+                   arc_length_step_size,
                    land_elevations=merged_land_elevations,
                    geospatials_partitions=merged_geospatials_partitions)
         return data
-    
+
+    def undersample(self, undersampling_factor):
+        undersampled_geospatials = self.geospatials[::undersampling_factor]
+        undersampled_latlngs = self.latlngs[::undersampling_factor]
+        undersampled_arc_lengths = self.arc_lengths[::undersampling_factor]
+        undersampled_arc_length_step_size = (self.arc_length_step_size *
+                                             undersampling_factor)
+        undersampled_elevation_profile = ElevationProfile(
+            undersampled_geospatials, undersampled_latlngs,
+            undersampled_arc_lengths, undersampled_arc_length_step_size)
+        return undersampled_elevation_profile
