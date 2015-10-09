@@ -25,6 +25,8 @@ import util
 class AbstractEdge(object):
 
     def __init__(self, start_point, end_point):
+        self.start_point = start_point
+        self.end_point = end_point
         self.start_id = start_point.point_id
         self.end_id = end_point.point_id
         self.start_abstract_coords = [start_point.abstract_x_coord,

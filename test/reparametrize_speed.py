@@ -67,7 +67,7 @@ def speeds_by_arc_length_to_times_by_arc_length(speeds_by_arc_length,
     return times_by_arc_length
 
 def speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
-                                                arc_lengths, time_step_size):
+                                    arc_lengths, time_step_size):
     times_by_arc_length = speeds_by_arc_length_to_times_by_arc_length(
                                         speeds_by_arc_length, arc_lengths)
     trip_time = times_by_arc_length[-1]
@@ -94,7 +94,7 @@ def speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
 def constrain_and_reparametrize_speeds(speeds_by_arc_length, arc_lengths,
                                                           time_step_size):
     constrained_speeds_by_arc_length = constrain_longitudinal_acceleration(
-        speeds_by_arc_length, arc_lengths, max_longitudinal_acceleration)
+                                         speeds_by_arc_length, arc_lengths)
     speeds_by_time, cumulative_time_steps = \
         speeds_by_arc_length_to_speeds_by_time(constrained_speeds_by_arc_length,
                                                     arc_lengths, time_step_size)

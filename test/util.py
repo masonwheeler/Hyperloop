@@ -80,6 +80,12 @@ def smart_concat_array(array_a, array_b):
     new_array = np.concatenate((array_a, array_b[1:]))
     return new_array
 
+def offset_concat(list_a, list_b):
+    offset = list_a[-1]
+    shifted_list_b = [val + offset for val in list_b]
+    new_list = smart_concat(list_a, shifted_list_b)
+    return new_list
+
 # Vector Operations:
 
 def safe_operation(operation, vector_a, vector_b):
@@ -169,6 +175,16 @@ def build_grid_1d(start_value, end_value, spacing):
     else:
         grid = [value + start_value for value in values]
         return grid
+
+def sample_list(in_list, num_samples):
+    fractions = [float(i)/float(num_samples) for i in range(num_samples)]
+    difference = in_list[-1] - in_list[0]
+    samples = [fraction * difference + in_list[0] for fraction in fractions]
+    return samples
+
+def bisect_list(in_list):
+    bisected_list = sample_list(in_list, 3)
+    return bisected_list
 
 # Edge Operations:
 

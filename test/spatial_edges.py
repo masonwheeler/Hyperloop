@@ -77,8 +77,14 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         #DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
         #                         parameters.MAX_SPEED**2)
         #max_curvature = DEFAULT_MAX_CURVATURE * 0.01
-        tube_profile = tube_builder(self.elevation_profile)#,
+        #tube_profile = tube_builder(self.elevation_profile)#,
                                     #max_curvature=max_curvature)
+        selected_tube_graphs = tube_builder(self.elevation_profile)
+        tube_curvature_arrays = [graph.tube_curvature_array for graph in  
+                                 selected_tube_graphs]
+        test_graph = selected_tube_graphs[0]
+        print test_graph.arc_lengths
+        print tube_curvature_arrays[0]
         self.tube_curvature_array = tube_profile.tube_curvature_array
         self.pylon_cost = tube_profile.pylons_cost
         self.tube_cost = tube_profile.tube_cost 
@@ -86,12 +92,10 @@ class SpatialEdge(abstract_edges.AbstractEdge):
             
     def __init__(self, start_point, end_point):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)
-        self.start_point = start_point
-        self.end_point = end_point
 
     def to_abstract_edge(self):
         abstract_edge = abstract_edges.AbstractEdge(self.start_point,
-                                                self.end_point)
+                                                      self.end_point)
         return abstract_edge
 
     def to_plottable_edge(self, color_string):

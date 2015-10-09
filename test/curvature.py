@@ -21,7 +21,6 @@ import math
 import numpy as np
 
 #Our Modules:
-import parameters
 import util
 
 def get_derivative_values(spline, s_values):
@@ -169,38 +168,6 @@ def parametric_splines_vertical_and_lateral_curvatures(x_spline, y_spline,
         y_first_deriv_values, y_second_deriv_values)
     return [vertical_curvature_array, lateral_curvature_array]
 
-def curvature_array_to_max_allowed_vels(curvature_array, accel_constraint):
-    curvature_array_length = curvature_array.size
-    accel_constraint_array = np.empty(curvature_array_length)
-    accel_constraint_array.fill(accel_constraint)    
-    max_allowed_vels = np.sqrt(
-        np.divide(accel_constraint_array,
-                  curvature_array)
-    )
-    return max_allowed_vels
-
-def curvature_array_to_bounded_max_allowed_vels(curvature_array,
-    accel_constraint, max_possible_vel):
-    curvature_array_length = curvature_array.size
-    max_possible_vels = np.empty(curvature_array_length)
-    max_possible_vels.fill(max_possible_vel)
-    max_allowed_vels = curvature_array_to_max_allowed_vels(curvature_array,
-                                                          accel_constraint)
-    
-    bounded_max_allowed_vels = np.minimum(max_allowed_vels, max_possible_vels)
-    return bounded_max_allowed_vels
-
-def vertical_curvature_array_to_max_allowed_vels(vertical_curvature_array):
-    max_allowed_vels = curvature_array_to_bounded_max_allowed_vels(
-            vertical_curvature_array, parameters.MAX_VERTICAL_ACCEL,
-                                      parameters.MAX_SPEED)
-    return max_allowed_vels
-
-def lateral_curvature_array_to_max_allowed_vels(lateral_curvature_array):
-    max_allowed_vels = curvature_array_to_bounded_max_allowed_vels(
-        lateral_curvature_array, parameters.MAX_LATERAL_ACCEL,
-                                 parameters.MAX_SPEED)
-    return max_allowed_vels
 
 def effective_max_allowed_vels(x_spline, y_spline, z_spline, s_values):
     vertical_curvature_array, lateral_curvature_array = \
@@ -241,7 +208,6 @@ def test_curvature_validity(curvature_array, curvature_threshhold):
     is_curvature_valid = (total_excess_curvature == 0)
     return is_curvature_valid
 
-
 def curvature_test_2d(x_spline, y_spline, s_values, curvature_threshold):
     splines_curvature = parametric_splines_2d_curvature(x_spline, y_spline,
                                                         s_values)
@@ -249,28 +215,3 @@ def curvature_test_2d(x_spline, y_spline, s_values, curvature_threshold):
                                                curvature_threshold)
     return is_curvature_valid
 
-def points_to_radius(three_points):
-    """Convert points to radius
-    """
-    #print("three points: " + str(three_points))
-    p1, p2, p3 = three_points
-    a = np.linalg.norm(np.subtract(p1, p2))
-    b = np.linalg.norm(np.subtract(p2, p3))
-    c = np.linalg.norm(np.subtract(p1, p3))
-    p = (a + b + c) / 1.99999999999999
-    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
-    if A == 0:
-        return 1000000000000
-    else:
-        return a * b * c / (4 * A)
-
-def points_list_to_radii(points_list):
-    points_triples = [points_list[i:i + 3] for i in range(len(points_list) - 3)]
-    radii = [points_to_radius(points_triple)
-             for points_triple in points_triples]
-    return radii
-
-def compute_naive_curvature(three_points):
-    radius_of_curvature = points_to_radius(three_points)
-    naive_curvature = 1.0 / radius_of_curvature
-    return naive_curvature

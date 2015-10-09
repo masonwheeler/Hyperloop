@@ -42,7 +42,7 @@ def compute_angle_constraint(length_scale, interpolator, max_curvature,
                                                              max_error):
     origin = [0, 0]
     point_a = [length_scale, 0]
-    angle_constraint_in_degrees = 1
+    angle_constraint_in_degrees = 0.1
     effective_angle_in_degrees = 180 - angle_constraint_in_degrees
     effective_angle_in_radians = math.radians(effective_angle_in_degrees)
     point_b = [math.cos(effective_angle_in_radians) * length_scale,
@@ -52,7 +52,7 @@ def compute_angle_constraint(length_scale, interpolator, max_curvature,
         is_curvature_acceptable = test_path_points(path_points, interpolator,
                                                     max_curvature, max_error)
         if is_curvature_acceptable:
-            angle_constraint_in_degrees += 1
+            angle_constraint_in_degrees += 0.1
             effective_angle_in_degrees = 180 - angle_constraint_in_degrees
             effective_angle_in_radians = math.radians(effective_angle_in_degrees)
             point_b = [math.cos(effective_angle_in_radians) * length_scale,

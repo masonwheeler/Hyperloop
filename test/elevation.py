@@ -67,11 +67,8 @@ class ElevationProfile(object):
         merged_land_elevations = util.smart_concat(
                                     elevation_profile_a.land_elevations,
                                     elevation_profile_b.land_elevations)
-        arc_length_offset = elevation_profile_a.arc_lengths[-1]
-        shifted_arc_lengths_b = [arc_length + arc_length_offset for arc_length
-                                 in elevation_profile_b.arc_lengths]
-        merged_arc_lengths = util.smart_concat(elevation_profile_a.arc_lengths,
-                                                         shifted_arc_lengths_b)
+        merged_arc_lengths = util.offset_concat(elevation_profile_a.arc_lengths,
+                                                elevation_profile_b.arc_lengths)
         arc_length_step_size = elevation_profile_a.arc_length_step_size
         data = cls(merged_geospatials, merged_latlngs, merged_arc_lengths, 
                    arc_length_step_size,
