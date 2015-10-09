@@ -9,7 +9,7 @@ import numpy as np
 # Custom Modules:
 import curvature
 
-def smoothing_spline_1d(y_array, s_values, 
+#def smoothing_spline_1d(y_array, s_values, 
 
 def smoothing_splines_2d(x_array, y_array, s_values, weights, smoothing_factor):
     x_spline = scipy.interpolate.UnivariateSpline(s_values, x_array, weights)
@@ -25,6 +25,7 @@ def set_smoothing_factors_2d(x_spline, y_spline, smoothing_factor):
 
 def iterative_smoothing_interpolation_2d(x_array, y_array, initial_weights,
                                 initial_smoothing_factor, curvature_threshold):
+    print x_array
     num_points = x_array.size
     s_values = np.arange(num_points)
     x_spline, y_spline = smoothing_splines_2d(x_array, y_array, s_values,
@@ -87,17 +88,17 @@ def bounded_error_graph_interpolation(graph_points, resolution):
     points_array = np.array([np.array(point) for point in graph_points])
     s_vals = np.arange(len(graph_points))
     points_x_vals_array, points_y_vals_array = np.transpose(points_array)
-    initial_end_weights = 10**3
-    intial_weights = np.empty(len(graph_points))
-    initial_weights.fill(1)
-    initial_weights[0] = initial_weights[-1] = initial_end_weights
-    initial_smoothing_factor = 10**4
+    end_weights = 10**3
+    weights = np.empty(len(graph_points))
+    weights.fill(1)
+    weights[0] = weights[-1] = end_weights
+    smoothing_factor = 10**4
     x_spline, y_spline = smoothing_interpolation_with_max_error(
                                                    points_x_vals_array,
                                                    points_y_vals_array,
                                                                 s_vals,
-                                                       initial_weights,
-                                              initial_smoothing_factor,
+                                                               weights,
+                                                      smoothing_factor,
                                                             resolution)
     sampled_x_vals = x_spline(s_vals)
     sampled_y_vals = y_spline(s_vals)
@@ -107,16 +108,16 @@ def bounded_error_graph_interpolation(graph_points, resolution):
                                                                      s_vals)
     return [interpolated_points, curvature_array_2d]
 
-def bounded_curvature_peaks_interpolate(x_vals, y_vals, peaks_indices,
-                                                        max_curvature):
-    peak_weight = 10**2
+def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
+                                                            max_curvature):
+    extrema_weight = 10**2
     smoothing_factor = 10**4
     num_points = len(x_vals)
     s_vals = np.arange(num_points)
     weights = np.empty(num_points)
     weights.fill(1)
-    for i in peaks_indices:
-        weights[i] = peak_weight    
+    for i in extrema_indices:
+        weights[i] = extrema_weight    
     x_spline, y_spline = iterative_smoothing_interpolation_2d(x_vals, y_vals,
                                     weights, smoothing_factor, max_curvature)
     y_vals = y_spline(s_vals)

@@ -10,6 +10,7 @@ Last Modification Purpose: Moved module specific settings to relevant modules
 ####################
 #Modes and settings#
 ####################
+INCLUDE_LAND_COST = False
 TESTING_MODE = True
 VISUAL_MODE = True
 CACHE_MODE = True

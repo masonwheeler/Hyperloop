@@ -7,7 +7,10 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To clarify module usage.
 """
 
-# Our Modules
+# Standard Modules
+import numpy as np
+
+# Custom Modules
 import parameters
 import usgs
 import util
@@ -15,8 +18,9 @@ import util
 class ElevationProfile(object):
     
     def get_land_elevations(self):
-        land_elevations = [usgs.get_elevation(latlng)
-                           for latlng in self.latlngs]
+        land_elevations_list = [usgs.get_elevation(latlng)
+                                for latlng in self.latlngs]
+        land_elevations = np.array(land_elevations_list)
         return land_elevations
     
     def get_land_elevations_v2(self):
@@ -64,7 +68,7 @@ class ElevationProfile(object):
                                                elevation_profile_b.geospatials)
         merged_latlngs = util.smart_concat(elevation_profile_a.latlngs,
                                            elevation_profile_b.latlngs)
-        merged_land_elevations = util.smart_concat(
+        merged_land_elevations = util.smart_concat_array(
                                     elevation_profile_a.land_elevations,
                                     elevation_profile_b.land_elevations)
         merged_arc_lengths = util.offset_concat(elevation_profile_a.arc_lengths,

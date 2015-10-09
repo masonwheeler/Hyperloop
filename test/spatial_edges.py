@@ -23,6 +23,7 @@ import time
 import abstract_edges
 import angle_constraint
 import cacher
+import config
 import curvature
 import elevation
 import landcover
@@ -52,18 +53,21 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         self.get_latlngs(geospatials_to_latlngs)
 
     def compute_land_cost(self):
-        edge_is_in_right_of_way = (self.start_point.is_in_right_of_way and
-                                   self.end_point.is_in_right_of_way)
-        if edge_is_in_right_of_way:
-            self.land_cost = parameters.RIGHT_OF_WAY_LAND_COST
-        else:
-            landcover_geospatials, distances = util.build_grid(
+        if config.INCLUDE_LAND_COST:
+            edge_is_in_right_of_way = (self.start_point.is_in_right_of_way and
+                                       self.end_point.is_in_right_of_way)
+            if edge_is_in_right_of_way:
+                self.land_cost = parameters.RIGHT_OF_WAY_LAND_COST
+            else:
+                landcover_geospatials, distances = util.build_grid(
                                                self.start_point.geospatial,
                                                self.end_point.geospatial,
                                                landcover.LAND_POINT_SPACING)
-            landcover_latlngs = self.geospatials_to_latlngs(
+                landcover_latlngs = self.geospatials_to_latlngs(
                                                landcover_geospatials)
-            self.land_cost = landcover.get_land_cost(landcover_latlngs)
+                self.land_cost = landcover.get_land_cost(landcover_latlngs)
+        else:
+            self.land_cost = 0
 
     def get_elevation_profile(self):
         
@@ -157,11 +161,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
             t3 = time.time()
             util.smart_print("Finished building tube profiles in: " + str(t3 - t2)
                          + " seconds.")
-        util.smart_print("Now computing land costs...")
         self.compute_land_costs()
-        #t4 = time.time()
-        #util.smart_print("Finished computing land costs in: " + str(t4 - t3)
-        #                 + " seconds.")
    
     def __init__(self, spatial_lattice, spatial_interpolator,
                                                 tube_builder):

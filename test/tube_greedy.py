@@ -18,8 +18,7 @@ VISUALIZE_EDGES = True
 
 
 def compute_tube_angle_constraint(length_scale, resolution):
-    max_curvature = curvature.compute_curvature_threshold(parameters.MAX_SPEED,
-                                                 parameters.MAX_VERTICAL_ACCEL)
+    max_curvature = parameters.MAX_VERTICAL_CURVATURE
     tube_interpolator = smoothing_interpolate.bounded_error_graph_interpolation
     tube_angle_constraint = angle_constraint.compute_angle_constraint(
            length_scale, tube_interpolator, max_curvature, resolution)

@@ -144,6 +144,20 @@ def sample_vector(vector, spacing):
     return [point_vectors, point_distances]
 
 def build_grid(start_point, end_point, spacing):
+    vector = end_point - start_point
+    x_diff, y_diff = vector
+    vector_length = np.linalg.norm(vector)
+    x_spacing = (x_diff / vector_length) * spacing
+    y_spacing = (y_diff / vector_length) * spacing
+    start_x, start_y = start_point
+    end_x, end_y = end_point
+    x_grid = np.linspacing(start_x, end_x, x_spacing)
+    y_grid = np.linspacing(start_y, end_y, y_spacing)
+    grid = np.transpose([x_grid, y_grid])
+    distances = np.linspacing(0, vector_length, spacing)
+    return [grid, distances]
+
+def build_grid_v2(start_point, end_point, spacing):
     """Builds a grid of points between the start and end point.
     """
     vector = subtract(end_point, start_point)

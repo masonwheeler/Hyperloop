@@ -12,11 +12,10 @@ import numpy as np
 # Our Modules:
 import abstract_lattice
 import cacher
-import config
 import curvature
 import interpolate
 import parameters
-import proj
+import sample_path
 import smoothing_interpolate
 import util
 
@@ -64,8 +63,8 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
 
 
 class SpatialLattice(abstract_lattice.AbstractLattice):
-    SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS = 10**5
-    SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR = 10**13
+    SPATIAL_SPLINE_END_WEIGHTS = 10**5
+    SPATIAL_SPLINE_SMOOTHING_FACTOR = 10**13
     SPATIAL_BASE_RESOLUTION = 100 #Meters
     
     NAME = "spatial_lattice"
@@ -79,24 +78,20 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
                                 in sampled_directions_geospatials]
         x_array = np.array(geospatials_x_values)
         y_array = np.array(geospatials_y_values)
-        initial_end_weights = \
-            self.SMOOTHING_SPATIAL_SPLINE_INITIAL_END_WEIGHTS
-        initial_smoothing_factor = \
-            self.SMOOTHING_SPATIAL_SPLINE_INITIAL_SMOOTHING_FACTOR
-        curvature_threshold = curvature.compute_curvature_threshold(
-                 parameters.MAX_SPEED, parameters.MAX_LATERAL_ACCEL)
+        weights = np.empty(len(sampled_directions_geospatials))
+        weights.fill(1)
+        weights[0] = weights[-1] = self.SPATIAL_SPLINE_END_WEIGHTS
+        smoothing_factor = self.SPATIAL_SPLINE_SMOOTHING_FACTOR
+        max_curvature = parameters.MAX_LATERAL_CURVATURE
         x_spline, y_spline = \
             smoothing_interpolate.iterative_smoothing_interpolation_2d(
-                                                                   x_array,
-                                                                   y_array,
-                                                       initial_end_weights,
-                                                  initial_smoothing_factor,
-                                                       curvature_threshold)
+            x_array, y_array, weights, smoothing_factor, max_curvature)
         return [x_spline, y_spline]
     
     def sample_directions_geospatials(self, directions_geospatials):
-        sampled_directions_geospatials, arc_lengths = interpolate.sample_path(
-                        directions_geospatials, self.SPATIAL_BASE_RESOLUTION)
+        sampled_directions_geospatials, arc_lengths = \
+          sample_path.sample_path_points(directions_geospatials,
+                                         self.SPATIAL_BASE_RESOLUTION)
         return sampled_directions_geospatials
    
     def smart_sample_nth_points(self, points, n_stride):
