@@ -28,6 +28,8 @@ LAND_COVER_GEOTIFF_FILE_PATH = "/nlcd/us.tif"
 ################
 
 LAND_POINT_SPACING = 30.0  # spacing for land cost sampling (in meters)
+LAND_PADDING = 30.0 #Meters
+RIGHT_OF_WAY_LAND_COST = 0.0 #Dollars
 
 # See (http://www.mrlc.gov/nlcd11_leg.php) for the pixel legend source.
 # Note the omission of Alaska only values (please enter values in USD/
@@ -55,7 +57,7 @@ def cost_density_to_local_cost(cost_density):
     """Takes the cost per unit area and outputs the land acquisition cost
     """
     length = LAND_POINT_SPACING
-    width = 2.0 * parameters.LAND_PADDING
+    width = 2.0 * LAND_PADDING
     area = length * width
     local_cost = cost_density * area * 10
     return local_cost

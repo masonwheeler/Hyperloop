@@ -7,6 +7,7 @@ Last Modification Purpose: To add docstrings
 """
 
 # Standard Modules:
+import numpy as np
 import pyproj
 
 # Our Modules:
@@ -59,12 +60,14 @@ def geospatial_to_latlng(geospatial, proj):
 
 def latlngs_to_geospatials(latlngs, proj):
     """Converts list of lat-lng coords to list of geospatial coords"""
-    return [latlng_to_geospatial(latlng, proj) for latlng in latlngs]
+    geospatials = np.array([latlng_to_geospatial(latlng, proj)
+                            for latlng in latlngs.tolist()])
+    return geospatials 
 
 def geospatials_to_latlngs(geospatials, proj):
     """Converts list of geospatial coords to list of lat-lng coords"""
-    latlngs = [geospatial_to_latlng(geospatial, proj)
-               for geospatial in geospatials]
+    latlngs = np.array([geospatial_to_latlng(geospatial, proj)
+                        for geospatial in geospatials.tolist()])
     return latlngs
 
 def set_projection(start_lat_lng, end_lat_lng):

@@ -88,10 +88,7 @@ class SpatiotemporalPathsSets4d(object):
 
     def __init__(self, spatial_paths_sets_3d, velocity_builder):
         self.velocity_builder = velocity_builder
-        self.start = spatial_paths_sets_3d.start
-        self.end = spatial_paths_sets_3d.end
-        self.start_latlng = spatial_paths_sets_3d.start_latlng
-        self.end_latlng = spatial_paths_sets_3d.end_latlng        
+        self.spatial_meta_data = spatial_paths_sets_3d.spatial_metadata
         self.build_paths_sets(spatial_paths_sets_3d.selected_paths)
         self.select_paths()
 

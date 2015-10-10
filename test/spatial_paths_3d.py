@@ -122,13 +122,9 @@ class SpatialPathsSets3d(object):
         print "num paths 3d selected: " + str(len(self.selected_paths))
 
     def __init__(self, spatial_paths_set_2d):
-        self.start = spatial_paths_set_2d.start
-        self.end = spatial_paths_set_2d.end
-        self.start_latlng = spatial_paths_set_2d.start_latlng
-        self.end_latlng = spatial_paths_set_2d.end_latlng
-        tube_builder = spatial_paths_set_2d.tube_builder
+        self.spatial_metadata = spatial_paths_set_2d.spatial_metadata
         paths_sets = self.build_paths_sets(spatial_paths_set_2d.paths,
-                                                         tube_builder)
+                                           spatial_paths_set_2d.tube_builder)
         self.select_paths(paths_sets)
         
                                                              

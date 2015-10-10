@@ -24,6 +24,7 @@ Citations:
 
 # Standard Modules:
 from collections import OrderedDict
+import numpy as np
 import itertools
 import json
 import urllib2
@@ -130,19 +131,25 @@ class Directions(object):
         raw_latlngs = self.remove_duplicates(latlngs_with_duplicates)
         util.smart_print("Removed duplicate Coordinates.")
         directions_latlngs = util.round_points(raw_latlngs)
-        return directions_latlngs
+        directions_latlngs_array = np.array([np.array(latlng) for latlng
+                                             in directions_latlngs])
+        return directions_latlngs_array
 
     def geospatials_to_latlngs(self, geospatials):
         latlngs = proj.geospatials_to_latlngs(geospatials, self.projection)
         return latlngs        
 
     def __init__(self, start, end):
-        self.start = start
-        self.end = end
+        start_name = start.replace("_", " ")
+        end_name = end.replace("_", " ")
         self.latlngs = self.get_directions_latlngs(start, end)
-        self.start_latlng = self.latlngs[0]
-        self.end_latlng = self.latlngs[-1]
-        self.projection = proj.set_projection(self.start_latlng, self.end_latlng)
+        start_latlng = list(self.latlngs[0])
+        end_latlng = list(self.latlngs[-1])
+        self.spatial_metadata = {"startName" : start_name,
+                                 "endName" : end_name,
+                                 "startLatLng" : start_latlng,
+                                 "endLatLng" : end_latlng}
+        self.projection = proj.set_projection(start_latlng, end_latlng)
         self.geospatials = proj.latlngs_to_geospatials(
                                       self.latlngs, self.projection)
 

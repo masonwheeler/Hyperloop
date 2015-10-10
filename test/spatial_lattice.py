@@ -145,10 +145,7 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
 
     def __init__(self, directions, spatial_x_spacing_power,
                                    spatial_y_spacing_power):
-        self.start = directions.start
-        self.end = directions.end
-        self.start_latlng = directions.start_latlng
-        self.end_latlng = directions.end_latlng
+        self.spatial_metadata = directions.spatial_metadata
         self.geospatials_to_latlngs = directions.geospatials_to_latlngs
         self.directions_geospatials = directions.geospatials
         directions_s_value_step_size = 2**spatial_x_spacing_power

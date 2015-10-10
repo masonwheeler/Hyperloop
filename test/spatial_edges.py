@@ -27,7 +27,6 @@ import config
 import curvature
 import elevation
 import landcover
-import parameters
 import util
 
 
@@ -57,7 +56,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
             edge_is_in_right_of_way = (self.start_point.is_in_right_of_way and
                                        self.end_point.is_in_right_of_way)
             if edge_is_in_right_of_way:
-                self.land_cost = parameters.RIGHT_OF_WAY_LAND_COST
+                self.land_cost = landcover.RIGHT_OF_WAY_LAND_COST
             else:
                 landcover_geospatials, distances = util.build_grid(
                                                self.start_point.geospatial,
@@ -172,10 +171,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
                                                            spatial_lattice)
         util.smart_print("The edge degree constraint is: " +
                          str(spatial_degree_constraint))
-        self.start = spatial_lattice.start
-        self.end = spatial_lattice.end
-        self.start_latlng = spatial_lattice.start_latlng
-        self.end_latlng = spatial_lattice.end_latlng
+        self.spatial_metadata = spatial_lattice.spatial_metadata
         self.geospatials_to_latlngs = spatial_lattice.geospatials_to_latlngs
         abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
                                  SpatialEdge, spatial_degree_constraint)

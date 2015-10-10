@@ -60,22 +60,19 @@ class RoutesSet(object):
         return routes_dicts_list
 
     def __init__(self, spatiotemporal_paths_sets_4d):
-        self.start = spatiotemporal_paths_sets_4d.start
-        self.end = spatiotemporal_paths_sets_4d.end
-        self.start_latlng = spatiotemporal_paths_sets_4d.start_latlng
-        self.end_latlng = spatiotemporal_paths_sets_4d.end_latlng
+        self.spatial_metadata = spatiotemporal_paths_sets_4d.spatial_metadata
         self.routes_dicts_list = self.build_routes_dicts_list(
                             spatiotemporal_paths_sets_4d)
     
     def as_dict(self):
         routes_set_dict = {
             "startCity": {
-                "name": self.start,
-                "coordinates": self.start_latlng
+                "name": self.spatial_metadata["startName"],
+                "coordinates": self.spatial_metadata["startLatLng"]
                 },
             "endCity": {
-                "name": self.end,
-                "coordinates": self.end_latlng
+                "name": self.spatial_metadata["endName"],
+                "coordinates": self.spatial_metadata["endLatLng"]
                 },
             "routes": self.routes_dicts_list
             }

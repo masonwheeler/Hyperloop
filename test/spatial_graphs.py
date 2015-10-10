@@ -232,10 +232,7 @@ class SpatialGraphsSets(abstract_graphs.AbstractGraphsSets):
         return merged_spatial_graph
 
     def __init__(self, spatial_edges_sets):
-        self.start = spatial_edges_sets.start
-        self.end = spatial_edges_sets.end
-        self.start_latlng = spatial_edges_sets.start_latlng
-        self.end_latlng = spatial_edges_sets.end_latlng
+        self.spatial_metadata = spatial_edges_sets.spatial_metadata
         self.geospatials_to_latlngs = spatial_edges_sets.geospatials_to_latlngs
         self.spatial_interpolator = spatial_edges_sets.spatial_interpolator
         self.tube_builder = spatial_edges_sets.tube_builder

@@ -54,10 +54,7 @@ class SpatialPathsSet2d(object):
     IS_SKIPPED = cacher.SKIP_PATHS_2D
 
     def __init__(self, spatial_graphs_sets):
-        self.start = spatial_graphs_sets.start
-        self.end = spatial_graphs_sets.end
-        self.start_latlng = spatial_graphs_sets.start_latlng
-        self.end_latlng = spatial_graphs_sets.end_latlng
+        self.spatial_metadata = spatial_graphs_sets.spatial_metadata
         self.geospatials_to_latlngs = spatial_graphs_sets.geospatials_to_latlngs
         self.spatial_interpolator = spatial_graphs_sets.spatial_interpolator
         self.tube_builder = spatial_graphs_sets.tube_builder
