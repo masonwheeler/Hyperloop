@@ -28,20 +28,6 @@ def points_3d_to_arrays(points3d):
     z_array = np.array(z_coords_list)
     return [x_array, y_array, z_array]
 
-def get_s_values(num_points):
-    s_values = np.arange(0.0, float(num_points))
-    return s_values
-
-def get_spline_values(spline, s_values):
-    spline_values = spline(s_values)
-    return spline_values
-
-def get_slice_s_values(s_values, nth):
-    last_s_value = s_values[-1]
-    slice_s_values = s_values[::nth]
-    slice_s_values = np.append(slice_s_values, last_s_value)
-    return slice_s_values
-
 ########## For Interpolating Splines ##########
 
 def interpolate_points_1d(points1d):

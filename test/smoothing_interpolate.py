@@ -12,9 +12,9 @@ import curvature
 #def smoothing_spline_1d(y_array, s_values, 
 
 def smoothing_splines_2d(x_array, y_array, s_values, weights, smoothing_factor):
-    x_spline = scipy.interpolate.UnivariateSpline(s_values, x_array, weights)
+    x_spline = scipy.interpolate.UnivariateSpline(s_values, x_array, w=weights)
     x_spline.set_smoothing_factor(smoothing_factor)
-    y_spline = scipy.interpolate.UnivariateSpline(s_values, y_array, weights)
+    y_spline = scipy.interpolate.UnivariateSpline(s_values, y_array, w=weights)
     y_spline.set_smoothing_factor(smoothing_factor)
     return [x_spline, y_spline]
 
@@ -25,7 +25,6 @@ def set_smoothing_factors_2d(x_spline, y_spline, smoothing_factor):
 
 def iterative_smoothing_interpolation_2d(x_array, y_array, initial_weights,
                                 initial_smoothing_factor, curvature_threshold):
-    print x_array
     num_points = x_array.size
     s_values = np.arange(num_points)
     x_spline, y_spline = smoothing_splines_2d(x_array, y_array, s_values,

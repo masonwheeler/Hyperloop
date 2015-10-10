@@ -12,8 +12,6 @@ import numpy as np
 # Our Modules:
 import abstract_lattice
 import cacher
-import curvature
-import interpolate
 import parameters
 import sample_path
 import smoothing_interpolate
@@ -37,9 +35,9 @@ class SpatialSlice(abstract_lattice.AbstractSlice):
     @staticmethod
     def spatial_slice_points_builder(abstract_x_coord, spatial_slice_bounds,
                                                              slice_start_id):
-        spatial_slice_y_spacing = spatial_slice_bounds["y_spacing"]
-        spline_geospatials = spatial_slice_bounds["spline_geospatials"]
-        directions_geospatials = spatial_slice_bounds["directions_geospatials"]
+        spatial_slice_y_spacing = spatial_slice_bounds["ySpacing"]
+        spline_geospatials = spatial_slice_bounds["splineGeospatials"]
+        directions_geospatials = spatial_slice_bounds["directionsGeospatials"]
         spatial_slice_geospatials, distances = util.build_grid(
                                             spline_geospatials,
                                             directions_geospatials,
@@ -71,14 +69,9 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
     FLAG = cacher.SPATIAL_LATTICE_FLAG
     IS_SKIPPED = cacher.SKIP_LATTICE
 
-    def get_spatial_splines(self, sampled_directions_geospatials):
-        geospatials_x_values = [geospatial[0] for geospatial
-                                in sampled_directions_geospatials]
-        geospatials_y_values = [geospatial[1] for geospatial
-                                in sampled_directions_geospatials]
-        x_array = np.array(geospatials_x_values)
-        y_array = np.array(geospatials_y_values)
-        weights = np.empty(len(sampled_directions_geospatials))
+    def get_splines(self, sampled_directions_geospatials):
+        x_array, y_array = np.transpose(sampled_directions_geospatials)
+        weights = np.empty(sampled_directions_geospatials.shape[0])
         weights.fill(1)
         weights[0] = weights[-1] = self.SPATIAL_SPLINE_END_WEIGHTS
         smoothing_factor = self.SPATIAL_SPLINE_SMOOTHING_FACTOR
@@ -94,90 +87,79 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
                                          self.SPATIAL_BASE_RESOLUTION)
         return sampled_directions_geospatials
    
-    def get_slices_directions_geospatials(self,
-            sampled_directions_geospatials, parallel_stride):
+    def get_slices_directions_geospatials(self, sampled_directions_geospatials,
+                                                  parallel_resolution_multiple):
         last_directions_geospatial = sampled_directions_geospatials[-1]
         slices_directions_geospatials = sampled_directions_geospatials[::
-                                                          parallel_stride]
+                                             parallel_resolution_multiple]
         slices_directions_geospatials = np.append(slices_directions_geospatials,
                                                     last_directions_geospatial)
         return slices_directions_geospatials
     
-    def get_spatial_slices_spline_geospatials(self,
-            sampled_directions_geospatials, spatial_x_spacing): 
-        self.spatial_spline_s_values = interpolate.get_s_values(len(
-                                        sampled_directions_geospatials))
-        spatial_slices_s_values = interpolate.get_slice_s_values(
-            self.spatial_spline_s_values, spatial_x_spacing)
-        self.spatial_x_spline, self.spatial_y_spline = self.get_spatial_splines(
-                                               sampled_directions_geospatials)
-        spatial_slices_spline_points_x_values = interpolate.get_spline_values(
-                          self.spatial_x_spline, spatial_slices_s_values)
-        spatial_slices_spline_points_y_values = interpolate.get_spline_values(
-                          self.spatial_y_spline, spatial_slices_s_values)
-        spatial_slices_spline_tuples = zip(
-            spatial_slices_spline_points_x_values,
-            spatial_slices_spline_points_y_values)
-        spatial_slices_spline_points = [list(eachTuple) for eachTuple in
-                                            spatial_slices_spline_tuples]
-        return spatial_slices_spline_points
+    def get_slices_spline_geospatials(self, sampled_directions_geospatials,
+                                              parallel_resolution_multiple): 
+        spline_s_values = np.arange(sampled_directions_geospatials.shape[0])
+        slices_s_values = spline_s_values[::parallel_resolution_multiple]
+        slices_s_values = np.append(slices_s_values, spline_s_values[-1])
+        x_spline, y_spline = self.get_splines(sampled_directions_geospatials)
+        slices_spline_x_values = x_spline(slices_s_values)
+        slices_spline_y_values = y_spline(slices_s_values)
+        slices_spline_geospatials = np.transpose([slices_spline_x_values,
+                                                  slices_spline_y_values])
+        return slices_spline_geospatials
     
-    def get_spatial_slices_bounds(self, spatial_slices_directions_points,
-                                  spatial_slices_spline_points,
-                                  spatial_y_spacing):
+    def get_spatial_slices_bounds(self, slices_directions_geospatials,
+                     slices_spline_geospatials, transverse_resolution):
         spatial_slices_bounds = []
-        for i in range(len(spatial_slices_directions_points)):
-            spatial_slice_bounds = {"directions_geospatials":  
-                                    spatial_slices_directions_points[i],
-                                    "spline_geospatials":
-                                    spatial_slices_spline_points[i],
-                                    "y_spacing":
-                                    spatial_y_spacing
+        for i in range(slices_directions_geospatials.shape[0]):
+            spatial_slice_bounds = {"directionsGeospatials":  
+                                    slices_directions_geospatials[i],
+                                    "splineGeospatials":
+                                    slices_spline_geospatials[i],
+                                    "ySpacing":
+                                    transverse_resolution
                                     }
             spatial_slices_bounds.append(spatial_slice_bounds)
         return spatial_slices_bounds        
 
-    def __init__(self, directions, spatial_x_spacing_power,
-                                   spatial_y_spacing_power):
+    def __init__(self, directions, parallel_resolution_bisection_depth,
+                                 transverse_resolution_bisection_depth):
         self.spatial_metadata = directions.spatial_metadata
         self.geospatials_to_latlngs = directions.geospatials_to_latlngs
         self.directions_geospatials = directions.geospatials
-        directions_s_value_step_size = 2**spatial_x_spacing_power
-        self.spatial_x_spacing = 2**spatial_x_spacing_power * \
-                                 self.SPATIAL_BASE_RESOLUTION
-        self.spatial_y_spacing = 2**spatial_y_spacing_power * \
-                                 self.SPATIAL_BASE_RESOLUTION
+
+        parallel_resolution_multiple = 2**parallel_resolution_bisection_depth
+        transverse_resolution_multiple = \
+                                       2**transverse_resolution_bisection_depth
+        self.parallel_resolution = (parallel_resolution_multiple *
+                                    self.SPATIAL_BASE_RESOLUTION)
+        self.transverse_resolution = (transverse_resolution_multiple *
+                                      self.SPATIAL_BASE_RESOLUTION)
+
         sampled_directions_geospatials = self.sample_directions_geospatials(
                                                 self.directions_geospatials)
         slices_directions_geospatials = self.get_slices_directions_geospatials(
-                  sampled_directions_geospatials, directions_s_value_step_size)
-        spatial_slices_spline_geospatials = \
-            self.get_spatial_slices_spline_geospatials(
-            sampled_directions_geospatials, directions_s_value_step_size)
+                  sampled_directions_geospatials, parallel_resolution_multiple)
+        self.slices_spline_geospatials = self.get_slices_spline_geospatials(
+                   sampled_directions_geospatials, parallel_resolution_multiple)
+
         spatial_slices_bounds = self.get_spatial_slices_bounds(
-                                    slices_directions_geospatials,
-                                    spatial_slices_spline_geospatials,
-                                    self.spatial_y_spacing)
+            slices_directions_geospatials, self.slices_spline_geospatials,
+                                     self.transverse_resolution)
+
         abstract_lattice.AbstractLattice.__init__(self, spatial_slices_bounds,
                                                                  SpatialSlice)
 
     def get_plottable_directions(self, color_string):
-        x_values = [geospatial[0] for geospatial in self.directions_geospatials]
-        y_values = [geospatial[1] for geospatial in self.directions_geospatials]
-        x_array = np.array(x_values)
-        y_array = np.array(y_values)
-        directions_points = [x_array, y_array]
+        directions_points = np.transpose(self.directions_geospatials)
         plottable_directions = [directions_points, color_string]
         return plottable_directions
 
     def get_plottable_spline(self, color_string):
-        x_values = self.spatial_x_spline(self.spatial_spline_s_values)
-        y_values = self.spatial_y_spline(self.spatial_spline_s_values)
-        x_array = np.array(x_values)
-        y_array = np.array(y_values)
-        spline_points = [x_array, y_array]
+        spline_points = np.transpose(self.slices_spline_geospatials)
         plottable_spline = [spline_points, color_string]
         return plottable_spline
+
             
 def get_spatial_lattice(*args):
     lattice = cacher.get_object(SpatialLattice.NAME,

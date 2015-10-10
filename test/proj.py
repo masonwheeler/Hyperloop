@@ -74,7 +74,4 @@ def set_projection(start_lat_lng, end_lat_lng):
     """Sets the projection used for converting lat-lngs to geospatials"""
     #start_lon_lat, end_lon_lat = util.swap_pairs([start_lat_lng, end_lat_lng])
     projection = get_albers_proj()
-    if config.VISUAL_MODE:
-        print "start lat-lng: " + str(start_lat_lng)
-        print "end lat-lng: " + str(end_lat_lng)
     return projection
