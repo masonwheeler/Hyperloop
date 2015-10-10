@@ -52,10 +52,10 @@ def build_spatial_lattice(route_directions):
     if config.VISUAL_MODE:
         util.smart_print("With a base resolution of: " +
             str(route_spatial_lattice.SPATIAL_BASE_RESOLUTION)+ " meters.")
-        util.smart_print("The spatial lattice spacing parallel to the route is: " +
-            str(route_spatial_lattice.spatial_x_spacing) + " meters.")
-        util.smart_print("And perpendicular to the route is: " +
-            str(route_spatial_lattice.spatial_y_spacing) + " meters.")
+        util.smart_print("The resolution parallel to the right of way is: " +
+            str(route_spatial_lattice.parallel_resolution) + " meters.")
+        util.smart_print("The resolution transverse to the right of way is: " +
+            str(route_spatial_lattice.transverse_resolution) + " meters.")
         if VISUALIZE_SPLINE:
             plottable_spline = route_spatial_lattice.get_plottable_spline('r-')
             visualize.PLOT_QUEUE_SPATIAL_2D.append(plottable_spline)

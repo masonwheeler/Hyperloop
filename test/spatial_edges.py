@@ -27,6 +27,7 @@ import config
 import curvature
 import elevation
 import landcover
+import parameters
 import util
 
 
@@ -118,7 +119,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     IS_SKIPPED = cacher.SKIP_EDGES
 
     def compute_spatial_degree_constraint(self, spatial_lattice):
-        length_scale = spatial_lattice.spatial_x_spacing
+        length_scale = spatial_lattice.parallel_resolution
         max_curvature = curvature.compute_curvature_threshold(
             parameters.MIN_SPEED, parameters.MAX_LATERAL_ACCEL)
         spatial_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION

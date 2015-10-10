@@ -10,13 +10,13 @@ import numpy as np
 import math
 import config
 import curvature
-import interpolate
+import sample_path
 
 VISUALIZE_CONSTRAINT = False
 
 def test_path_points(path_points, interpolator, max_curvature, resolution):
-    sampled_path_points, arc_lengths = interpolate.sample_path(path_points,
-                                                               resolution)
+    sampled_path_points, arc_lengths = sample_path.sample_path_points(
+                                                  path_points, resolution)
     interpolated_points, curvature_array = interpolator(sampled_path_points,
                                                                  resolution)
     is_curvature_acceptable = curvature.test_curvature_validity(

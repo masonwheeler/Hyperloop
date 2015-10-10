@@ -89,11 +89,10 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
    
     def get_slices_directions_geospatials(self, sampled_directions_geospatials,
                                                   parallel_resolution_multiple):
-        last_directions_geospatial = sampled_directions_geospatials[-1]
         slices_directions_geospatials = sampled_directions_geospatials[::
                                              parallel_resolution_multiple]
-        slices_directions_geospatials = np.append(slices_directions_geospatials,
-                                                    last_directions_geospatial)
+        slices_directions_geospatials = np.vstack(
+            (slices_directions_geospatials, sampled_directions_geospatials[-1]))
         return slices_directions_geospatials
     
     def get_slices_spline_geospatials(self, sampled_directions_geospatials,

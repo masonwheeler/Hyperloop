@@ -154,12 +154,12 @@ def build_grid(start_point, end_point, step):
     start_x, start_y = start_point
     end_x, end_y = end_point
     x_grid = np.arange(start_x, end_x, x_step)
-    x_grid.append(end_x)
+    x_grid = np.append(x_grid, end_x)
     y_grid = np.arange(start_y, end_y, y_step)
-    y_grid.append(end_y)
+    y_grid = np.append(y_grid, end_y)
     grid = np.transpose([x_grid, y_grid])
     distances = np.arange(0, vector_length, step)
-    distances.append(vector_length)
+    distances = np.append(distances, vector_length)
     return [grid, distances]
 
 def build_grid_v2(start_point, end_point, spacing):
