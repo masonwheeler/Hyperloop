@@ -94,20 +94,14 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
                                          self.SPATIAL_BASE_RESOLUTION)
         return sampled_directions_geospatials
    
-    def smart_sample_nth_points(self, points, n_stride):
-        """
-        Takes every nth point in a list as well as the last point.
-        """
-        end_point = points[-1]
-        sampled_points = points[::n_stride]
-        sampled_points.append(end_point)
-        return sampled_points
-        
-    def get_spatial_slices_directions_geospatials(self,
-            sampled_directions_geospatials, spatial_x_spacing):
-        spatial_slices_directions_geospatials = self.smart_sample_nth_points(
-            sampled_directions_geospatials, spatial_x_spacing)
-        return spatial_slices_directions_geospatials
+    def get_slices_directions_geospatials(self,
+            sampled_directions_geospatials, parallel_stride):
+        last_directions_geospatial = sampled_directions_geospatials[-1]
+        slices_directions_geospatials = sampled_directions_geospatials[::
+                                                          parallel_stride]
+        slices_directions_geospatials = np.append(slices_directions_geospatials,
+                                                    last_directions_geospatial)
+        return slices_directions_geospatials
     
     def get_spatial_slices_spline_geospatials(self,
             sampled_directions_geospatials, spatial_x_spacing): 
@@ -155,14 +149,13 @@ class SpatialLattice(abstract_lattice.AbstractLattice):
                                  self.SPATIAL_BASE_RESOLUTION
         sampled_directions_geospatials = self.sample_directions_geospatials(
                                                 self.directions_geospatials)
-        spatial_slices_directions_geospatials = \
-            self.get_spatial_slices_directions_geospatials(
-                   sampled_directions_geospatials, directions_s_value_step_size)
+        slices_directions_geospatials = self.get_slices_directions_geospatials(
+                  sampled_directions_geospatials, directions_s_value_step_size)
         spatial_slices_spline_geospatials = \
             self.get_spatial_slices_spline_geospatials(
             sampled_directions_geospatials, directions_s_value_step_size)
         spatial_slices_bounds = self.get_spatial_slices_bounds(
-                                    spatial_slices_directions_geospatials,
+                                    slices_directions_geospatials,
                                     spatial_slices_spline_geospatials,
                                     self.spatial_y_spacing)
         abstract_lattice.AbstractLattice.__init__(self, spatial_slices_bounds,
