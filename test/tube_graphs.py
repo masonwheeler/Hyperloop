@@ -79,75 +79,30 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         return data
 
     @staticmethod
-    def merge_tube_curvature_arrays(tube_graph_a, tube_graph_b, boundary_width,
+    def merge_tube_curvature_arrays(tube_graph_a, tube_graph_b,
                                     graph_interpolator, resolution):
-        boundary_points_a = tube_graph_a.tube_points_partitions[-1]
-        boundary_points_b = tube_graph_b.tube_points_partitions[0]        
-        boundary_arc_lengths_a = tube_graph_a.arc_lengths[-boundary_width:]
-        boundary_arc_lengths_b = tube_graph_b.arc_lengths[:boundary_width]
+        boundary_arc_lengths_a = tube_graph_a.arc_lengths_partitions[-1]
+        boundary_arc_lengths_b = tube_graph_b.arc_lengths_partitions[0]
+        boundary_a_length = len(boundary_arc_lengths_a)
+        boundary_b_length = len(boundary_arc_lengths_b)
         boundary_arc_lengths = util.offset_concat(boundary_arc_lengths_a,
                                                   boundary_arc_lengths_b)        
-        boundary_tube_elevations_a = \
-            tube_graph_a.tube_elevations[-boundary_width:]
-        boundary_tube_elevations_b = \
-            tube_graph_b.tube_elevations[:boundary_width]
+        boundary_tube_elevations_a = tube_graph_a.tube_elevations_partitions[-1]
+        boundary_tube_elevations_b = tube_graph_b.tube_elevations_partitions[0]
         boundary_tube_elevations = util.smart_concat(boundary_tube_elevations_a,        
                                                      boundary_tube_elevations_b)
         boundary_points = zip(boundary_arc_lengths, boundary_tube_elevations)
-        sampled_boundary_points, arc_lengths = sample_path.sample_path_points(
-                                                  boundary_points, resolution)
-        """
-        if len(tube_graph_a.arc_lengths) < boundary_width:
-            boundary_arc_lengths_a = util.bisect_list(tube_graph_a.arc_lengths)
-            boundary_tube_elevations_a = util.bisect_list(
-                                 tube_graph_a.tube_elevations)
-            bisected_a = True
-        else:
-            boundary_arc_lengths_a = tube_graph_a.arc_lengths[-boundary_width:]
-            boundary_tube_elevations_a = tube_graph_a.tube_elevations[
-                                                     -boundary_width:]
-            bisected_a = False
-
-        if len(tube_graph_b.arc_lengths) < boundary_width:
-            boundary_arc_lengths_b = util.bisect_list(tube_graph_b.arc_lengths)
-            boundary_tube_elevations_b = util.bisect_list(
-                                 tube_graph_b.tube_elevations)
-            bisected_b = True
-        else:
-            boundary_arc_lengths_b = tube_graph_b.arc_lengths[:boundary_width]
-            boundary_tube_elevations_b = tube_graph_b.tube_elevations[
-                                                      :boundary_width]
-            bisected_b = False
-
-        boundary_arc_lengths = util.offset_concat(boundary_arc_lengths_a,
-                                                  boundary_arc_lengths_b)
-        boundary_tube_elevations = util.smart_concat(boundary_tube_elevations_a,
-                                                     boundary_tube_elevations_b)
-        boundary_points = zip(boundary_arc_lengths, boundary_tube_elevations)
-        """
-        interpolated_boundary_elevations, boundary_tube_curvature_array = \
-                     graph_interpolator(sampled_boundary_points, resolution)
-        """
-        if bisected_a:
-            boundary_tube_curvature_array_a = \
-                boundary_tube_curvature_array[:boundary_width][::2]
-        else:
-            boundary_tube_curvature_array_a = \
-                boundary_tube_curvature_array[:boundary_width]
-
-        if bisected_b: 
-           boundary_tube_curvature_array_b = \
-                boundary_tube_curvature_array[(boundary_width - 1):][::2]
-        else:
-           boundary_tube_curvature_array_b = \
-                boundary_tube_curvature_array[(boundary_width - 1):]
-        """
-
-        if (tube_graph_a.tube_curvature_array == None and
-            tube_graph_b.tube_curvature_array == None):
-            merged_curvature_array = util.smart_concat_array(
-                              boundary_tube_curvature_array_a,
-                              boundary_tube_curvature_array_b)
+        _, boundary_tube_curvature_array = graph_interpolator(boundary_points,
+                                                              resolution)        
+        boundary_tube_curvature_array_a = boundary_tube_curvature_array[
+                                                         :boundary_a_length]
+        boundary_tube_curvature_array_b = boundary_tube_curvature_array[
+                                                         :boundary_b_length]        
+        graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array
+        graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array
+        if (graph_a_tube_curvature_array == None and
+            graph_b_tube_curvature_array == None):
+            merged_curvature_array = boundary_tube_curvature_array_b
         elif (tube_graph_a.tube_curvature_array != None and
               tube_graph_b.tube_curvature_array != None):
             graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
@@ -247,8 +202,6 @@ class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
 
 class TubeGraphsSets(abstract_graphs.AbstractGraphsSets):
 
-    BOUNDARY_WIDTH = 3
-
     def tube_graph_interpolator(self, waypoint_tube_elevations,
                                  waypoint_tube_arc_lengths):
         interpolated_tube_elevations, tube_curvature_array = \
@@ -257,9 +210,9 @@ class TubeGraphsSets(abstract_graphs.AbstractGraphsSets):
         return [interpolated_tube_elevations, tube_curvature_array]
 
     def merge_two_tube_graphs(self, tube_graph_a, tube_graph_b):
-        merged_tube_graph = TubeGraph.merge_two_tube_graphs(
-            tube_graph_a, tube_graph_b, self.BOUNDARY_WIDTH,
-            self.tube_graph_interpolator, self.tube_elevation_resolution)
+        merged_tube_graph = TubeGraph.merge_two_tube_graphs(tube_graph_a, 
+                              tube_graph_b, self.tube_graph_interpolator,
+                                          self.tube_elevation_resolution)
         return merged_tube_graph
 
     def __init__(self, tube_edges_sets, tube_interpolator,
