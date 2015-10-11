@@ -141,12 +141,12 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     def __init__(self, elevation_profile, elevation_mesh_bisection_depth,
                                          arc_length_mesh_bisection_depth):
-        self.tube_point_elevation_step_size = (self.BASE_ELEVATION_STEP_SIZE *
+        self.elevation_step_size = (self.BASE_ELEVATION_STEP_SIZE *
                                             2**elevation_mesh_bisection_depth)
         self.original_elevation_profile = elevation_profile
         elevation_profile = elevation_profile.undersample(
                                  2**arc_length_mesh_bisection_depth)
-        self.arc_lengths = elevation_profile.arc_lengths       
+        self.arc_lengths = elevation_profile.arc_lengths
         self.arc_length_step_size = elevation_profile.arc_length_step_size
         self.land_elevations = elevation_profile.land_elevations
         self.lower_tube_envelope = self.build_lower_tube_envelope_v2(
@@ -155,25 +155,25 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
                                   self.arc_lengths, self.land_elevations)
         tube_points_slices_bounds = self.tube_envelopes_to_tube_slice_bounds(
                           self.lower_tube_envelope, self.upper_tube_envelope,
-                      elevation_profile, self.tube_point_elevation_step_size)
+                                 elevation_profile, self.elevation_step_size)
         abstract_lattice.AbstractLattice.__init__(self,
             tube_points_slices_bounds, TubePointsSlice)
 
     def visualize(self):
         lattice_axes_equal = False
-        arc_lengths = self.elevation_profile.arc_lengths
-        land_elevations = self.elevation_profile.land_elevations
         land_elevations_points = [self.original_elevation_profile.arc_lengths, 
-                                  self.original_elevation_profile.land_elevations]
+                               self.original_elevation_profile.land_elevations]
         plottable_land_elevations = [land_elevations_points, 'b-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
         
-        lower_tube_envelope_points = [arc_lengths, self.lower_tube_envelope]
+        lower_tube_envelope_points = [self.arc_lengths,
+                                      self.lower_tube_envelope]
         plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                             plottable_lower_tube_envelope)
 
-        upper_tube_envelope_points = [arc_lengths, self.upper_tube_envelope]
+        upper_tube_envelope_points = [self.arc_lengths,
+                                      self.upper_tube_envelope]
         plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                             plottable_upper_tube_envelope)

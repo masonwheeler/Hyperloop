@@ -2,18 +2,26 @@
 Original Developer: Jonathan Ward
 """
 
+# Standard Modules:
+import numpy as np
+
 # Custom Modules:
 import abstract_graphs
 import curvature_constrain_speed
 import mergetree
 import parameters
 import reparametrize_speed
+import sample_path
 import util
 
 
 class TubeGraph(abstract_graphs.AbstractGraph):
 
     def compute_min_time(self, tube_curvature_array, arc_lengths):
+        print "num arc lengths: " 
+        print len(arc_lengths)
+        print "num tube curvatures: " 
+        print tube_curvature_array.size
         max_allowed_speeds = \
             curvature_constrain_speed.get_vertical_curvature_constrained_speeds(
                                                     tube_curvature_array)
@@ -73,6 +81,22 @@ class TubeGraph(abstract_graphs.AbstractGraph):
     @staticmethod
     def merge_tube_curvature_arrays(tube_graph_a, tube_graph_b, boundary_width,
                                     graph_interpolator, resolution):
+        boundary_points_a = tube_graph_a.tube_points_partitions[-1]
+        boundary_points_b = tube_graph_b.tube_points_partitions[0]        
+        boundary_arc_lengths_a = tube_graph_a.arc_lengths[-boundary_width:]
+        boundary_arc_lengths_b = tube_graph_b.arc_lengths[:boundary_width]
+        boundary_arc_lengths = util.offset_concat(boundary_arc_lengths_a,
+                                                  boundary_arc_lengths_b)        
+        boundary_tube_elevations_a = \
+            tube_graph_a.tube_elevations[-boundary_width:]
+        boundary_tube_elevations_b = \
+            tube_graph_b.tube_elevations[:boundary_width]
+        boundary_tube_elevations = util.smart_concat(boundary_tube_elevations_a,        
+                                                     boundary_tube_elevations_b)
+        boundary_points = zip(boundary_arc_lengths, boundary_tube_elevations)
+        sampled_boundary_points, arc_lengths = sample_path.sample_path_points(
+                                                  boundary_points, resolution)
+        """
         if len(tube_graph_a.arc_lengths) < boundary_width:
             boundary_arc_lengths_a = util.bisect_list(tube_graph_a.arc_lengths)
             boundary_tube_elevations_a = util.bisect_list(
@@ -100,8 +124,10 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         boundary_tube_elevations = util.smart_concat(boundary_tube_elevations_a,
                                                      boundary_tube_elevations_b)
         boundary_points = zip(boundary_arc_lengths, boundary_tube_elevations)
+        """
         interpolated_boundary_elevations, boundary_tube_curvature_array = \
-                              graph_interpolator(boundary_points, resolution)
+                     graph_interpolator(sampled_boundary_points, resolution)
+        """
         if bisected_a:
             boundary_tube_curvature_array_a = \
                 boundary_tube_curvature_array[:boundary_width][::2]
@@ -115,6 +141,7 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         else:
            boundary_tube_curvature_array_b = \
                 boundary_tube_curvature_array[(boundary_width - 1):]
+        """
 
         if (tube_graph_a.tube_curvature_array == None and
             tube_graph_b.tube_curvature_array == None):

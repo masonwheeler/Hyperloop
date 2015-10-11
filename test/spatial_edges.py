@@ -18,6 +18,7 @@ Last Modification Purpose:
 
 # Standard Modules:
 import time
+import numpy as np
 
 # Custom Modules:
 import abstract_edges
@@ -36,8 +37,8 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     ELEVATION_POINTS_TO_PYLON_POINTS_RATIO = 1
 
     def get_geospatials(self):
-        self.geospatials = [self.start_point.geospatial,
-                            self.end_point.geospatial]
+        self.geospatials = np.array([self.start_point.geospatial,
+                                     self.end_point.geospatial])
 
     def get_latlngs(self, geospatials_to_latlngs):
         self.latlngs = geospatials_to_latlngs(self.geospatials)
