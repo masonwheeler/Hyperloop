@@ -177,6 +177,7 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
         self.geospatials_to_latlngs = spatial_lattice.geospatials_to_latlngs
         abstract_edges.AbstractEdgesSets.__init__(self, spatial_lattice,
                                  SpatialEdge, spatial_degree_constraint)
+        self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
         self.build_coordinates()
         self.finish_edges_sets()
 

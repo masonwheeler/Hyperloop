@@ -43,12 +43,6 @@ class AbstractEdge(object):
         self.is_useful = True
 
 
-class AbstractEdgesSet(object):
-
-    def __init__(self, abstract_edges):
-        self.abstract_edges = abstract_edges
-
-
 class AbstractEdgesSets(object):
 
     def is_edge_pair_compatible(self, edge_a, edge_b):
@@ -114,6 +108,7 @@ class AbstractEdgesSets(object):
         return False
 
     def iterative_filter(self, edges_sets):
+        edges_sets = self.filter_edges(self, edges_sets)
         prefilter_num_edges = util.list_of_lists_len(edges_sets)
         util.smart_print("The original number of edges: " +
                          str(prefilter_num_edges))
@@ -137,5 +132,3 @@ class AbstractEdgesSets(object):
         self.degree_constraint = degree_constraint
         self.raw_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
-        self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
-

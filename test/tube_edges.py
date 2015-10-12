@@ -10,6 +10,7 @@ import abstract_edges
 import angle_constraint
 import curvature
 import parameters
+import sample_path
 
 
 class TubeEdge(abstract_edges.AbstractEdge):
@@ -41,8 +42,19 @@ class TubeEdge(abstract_edges.AbstractEdge):
         edge_length = np.linalg.norm(edge_vector)
         return edge_length
 
+    def build_tube_points(self, resolution):
+        tube_end_points = zip(self.arc_lengths, self.tube_elevations)
+        tube_points = sample_path.sample_path_points(tube_end_points,
+                                                     resolution)
+        return tube_points
+
     def __init__(self, tube_point_a, tube_point_b):
         abstract_edges.AbstractEdge.__init__(self, tube_point_a, tube_point_b)
+
+    def constrain_grade(self, max_grade):
+        self.is_useful = abs(self.angle) < max_grade
+
+    def attach_costs(self):
         self.arc_lengths = [tube_point_a.arc_length, tube_point_b.arc_length]
         self.tube_elevations = [tube_point_a.tube_elevation,
                                 tube_point_b.tube_elevation]
@@ -52,6 +64,10 @@ class TubeEdge(abstract_edges.AbstractEdge):
                                                tube_point_a, tube_point_b)
         self.pylons_costs = [tube_point_a.pylon_cost, tube_point_b.pylon_cost]
 
+    def sample_edge(self, resolution):
+        tube_edge_end_points = zip(self.arc_lengths, self.tube_elevations)
+        self.sampled_tube_points = sample_path.sample_path_points(
+                                     tube_edge_end_points, resolution)                            
     def to_abstract_edge(self):
         abstract_edge = abstract_edges.AbstractEdge(self.start_point,
                                                       self.end_point)
@@ -60,8 +76,26 @@ class TubeEdge(abstract_edges.AbstractEdge):
 
 class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    def __init__(self, tube_points_lattice, tube_degree_constraint):
+    def contrain_edges_grades(self, edges_sets, max_grade):
+        for edges_set in edges_sets:
+            for edge in edges_set:
+                edge.constraint_grade(max_grade)
+
+    def attach_edges_costs(self, edges_sets):
+        for edges_set in edges_sets:
+            for edge in edges_set:
+                edges.attach_costs()
+
+    def sample_edges(self, edges_sets, resolution):
+        for edges_set in edges_sets:
+            for edge in edges_set:
+                edge.sample_edge(resolution)    
+
+    def __init__(self, tube_points_lattice, tube_degree_constraint, max_grade):
         abstract_edges.AbstractEdgesSets.__init__(self, tube_points_lattice,
                                                                    TubeEdge,
                                                      tube_degree_constraint)
-
+        self.constrain_edges_grades(self.raw_edges_sets, max_grade)
+        self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
+        self.attach_edges_costs(self.filtered_edges_sets)
+        self.sample_edges(self.filtered_edges_sets, resolution)
