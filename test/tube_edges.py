@@ -65,9 +65,12 @@ class TubeEdge(abstract_edges.AbstractEdge):
         self.pylons_costs = [tube_point_a.pylon_cost, tube_point_b.pylon_cost]
 
     def sample_edge(self, resolution):
-        tube_edge_end_points = zip(self.arc_lengths, self.tube_elevations)
-        self.sampled_tube_points = sample_path.sample_path_points(
-                                     tube_edge_end_points, resolution)                            
+        tube_edge_end_points = [self.arc_lengths, self.tube_elevations]
+        sampled_tube_points = sample_path.sample_path_points(
+                              tube_edge_end_points, resolution)
+        self.sampled_arc_lengths, self.sampled_tube_elevations = \
+            np.tranpose(sampled_tube_points)
+
     def to_abstract_edge(self):
         abstract_edge = abstract_edges.AbstractEdge(self.start_point,
                                                       self.end_point)

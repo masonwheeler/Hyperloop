@@ -95,20 +95,18 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         _, boundary_tube_curvature_array = graph_interpolator(boundary_points,
                                                               resolution)        
         boundary_tube_curvature_array_a = boundary_tube_curvature_array[
-                                                         :boundary_a_length]
+                                                          :boundary_a_length]
         boundary_tube_curvature_array_b = boundary_tube_curvature_array[
-                                                         :boundary_b_length]        
-        graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array
-        graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array
+                                                         -boundary_b_length:]
+        graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
+                                                          :boundary_a_length]
+        graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
+                                                         -boundary_b_length:]
         if (graph_a_tube_curvature_array == None and
             graph_b_tube_curvature_array == None):
             merged_curvature_array = boundary_tube_curvature_array_b
-        elif (tube_graph_a.tube_curvature_array != None and
-              tube_graph_b.tube_curvature_array != None):
-            graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
-                                      -len(boundary_tube_curvature_array_a):]
-            graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
-                                       :len(boundary_tube_curvature_array_b)]
+        elif (graph_a_tube_curvature_array != None and
+              graph_b_tube_curvature_array != None):
             tube_curvature_array_a = np.maximum(graph_a_tube_curvature_array,
                                              boundary_tube_curvature_array_a)
             tube_curvature_array_b = np.maximum(graph_b_tube_curvature_array,
@@ -116,18 +114,14 @@ class TubeGraph(abstract_graphs.AbstractGraph):
             merged_curvature_array = util.smart_concat_array(
                                           tube_curvature_array_a,
                                           tube_curvature_array_b)
-        elif (tube_graph_a.tube_curvature_array != None and
-              tube_graph_b.tube_curvature_array == None):
-            graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
-                                      -len(boundary_tube_curvature_array_a):]
+        elif (graph_a_tube_curvature_array != None and
+              graph_b_tube_curvature_array == None):
             tube_curvature_array_a = np.maximum(graph_a_tube_curvature_array,
                                              boundary_tube_curvature_array_a)
             merged_curvature_array = util.smart_concat_array(
                 tube_curvature_array_a, boundary_curvature_array_b)
-        elif (tube_graph_a.tube_curvature_array == None and
-              tube_graph_b.tube_curvature_array != None):
-            graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
-                                       :len(boundary_tube_curvature_array_b)]
+        elif (graph_a_tube_curvature_array == None and
+              graph_b_tube_curvature_array != None):
             tube_curvature_array_b = np.maximum(graph_b_tube_curvature_array,
                                              boundary_tube_curvature_array_b)
             merged_curvature_array = util.smart_concat_array(
@@ -135,7 +129,7 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         return merged_curvature_array                
 
     @classmethod
-    def merge_two_tube_graphs(cls, tube_graph_a, tube_graph_b, boundary_width,
+    def merge_two_tube_graphs(cls, tube_graph_a, tube_graph_b,
                               graph_interpolator, resolution):
         abstract_graph_a = tube_graph_a.to_abstract_graph()
         abstract_graph_b = tube_graph_b.to_abstract_graph()
@@ -154,8 +148,7 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tube_elevations = util.smart_concat(tube_graph_a.tube_elevations,
                                             tube_graph_b.tube_elevations)
         merged_tube_curvature_array = TubeGraph.merge_tube_curvature_arrays(
-                                 tube_graph_a, tube_graph_b, boundary_width,
-                                             graph_interpolator, resolution)
+                 tube_graph_a, tube_graph_b, graph_interpolator, resolution)
         data = cls(merged_abstract_graph, pylons_costs, total_pylon_cost,
             tube_cost, tunneling_cost, total_cost, arc_lengths, tube_elevations,
                                tube_curvature_array=merged_tube_curvature_array)
