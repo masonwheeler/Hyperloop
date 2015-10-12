@@ -18,10 +18,6 @@ import util
 class TubeGraph(abstract_graphs.AbstractGraph):
 
     def compute_min_time(self, tube_curvature_array, arc_lengths):
-        print "num arc lengths: " 
-        print len(arc_lengths)
-        print "num tube curvatures: " 
-        print tube_curvature_array.size
         max_allowed_speeds = \
             curvature_constrain_speed.get_vertical_curvature_constrained_speeds(
                                                     tube_curvature_array)
@@ -40,8 +36,8 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         return [min_time, total_cost]
 
     def __init__(self, abstract_graph, pylons_costs, total_pylon_cost,
-                   tube_cost, tunneling_cost, total_cost, arc_lengths,
-                           tube_elevations, tube_curvature_array=None):
+                 tube_cost, tunneling_cost, total_cost, arc_lengths_partitions,
+                        tube_elevations_partitions, tube_curvature_array=None):
         abstract_graphs.AbstractGraph.__init__(self, abstract_graph.start_id,
                                                        abstract_graph.end_id,
                                                   abstract_graph.start_angle,
@@ -52,12 +48,13 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         self.tube_cost = tube_cost
         self.tunneling_cost = tunneling_cost
         self.total_cost = total_cost
-        self.arc_lengths = arc_lengths
-        self.tube_elevations = tube_elevations
+        self.arc_lengths_partitions = arc_lengths_partitions
+        self.tube_elevations_partitions = tube_elevations_partitions
         self.tube_curvature_array = tube_curvature_array
         if self.tube_curvature_array == None:
             self.min_time = None
         else:
+            arc_lengths = util.fast_concat(self.arc_lengths_partitions)
             self.min_time = self.compute_min_time(tube_curvature_array,
                                                            arc_lengths)
 
@@ -71,11 +68,11 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tube_cost = tube_edge.tube_cost
         tunneling_cost = tube_edge.tunneling_cost
         total_cost = total_pylon_cost + tube_cost + tunneling_cost
-        arc_lengths = tube_edge.arc_lengths
-        tube_elevations = tube_edge.tube_elevations
+        arc_lengths_partitions = tube_edge.sampled_arc_lengths
+        tube_elevations_partitions = tube_edge.sampled_tube_elevations
         data = cls(abstract_graph, pylons_costs, total_pylon_cost,
                    tube_cost, tunneling_cost, total_cost,
-                   arc_lengths, tube_elevations)
+                   arc_lengths_partitions, tube_elevations_partitions)
         return data
 
     @staticmethod
@@ -136,6 +133,7 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         merged_abstract_graph = \
             abstract_graphs.AbstractGraph.merge_abstract_graphs(
                                  abstract_graph_a, abstract_graph_b)
+
         pylons_costs = util.smart_concat(tube_graph_a.pylons_costs,
                                          tube_graph_b.pylons_costs)
         total_pylon_cost = sum(pylons_costs)
@@ -143,15 +141,21 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tunneling_cost = (tube_graph_a.tunneling_cost +
                           tube_graph_b.tunneling_cost)
         total_cost = tube_graph_a.total_cost + tube_graph_b.total_cost
-        arc_lengths = util.offset_concat(tube_graph_a.arc_lengths, 
-                                         tube_graph_b.arc_lengths)
-        tube_elevations = util.smart_concat(tube_graph_a.tube_elevations,
-                                            tube_graph_b.tube_elevations)
+        print tube_graph_a.arc_lengths_partitions
+        offset = tube_graph_a.arc_lengths_partitions[0][0]
+        shifted_arc_lengths_partitions_b = [arc_length_partition + offset for 
+            arc_length_partition in tube_graph_b.arc_length_partitions]
+        arc_lengths_partitions = (tube_graph_a.arc_length_partitions +
+                                  shifted_arc_length_partitions_b)
+        tube_elevations_partitions = (tube_graph_a.tube_elevations_partitions +
+                                      tube_graph_b.tube_elevations_partitions)
+
         merged_tube_curvature_array = TubeGraph.merge_tube_curvature_arrays(
                  tube_graph_a, tube_graph_b, graph_interpolator, resolution)
         data = cls(merged_abstract_graph, pylons_costs, total_pylon_cost,
-            tube_cost, tunneling_cost, total_cost, arc_lengths, tube_elevations,
-                               tube_curvature_array=merged_tube_curvature_array)
+                   tube_cost, tunneling_cost, total_cost,
+                   arc_lengths_partitions, tube_elevations_partitions,
+                   tube_curvature_array=merged_tube_curvature_array)
         return data
 
     def to_abstract_graph(self):

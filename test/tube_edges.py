@@ -42,12 +42,6 @@ class TubeEdge(abstract_edges.AbstractEdge):
         edge_length = np.linalg.norm(edge_vector)
         return edge_length
 
-    def build_tube_points(self, resolution):
-        tube_end_points = zip(self.arc_lengths, self.tube_elevations)
-        tube_points = sample_path.sample_path_points(tube_end_points,
-                                                     resolution)
-        return tube_points
-
     def __init__(self, tube_point_a, tube_point_b):
         abstract_edges.AbstractEdge.__init__(self, tube_point_a, tube_point_b)
 
@@ -55,21 +49,22 @@ class TubeEdge(abstract_edges.AbstractEdge):
         self.is_useful = abs(self.angle) < max_grade
 
     def attach_costs(self):
-        self.arc_lengths = [tube_point_a.arc_length, tube_point_b.arc_length]
-        self.tube_elevations = [tube_point_a.tube_elevation,
-                                tube_point_b.tube_elevation]
-        edge_length = self.compute_edge_length(tube_point_a, tube_point_b)
+        edge_length = self.compute_edge_length(self.start_point, self.end_point)
         self.tube_cost = self.compute_tube_cost(edge_length)
         self.tunneling_cost = self.compute_tunneling_cost(edge_length,
-                                               tube_point_a, tube_point_b)
-        self.pylons_costs = [tube_point_a.pylon_cost, tube_point_b.pylon_cost]
+                                               self.start_point, self.end_point)
+        self.pylons_costs = [self.start_point.pylon_cost, self.end_point.pylon_cost]
 
-    def sample_edge(self, resolution):
-        tube_edge_end_points = [self.arc_lengths, self.tube_elevations]
-        sampled_tube_points = sample_path.sample_path_points(
-                              tube_edge_end_points, resolution)
+    def sample_edge_tube_points(self, resolution):
+        arc_lengths = [self.start_point.arc_length,
+                       self.end_point.arc_length]
+        tube_elevations = [self.start_point.tube_elevation,
+                           self.end_point.tube_elevation]
+        tube_edge_end_points = zip(arc_lengths, tube_elevations)
+        sampled_tube_points, _ = sample_path.sample_path_points(
+                                         tube_edge_end_points, resolution)
         self.sampled_arc_lengths, self.sampled_tube_elevations = \
-            np.tranpose(sampled_tube_points)
+            np.transpose(sampled_tube_points)
 
     def to_abstract_edge(self):
         abstract_edge = abstract_edges.AbstractEdge(self.start_point,
@@ -79,26 +74,26 @@ class TubeEdge(abstract_edges.AbstractEdge):
 
 class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    def contrain_edges_grades(self, edges_sets, max_grade):
+    def constrain_edges_grades(self, edges_sets, max_grade):
         for edges_set in edges_sets:
             for edge in edges_set:
-                edge.constraint_grade(max_grade)
+                edge.constrain_grade(max_grade)
 
     def attach_edges_costs(self, edges_sets):
         for edges_set in edges_sets:
             for edge in edges_set:
-                edges.attach_costs()
+                edge.attach_costs()
 
-    def sample_edges(self, edges_sets, resolution):
+    def sample_edges_tube_points(self, edges_sets, resolution):
         for edges_set in edges_sets:
             for edge in edges_set:
-                edge.sample_edge(resolution)    
+                edge.sample_edge_tube_points(resolution)
 
     def __init__(self, tube_points_lattice, tube_degree_constraint, max_grade):
         abstract_edges.AbstractEdgesSets.__init__(self, tube_points_lattice,
-                                                                   TubeEdge,
-                                                     tube_degree_constraint)
+                                               TubeEdge, tube_degree_constraint)
+        resolution = tube_points_lattice.elevation_step_size
         self.constrain_edges_grades(self.raw_edges_sets, max_grade)
         self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
         self.attach_edges_costs(self.filtered_edges_sets)
-        self.sample_edges(self.filtered_edges_sets, resolution)
+        self.sample_edges_tube_points(self.filtered_edges_sets, resolution)

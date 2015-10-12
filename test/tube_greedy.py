@@ -28,22 +28,22 @@ def elevation_profile_to_tube_points_lattice(elevation_profile,
                            elevation_mesh_bisection_depth=None,
                           arc_length_mesh_bisection_depth=None):
     if elevation_mesh_bisection_depth == None:
-        elevation_mesh_bisection_depth = 1
+        elevation_mesh_bisection_depth = 0
     if arc_length_mesh_bisection_depth == None:
-        arc_length_mesh_bisection_depth = 1
+        arc_length_mesh_bisection_depth = 4
     tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile,
            elevation_mesh_bisection_depth, arc_length_mesh_bisection_depth)
     if config.VISUAL_MODE and VISUALIZE_LATTICE:
         tube_points_lattice.visualize()
     return tube_points_lattice
 
-def tube_points_lattice_to_tube_edges_sets(tube_points_lattice):
+def tube_points_lattice_to_tube_edges_sets(tube_points_lattice, max_grade):
     length_scale = tube_points_lattice.arc_length_step_size
     resolution = tube_points_lattice.elevation_step_size
     tube_angle_constraint = compute_tube_angle_constraint(length_scale,
                                                             resolution)
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
-                                             tube_angle_constraint) 
+                                  tube_angle_constraint, max_grade) 
     if config.VISUAL_MODE and VISUALIZE_EDGES:       
         print "tube angle constraint: " + str(tube_angle_constraint)
     return [tube_edges_sets, resolution]
@@ -62,7 +62,7 @@ def elevation_profile_to_tube_graphs(elevation_profile,
                  elevation_profile, elevation_mesh_bisection_depth=None,
                                    arc_length_mesh_bisection_depth=None)
     tube_edges_sets, resolution = tube_points_lattice_to_tube_edges_sets(
-                                                     tube_points_lattice)
-    selected_tube_graphs = tube_edges_sets_to_tube_graphs(tube_edges_sets,
-                                                               resolution)
-    return selected_tube_graphs
+                          tube_points_lattice, parameters.MAX_TUBE_GRADE)
+    #selected_tube_graphs = tube_edges_sets_to_tube_graphs(tube_edges_sets,
+    #                                                           resolution)
+    return 0#selected_tube_graphs

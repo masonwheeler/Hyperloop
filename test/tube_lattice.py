@@ -91,23 +91,18 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     BASE_ELEVATION_STEP_SIZE = 1.0 #Meter
 
-    def build_lower_tube_envelope_v1(self, arc_lengths, land_elevations):
+    def build_lower_tube_envelope(self, arc_lengths, land_elevations):
         land_elevation_troughs_indices_tuple = scipy.signal.argrelmin(
                                                  land_elevations, order=5)
         land_elevation_troughs_indices = \
             land_elevation_troughs_indices_tuple[0].tolist()
         lower_tube_envelope = \
             smoothing_interpolate.bounded_curvature_extrema_interpolate(
-            elevation_profile.arc_lengths, elevation_profile.land_elevations,
-            land_elevation_troughs_indices, parameters.MAX_VERTICAL_CURVATURE)
+            arc_lengths, land_elevations, land_elevation_troughs_indices, 
+            parameters.MAX_VERTICAL_CURVATURE)
         return lower_tube_envelope
 
-    def build_lower_tube_envelope_v2(self, land_elevations):
-        lowest_land_elevation = min(land_elevations)
-        lower_tube_envelope = ([lowest_land_elevation] * len(land_elevations))
-        return lower_tube_envelope
-
-    def build_upper_tube_envelope_v1(self, arc_lengths, land_elevations):
+    def build_upper_tube_envelope(self, arc_lengths, land_elevations):
         land_elevation_peaks_indices_tuple = scipy.signal.argrelmax(
                                                land_elevations, order=5)
         land_elevation_peaks_indices = \
@@ -116,11 +111,6 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
             smoothing_interpolate.bounded_curvature_extrema_interpolate(
              arc_lengths, land_elevations, land_elevation_peaks_indices,
                                       parameters.MAX_VERTICAL_CURVATURE)
-        return upper_tube_envelope
-       
-    def build_upper_tube_envelope_v2(self, land_elevations):
-        highest_land_elevation = max(land_elevations)
-        upper_tube_envelope = ([highest_land_elevation] * len(land_elevations))
         return upper_tube_envelope
 
     def tube_envelopes_to_tube_slice_bounds(self, lower_tube_envelope,
@@ -144,15 +134,14 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
         self.elevation_step_size = (self.BASE_ELEVATION_STEP_SIZE *
                                             2**elevation_mesh_bisection_depth)
         self.original_elevation_profile = elevation_profile
-        elevation_profile = elevation_profile.undersample(
                                  2**arc_length_mesh_bisection_depth)
         self.arc_lengths = elevation_profile.arc_lengths
         self.arc_length_step_size = elevation_profile.arc_length_step_size
         self.land_elevations = elevation_profile.land_elevations
-        self.lower_tube_envelope = self.build_lower_tube_envelope_v2(
-                                                    self.land_elevations)
-        self.upper_tube_envelope = self.build_upper_tube_envelope_v1(
-                                  self.arc_lengths, self.land_elevations)
+        self.lower_tube_envelope = self.build_lower_tube_envelope(
+                                   self.arc_lengths, self.land_elevations)
+        self.upper_tube_envelope = self.build_upper_tube_envelope(
+                                   self.arc_lengths, self.land_elevations)
         tube_points_slices_bounds = self.tube_envelopes_to_tube_slice_bounds(
                           self.lower_tube_envelope, self.upper_tube_envelope,
                                  elevation_profile, self.elevation_step_size)

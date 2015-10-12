@@ -108,7 +108,7 @@ class AbstractEdgesSets(object):
         return False
 
     def iterative_filter(self, edges_sets):
-        edges_sets = self.filter_edges(self, edges_sets)
+        edges_sets = self.filter_edges(edges_sets)
         prefilter_num_edges = util.list_of_lists_len(edges_sets)
         util.smart_print("The original number of edges: " +
                          str(prefilter_num_edges))

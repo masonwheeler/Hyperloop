@@ -17,6 +17,7 @@ Last Modification Purpose: Created Module
 
 PYLON_SPACING = 60.96 #Meters
 MAX_SPEED = 326.0 #Meters/Second
+MAX_TUBE_GRADE = 10 #Degrees
 
 ####################
 #Comfort Parameters#
