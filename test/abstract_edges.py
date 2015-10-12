@@ -42,6 +42,12 @@ class AbstractEdge(object):
             end_point.physical_x_coord - start_point.physical_x_coord))
         self.is_useful = True
 
+    def to_plottable_edge(self, color_string):
+        plottable_points = zip(self.start_physical_coords,
+                               self.end_physical_coords)
+        plottable_edge = [plottable_points, color_string]
+        return plottable_edge        
+
 
 class AbstractEdgesSets(object):
 
@@ -132,3 +138,12 @@ class AbstractEdgesSets(object):
         self.degree_constraint = degree_constraint
         self.raw_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
+
+   def get_plottable_edges(self, color_string):
+        plottable_edges = []
+        for edges_set in self.filtered_edges_sets:
+            for edge in edges_set:
+                plottable_edge = edge.to_plottable_edge(color_string)
+                plottable_edges.append(plottable_edge)
+        return plottable_edges
+

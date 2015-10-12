@@ -12,7 +12,6 @@ import config
 import smoothing_interpolate
 import parameters
 import util
-import visualize
 
 
 class TubePoint(abstract_lattice.AbstractPoint):
@@ -93,7 +92,7 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     def build_lower_tube_envelope(self, arc_lengths, land_elevations):
         land_elevation_troughs_indices_tuple = scipy.signal.argrelmin(
-                                                 land_elevations, order=5)
+                                                 land_elevations, order=10)
         land_elevation_troughs_indices = \
             land_elevation_troughs_indices_tuple[0].tolist()
         lower_tube_envelope = \
@@ -104,7 +103,7 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
 
     def build_upper_tube_envelope(self, arc_lengths, land_elevations):
         land_elevation_peaks_indices_tuple = scipy.signal.argrelmax(
-                                               land_elevations, order=5)
+                                               land_elevations, order=10)
         land_elevation_peaks_indices = \
             land_elevation_peaks_indices_tuple[0].tolist()
         upper_tube_envelope = \
@@ -113,69 +112,48 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
                                       parameters.MAX_VERTICAL_CURVATURE)
         return upper_tube_envelope
 
-    def tube_envelopes_to_tube_slice_bounds(self, lower_tube_envelope,
-          upper_tube_envelope, elevation_profile, elevation_step_size):
+    def sampled_tube_envelopes_to_tube_slice_bounds(self, 
+            sampled_lower_tube_envelope, sampled_upper_tube_envelope, 
+            sampled_elevation_profile, elevation_step_size):
         tube_points_slices_bounds = []
-        for i in range(len(elevation_profile.arc_lengths)):
+        for i in range(len(sampled_elevation_profile.arc_lengths)):
             tube_points_slice_bounds = {
                 "elevationStepSize" : elevation_step_size,
-                "minTubeElevation" : lower_tube_envelope[i],
-                "maxTubeElevation" : upper_tube_envelope[i],
-                "arcLength" : elevation_profile.arc_lengths[i],
-                "geospatial" : elevation_profile.geospatials[i],
-                "latlng" : elevation_profile.latlngs[i],
-                "landElevation" : elevation_profile.land_elevations[i]
+                "minTubeElevation" : sampled_lower_tube_envelope[i],
+                "maxTubeElevation" : sampled_upper_tube_envelope[i],
+                "arcLength" : sampled_elevation_profile.arc_lengths[i],
+                "geospatial" : sampled_elevation_profile.geospatials[i],
+                "latlng" : sampled_elevation_profile.latlngs[i],
+                "landElevation" : sampled_elevation_profile.land_elevations[i]
                 }
             tube_points_slices_bounds.append(tube_points_slice_bounds) 
         return tube_points_slices_bounds
 
     def __init__(self, elevation_profile, elevation_mesh_bisection_depth,
                                          arc_length_mesh_bisection_depth):
-        self.elevation_step_size = (self.BASE_ELEVATION_STEP_SIZE *
-                                            2**elevation_mesh_bisection_depth)
-        self.original_elevation_profile = elevation_profile
-                                 2**arc_length_mesh_bisection_depth)
+        elevation_step_size = (self.BASE_ELEVATION_STEP_SIZE *
+                               2**elevation_mesh_bisection_depth)
         self.arc_lengths = elevation_profile.arc_lengths
-        self.arc_length_step_size = elevation_profile.arc_length_step_size
         self.land_elevations = elevation_profile.land_elevations
         self.lower_tube_envelope = self.build_lower_tube_envelope(
-                                   self.arc_lengths, self.land_elevations)
+            self.arc_lengths, self.land_elevations)
         self.upper_tube_envelope = self.build_upper_tube_envelope(
-                                   self.arc_lengths, self.land_elevations)
-        tube_points_slices_bounds = self.tube_envelopes_to_tube_slice_bounds(
-                          self.lower_tube_envelope, self.upper_tube_envelope,
-                                 elevation_profile, self.elevation_step_size)
+            self.arc_lengths, self.land_elevations)
+
+        undersampling_factor = 2**arc_length_mesh_bisection_depth
+        sampled_lower_tube_envelope = self.lower_tube_envelope[::
+                                                 undersampling_factor]
+        sampled_upper_tube_envelope = self.upper_tube_envelope[::
+                                                 undersampling_factor]
+        sampled_elevation_profile = elevation_profile.undersample(
+                                                 undersampling_factor)
+        tube_points_slices_bounds = \
+            self.sampled_tube_envelopes_to_tube_slice_bounds(
+                    sampled_lower_tube_envelope, sampled_upper_tube_envelope,
+                              sampled_elevation_profile, elevation_step_size)
         abstract_lattice.AbstractLattice.__init__(self,
             tube_points_slices_bounds, TubePointsSlice)
-
-    def visualize(self):
-        lattice_axes_equal = False
-        land_elevations_points = [self.original_elevation_profile.arc_lengths, 
-                               self.original_elevation_profile.land_elevations]
-        plottable_land_elevations = [land_elevations_points, 'b-']
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
-        
-        lower_tube_envelope_points = [self.arc_lengths,
-                                      self.lower_tube_envelope]
-        plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                            plottable_lower_tube_envelope)
-
-        upper_tube_envelope_points = [self.arc_lengths,
-                                      self.upper_tube_envelope]
-        plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                            plottable_upper_tube_envelope)
-
-        plottable_lattice = self.get_plottable_lattice('k.')
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_lattice)
-
-        visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
-                               lattice_axes_equal)
-
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-
+        self.resolution = elevation_step_size
+        self.length_scale = elevation_profile.arc_length_step_size
 
 

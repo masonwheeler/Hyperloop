@@ -11,6 +11,7 @@ import smoothing_interpolate
 import tube_edges
 import tube_graphs
 import tube_lattice
+import visualize
 
 
 VISUALIZE_LATTICE = True
@@ -28,23 +29,47 @@ def elevation_profile_to_tube_points_lattice(elevation_profile,
                            elevation_mesh_bisection_depth=None,
                           arc_length_mesh_bisection_depth=None):
     if elevation_mesh_bisection_depth == None:
-        elevation_mesh_bisection_depth = 0
+        elevation_mesh_bisection_depth = 2
     if arc_length_mesh_bisection_depth == None:
-        arc_length_mesh_bisection_depth = 4
+        arc_length_mesh_bisection_depth = 2
     tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile,
            elevation_mesh_bisection_depth, arc_length_mesh_bisection_depth)
     if config.VISUAL_MODE and VISUALIZE_LATTICE:
-        tube_points_lattice.visualize()
+        lattice_axes_equal = False
+        land_elevations_points = [tube_points_lattice.arc_lengths, 
+                                  tube_points_lattice.land_elevations]
+        plottable_land_elevations = [land_elevations_points, 'b-']
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
+
+        lower_tube_envelope_points = [tube_points_lattice.arc_lengths,
+                                      tube_points_lattice.lower_tube_envelope]
+        plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                            plottable_lower_tube_envelope)
+        upper_tube_envelope_points = [tube_points_lattice.arc_lengths,
+                                      tube_points_lattice.upper_tube_envelope]
+        plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                            plottable_upper_tube_envelope)
+        plottable_lattice = tube_points_lattice.get_plottable_lattice('k.')
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_lattice)
+
+        visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                               lattice_axes_equal)
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
     return tube_points_lattice
 
 def tube_points_lattice_to_tube_edges_sets(tube_points_lattice, max_grade):
-    length_scale = tube_points_lattice.arc_length_step_size
-    resolution = tube_points_lattice.elevation_step_size
+    length_scale = tube_points_lattice.length_scale
+    resolution = tube_points_lattice.resolution
     tube_angle_constraint = compute_tube_angle_constraint(length_scale,
                                                             resolution)
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
                                   tube_angle_constraint, max_grade) 
-    if config.VISUAL_MODE and VISUALIZE_EDGES:       
+    if config.VISUAL_MODE and VISUALIZE_EDGES:
+        
         print "tube angle constraint: " + str(tube_angle_constraint)
     return [tube_edges_sets, resolution]
 

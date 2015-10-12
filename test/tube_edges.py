@@ -92,7 +92,7 @@ class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
     def __init__(self, tube_points_lattice, tube_degree_constraint, max_grade):
         abstract_edges.AbstractEdgesSets.__init__(self, tube_points_lattice,
                                                TubeEdge, tube_degree_constraint)
-        resolution = tube_points_lattice.elevation_step_size
+        resolution = tube_points_lattice.resolution
         self.constrain_edges_grades(self.raw_edges_sets, max_grade)
         self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
         self.attach_edges_costs(self.filtered_edges_sets)
