@@ -86,6 +86,12 @@ def offset_concat(list_a, list_b):
     new_list = smart_concat(list_a, shifted_list_b)
     return new_list
 
+def offset_concat_array(array_a, array_b):
+    offset = array_a[-1]
+    shifted_array_b = array_b + offset
+    new_array = smart_concat_array(array_a, shifted_array_b)
+    return new_array
+
 # Vector Operations:
 
 def safe_operation(operation, vector_a, vector_b):

@@ -68,8 +68,8 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tube_cost = tube_edge.tube_cost
         tunneling_cost = tube_edge.tunneling_cost
         total_cost = total_pylon_cost + tube_cost + tunneling_cost
-        arc_lengths_partitions = tube_edge.sampled_arc_lengths
-        tube_elevations_partitions = tube_edge.sampled_tube_elevations
+        arc_lengths_partitions = [tube_edge.sampled_arc_lengths]
+        tube_elevations_partitions = [tube_edge.sampled_tube_elevations]
         data = cls(abstract_graph, pylons_costs, total_pylon_cost,
                    tube_cost, tunneling_cost, total_cost,
                    arc_lengths_partitions, tube_elevations_partitions)
@@ -80,14 +80,16 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                     graph_interpolator, resolution):
         boundary_arc_lengths_a = tube_graph_a.arc_lengths_partitions[-1]
         boundary_arc_lengths_b = tube_graph_b.arc_lengths_partitions[0]
-        boundary_a_length = len(boundary_arc_lengths_a)
-        boundary_b_length = len(boundary_arc_lengths_b)
-        boundary_arc_lengths = util.offset_concat(boundary_arc_lengths_a,
-                                                  boundary_arc_lengths_b)        
+        print boundary_arc_lengths_a
+        print boundary_arc_lengths_b
+        boundary_a_length = boundary_arc_lengths_a.shape[0]
+        boundary_b_length = boundary_arc_lengths_b.shape[0]
+        boundary_arc_lengths = util.offset_concat_array(boundary_arc_lengths_a,
+                                                        boundary_arc_lengths_b)        
         boundary_tube_elevations_a = tube_graph_a.tube_elevations_partitions[-1]
         boundary_tube_elevations_b = tube_graph_b.tube_elevations_partitions[0]
-        boundary_tube_elevations = util.smart_concat(boundary_tube_elevations_a,        
-                                                     boundary_tube_elevations_b)
+        boundary_tube_elevations = util.smart_concat_array(
+            boundary_tube_elevations_a, boundary_tube_elevations_b)
         boundary_points = zip(boundary_arc_lengths, boundary_tube_elevations)
         _, boundary_tube_curvature_array = graph_interpolator(boundary_points,
                                                               resolution)        
@@ -141,12 +143,11 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tunneling_cost = (tube_graph_a.tunneling_cost +
                           tube_graph_b.tunneling_cost)
         total_cost = tube_graph_a.total_cost + tube_graph_b.total_cost
-        print tube_graph_a.arc_lengths_partitions
-        offset = tube_graph_a.arc_lengths_partitions[0][0]
+        offset = tube_graph_a.arc_lengths_partitions[-1]
         shifted_arc_lengths_partitions_b = [arc_length_partition + offset for 
-            arc_length_partition in tube_graph_b.arc_length_partitions]
-        arc_lengths_partitions = (tube_graph_a.arc_length_partitions +
-                                  shifted_arc_length_partitions_b)
+            arc_length_partition in tube_graph_b.arc_lengths_partitions]
+        arc_lengths_partitions = (tube_graph_a.arc_lengths_partitions +
+                                       shifted_arc_lengths_partitions_b)
         tube_elevations_partitions = (tube_graph_a.tube_elevations_partitions +
                                       tube_graph_b.tube_elevations_partitions)
 

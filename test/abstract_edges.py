@@ -139,7 +139,7 @@ class AbstractEdgesSets(object):
         self.raw_edges_sets = self.lattice_slices_to_unfiltered_edges_sets(
             lattice.slices, edge_builder)
 
-   def get_plottable_edges(self, color_string):
+    def get_plottable_edges(self, color_string):
         plottable_edges = []
         for edges_set in self.filtered_edges_sets:
             for edge in edges_set:

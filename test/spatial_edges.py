@@ -79,11 +79,6 @@ class SpatialEdge(abstract_edges.AbstractEdge):
               self.ELEVATION_POINTS_TO_PYLON_POINTS_RATIO)
     
     def build_tube(self, tube_builder):
-        #DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
-        #                         parameters.MAX_SPEED**2)
-        #max_curvature = DEFAULT_MAX_CURVATURE * 0.01
-        #tube_profile = tube_builder(self.elevation_profile)#,
-                                    #max_curvature=max_curvature)
         selected_tube_graphs = tube_builder(self.elevation_profile)
         tube_curvature_arrays = [graph.tube_curvature_array for graph in  
                                  selected_tube_graphs]

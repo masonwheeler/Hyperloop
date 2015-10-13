@@ -14,7 +14,7 @@ import tube_lattice
 import visualize
 
 
-VISUALIZE_LATTICE = True
+VISUALIZE_LATTICE = False
 VISUALIZE_EDGES = True
 VISUALIZE_GRAPHS = True
 
@@ -30,9 +30,9 @@ def elevation_profile_to_tube_points_lattice(elevation_profile,
                            elevation_mesh_bisection_depth=None,
                           arc_length_mesh_bisection_depth=None):
     if elevation_mesh_bisection_depth == None:
-        elevation_mesh_bisection_depth = 2
+        elevation_mesh_bisection_depth = 1
     if arc_length_mesh_bisection_depth == None:
-        arc_length_mesh_bisection_depth = 2
+        arc_length_mesh_bisection_depth = 3
     tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile,
            elevation_mesh_bisection_depth, arc_length_mesh_bisection_depth)
     if config.VISUAL_MODE and VISUALIZE_LATTICE:
@@ -90,7 +90,7 @@ def tube_points_lattice_to_tube_edges_sets(tube_points_lattice, max_grade):
                             plottable_upper_tube_envelope)
 
         plottable_edges = tube_edges_sets.get_plottable_edges('k-')
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_edges)
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE += plottable_edges
 
         visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
                                axes_equal)
