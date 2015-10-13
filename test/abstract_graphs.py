@@ -48,7 +48,7 @@ class AbstractGraph(object):
         end_id = abstract_graph_b.end_id
         start_angle = abstract_graph_a.start_angle
         end_angle = abstract_graph_b.end_angle
-        abstract_coords = util.smart_concat(abstract_graph_a.abstract_coords,
+        abstract_coords = util.glue_list_pair(abstract_graph_a.abstract_coords,
                                             abstract_graph_b.abstract_coords)
         data = cls(start_id, end_id, start_angle, end_angle, abstract_coords)
         return data

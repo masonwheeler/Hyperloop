@@ -67,30 +67,35 @@ def list_of_lists_len(list_of_lists):
     """gets total length of a list of lists"""
     return sum(map(len, list_of_lists))
 
+def glue_list_of_arrays(list_of_arrays):
+    glued_arrays = list_of_arrays[0]
+    for array in list_of_arrays[1:]:
+        glued_arrays = glue_array_pair(glued_arrays, array)
+    return glued_arrays
 
 # List Pair Operations:
 
-def smart_concat(list_a, list_b):
+def glue_list_pair(list_a, list_b):
     """Connects two lists without duplicating shared boundary point"""
-    new_list = list_a + list_b[1:]
-    return new_list
+    glued_list = list_a + list_b[1:]
+    return glued_list
 
-def smart_concat_array(array_a, array_b):
+def glue_array_pair(array_a, array_b):
     """Connects two lists without duplicating shared boundary point"""
-    new_array = np.concatenate((array_a, array_b[1:]))
-    return new_array
+    glued_array = np.concatenate((array_a, array_b[1:]))
+    return glued_array
 
-def offset_concat(list_a, list_b):
+def shift_and_glue_list_pair(list_a, list_b):
     offset = list_a[-1]
     shifted_list_b = [val + offset for val in list_b]
-    new_list = smart_concat(list_a, shifted_list_b)
-    return new_list
+    glued_list = glue_list_pair(list_a, shifted_list_b)
+    return glue_list
 
-def offset_concat_array(array_a, array_b):
+def shift_and_glue_array_pair(array_a, array_b):
     offset = array_a[-1]
     shifted_array_b = array_b + offset
-    new_array = smart_concat_array(array_a, shifted_array_b)
-    return new_array
+    glued_array = glue_array_pair(array_a, shifted_array_b)
+    return glued_array
 
 # Vector Operations:
 

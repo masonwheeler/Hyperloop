@@ -64,11 +64,11 @@ class ElevationProfile(object):
                     elevation_profile_b.geospatials_partitions)
         else:
             merged_geospatials_partitions = None
-        merged_geospatials = util.smart_concat(elevation_profile_a.geospatials,
+        merged_geospatials = util.glue_list_pair(elevation_profile_a.geospatials,
                                                elevation_profile_b.geospatials)
-        merged_latlngs = util.smart_concat(elevation_profile_a.latlngs,
+        merged_latlngs = util.glue_list_pair(elevation_profile_a.latlngs,
                                            elevation_profile_b.latlngs)
-        merged_land_elevations = util.smart_concat_array(
+        merged_land_elevations = util.glue_array_pair(
                                     elevation_profile_a.land_elevations,
                                     elevation_profile_b.land_elevations)
         merged_arc_lengths = util.offset_concat(elevation_profile_a.arc_lengths,

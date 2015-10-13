@@ -103,7 +103,7 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             spatial_graph_b.elevation_profile.geospatials_partitions[0]
         boundary_a_length = len(boundary_geospatials_a)
         boundary_b_length = len(boundary_geospatials_b)
-        merged_boundary_geospatials = util.smart_concat(
+        merged_boundary_geospatials = util.glue_list_pair(
                                         boundary_geospatials_a,
                                         boundary_geospatials_b)
         interpolated_boundary_geospatials, boundary_spatial_curvature_array = \
@@ -125,17 +125,17 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             spatial_curvature_array_b[:boundary_b_length] = \
                 np.maximum(spatial_curvature_array_b[:boundary_b_length],
                            boundary_curvatures_b)
-            merged_curvature_array = util.smart_concat_array(
+            merged_curvature_array = util.glue_array_pair(
                                       spatial_curvature_array_a,
                                       spatial_curvature_array_b)
         elif (spatial_curvature_array_a != None and
               spatial_curvature_array_b == None):
-            merged_curvature_array = util.smart_concat_array(
+            merged_curvature_array = util.glue_array_pair(
                                       spatial_curvature_array_a,
                                       boundary_curvatures_b)
         elif (spatial_curvature_array_a == None and
               spatial_curvature_array_b != None):
-            merged_curvature_array = util.smart_concat_array(
+            merged_curvature_array = util.glue_array_pair(
                                       boundary_curvatures_a,
                                       spatial_curvature_array_b)
         return merged_curvature_array
@@ -153,12 +153,12 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         tube_cost = spatial_graph_a.tube_cost + spatial_graph_b.tube_cost
         tunneling_cost = (spatial_graph_a.tunneling_cost +
                           spatial_graph_b.tunneling_cost)
-        latlngs = util.smart_concat(spatial_graph_a.latlngs,
+        latlngs = util.glue_list_pair(spatial_graph_a.latlngs,
                                     spatial_graph_b.latlngs)
         elevation_profile = elevation.ElevationProfile.merge_elevation_profiles(
                                               spatial_graph_a.elevation_profile,
                                               spatial_graph_b.elevation_profile)
-        tube_curvature_array = util.smart_concat_array(
+        tube_curvature_array = util.glue_array_pair(
                                spatial_graph_a.tube_curvature_array,
                                spatial_graph_b.tube_curvature_array)
         spatial_curvature_array = SpatialGraph.merge_spatial_curvature_arrays(
