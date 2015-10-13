@@ -220,3 +220,20 @@ class TubeGraphsSets(abstract_graphs.AbstractGraphsSets):
                                    TubeGraphsSet.init_from_tube_edges_set,
                                                self.merge_two_tube_graphs,
                                                             TubeGraphsSet)
+
+    def get_plottable_tube_graphs(self, color_string):
+        plottable_tube_graphs = []
+        for tube_graph in self.selected_graphs:
+            plottable_tube_graphs = tube_graph.to_plottable(color_string)
+            plottable_tube_graphs.append(plottable_tube_graph)
+        return plottable_graphs
+
+    def cost_time_scatterplot(self, color_string):
+        costs = []
+        times = []
+        for tube_graph in self.selected_graphs:
+            costs.append(graph.total_cost)
+            times.append(graph.time)
+        scatterplot_values = [costs, times]
+        scatterplot = [scatterplot_values, color_string]
+        return scatterplot
