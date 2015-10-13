@@ -84,22 +84,32 @@ class TubeGraph(abstract_graphs.AbstractGraph):
     def merge_tube_curvature_arrays(tube_graph_a, tube_graph_b,
                                     graph_interpolator, resolution):
         boundary_arc_lengths_a = tube_graph_a.arc_lengths_partitions[-1]
+        ##print boundary_arc_lengths_a.shape[0]
         boundary_arc_lengths_b = tube_graph_b.arc_lengths_partitions[0]
+        ##print boundary_arc_lengths_b.shape[0]
         boundary_a_length = boundary_arc_lengths_a.shape[0]
         boundary_b_length = boundary_arc_lengths_b.shape[0]
-        boundary_arc_lengths = util.offset_concat_array(boundary_arc_lengths_a,
-                                                        boundary_arc_lengths_b)        
+        boundary_arc_lengths = np.concatenate((boundary_arc_lengths_a[:-1],
+                                               boundary_arc_lengths_b))
+        ##print boundary_arc_lengths.shape[0]
         boundary_tube_elevations_a = tube_graph_a.tube_elevations_partitions[-1]
+        ##print boundary_tube_elevations_a.shape[0]
         boundary_tube_elevations_b = tube_graph_b.tube_elevations_partitions[0]
-        boundary_tube_elevations = util.smart_concat_array(
-            boundary_tube_elevations_a, boundary_tube_elevations_b)
+        ##print boundary_tube_elevations_b.shape[0]
+        boundary_tube_elevations = np.concatenate(
+            (boundary_tube_elevations_a[:-1], boundary_tube_elevations_b))
+        ##print boundary_tube_elevations.shape[0]
         boundary_points = zip(boundary_arc_lengths, boundary_tube_elevations)
+        ##print len(boundary_points)
         _, boundary_tube_curvature_array = graph_interpolator(boundary_points,
-                                                              resolution)        
+                                                              resolution)
+        print boundary_tube_curvature_array.shape[0]
         boundary_tube_curvature_array_a = boundary_tube_curvature_array[
                                                           :boundary_a_length]
+        print boundary_tube_curvature_array_a.shape[0]
         boundary_tube_curvature_array_b = boundary_tube_curvature_array[
                                                          -boundary_b_length:]
+        print boundary_tube_curvature_array_b.shape[0]
         if tube_graph_a.tube_curvature_array == None:
             graph_a_tube_curvature_array = None
         else:
@@ -110,11 +120,13 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         else:
             graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
                                                          -boundary_b_length:]
-        if (graph_a_tube_curvature_array == None and
+        if (graph_a_tube_curvature_array == None and    
             graph_b_tube_curvature_array == None):
-            merged_curvature_array = boundary_tube_curvature_array_b
+            print 1
+            merged_curvature_array = boundary_tube_curvature_array
         elif (graph_a_tube_curvature_array != None and
               graph_b_tube_curvature_array != None):
+            print 2
             tube_curvature_array_a = np.maximum(graph_a_tube_curvature_array,
                                              boundary_tube_curvature_array_a)
             tube_curvature_array_b = np.maximum(graph_b_tube_curvature_array,
@@ -124,12 +136,14 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                           tube_curvature_array_b)
         elif (graph_a_tube_curvature_array != None and
               graph_b_tube_curvature_array == None):
+            print 3
             tube_curvature_array_a = np.maximum(graph_a_tube_curvature_array,
                                              boundary_tube_curvature_array_a)
             merged_curvature_array = util.smart_concat_array(
                 tube_curvature_array_a, boundary_curvature_array_b)
         elif (graph_a_tube_curvature_array == None and
               graph_b_tube_curvature_array != None):
+            print 4
             tube_curvature_array_b = np.maximum(graph_b_tube_curvature_array,
                                              boundary_tube_curvature_array_b)
             merged_curvature_array = util.smart_concat_array(
@@ -152,20 +166,17 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tunneling_cost = (tube_graph_a.tunneling_cost +
                           tube_graph_b.tunneling_cost)
         total_cost = tube_graph_a.total_cost + tube_graph_b.total_cost
-        ##print tube_graph_a.arc_lengths_partitions[0].shape[0]
-        ##print tube_graph_b.arc_lengths_partitions[0].shape[0]
         arc_lengths_partitions = (tube_graph_a.arc_lengths_partitions +
                                   tube_graph_b.arc_lengths_partitions)
-        print arc_lengths_partitions
         tube_elevations_partitions = (tube_graph_a.tube_elevations_partitions +
                                       tube_graph_b.tube_elevations_partitions)
         merged_tube_curvature_array = TubeGraph.merge_tube_curvature_arrays(
                  tube_graph_a, tube_graph_b, graph_interpolator, resolution)
         arc_lengths = util.fast_concat(arc_lengths_partitions)
-        ##print "arc_lengths list length: "
-        ##print len(arc_lengths)
-        ##print "merged_tube_curvature_array"
-        ##print merged_tube_curvature_array.shape[0]
+        print "arc_lengths list length: "
+        print len(arc_lengths)
+        print "merged_tube_curvature_array"
+        print merged_tube_curvature_array.shape[0]
         assert(len(arc_lengths) == merged_tube_curvature_array.shape[0])
         data = cls(merged_abstract_graph, pylons_costs, total_pylon_cost,
                    tube_cost, tunneling_cost, total_cost,
