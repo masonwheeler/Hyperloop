@@ -11,12 +11,13 @@ import smoothing_interpolate
 import tube_edges
 import tube_graphs
 import tube_lattice
-import visualize
 
-
-VISUALIZE_LATTICE = False
-VISUALIZE_EDGES = True
-VISUALIZE_GRAPHS = True
+if config.VISUAL_MODE:
+    import visualize
+    VISUALIZE_LATTICE = False
+    VISUALIZE_EDGES = True
+    VISUALIZE_GRAPHS = True
+    VISUALIZE_COST_TIME_SCATTERPLOT = True
 
 
 def compute_tube_angle_constraint(length_scale, resolution):
@@ -104,33 +105,42 @@ def tube_edges_sets_to_tube_graphs(tube_edges_sets, resolution):
           smoothing_interpolate.bounded_error_graph_interpolation,
                                                        resolution)
     selected_tube_graphs = tube_graphs_sets.selected_graphs
-    if config.VISUAL_MODE and VISUALIZE_GRAPHS:
-        print "Num selected tube graphs: " + str(len(selected_tube_graphs))
-        axes_equal = False
-        land_elevations_points = [tube_points_lattice.arc_lengths, 
+    if config.VISUAL_MODE:
+        if VISUALIZE_GRAPHS:
+            print "Num selected tube graphs: " + str(len(selected_tube_graphs))
+            are_axes_equal = False
+            land_elevations_points = [tube_points_lattice.arc_lengths, 
                                   tube_points_lattice.land_elevations]
-        plottable_land_elevations = [land_elevations_points, 'b-']
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
+            plottable_land_elevations = [land_elevations_points, 'b-']
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
 
-        lower_tube_envelope_points = [tube_points_lattice.arc_lengths,
-                                      tube_points_lattice.lower_tube_envelope]
-        plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                            plottable_lower_tube_envelope)
-        upper_tube_envelope_points = [tube_points_lattice.arc_lengths,
-                                      tube_points_lattice.upper_tube_envelope]
-        plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                            plottable_upper_tube_envelope)
-
-        plottable_tube_graphs = tube_graphs_sets.get_plottable_tube_graphs('k-')
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE += plottable_tube_graphs
-
-        visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
-                               axes_equal)
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+            lower_tube_envelope_points = [tube_points_lattice.arc_lengths,
+                                          tube_points_lattice.lower_tube_envelope]
+            plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                plottable_lower_tube_envelope)
+            upper_tube_envelope_points = [tube_points_lattice.arc_lengths,
+                                          tube_points_lattice.upper_tube_envelope]
+            plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                plottable_upper_tube_envelope)
+          
+            plottable_tube_graphs = tube_graphs_sets.get_plottable_tube_graphs('k-')
+            for plottable_tube_graph in plottable_tube_graphs:        
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                              plottable_tube_graph)
+                visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        if VISUALIZE_COST_TIME_SCATTERPLOT:
+            are_axes_equal = False
+            cost_time_scatterplot = \
+                tube_graphs_sets.get_cost_time_scatterplot('r.')
+            visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
+            visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
+                                   are_axes_equal)
     return selected_tube_graphs 
 
 def elevation_profile_to_tube_graphs(elevation_profile,

@@ -80,15 +80,12 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     
     def build_tube(self, tube_builder):
         selected_tube_graphs = tube_builder(self.elevation_profile)
-        tube_curvature_arrays = [graph.tube_curvature_array for graph in  
-                                 selected_tube_graphs]
-        test_graph = selected_tube_graphs[0]
-        print test_graph.arc_lengths
-        print tube_curvature_arrays[0]
-        self.tube_curvature_array = tube_profile.tube_curvature_array
-        self.pylon_cost = tube_profile.pylons_cost
-        self.tube_cost = tube_profile.tube_cost 
-        self.tunneling_cost = tube_profile.tunneling_cost
+        print len(selected_tube_graphs)
+        raise ValueError
+        ##self.tube_curvature_array = tube_profile.tube_curvature_array
+        ##self.pylon_cost = tube_profile.pylons_cost
+        ##self.tube_cost = tube_profile.tube_cost 
+        ##self.tunneling_cost = tube_profile.tunneling_cost
             
     def __init__(self, start_point, end_point):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)

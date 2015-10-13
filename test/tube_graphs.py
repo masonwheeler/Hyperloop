@@ -31,8 +31,8 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         if self.min_time == None or self.total_cost == None:
             return None
         else: 
-            min_time = round(self.min_time / 60.0, 3)
-            total_cost = round(self.total_cost / 10.0**9, 3)
+            min_time = round(self.min_time / 60.0, 5)
+            total_cost = round(self.total_cost / 10.0**9, 5)
         return [min_time, total_cost]
 
     def __init__(self, abstract_graph, pylons_costs, total_pylon_cost,
@@ -55,7 +55,10 @@ class TubeGraph(abstract_graphs.AbstractGraph):
             self.min_time = None
         else:
             arc_lengths = util.glue_list_of_arrays(self.arc_lengths_partitions)
-            assert arc_lengths.shape[0] == tube_curvature_array.shape[0]
+            if arc_lengths.shape[0] != tube_curvature_array.shape[0]:
+                print arc_lengths.shape[0]
+                print tube_curvature_array.shape[0]
+                raise ValueError
             self.min_time = self.compute_min_time(tube_curvature_array,
                                                            arc_lengths)
 
@@ -96,40 +99,35 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                                           :boundary_a_length]
         boundary_tube_curvature_array_b = boundary_tube_curvature_array[
                                                          -boundary_b_length:]
-        if tube_graph_a.tube_curvature_array == None:
-            graph_a_tube_curvature_array = None
-        else:
-            graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
-                                                          :boundary_a_length]
-        if tube_graph_b.tube_curvature_array == None:
-            graph_b_tube_curvature_array = None
-        else:
-            graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
-                                                         -boundary_b_length:]
+        graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array
+        graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array
         if (graph_a_tube_curvature_array == None and    
             graph_b_tube_curvature_array == None):
             merged_curvature_array = boundary_tube_curvature_array
         elif (graph_a_tube_curvature_array != None and
               graph_b_tube_curvature_array != None):
-            tube_curvature_array_a = np.maximum(graph_a_tube_curvature_array,
-                                             boundary_tube_curvature_array_a)
-            tube_curvature_array_b = np.maximum(graph_b_tube_curvature_array,
-                                             boundary_tube_curvature_array_b)
+            graph_a_tube_curvature_array[-boundary_a_length:] = \
+                np.maximum(graph_a_tube_curvature_array[-boundary_a_length:],
+                           boundary_tube_curvature_array_a)
+            graph_b_tube_curvature_array[:boundary_b_length] = \
+                np.maximum(graph_b_tube_curvature_array[:boundary_b_length],
+                           boundary_tube_curvature_array_b)
             merged_curvature_array = util.glue_array_pair(
-                                          tube_curvature_array_a,
-                                          tube_curvature_array_b)
+                graph_a_tube_curvature_array, graph_b_tube_curvature_array)
         elif (graph_a_tube_curvature_array != None and
               graph_b_tube_curvature_array == None):
-            tube_curvature_array_a = np.maximum(graph_a_tube_curvature_array,
-                                             boundary_tube_curvature_array_a)
+            graph_a_tube_curvature_array[-boundary_a_length:] = \
+                np.maximum(graph_a_tube_curvature_array[-boundary_a_length:],
+                           boundary_tube_curvature_array_a)
             merged_curvature_array = util.glue_array_pair(
-                tube_curvature_array_a, boundary_curvature_array_b)
+                graph_a_tube_curvature_array, boundary_tube_curvature_array_b)
         elif (graph_a_tube_curvature_array == None and
               graph_b_tube_curvature_array != None):
-            tube_curvature_array_b = np.maximum(graph_b_tube_curvature_array,
-                                             boundary_tube_curvature_array_b)
+            graph_b_tube_curvature_array[:boundary_b_length] = \
+                np.maximum(graph_b_tube_curvature_array[:boundary_b_length],
+                           boundary_tube_curvature_array_b)
             merged_curvature_array = util.glue_array_pair(
-                boundary_curvature_array_a, tube_curvature_array_b)
+                boundary_tube_curvature_array_a, graph_b_tube_curvature_array)
         return merged_curvature_array                
 
     @classmethod
@@ -154,7 +152,6 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                       tube_graph_b.tube_elevations_partitions)
         merged_tube_curvature_array = TubeGraph.merge_tube_curvature_arrays(
                  tube_graph_a, tube_graph_b, graph_interpolator, resolution)
-        arc_lengths = util.glue_list_of_arrays(arc_lengths_partitions)
         data = cls(merged_abstract_graph, pylons_costs, total_pylon_cost,
                    tube_cost, tunneling_cost, total_cost,
                    arc_lengths_partitions, tube_elevations_partitions,
