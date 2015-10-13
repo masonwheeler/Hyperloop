@@ -49,12 +49,17 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         self.tunneling_cost = tunneling_cost
         self.total_cost = total_cost
         self.arc_lengths_partitions = arc_lengths_partitions
-        self.tube_elevations_partitions = tube_elevations_partitions
+        self.tube_elevations_partitions = tube_elevations_partitions        
         self.tube_curvature_array = tube_curvature_array
         if self.tube_curvature_array == None:
             self.min_time = None
         else:
             arc_lengths = util.fast_concat(self.arc_lengths_partitions)
+            print "arc_lengths_list length"
+            print len(arc_lengths)
+            print "tube_curvature_array length"
+            print tube_curvature_array.shape[0]
+            assert len(arc_lengths) == tube_curvature_array.shape[0]
             self.min_time = self.compute_min_time(tube_curvature_array,
                                                            arc_lengths)
 
@@ -80,8 +85,6 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                     graph_interpolator, resolution):
         boundary_arc_lengths_a = tube_graph_a.arc_lengths_partitions[-1]
         boundary_arc_lengths_b = tube_graph_b.arc_lengths_partitions[0]
-        print boundary_arc_lengths_a
-        print boundary_arc_lengths_b
         boundary_a_length = boundary_arc_lengths_a.shape[0]
         boundary_b_length = boundary_arc_lengths_b.shape[0]
         boundary_arc_lengths = util.offset_concat_array(boundary_arc_lengths_a,
@@ -97,9 +100,15 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                                           :boundary_a_length]
         boundary_tube_curvature_array_b = boundary_tube_curvature_array[
                                                          -boundary_b_length:]
-        graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
+        if tube_graph_a.tube_curvature_array == None:
+            graph_a_tube_curvature_array = None
+        else:
+            graph_a_tube_curvature_array = tube_graph_a.tube_curvature_array[
                                                           :boundary_a_length]
-        graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
+        if tube_graph_b.tube_curvature_array == None:
+            graph_b_tube_curvature_array = None
+        else:
+            graph_b_tube_curvature_array = tube_graph_b.tube_curvature_array[
                                                          -boundary_b_length:]
         if (graph_a_tube_curvature_array == None and
             graph_b_tube_curvature_array == None):
@@ -143,16 +152,21 @@ class TubeGraph(abstract_graphs.AbstractGraph):
         tunneling_cost = (tube_graph_a.tunneling_cost +
                           tube_graph_b.tunneling_cost)
         total_cost = tube_graph_a.total_cost + tube_graph_b.total_cost
-        offset = tube_graph_a.arc_lengths_partitions[-1]
-        shifted_arc_lengths_partitions_b = [arc_length_partition + offset for 
-            arc_length_partition in tube_graph_b.arc_lengths_partitions]
+        ##print tube_graph_a.arc_lengths_partitions[0].shape[0]
+        ##print tube_graph_b.arc_lengths_partitions[0].shape[0]
         arc_lengths_partitions = (tube_graph_a.arc_lengths_partitions +
-                                       shifted_arc_lengths_partitions_b)
+                                  tube_graph_b.arc_lengths_partitions)
+        print arc_lengths_partitions
         tube_elevations_partitions = (tube_graph_a.tube_elevations_partitions +
                                       tube_graph_b.tube_elevations_partitions)
-
         merged_tube_curvature_array = TubeGraph.merge_tube_curvature_arrays(
                  tube_graph_a, tube_graph_b, graph_interpolator, resolution)
+        arc_lengths = util.fast_concat(arc_lengths_partitions)
+        ##print "arc_lengths list length: "
+        ##print len(arc_lengths)
+        ##print "merged_tube_curvature_array"
+        ##print merged_tube_curvature_array.shape[0]
+        assert(len(arc_lengths) == merged_tube_curvature_array.shape[0])
         data = cls(merged_abstract_graph, pylons_costs, total_pylon_cost,
                    tube_cost, tunneling_cost, total_cost,
                    arc_lengths_partitions, tube_elevations_partitions,

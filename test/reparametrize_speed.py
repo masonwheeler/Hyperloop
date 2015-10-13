@@ -60,8 +60,7 @@ def speeds_by_arc_length_to_times_by_arc_length(speeds_by_arc_length,
     speeds_b = speeds_by_arc_length[1:]
     speeds_sums = speeds_a + speeds_b
     mean_speeds = np.divide(speeds_sums, 2)
-    interval_times = np.divide(arc_length_intervals,
-                                    mean_speeds)
+    interval_times = np.divide(arc_length_intervals, mean_speeds)   
     cumulative_interval_times = np.cumsum(interval_times)
     times_by_arc_length = np.insert(cumulative_interval_times, 0, 0)
     return times_by_arc_length
@@ -93,6 +92,8 @@ def speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
 
 def constrain_and_reparametrize_speeds(speeds_by_arc_length, arc_lengths,
                                                           time_step_size):
+    ##print speeds_by_arc_length.shape[0]
+    ##print arc_lengths.shape[0]
     constrained_speeds_by_arc_length = constrain_longitudinal_acceleration(
                                          speeds_by_arc_length, arc_lengths)
     speeds_by_time, cumulative_time_steps = \
