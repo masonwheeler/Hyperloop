@@ -181,12 +181,8 @@ class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
             return tube_graphs_min_times_and_total_costs
 
     def __init__(self, tube_graphs):
-        minimize_cost = True
-        minimize_time = True
         abstract_graphs.AbstractGraphsSet.__init__(self, tube_graphs,
                       self.get_tube_graphs_min_times_and_total_costs,
-                                                       minimize_cost,
-                                                       minimize_time,
                                            self.NUM_FRONTS_TO_SELECT)
 
     @classmethod

@@ -72,15 +72,12 @@ class AbstractGraph(object):
 
 class AbstractGraphsSet(object):
 
-    def select_graphs(self, minimize_a_vals, minimize_b_vals,
-                                       num_fronts_to_select):
+    def select_graphs(self, num_fronts_to_select):
         if self.graphs_a_b_vals == None:
             self.selected_graphs = self.unfiltered_graphs
         else:
             try:
-                self.front = paretofront.ParetoFront(self.graphs_a_b_vals,
-                                                     minimize_a_vals,
-                                                     minimize_b_vals)
+                self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
                 current_num_fronts = 1
                 while (self.front.build_nextfront() and
@@ -94,16 +91,11 @@ class AbstractGraphsSet(object):
                 self.selected_graphs = self.unfiltered_graphs
                 return False
 
-    def __init__(self, graphs, graphs_evaluator,
-                   minimize_a_vals, minimize_b_vals,
-                   num_fronts_to_select):
+    def __init__(self, graphs, graphs_evaluator, num_fronts_to_select):
         self.front = None
         self.unfiltered_graphs = graphs
         self.graphs_a_b_vals = graphs_evaluator(graphs)
-        self.select_graphs(minimize_a_vals, minimize_b_vals, 
-                                       num_fronts_to_select)
-        self.minimize_a_vals = minimize_a_vals
-        self.minimize_b_vals = minimize_b_vals
+        self.select_graphs(num_fronts_to_select)
         self.num_fronts_to_select = num_fronts_to_select
 
     def update_graphs(self):

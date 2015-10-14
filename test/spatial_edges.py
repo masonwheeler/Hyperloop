@@ -80,6 +80,8 @@ class SpatialEdge(abstract_edges.AbstractEdge):
     
     def build_tube(self, tube_builder):
         selected_tube_graphs = tube_builder(self.elevation_profile)
+        tube_curvature_arrays = [graph.tube_curvature_array for graph 
+                                 in selected_tube_graphs]        
         print len(selected_tube_graphs)
         raise ValueError
         ##self.tube_curvature_array = tube_profile.tube_curvature_array
