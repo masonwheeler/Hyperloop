@@ -134,7 +134,7 @@ class AbstractGraphsSets(object):
         angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
         angles_compatible = angle_difference < self.degree_constraint
         end_points_match = graph_a.end_id == graph_b.start_id
-        graph_pair_compatible = (end_points_match and angles_compatible)
+        graph_pair_compatible = (end_points_match) #and angles_compatible)
         return graph_pair_compatible
 
     def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):
@@ -147,7 +147,9 @@ class AbstractGraphsSets(object):
                     merged_graph = self.merge_graph_pair(graph_a, graph_b)
                     merged_graphs.append(merged_graph) 
         if (len(merged_graphs) == 0):
-            print "none compatible"
+            print "No graphs compatible"
+            print "Number of graphs selected from set a: " + str(len(selected_a))
+            print "Number of graphs selected from set b: " + str(len(selected_b))
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs)
@@ -165,8 +167,6 @@ class AbstractGraphsSets(object):
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
         final_num_fronts_to_select = 1
-        root_graphs_set.select_graphs(root_graphs_set.minimize_a_vals,
-                                      root_graphs_set.minimize_b_vals,
-                                           final_num_fronts_to_select)
+        root_graphs_set.select_graphs(final_num_fronts_to_select)
         self.selected_graphs = root_graphs_set.selected_graphs
 

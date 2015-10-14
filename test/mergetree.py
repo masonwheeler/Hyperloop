@@ -11,9 +11,6 @@ Last Modification Purpose: Added MasterTree Class
 # Standard Modules:
 import collections
 
-# Custom Modules:
-import config
-
 class MergeTree(object):
     """
     Stores the results of recursively applied binary operations on a list.
@@ -171,7 +168,6 @@ class MasterTree(object):
         # sides.
         next_branch_layer = collections.deque()
         while len(branch_layer) > 1:
-            ##print len(branch_layer)
             # Take first two branches and merge them
             left_branch = branch_layer.popleft()
             right_branch = branch_layer.popleft()

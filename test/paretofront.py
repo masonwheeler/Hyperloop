@@ -72,8 +72,8 @@ class ParetoFront(object):
         x_vals, y_vals = np.transpose(points_array)
         x_vals_identical = np.all(x_vals==x_vals[0])
         y_vals_identical = np.all(y_vals==y_vals[0])
-        is_linear = x_vals_identical or y_vals_identical
-        return is_linear
+        are_points_linear = x_vals_identical or y_vals_identical
+        return are_points_linear
 
     @staticmethod
     def remove_duplicates(points_array):
@@ -89,7 +89,6 @@ class ParetoFront(object):
         return sorted_unique_indices
 
     def __init__(self, points):
-        ##print points
         self.fronts_indices = []
         # Raw points array may contain duplicates
         raw_points_array = np.array([np.array(point) for point in points])
@@ -115,7 +114,10 @@ class ParetoFront(object):
         else:
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:
-                self.fronts_indices 
+                # if the points are linear, just add them all to the fronts.
+                front_indices = self.pruned_points_indices
+                self.fronts_indices.append(front_indices.tolist())
+                self.remove_frontindices(front_indices)
             else:
                 # If there are enough points, try to build a convex hull.
                 try:
@@ -168,37 +170,44 @@ class ParetoFront(object):
                 self.remove_frontindices(front_indices_rel_points)
                 return True
         else:
-            # If there are enough points, try to build a convex hull
-            try:
-                convex_hull = scipy.spatial.ConvexHull(pruned_points)
-            # if convex hull not built, raise a value error.
-            except scipy.spatial.qhull.QhullError:
-                print "all points are in a line."
-                raise ValueError("All points are in a line.")
-            # If another strange error occurs, record that.
-            except ValueError:
-                print "Qhull encountered other error"
-                raise ValueError("Qhull encountered other error")
-            # The indices of the vertices in the convex hull
-            # relative to the pruned points array
-            hull_indices_rel_pruned_points = convex_hull.vertices
-            # The indices of the vertices in the convex hull
-            # relative to the points array
-            hull_indices_rel_points = self.pruned_points_indices[
-                hull_indices_rel_pruned_points]
-            # The vertices in the convex hull
-            hull_vertices = self.points_array[hull_indices_rel_points]
-            # The indices of the points in the front
-            # relative to the convex hull.
-            front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
-                         hull_vertices, self.x_reverse, self.y_reverse)
-            # The indices of the points in the front
-            # relative to the points array.
-            front_indices_rel_points = hull_indices_rel_points[
-                front_indices_rel_hull]
-            # Add the indices of the points in the pareto front to list.
-            front_indices_list = front_indices_rel_points.tolist()
-            self.fronts_indices.append(front_indices_list)
-            # Remove the indices of the points in the pareto front from list.
-            self.remove_frontindices(front_indices_rel_points)
-            return True
+            are_points_linear = ParetoFront.check_linear(self.points_array)
+            if are_points_linear:
+                # if the points are linear, just add them all to the fronts.
+                front_indices = self.pruned_points_indices
+                self.fronts_indices.append(front_indices.tolist())
+                self.remove_frontindices(front_indices)
+            else:
+                # If there are enough points, try to build a convex hull
+                try:
+                    convex_hull = scipy.spatial.ConvexHull(pruned_points)
+                # if convex hull not built, raise a value error.
+                except scipy.spatial.qhull.QhullError:
+                    print "all points are in a line."
+                    raise ValueError("All points are in a line.")
+                # If another strange error occurs, record that.
+                except ValueError:
+                    print "Qhull encountered other error"
+                    raise ValueError("Qhull encountered other error")
+                # The indices of the vertices in the convex hull
+                # relative to the pruned points array
+                hull_indices_rel_pruned_points = convex_hull.vertices
+                # The indices of the vertices in the convex hull
+                # relative to the points array
+                hull_indices_rel_points = self.pruned_points_indices[
+                    hull_indices_rel_pruned_points]
+                # The vertices in the convex hull
+                hull_vertices = self.points_array[hull_indices_rel_points]
+                # The indices of the points in the front
+                # relative to the convex hull.
+                front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
+                             hull_vertices, self.x_reverse, self.y_reverse)
+                # The indices of the points in the front
+                # relative to the points array.
+                front_indices_rel_points = hull_indices_rel_points[
+                    front_indices_rel_hull]
+                # Add the indices of the points in the pareto front to list.
+                front_indices_list = front_indices_rel_points.tolist()
+                self.fronts_indices.append(front_indices_list)
+                # Remove the indices of the points in the pareto front from list.
+                self.remove_frontindices(front_indices_rel_points)
+                return True
