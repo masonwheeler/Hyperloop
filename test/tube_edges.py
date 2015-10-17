@@ -90,6 +90,10 @@ class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
                 edge.sample_edge_tube_points(resolution)
 
     def __init__(self, tube_points_lattice, tube_degree_constraint, max_grade):
+        self.arc_lengths = tube_points_lattice.arc_lengths
+        self.land_elevations = tube_points_lattice.land_elevations
+        self.lower_tube_envelope = tube_points_lattice.lower_tube_envelope
+        self.upper_tube_envelope = tube_points_lattice.upper_tube_envelope
         abstract_edges.AbstractEdgesSets.__init__(self, tube_points_lattice,
                                                TubeEdge, tube_degree_constraint)
         resolution = tube_points_lattice.resolution

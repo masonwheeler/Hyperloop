@@ -109,18 +109,18 @@ def tube_edges_sets_to_tube_graphs(tube_edges_sets, resolution):
         if VISUALIZE_GRAPHS:
             print "Num selected tube graphs: " + str(len(selected_tube_graphs))
             are_axes_equal = False
-            land_elevations_points = [tube_points_lattice.arc_lengths, 
-                                  tube_points_lattice.land_elevations]
+            land_elevations_points = [tube_edges_sets.arc_lengths, 
+                                  tube_edges_sets.land_elevations]
             plottable_land_elevations = [land_elevations_points, 'b-']
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
 
-            lower_tube_envelope_points = [tube_points_lattice.arc_lengths,
-                                          tube_points_lattice.lower_tube_envelope]
+            lower_tube_envelope_points = [tube_edges_sets.arc_lengths,
+                                          tube_edges_sets.lower_tube_envelope]
             plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                                 plottable_lower_tube_envelope)
-            upper_tube_envelope_points = [tube_points_lattice.arc_lengths,
-                                          tube_points_lattice.upper_tube_envelope]
+            upper_tube_envelope_points = [tube_edges_sets.arc_lengths,
+                                          tube_edges_sets.upper_tube_envelope]
             plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                                 plottable_upper_tube_envelope)

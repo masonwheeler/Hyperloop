@@ -24,12 +24,13 @@ import util
 class AbstractGraph(object):
 
     def __init__(self, start_id, end_id, start_angle, end_angle,
-                                                abstract_coords):
+                               abstract_coords, physical_coords):
         self.start_id = start_id
         self.end_id = end_id
         self.start_angle = start_angle
         self.end_angle = end_angle
         self.abstract_coords = abstract_coords
+        self.physical_coords = physical_coords
 
     @classmethod
     def init_from_abstract_edge(cls, abstract_edge):
@@ -39,7 +40,10 @@ class AbstractGraph(object):
         end_angle = abstract_edge.angle
         abstract_coords = [abstract_edge.start_abstract_coords,
                            abstract_edge.end_abstract_coords]
-        data = cls(start_id, end_id, start_angle, end_angle, abstract_coords)
+        physical_coords = [abstract_edge.start_physical_coords,
+                           abstract_edge.end_physical_coords]
+        data = cls(start_id, end_id, start_angle, end_angle,
+                           abstract_coords, physical_coords)
         return data
 
     @classmethod
@@ -49,10 +53,13 @@ class AbstractGraph(object):
         start_angle = abstract_graph_a.start_angle
         end_angle = abstract_graph_b.end_angle
         abstract_coords = util.glue_list_pair(abstract_graph_a.abstract_coords,
-                                            abstract_graph_b.abstract_coords)
-        data = cls(start_id, end_id, start_angle, end_angle, abstract_coords)
+                                              abstract_graph_b.abstract_coords)
+        physical_coords = util.glue_list_pair(abstract_graph_a.physical_coords,
+                                              abstract_graph_b.physical_coords)
+        data = cls(start_id, end_id, start_angle, end_angle, 
+                           abstract_coords, physical_coords)
         return data
-
+"""
     def build_local_lattice(self, lattice_coords, spacing):
         coord_pairs = util.to_pairs(lattice_coords)
         mid_points = map(util.get_midpoint, coord_pairs)
@@ -68,7 +75,7 @@ class AbstractGraph(object):
 
         local_lattice = map(slice_center_to_slice, slice_centers)
         return local_lattice
-
+"""
 
 class AbstractGraphsSet(object):
 

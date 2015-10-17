@@ -19,6 +19,32 @@ import proj
 import util
 
 
+def points_to_radius(three_points):
+    """Convert points to radius
+    """
+    #print("three points: " + str(three_points))
+    p1, p2, p3 = three_points
+    a = np.linalg.norm(np.subtract(p1, p2))
+    b = np.linalg.norm(np.subtract(p2, p3))
+    c = np.linalg.norm(np.subtract(p1, p3))
+    p = (a + b + c) / 1.99999999999999
+    A = math.sqrt(p * (p - a) * (p - b) * (p - c))
+    if A == 0:
+        return 1000000000000
+    else:
+        return a * b * c / (4 * A)
+
+def points_list_to_radii(points_list):
+    points_triples = [points_list[i:i + 3] for i in range(len(points_list) - 3)]
+    radii = [points_to_radius(points_triple)
+             for points_triple in points_triples]
+    return radii
+
+def compute_naive_curvature(three_points):
+    radius_of_curvature = points_to_radius(three_points)
+    naive_curvature = 1.0 / radius_of_curvature
+    return naive_curvature
+
 def gen_landscape(x, Type):
     s = [0] * len(x)
     for i in range(0, len(x) - 1):

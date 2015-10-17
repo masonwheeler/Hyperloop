@@ -51,7 +51,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                                abstract_graph.end_id,
                                                abstract_graph.start_angle,
                                                abstract_graph.end_angle,
-                                               abstract_graph.abstract_coords)
+                                               abstract_graph.abstract_coords,
+                                               abstract_graph.physical_coords)
         self.land_cost = land_cost  # The total cost of the land acquired       
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
