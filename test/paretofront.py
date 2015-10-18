@@ -70,10 +70,21 @@ class ParetoFront(object):
     @staticmethod
     def check_linear(points_array):
         x_vals, y_vals = np.transpose(points_array)
-        x_vals_identical = np.all(x_vals==x_vals[0])
-        y_vals_identical = np.all(y_vals==y_vals[0])
-        are_points_linear = x_vals_identical or y_vals_identical
+        are_x_vals_identical = np.all(x_vals==x_vals[0])
+        are_y_vals_identical = np.all(y_vals==y_vals[0])
+        are_points_linear = are_x_vals_identical or are_y_vals_identical
         return are_points_linear
+
+    @staticmethod
+    def get_linear_min(points_array):
+        x_vals, y_vals = np.transpose(points_array)
+        are_x_vals_identical = np.all(x_vals==x_vals[0])
+        are_y_vals_identical = np.all(y_vals==y_vals[0])
+        if are_x_vals_identical:
+            min_index = np.argmin(y_vals)
+        if are_y_vals_identical:
+            min_index = np.argmin(x_vals)
+        return [min_index]        
 
     @staticmethod
     def remove_duplicates(points_array):
@@ -112,14 +123,16 @@ class ParetoFront(object):
                 self.remove_frontindices(front_indices)
         else:
             are_points_linear = ParetoFront.check_linear(self.points_array)
-            if are_points_linear:
+            if are_points_linear:                      
                 # if the points are linear, just add them all to the fronts.
-                ##print "points are linear"
-                ##print "num pruned points indices: " + str(len(self.pruned_points_indices))
-                front_indices = self.pruned_points_indices
-                self.fronts_indices.append(front_indices.tolist())
+                print "points are linear"
+                linear_min_index = ParetoFront.get_linear_min(self.points_array)
+                front_indices = linear_min_index               
+                #self.fronts_indices.append(front_indices.tolist())
+                self.fronts_indices.append(front_indices)
                 self.remove_frontindices(front_indices)
             else:
+                print "points not linear"
                 # If there are enough points, try to build a convex hull.
                 try:
                     convex_hull = scipy.spatial.ConvexHull(self.points_array)
@@ -174,10 +187,15 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:
                 # if the points are linear, just add them all to the fronts.
-                front_indices = self.pruned_points_indices
-                self.fronts_indices.append(front_indices.tolist())
+                print "points are linear"
+                linear_min_index = ParetoFront.get_linear_min(self.points_array)
+                #front_indices = self.pruned_points_indices
+                front_indices = linear_min_index               
+                #self.fronts_indices.append(front_indices.tolist())
+                self.fronts_indices.append(front_indices)
                 self.remove_frontindices(front_indices)
             else:
+                print "points not linear"
                 # If there are enough points, try to build a convex hull
                 try:
                     convex_hull = scipy.spatial.ConvexHull(pruned_points)
