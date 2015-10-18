@@ -89,14 +89,11 @@ class AbstractGraphsSet(object):
             self.selected_graphs = self.unfiltered_graphs
         else:
             try:
-                ##print "num ab vals: " + str(len(self.graphs_a_b_vals))
                 self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
-                ##print "num selected graphs: " + str(len(selected_graphs_indices))
-                #print selected_graphs_indices
                 current_num_fronts = 1
-                #print "current num fronts"
-                #print current_num_fronts
+                print "current num fronts"
+                print current_num_fronts
                 while (self.front.build_nextfront() and
                        current_num_fronts <= num_fronts_to_select):
                     current_num_fronts += 1
@@ -129,14 +126,20 @@ class AbstractGraphsSet(object):
         """
         print("tried to update graphs")
         if self.front == None:
+            print "no front"
             return False
         else:
+            print "front"
             try:
+                print "building next front"
                 are_graphs_updated = self.front.build_nextfront()
             except ValueError:
+                print "could not build next front"
                 return False
             if are_graphs_updated:
+                print "graphs are updated"
                 selected_graph_indices = self.front.fronts_indices[-1]
+                print selected_graph_indices
                 for i in selected_graph_indices:
                     self.selected_graphs.append(self.unfiltered_graphs[i])
                 return True
@@ -171,6 +174,8 @@ class AbstractGraphsSets(object):
             print "No graphs compatible"
             print "Number of graphs selected from set a: " + str(len(selected_a))
             print "Number of graphs selected from set b: " + str(len(selected_b))
+            print "num graphs in set a: " + str(len(graphs_set_a.unfiltered_graphs))
+            print "num graphs in set b: " + str(len(graphs_set_b.unfiltered_graphs))
             return None
         else:
             merged_graphs_set = self.graphs_set_builder(merged_graphs)

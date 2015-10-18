@@ -70,15 +70,16 @@ class MergeTree(object):
         returns True, otherwise the function returns False.
         """
         if self.left == None or self.right == None:
-            return False
+            a_child_updated = False
         if self.left.data == None or self.right.data == None:
-            return False
-
+            a_child_updated = False
         if self.child_to_update == "left":
-            self.update_left_child(children_merger, data_updater)
-
+            a_child_updated = self.update_left_child(children_merger, 
+                                                     data_updater)            
         if self.child_to_update == "right":
-            self.update_right_child(children_merger, data_updater)
+            a_child_updated = self.update_right_child(children_merger, 
+                                                      data_updater)
+        return a_child_updated            
 
     def update_data(self, children_merger, data_updater):
         """
@@ -90,13 +91,18 @@ class MergeTree(object):
         then merge the updated children to get new data for the node.
         If the node's children cannot be updated, record failure.
         """
+        print "updating node"
         if self.data == None:
+            print "no data"
             return False
         else:
+            print "yes data"
             is_data_updated = data_updater(self.data)
             if is_data_updated:
+                print "data was updated"
                 return True
             else:
+                print "data was not updated"
                 any_children_updated = self.update_children(children_merger,
                                                             data_updater)
                 if any_children_updated:
@@ -116,9 +122,11 @@ class MergeTree(object):
         """
         merge_result = children_merger(self.left.data, self.right.data)
         while merge_result == None:
+            print "merging children"
             any_children_updated = self.update_children(children_merger,
-                                                        data_updater)
+                                                        data_updater)            
             if any_children_updated:
+                print "a child was updated"
                 merge_result = children_merger(self.left.data,
                                                self.right.data)
             else:
@@ -186,7 +194,6 @@ class MasterTree(object):
             next_branch_layer.append(merged_branch)
         return next_branch_layer    
     
-    ##@profile
     def merge_all_objects(self, objects, children_merger, data_updater):
         """Recursively merges objects until list is completely merged."""
         branch_layers = []

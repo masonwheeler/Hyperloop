@@ -125,14 +125,14 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:                      
                 # if the points are linear, just add them all to the fronts.
-                print "points are linear"
+                ##print "points are linear"
                 linear_min_index = ParetoFront.get_linear_min(self.points_array)
                 front_indices = linear_min_index               
                 #self.fronts_indices.append(front_indices.tolist())
                 self.fronts_indices.append(front_indices)
                 self.remove_frontindices(front_indices)
             else:
-                print "points not linear"
+                ##print "points not linear"
                 # If there are enough points, try to build a convex hull.
                 try:
                     convex_hull = scipy.spatial.ConvexHull(self.points_array)
@@ -170,6 +170,8 @@ class ParetoFront(object):
         """
         # Initialize the points which have not been in a front yet
         pruned_points = self.points_array[self.pruned_points_indices]
+        ##print "pruned points indices"
+        ##print self.pruned_points_indices
         # The number of rows in the pruned points array
         num_points_left = pruned_points.shape[0]
         # At least 3 points are needed to build a convex hull
@@ -187,15 +189,16 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:
                 # if the points are linear, just add them all to the fronts.
-                print "points are linear"
+                ##print "points are linear"
                 linear_min_index = ParetoFront.get_linear_min(self.points_array)
                 #front_indices = self.pruned_points_indices
                 front_indices = linear_min_index               
                 #self.fronts_indices.append(front_indices.tolist())
                 self.fronts_indices.append(front_indices)
                 self.remove_frontindices(front_indices)
+                return True
             else:
-                print "points not linear"
+                ##print "points not linear"
                 # If there are enough points, try to build a convex hull
                 try:
                     convex_hull = scipy.spatial.ConvexHull(pruned_points)
