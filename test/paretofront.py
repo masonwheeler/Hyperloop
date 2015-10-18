@@ -79,7 +79,6 @@ class ParetoFront(object):
     def remove_duplicates(points_array):
         """Gives the indices of the unique points."""
         # reshapes the points array into an array of tuples
-        #print("original points: " + str(points_array))
         tuples_array = np.ascontiguousarray(points_array).view(
             np.dtype((np.void,
             points_array.dtype.itemsize * points_array.shape[1])))
@@ -93,9 +92,9 @@ class ParetoFront(object):
         # Raw points array may contain duplicates
         raw_points_array = np.array([np.array(point) for point in points])
         # The indices of the unique points in the raw points array.
-        unique_indices = ParetoFront.remove_duplicates(raw_points_array)
+        ##unique_indices = ParetoFront.remove_duplicates(raw_points_array)
         # The unique points in the raw points array.
-        self.points_array = raw_points_array[unique_indices]
+        self.points_array = raw_points_array ##[unique_indices]
         # The number of rows in the points array
         num_points = self.points_array.shape[0]
         # set the indices of the pruned points as the indices of all points
@@ -115,6 +114,8 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:
                 # if the points are linear, just add them all to the fronts.
+                ##print "points are linear"
+                ##print "num pruned points indices: " + str(len(self.pruned_points_indices))
                 front_indices = self.pruned_points_indices
                 self.fronts_indices.append(front_indices.tolist())
                 self.remove_frontindices(front_indices)

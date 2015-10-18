@@ -59,6 +59,11 @@ class AbstractGraph(object):
         data = cls(start_id, end_id, start_angle, end_angle, 
                            abstract_coords, physical_coords)
         return data
+
+    def to_plottable(self, color_string):
+        physical_graph_points = zip(*self.physical_coords)
+        plottable_graph = [physical_graph_points, color_string]
+        return plottable_graph
 """
     def build_local_lattice(self, lattice_coords, spacing):
         coord_pairs = util.to_pairs(lattice_coords)
@@ -84,19 +89,28 @@ class AbstractGraphsSet(object):
             self.selected_graphs = self.unfiltered_graphs
         else:
             try:
+                ##print "num ab vals: " + str(len(self.graphs_a_b_vals))
                 self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
+                ##print "num selected graphs: " + str(len(selected_graphs_indices))
+                #print selected_graphs_indices
                 current_num_fronts = 1
+                #print "current num fronts"
+                #print current_num_fronts
                 while (self.front.build_nextfront() and
                        current_num_fronts <= num_fronts_to_select):
                     current_num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
+                    print "current num fronts"
+                    print current_num_fronts
                 self.selected_graphs = [self.unfiltered_graphs[i] for i in
                                         selected_graphs_indices]
                 return True
             except ValueError:
+                print "encountered value error"
                 self.selected_graphs = self.unfiltered_graphs
                 return False
+        #self.selected_graphs = self.unfiltered_graphs
 
     def __init__(self, graphs, graphs_evaluator, num_fronts_to_select):
         self.front = None
@@ -141,7 +155,7 @@ class AbstractGraphsSets(object):
         angle_difference = abs(graph_a.end_angle - graph_b.start_angle)
         angles_compatible = angle_difference < self.degree_constraint
         end_points_match = graph_a.end_id == graph_b.start_id
-        graph_pair_compatible = (end_points_match) #and angles_compatible)
+        graph_pair_compatible = (end_points_match and angles_compatible)
         return graph_pair_compatible
 
     def merge_two_graphs_sets(self, graphs_set_a, graphs_set_b):

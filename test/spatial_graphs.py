@@ -177,14 +177,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
                                                        self.abstract_coords)
         return abstract_graph
 
-    def to_plottable(self, color_string):
-        """Return the geospatial coords of the graph in plottable format"""
-        geospatials_x_vals = [geospatial[0] for geospatial in self.geospatials]
-        geospatials_y_vals = [geospatial[1] for geospatial in self.geospatials]
-        graph_points = [geospatials_x_vals, geospatials_y_vals]
-        plottable_graph = [graph_points, color_string]
-        return plottable_graph
-
 
 class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
     NUM_FRONTS_TO_SELECT = 3

@@ -14,10 +14,14 @@ import tube_lattice
 
 if config.VISUAL_MODE:
     import visualize
+    #VISUALIZE_LATTICE = True
     VISUALIZE_LATTICE = False
-    VISUALIZE_EDGES = True
-    VISUALIZE_GRAPHS = True
-    VISUALIZE_COST_TIME_SCATTERPLOT = True
+    #VISUALIZE_EDGES = True
+    VISUALIZE_EDGES = False
+    #VISUALIZE_GRAPHS = True
+    VISUALIZE_GRAPHS = False
+    #VISUALIZE_COST_TIME_SCATTERPLOT = True
+    VISUALIZE_COST_TIME_SCATTERPLOT = False
 
 
 def compute_tube_angle_constraint(length_scale, resolution):
@@ -53,10 +57,8 @@ def elevation_profile_to_tube_points_lattice(elevation_profile,
         plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                             plottable_upper_tube_envelope)
-
         plottable_lattice = tube_points_lattice.get_plottable_lattice('k.')
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_lattice)
-
         visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
                                axes_equal)
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
@@ -95,9 +97,7 @@ def tube_points_lattice_to_tube_edges_sets(tube_points_lattice, max_grade):
 
         visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
                                axes_equal)
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
-        visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        visualize.ELEVATION_PROFILE_PLOT_QUEUE = []
     return [tube_edges_sets, resolution]
 
 def tube_edges_sets_to_tube_graphs(tube_edges_sets, resolution):
@@ -112,8 +112,8 @@ def tube_edges_sets_to_tube_graphs(tube_edges_sets, resolution):
             land_elevations_points = [tube_edges_sets.arc_lengths, 
                                   tube_edges_sets.land_elevations]
             plottable_land_elevations = [land_elevations_points, 'b-']
-            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(plottable_land_elevations)
-
+            visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                    plottable_land_elevations)
             lower_tube_envelope_points = [tube_edges_sets.arc_lengths,
                                           tube_edges_sets.lower_tube_envelope]
             plottable_lower_tube_envelope = [lower_tube_envelope_points, 'r-']
@@ -123,9 +123,9 @@ def tube_edges_sets_to_tube_graphs(tube_edges_sets, resolution):
                                           tube_edges_sets.upper_tube_envelope]
             plottable_upper_tube_envelope = [upper_tube_envelope_points, 'g-']
             visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
-                                plottable_upper_tube_envelope)
-          
-            plottable_tube_graphs = tube_graphs_sets.get_plottable_tube_graphs('k-')
+                                plottable_upper_tube_envelope)          
+            plottable_tube_graphs = \
+                tube_graphs_sets.get_plottable_tube_graphs('k-')
             for plottable_tube_graph in plottable_tube_graphs:        
                 visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                                               plottable_tube_graph)

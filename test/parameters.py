@@ -31,10 +31,10 @@ MAX_VERTICAL_ACCEL = 0.3 * 9.81 #Meters/Second^2
 #Financial Parameters#
 ######################
 
-PYLON_BASE_COST = 2000.0 #Dollars
-PYLON_COST_PER_METER = 10000.0 #Dollars
+PYLON_BASE_COST = 0.0#2000.0 #Dollars
+PYLON_COST_PER_METER = 0.0#1000.0 #Dollars
 TUBE_COST_PER_METER = 1000.0 #Dollars
-TUNNELING_COST_PER_METER = 10000.0 #Dollars
+TUNNELING_COST_PER_METER = 1000000.0 #Dollars
 
 ##########################
 #Speed Profile Parameters#

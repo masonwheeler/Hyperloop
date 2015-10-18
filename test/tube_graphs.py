@@ -42,7 +42,8 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                                        abstract_graph.end_id,
                                                   abstract_graph.start_angle,
                                                     abstract_graph.end_angle,
-                                              abstract_graph.abstract_coords)
+                                              abstract_graph.abstract_coords,
+                                              abstract_graph.physical_coords)
         self.pylons_costs = pylons_costs
         self.total_pylon_cost = total_pylon_cost
         self.tube_cost = tube_cost
@@ -163,13 +164,14 @@ class TubeGraph(abstract_graphs.AbstractGraph):
                                                        self.end_id,
                                                        self.start_angle,
                                                        self.end_angle,
-                                                       self.abstract_coords)
+                                                       self.abstract_coords,
+                                                       self.physical_coords)
         return abstract_graph
 
 
 class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
 
-    NUM_FRONTS_TO_SELECT = 3
+    NUM_FRONTS_TO_SELECT = 8
 
     def get_tube_graphs_min_times_and_total_costs(self, tube_graphs):
         tube_graphs_min_times_and_total_costs = \
@@ -220,16 +222,16 @@ class TubeGraphsSets(abstract_graphs.AbstractGraphsSets):
     def get_plottable_tube_graphs(self, color_string):
         plottable_tube_graphs = []
         for tube_graph in self.selected_graphs:
-            plottable_tube_graphs = tube_graph.to_plottable(color_string)
+            plottable_tube_graph = tube_graph.to_plottable(color_string)
             plottable_tube_graphs.append(plottable_tube_graph)
-        return plottable_graphs
+        return plottable_tube_graphs
 
-    def cost_time_scatterplot(self, color_string):
+    def get_cost_time_scatterplot(self, color_string):
         costs = []
         times = []
         for tube_graph in self.selected_graphs:
-            costs.append(graph.total_cost)
-            times.append(graph.time)
+            costs.append(tube_graph.total_cost)
+            times.append(tube_graph.min_time)
         scatterplot_values = [costs, times]
         scatterplot = [scatterplot_values, color_string]
         return scatterplot
