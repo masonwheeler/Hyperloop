@@ -84,29 +84,31 @@ class AbstractGraph(object):
 
 class AbstractGraphsSet(object):
 
-    def select_graphs(self, num_fronts_to_select, graphs, graphs_a_b_vals):
-        if graphs_a_b_vals == None:
-            selected_graphs = graphs
-        else:
-            try:
-                self.front = paretofront.ParetoFront(graphs_a_b_vals)
-                selected_graphs_indices = self.front.fronts_indices[-1]
-                current_num_fronts = 1
-                while (self.front.build_nextfront() and
-                       current_num_fronts <= num_fronts_to_select):
-                    current_num_fronts += 1
-                    selected_graphs_indices += self.front.fronts_indices[-1]
-                selected_graphs = [graphs[i] for i in
-                                   selected_graphs_indices]
-            except ValueError:
-                print "encountered value error"
-        return selected_graphs
+    def select_graphs(self, num_fronts_to_select):
+        try:
+            self.front = paretofront.ParetoFront(graphs_a_b_vals)
+            selected_graphs_indices = self.front.fronts_indices[-1]
+            current_num_fronts = 1
+            while (self.front.build_nextfront() and
+                   current_num_fronts <= num_fronts_to_select):
+                current_num_fronts += 1
+                selected_graphs_indices += self.front.fronts_indices[-1]
+            return selected_graphs_indices
+        except ValueError:
+            print "encountered value error"
+            self.front = None
 
-    def __init__(self, graphs, graphs_evaluator, num_fronts_to_select):
-        graphs_a_b_vals = graphs_evaluator(graphs)
-        self.selected_graphs = self.select_graphs(num_fronts_to_select, graphs,
-                                                  graphs_a_b_vals)
-        self.num_fronts_to_select = num_fronts_to_select
+    def __init__(self, graphs, graphs_evaluator, num_fronts_to_select,
+                        graphs_num_edges, graph_filter_min_num_edges):
+        self.graphs = graphs
+        self.graphs_num_edges = graphs_num_edges
+        self.graphs_a_b_vals = graphs_evaluator(graphs)
+        if graphs_num_edges > graph_filter_min_num_edges:
+            selected_graphs_indices = self.select_graphs(num_fronts_to_select)
+            self.selected_graphs = [graphs[i] for i in selected_graphs_indices]
+        else: 
+            self.selected_graphs = graphs
+        #self.num_fronts_to_select = num_fronts_to_select
 
     def update_graphs(self):
         """
@@ -126,7 +128,7 @@ class AbstractGraphsSet(object):
             if are_graphs_updated:
                 selected_graph_indices = self.front.fronts_indices[-1]
                 for i in selected_graph_indices:
-                    self.selected_graphs.append(self.unfiltered_graphs[i])
+                    self.selected_graphs.append(self.graphs[i])
                 return True
             else:
                 return False
@@ -178,5 +180,6 @@ class AbstractGraphsSets(object):
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
         final_num_fronts_to_select = 1
-        self.selected_graphs = root_graphs_set.select_graphs(final_num_fronts_to_select)
+        self.selected_graphs = root_graphs_set.select_graphs(
+                                  final_num_fronts_to_select)
 
