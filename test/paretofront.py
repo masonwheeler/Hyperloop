@@ -64,16 +64,14 @@ class ParetoFront(object):
 
     def remove_front_indices(self, front_indices_rel_points):
         """Gives the indices of the points without the indices of the front."""
-        print "num points before: " + str(len(self.pruned_points_indices))
         intersection = np.intersect1d(self.pruned_points_indices,
                                       front_indices_rel_points)
         if intersection.shape[0] == 0:
-            print "empty intersection"
+            print "Empty intersection"
             raise IndexError
         else:
             self.pruned_points_indices = np.setdiff1d(self.pruned_points_indices,
                                                   front_indices_rel_points)
-            print "num points after: " + str(len(self.pruned_points_indices))
 
     @staticmethod
     def check_linear(points_array):
@@ -84,15 +82,18 @@ class ParetoFront(object):
         return are_points_linear
 
     @staticmethod
-    def get_linear_min(points_array):
-        x_vals, y_vals = np.transpose(points_array)
+    def get_linear_min(points_array, pruned_points_indices):
+        pruned_points_array = points_array[pruned_points_indices]
+        x_vals, y_vals = np.transpose(pruned_points_array)
         are_x_vals_identical = np.all(x_vals==x_vals[0])
         are_y_vals_identical = np.all(y_vals==y_vals[0])
         if are_x_vals_identical:
-            min_index = np.argmin(y_vals)
+            min_index_rel_pruned_points = np.argmin(y_vals)
         if are_y_vals_identical:
-            min_index = np.argmin(x_vals)
-        return [min_index]        
+            min_index_rel_pruned_points = np.argmin(x_vals)
+        min_index_rel_all_points = pruned_points_indices[
+                                 min_index_rel_pruned_points]
+        return [min_index_rel_all_points]        
 
     @staticmethod
     def remove_duplicates(points_array):
@@ -132,7 +133,8 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:                      
                 # if the points are linear, just add them all to the fronts.
-                linear_min_index = ParetoFront.get_linear_min(self.points_array)
+                linear_min_index = ParetoFront.get_linear_min(self.points_array,
+                                                     self.pruned_points_indices)
                 front_indices = linear_min_index               
                 self.fronts_indices.append(front_indices)
                 self.remove_front_indices(front_indices)
@@ -190,7 +192,8 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:
                 # if the points are linear, just add them all to the fronts.
-                linear_min_index = ParetoFront.get_linear_min(pruned_points)
+                linear_min_index = ParetoFront.get_linear_min(self.points_array,
+                                                     self.pruned_points_indices)
                 front_indices = linear_min_index               
                 self.fronts_indices.append(front_indices)
                 self.remove_front_indices(front_indices)
