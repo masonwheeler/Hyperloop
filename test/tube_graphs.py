@@ -172,6 +172,7 @@ class TubeGraph(abstract_graphs.AbstractGraph):
 class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
 
     NUM_FRONTS_TO_SELECT = 100
+    GRAPH_FILTER_MIN_NUM_EDGES = 4
 
     def get_tube_graphs_min_times_and_total_costs(self, tube_graphs):
         tube_graphs_min_times_and_total_costs = \
@@ -182,16 +183,18 @@ class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
         else:
             return tube_graphs_min_times_and_total_costs
 
-    def __init__(self, tube_graphs):
+    def __init__(self, tube_graphs, graphs_num_edges):        
         abstract_graphs.AbstractGraphsSet.__init__(self, tube_graphs,
                       self.get_tube_graphs_min_times_and_total_costs,
-                                           self.NUM_FRONTS_TO_SELECT)
+                         self.NUM_FRONTS_TO_SELECT, graphs_num_edges,
+                                     self.GRAPH_FILTER_MIN_NUM_EDGES)
 
     @classmethod
     def init_from_tube_edges_set(cls, tube_edges_set):
         tube_graphs = [TubeGraph.init_from_tube_edge(tube_edge)
                        for tube_edge in tube_edges_set]
-        data = cls(tube_graphs)
+        graphs_num_edges = 1
+        data = cls(tube_graphs, graphs_num_edges)
         return data
 
 

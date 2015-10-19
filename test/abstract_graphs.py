@@ -21,6 +21,7 @@ import mergetree
 import paretofront
 import util
 
+
 class AbstractGraph(object):
 
     def __init__(self, start_id, end_id, start_angle, end_angle,
@@ -86,7 +87,7 @@ class AbstractGraphsSet(object):
 
     def select_graphs(self, num_fronts_to_select):
         try:
-            self.front = paretofront.ParetoFront(graphs_a_b_vals)
+            self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
             selected_graphs_indices = self.front.fronts_indices[-1]
             current_num_fronts = 1
             while (self.front.build_nextfront() and
@@ -108,7 +109,6 @@ class AbstractGraphsSet(object):
             self.selected_graphs = [graphs[i] for i in selected_graphs_indices]
         else: 
             self.selected_graphs = graphs
-        #self.num_fronts_to_select = num_fronts_to_select
 
     def update_graphs(self):
         """
@@ -165,7 +165,10 @@ class AbstractGraphsSets(object):
             print "num graphs in set b: " + str(len(graphs_set_b.unfiltered_graphs))
             return None
         else:
-            merged_graphs_set = self.graphs_set_builder(merged_graphs)
+            merged_graphs_num_edges = (graphs_set_a.graphs_num_edges +
+                                       graphs_set_b.graphs_num_edges)
+            merged_graphs_set = self.graphs_set_builder(merged_graphs,
+                                                        merged_graphs_num_edges)
             return merged_graphs_set
     
     def __init__(self, edges_sets, edges_set_to_graphs_set, merge_graph_pair,
@@ -180,6 +183,8 @@ class AbstractGraphsSets(object):
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
         final_num_fronts_to_select = 1
-        self.selected_graphs = root_graphs_set.select_graphs(
-                                  final_num_fronts_to_select)
+        selected_graphs_indices = root_graphs_set.select_graphs(
+                                         final_num_fronts_to_select)
+        self.selected_graphs = [root_graphs_set.graphs[i] for i 
+                                in selected_graphs_indices]
 

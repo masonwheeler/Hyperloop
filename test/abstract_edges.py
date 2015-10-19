@@ -68,7 +68,8 @@ class AbstractEdgesSets(object):
             for point_a in lattice_slice_a.points:
                 for point_b in lattice_slice_b.points:
                     new_edge = edge_builder(point_a, point_b)
-                    edges_set.append(new_edge)
+                    if new_edge.is_useful:
+                        edges_set.append(new_edge)
             unfiltered_edges_sets.append(edges_set)
         return unfiltered_edges_sets
 

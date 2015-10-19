@@ -15,6 +15,8 @@ import sample_path
 
 class TubeEdge(abstract_edges.AbstractEdge):
 
+    MAX_TUBE_GRADE = parameters.MAX_TUBE_GRADE
+
     def compute_tunneling_cost(self, edge_length, tube_point_a, tube_point_b):
         if tube_point_a.is_underground and tube_point_b.is_underground:
             tunneling_cost = (edge_length *
@@ -44,9 +46,7 @@ class TubeEdge(abstract_edges.AbstractEdge):
 
     def __init__(self, tube_point_a, tube_point_b):
         abstract_edges.AbstractEdge.__init__(self, tube_point_a, tube_point_b)
-
-    def constrain_grade(self, max_grade):
-        self.is_useful = abs(self.angle) < max_grade
+        self.is_useful = abs(self.angle) < self.MAX_TUBE_GRADE
 
     def attach_costs(self):
         edge_length = self.compute_edge_length(self.start_point, self.end_point)
@@ -74,11 +74,6 @@ class TubeEdge(abstract_edges.AbstractEdge):
 
 class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    def constrain_edges_grades(self, edges_sets, max_grade):
-        for edges_set in edges_sets:
-            for edge in edges_set:
-                edge.constrain_grade(max_grade)
-
     def attach_edges_costs(self, edges_sets):
         for edges_set in edges_sets:
             for edge in edges_set:
@@ -89,7 +84,7 @@ class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
             for edge in edges_set:
                 edge.sample_edge_tube_points(resolution)
 
-    def __init__(self, tube_points_lattice, tube_degree_constraint, max_grade):
+    def __init__(self, tube_points_lattice, tube_degree_constraint):
         self.arc_lengths = tube_points_lattice.arc_lengths
         self.land_elevations = tube_points_lattice.land_elevations
         self.lower_tube_envelope = tube_points_lattice.lower_tube_envelope
@@ -97,7 +92,6 @@ class TubeEdgesSets(abstract_edges.AbstractEdgesSets):
         abstract_edges.AbstractEdgesSets.__init__(self, tube_points_lattice,
                                                TubeEdge, tube_degree_constraint)
         resolution = tube_points_lattice.resolution
-        self.constrain_edges_grades(self.raw_edges_sets, max_grade)
         self.filtered_edges_sets = self.iterative_filter(self.raw_edges_sets)
         self.attach_edges_costs(self.filtered_edges_sets)
         self.sample_edges_tube_points(self.filtered_edges_sets, resolution)

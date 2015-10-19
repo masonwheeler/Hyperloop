@@ -66,13 +66,13 @@ def elevation_profile_to_tube_points_lattice(elevation_profile,
         visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
     return tube_points_lattice
 
-def tube_points_lattice_to_tube_edges_sets(tube_points_lattice, max_grade):
+def tube_points_lattice_to_tube_edges_sets(tube_points_lattice):
     length_scale = tube_points_lattice.length_scale
     resolution = tube_points_lattice.resolution
     tube_angle_constraint = compute_tube_angle_constraint(length_scale,
                                                             resolution)
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
-                                  tube_angle_constraint, max_grade) 
+                                             tube_angle_constraint)
     if config.VISUAL_MODE and VISUALIZE_EDGES:
         print "tube angle constraint: " + str(tube_angle_constraint)
         axes_equal = False
@@ -150,7 +150,7 @@ def elevation_profile_to_tube_graphs(elevation_profile,
                  elevation_profile, elevation_mesh_bisection_depth=None,
                                    arc_length_mesh_bisection_depth=None)
     tube_edges_sets, resolution = tube_points_lattice_to_tube_edges_sets(
-                          tube_points_lattice, parameters.MAX_TUBE_GRADE)
+                                                     tube_points_lattice)
     selected_tube_graphs = tube_edges_sets_to_tube_graphs(tube_edges_sets,
                                                                resolution)
     return selected_tube_graphs
