@@ -171,7 +171,7 @@ class TubeGraph(abstract_graphs.AbstractGraph):
 
 class TubeGraphsSet(abstract_graphs.AbstractGraphsSet):
 
-    NUM_FRONTS_TO_SELECT = 20
+    NUM_FRONTS_TO_SELECT = 100
 
     def get_tube_graphs_min_times_and_total_costs(self, tube_graphs):
         tube_graphs_min_times_and_total_costs = \

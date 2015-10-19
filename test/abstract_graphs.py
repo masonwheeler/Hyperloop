@@ -84,31 +84,28 @@ class AbstractGraph(object):
 
 class AbstractGraphsSet(object):
 
-    def select_graphs(self, num_fronts_to_select):
-        if self.graphs_a_b_vals == None:
-            self.selected_graphs = self.unfiltered_graphs
+    def select_graphs(self, num_fronts_to_select, graphs, graphs_a_b_vals):
+        if graphs_a_b_vals == None:
+            selected_graphs = graphs
         else:
             try:
-                self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
+                self.front = paretofront.ParetoFront(graphs_a_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
                 current_num_fronts = 1
                 while (self.front.build_nextfront() and
                        current_num_fronts <= num_fronts_to_select):
                     current_num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
-                self.selected_graphs = [self.unfiltered_graphs[i] for i in
-                                        selected_graphs_indices]
-                return True
+                selected_graphs = [graphs[i] for i in
+                                   selected_graphs_indices]
             except ValueError:
                 print "encountered value error"
-                self.selected_graphs = self.unfiltered_graphs
-                return False
+        return selected_graphs
 
     def __init__(self, graphs, graphs_evaluator, num_fronts_to_select):
-        self.front = None
-        self.unfiltered_graphs = graphs
-        self.graphs_a_b_vals = graphs_evaluator(graphs)
-        self.select_graphs(num_fronts_to_select)
+        graphs_a_b_vals = graphs_evaluator(graphs)
+        self.selected_graphs = self.select_graphs(num_fronts_to_select, graphs,
+                                                  graphs_a_b_vals)
         self.num_fronts_to_select = num_fronts_to_select
 
     def update_graphs(self):
@@ -128,8 +125,6 @@ class AbstractGraphsSet(object):
                 return False
             if are_graphs_updated:
                 selected_graph_indices = self.front.fronts_indices[-1]
-                print "new selected graph indices"
-                print selected_graph_indices
                 for i in selected_graph_indices:
                     self.selected_graphs.append(self.unfiltered_graphs[i])
                 return True
@@ -159,7 +154,7 @@ class AbstractGraphsSets(object):
             for graph_b in selected_b:                
                 if self.test_graph_pair_compatibility(graph_a, graph_b):
                     merged_graph = self.merge_graph_pair(graph_a, graph_b)
-                    merged_graphs.append(merged_graph) 
+                    merged_graphs.append(merged_graph)
         if (len(merged_graphs) == 0):
             print "No graphs compatible"
             print "Number of graphs selected from set a: " + str(len(selected_a))
@@ -183,6 +178,5 @@ class AbstractGraphsSets(object):
                                  AbstractGraphsSets.graphs_set_updater)
         root_graphs_set = graphs_sets_tree.root
         final_num_fronts_to_select = 1
-        root_graphs_set.select_graphs(final_num_fronts_to_select)
-        self.selected_graphs = root_graphs_set.selected_graphs
+        self.selected_graphs = root_graphs_set.select_graphs(final_num_fronts_to_select)
 
