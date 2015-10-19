@@ -81,12 +81,20 @@ class ElevationProfile(object):
         return data
 
     def undersample(self, undersampling_factor):
-        undersampled_geospatials = self.geospatials[::undersampling_factor]
-        undersampled_latlngs = self.latlngs[::undersampling_factor]
-        undersampled_arc_lengths = self.arc_lengths[::undersampling_factor]
+        strided_geospatials = self.geospatials[::undersampling_factor]
+        strided_latlngs = self.latlngs[::undersampling_factor]
+        strided_arc_lengths = self.arc_lengths[::undersampling_factor]
+        last_geospatial = self.geospatials[-1]
+        last_latlng = self.latlngs[-1]
+        last_arc_length = self.arc_lengths[-1]
+        undersampled_geospatials = np.vstack((strided_geospatials, 
+                                              last_geospatial))
+        undersampled_latlngs = np.vstack((strided_latlngs, last_latlng))
+        undersampled_arc_lengths = np.hstack((strided_arc_lengths, 
+                                              last_arc_length))
         undersampled_arc_length_step_size = (self.arc_length_step_size *
                                              undersampling_factor)
         undersampled_elevation_profile = ElevationProfile(
-            undersampled_geospatials, undersampled_latlngs,
-            undersampled_arc_lengths, undersampled_arc_length_step_size)
+          undersampled_geospatials.tolist(), undersampled_latlngs.tolist(),
+          undersampled_arc_lengths.tolist(), undersampled_arc_length_step_size)
         return undersampled_elevation_profile

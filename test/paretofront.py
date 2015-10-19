@@ -128,7 +128,7 @@ class ParetoFront(object):
                 # if there are 1 or 2 points, add these to the fronts
                 front_indices = self.pruned_points_indices
                 self.fronts_indices.append(front_indices.tolist())
-                self.remove_frontindices(front_indices)
+                self.remove_front_indices(front_indices)
         else:
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:                      

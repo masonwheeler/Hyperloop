@@ -142,19 +142,23 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
         self.upper_tube_envelope += elevation_step_size
 
         undersampling_factor = 2**arc_length_mesh_bisection_depth
-        sampled_lower_tube_envelope = self.lower_tube_envelope[::
-                                                 undersampling_factor]
-        sampled_upper_tube_envelope = self.upper_tube_envelope[::
-                                                 undersampling_factor]
+        strided_lower_tube_envelope = self.lower_tube_envelope[::
+                                             undersampling_factor]
+        sampled_lower_tube_envelope = np.hstack((strided_lower_tube_envelope,
+                                              self.lower_tube_envelope[-1]))
+        strided_upper_tube_envelope = self.upper_tube_envelope[::
+                                             undersampling_factor]
+        sampled_upper_tube_envelope = np.hstack((strided_upper_tube_envelope,
+                                              self.upper_tube_envelope[-1]))
         sampled_elevation_profile = elevation_profile.undersample(
-                                                 undersampling_factor)
+                                                  undersampling_factor)
         tube_points_slices_bounds = \
             self.sampled_tube_envelopes_to_tube_slice_bounds(
                     sampled_lower_tube_envelope, sampled_upper_tube_envelope,
                               sampled_elevation_profile, elevation_step_size)
         abstract_lattice.AbstractLattice.__init__(self,
             tube_points_slices_bounds, TubePointsSlice)
-        self.resolution = elevation_step_size
+        self.resolution = self.BASE_ELEVATION_STEP_SIZE
         self.length_scale = elevation_profile.arc_length_step_size
 
 
