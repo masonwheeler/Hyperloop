@@ -62,10 +62,18 @@ class ParetoFront(object):
         selected_front_indices = sorted_front_indices[selected_indices]
         return selected_front_indices
 
-    def remove_frontindices(self, front_indices_rel_points):
+    def remove_front_indices(self, front_indices_rel_points):
         """Gives the indices of the points without the indices of the front."""
-        self.pruned_points_indices = np.setdiff1d(self.pruned_points_indices,
+        print "num points before: " + str(len(self.pruned_points_indices))
+        intersection = np.intersect1d(self.pruned_points_indices,
+                                      front_indices_rel_points)
+        if intersection.shape[0] == 0:
+            print "empty intersection"
+            raise IndexError
+        else:
+            self.pruned_points_indices = np.setdiff1d(self.pruned_points_indices,
                                                   front_indices_rel_points)
+            print "num points after: " + str(len(self.pruned_points_indices))
 
     @staticmethod
     def check_linear(points_array):
@@ -103,9 +111,8 @@ class ParetoFront(object):
         # Raw points array may contain duplicates
         raw_points_array = np.array([np.array(point) for point in points])
         # The indices of the unique points in the raw points array.
-        ##unique_indices = ParetoFront.remove_duplicates(raw_points_array)
         # The unique points in the raw points array.
-        self.points_array = raw_points_array ##[unique_indices]
+        self.points_array = raw_points_array
         # The number of rows in the points array
         num_points = self.points_array.shape[0]
         # set the indices of the pruned points as the indices of all points
@@ -125,14 +132,11 @@ class ParetoFront(object):
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:                      
                 # if the points are linear, just add them all to the fronts.
-                ##print "points are linear"
                 linear_min_index = ParetoFront.get_linear_min(self.points_array)
                 front_indices = linear_min_index               
-                #self.fronts_indices.append(front_indices.tolist())
                 self.fronts_indices.append(front_indices)
-                self.remove_frontindices(front_indices)
+                self.remove_front_indices(front_indices)
             else:
-                ##print "points not linear"
                 # If there are enough points, try to build a convex hull.
                 try:
                     convex_hull = scipy.spatial.ConvexHull(self.points_array)
@@ -148,7 +152,6 @@ class ParetoFront(object):
                 hull_indices = convex_hull.vertices
                 # The vertices in the convex hull.
                 hull_vertices = self.points_array[hull_indices]
-                ##print hull_vertices
                 # The indices of the points in the pareto front in the hull array.
                 front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
                                                                 hull_vertices)
@@ -170,8 +173,6 @@ class ParetoFront(object):
         """
         # Initialize the points which have not been in a front yet
         pruned_points = self.points_array[self.pruned_points_indices]
-        ##print "pruned points indices"
-        ##print self.pruned_points_indices
         # The number of rows in the pruned points array
         num_points_left = pruned_points.shape[0]
         # At least 3 points are needed to build a convex hull
@@ -183,22 +184,18 @@ class ParetoFront(object):
                 # If there are 1 or 2 points, add them to the front
                 front_indices_rel_points = self.pruned_points_indices
                 self.fronts_indices.append(front_indices_rel_points.tolist())
-                self.remove_frontindices(front_indices_rel_points)
+                self.remove_front_indices(front_indices_rel_points)
                 return True
         else:
             are_points_linear = ParetoFront.check_linear(self.points_array)
             if are_points_linear:
                 # if the points are linear, just add them all to the fronts.
-                ##print "points are linear"
-                linear_min_index = ParetoFront.get_linear_min(self.points_array)
-                #front_indices = self.pruned_points_indices
+                linear_min_index = ParetoFront.get_linear_min(pruned_points)
                 front_indices = linear_min_index               
-                #self.fronts_indices.append(front_indices.tolist())
                 self.fronts_indices.append(front_indices)
-                self.remove_frontindices(front_indices)
+                self.remove_front_indices(front_indices)
                 return True
             else:
-                ##print "points not linear"
                 # If there are enough points, try to build a convex hull
                 try:
                     convex_hull = scipy.spatial.ConvexHull(pruned_points)
@@ -231,5 +228,5 @@ class ParetoFront(object):
                 front_indices_list = front_indices_rel_points.tolist()
                 self.fronts_indices.append(front_indices_list)
                 # Remove the indices of the points in the pareto front from list.
-                self.remove_frontindices(front_indices_rel_points)
+                self.remove_front_indices(front_indices_rel_points)
                 return True

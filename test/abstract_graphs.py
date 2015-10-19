@@ -92,14 +92,10 @@ class AbstractGraphsSet(object):
                 self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
                 selected_graphs_indices = self.front.fronts_indices[-1]
                 current_num_fronts = 1
-                print "current num fronts"
-                print current_num_fronts
                 while (self.front.build_nextfront() and
                        current_num_fronts <= num_fronts_to_select):
                     current_num_fronts += 1
                     selected_graphs_indices += self.front.fronts_indices[-1]
-                    print "current num fronts"
-                    print current_num_fronts
                 self.selected_graphs = [self.unfiltered_graphs[i] for i in
                                         selected_graphs_indices]
                 return True
@@ -107,7 +103,6 @@ class AbstractGraphsSet(object):
                 print "encountered value error"
                 self.selected_graphs = self.unfiltered_graphs
                 return False
-        #self.selected_graphs = self.unfiltered_graphs
 
     def __init__(self, graphs, graphs_evaluator, num_fronts_to_select):
         self.front = None
@@ -124,21 +119,16 @@ class AbstractGraphsSet(object):
         If the graphs are successfully updated return True, else return False.
         Update the graphs by adding the next front from the Pareto Frontier
         """
-        print("tried to update graphs")
         if self.front == None:
-            print "no front"
             return False
         else:
-            print "front"
             try:
-                print "building next front"
                 are_graphs_updated = self.front.build_nextfront()
             except ValueError:
-                print "could not build next front"
                 return False
             if are_graphs_updated:
-                print "graphs are updated"
                 selected_graph_indices = self.front.fronts_indices[-1]
+                print "new selected graph indices"
                 print selected_graph_indices
                 for i in selected_graph_indices:
                     self.selected_graphs.append(self.unfiltered_graphs[i])

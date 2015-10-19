@@ -91,18 +91,13 @@ class MergeTree(object):
         then merge the updated children to get new data for the node.
         If the node's children cannot be updated, record failure.
         """
-        print "updating node"
         if self.data == None:
-            print "no data"
             return False
         else:
-            print "yes data"
             is_data_updated = data_updater(self.data)
             if is_data_updated:
-                print "data was updated"
                 return True
             else:
-                print "data was not updated"
                 any_children_updated = self.update_children(children_merger,
                                                             data_updater)
                 if any_children_updated:
@@ -122,11 +117,9 @@ class MergeTree(object):
         """
         merge_result = children_merger(self.left.data, self.right.data)
         while merge_result == None:
-            print "merging children"
             any_children_updated = self.update_children(children_merger,
                                                         data_updater)            
             if any_children_updated:
-                print "a child was updated"
                 merge_result = children_merger(self.left.data,
                                                self.right.data)
             else:
