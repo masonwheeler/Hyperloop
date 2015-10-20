@@ -78,16 +78,20 @@ class NaiveTubeProfile(object):
              arc_lengths, land_elevations, land_elevation_peaks_indices,
                                       parameters.MAX_VERTICAL_CURVATURE)
 
-    def compute_total_pylon_cost(self, land_elevations, tube_elevations):
-   
-   
     def __init__(self, elevation_profile):
         arc_lengths = elevation_profile.arc_lengths
         land_elevations = elevation_profile.land_elevations
         tube_elevations = self.compute_tube_elevations(arc_lengths, 
                                                        land_elevations)
         tube_points = [TubePoint(arc_lengths[i], land_elevation[i], 
-                       tube_elevations[i]) for i in len(arc_lengths)]
-                       
-                      
+                       tube_elevations[i]) for i in range(len(arc_lengths))]
+        tube_edges = [TubeEdge(tube_points[i], tube_points[i + 1])
+                      for i in range(len(tube_points) - 1)]
+        tube_costs = [tube_edge.tube_cost for tube_edge in tube_edges]
+        tunneling_costs = [tube_edge.tunneling_cost for tube_edge in tube_edges]
+        pylons_costs = [tube_point.pylon_cost for tube_point in tube_points]
+        self.total_pylon_cost = sum(pylons_costs)
+        self.tube_cost = sum(tube_costs)
+        self.tunneling_cost = sum(tunneling_costs)
+        
         
