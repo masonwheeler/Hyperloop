@@ -22,18 +22,12 @@ class ElevationProfile(object):
                                 for latlng in self.latlngs]
         land_elevations = np.array(land_elevations_list)
         return land_elevations
-    
-    def get_land_elevations_v2(self):
-        land_elevations = usgs.get_elevations(self.latlngs)
-        return land_elevations
 
     def __init__(self, geospatials, latlngs, arc_lengths,
-                 arc_length_step_size,
                  land_elevations=None, geospatials_partitions=None):
         self.geospatials = geospatials
         self.latlngs = latlngs
         self.arc_lengths = arc_lengths
-        self.arc_length_step_size = arc_length_step_size
         if geospatials_partitions == None:
             geospatials_partitions = [geospatials]
         self.geospatials_partitions = geospatials_partitions
@@ -47,12 +41,10 @@ class ElevationProfile(object):
           geospatials_to_latlngs, elevation_points_to_pylon_points_ratio):
         arc_length_step_size = (parameters.PYLON_SPACING / 
                                    elevation_points_to_pylon_points_ratio)
-        geospatials, arc_lengths = util.build_grid(
-                                      start_geospatial,
-                                        end_geospatial,
-                                  arc_length_step_size)
+        geospatials, arc_lengths = util.build_grid(start_geospatial,
+                                                     end_geospatial)
         latlngs = geospatials_to_latlngs(geospatials)
-        data = cls(geospatials, latlngs, arc_lengths, arc_length_step_size)
+        data = cls(geospatials, latlngs, arc_lengths)
         return data        
 
     @classmethod
@@ -74,9 +66,8 @@ class ElevationProfile(object):
         merged_arc_lengths = util.shift_and_glue_array_pair(
                             elevation_profile_a.arc_lengths,
                             elevation_profile_b.arc_lengths)
-        arc_length_step_size = elevation_profile_a.arc_length_step_size
+        #arc_length_step_size = elevation_profile_a.arc_length_step_size
         data = cls(merged_geospatials, merged_latlngs, merged_arc_lengths, 
-                   arc_length_step_size,
                    land_elevations=merged_land_elevations,
                    geospatials_partitions=merged_geospatials_partitions)
         return data
