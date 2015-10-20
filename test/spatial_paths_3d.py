@@ -9,7 +9,7 @@ import numpy as np
 # Custom Modules:
 import cacher
 import config
-import curvature
+import curvature_constrain_speed
 import parameters
 import paretofront
 import util
@@ -18,32 +18,30 @@ import reparametrize_speed
 
 class SpatialPath3d(object):
 
-    def compute_min_time(self, spatial_curvature_array,
-                                  tube_curvature_array,
-                                           arc_lengths):
-        max_allowed_vels_lateral = \
-            curvature.lateral_curvature_array_to_max_allowed_vels(
-                                                    spatial_curvature_array)
-        max_allowed_vels_vertical = \
-            curvature.vertical_curvature_array_to_max_allowed_vels(
-                                                    tube_curvature_array)
+    def compute_min_time(self, spatial_curvature_array, tube_curvature_array,
+                                                                 arc_lengths):
+        max_allowed_speeds_lateral = \
+            curvature_constrain_speed.get_lateral_curvature_constrained_speeds(
+                                                       spatial_curvature_array)
+        max_allowed_speeds_vertical = \
+            curvature_constrain_speed.get_vertical_curvature_constrained_speeds(
+                                                           tube_curvature_array)
         effective_max_allowed_speeds_by_arc_length = np.minimum(
-            max_allowed_vels_vertical, max_allowed_vels_lateral)
-        time_step_size = 1 #second times
-        speeds_by_time, time_elapsed = \
-        reparametrize_speed.constrain_and_reparametrize_speeds(
-                     effective_max_allowed_speeds_by_arc_length, arc_lengths,
-                           time_step_size, parameters.MAX_LONGITUDINAL_ACCEL)
-        return time_elapsed
+            max_allowed_speeds_vertical, max_allowed_speeds_lateral)
+        time_step_size = 1 #Second
+        speeds_by_time, min_time = \
+            reparametrize_speed.constrain_and_reparametrize_speeds(
+        effective_max_allowed_speeds_by_arc_length, arc_lengths, time_step_size)
+        return min_time
 
     def compute_total_cost(self):
-        total_cost = (self.land_cost + (self.pylon_cost * 4) +
+        total_cost = (self.land_cost + self.pylon_cost +
                       self.tube_cost + self.tunneling_cost)
         return total_cost
 
     def __init__(self, tube_profile, spatial_path_2d):
         self.land_cost = spatial_path_2d.land_cost
-        self.pylon_cost = tube_profile.pylons_cost
+        self.pylon_cost = tube_profile.total_pylon_cost
         self.tube_cost = tube_profile.tube_cost
         self.tunneling_cost = tube_profile.tunneling_cost        
         self.latlngs = spatial_path_2d.latlngs
@@ -54,8 +52,7 @@ class SpatialPath3d(object):
         self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
         self.tube_curvature_array = tube_profile.tube_curvature_array
         self.min_time = self.compute_min_time(self.spatial_curvature_array,
-                                                self.tube_curvature_array,
-                                                         self.arc_lengths)
+                               self.tube_curvature_array, self.arc_lengths)
         self.total_cost = self.compute_total_cost()
 
     def fetch_min_time_and_total_cost(self):
@@ -63,34 +60,33 @@ class SpatialPath3d(object):
         total_cost = round(self.total_cost / 10.0**9, 3)
         return [min_time, total_cost]
 
+import time
 
 class SpatialPathsSet3d(object):
   
     NUM_TUBE_PROFILES = 5
+    """
     DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
                              parameters.MAX_SPEED**2)
+    """
 
-    def build_tube_profiles_v1(self, tube_builder, elevation_profile):
-        tube_profiles = []
-        for i in range(self.NUM_TUBE_PROFILES):
-            max_curvature = ((self.DEFAULT_MAX_CURVATURE * 0.001) *
-                             (float(i) / float(self.NUM_TUBE_PROFILES)))
-            tube_profile = tube_builder(elevation_profile,
-                              max_curvature=max_curvature)
-            tube_profile.visualize()
-            print "dummy variable used: " + str(max_curvature)
-            tube_profiles.append(tube_profile)
+    def build_tube_profiles(self, tube_builder, elevation_profile):
+        t1 = time.time()
+        tube_profile = tube_builder(elevation_profile)
+        print time.time() - t1
+        tube_profiles = [tube_profile]
         return tube_profiles
 
     def build_paths(self, spatial_path_2d, tube_profiles):
-        self.paths = [SpatialPath3d(tube_profile, spatial_path_2d)
-                      for tube_profile in tube_profiles]
+        paths = [SpatialPath3d(tube_profile, spatial_path_2d)
+                 for tube_profile in tube_profiles]
+        return paths
 
     def __init__(self, spatial_path_2d, tube_builder):
         elevation_profile = spatial_path_2d.elevation_profile 
-        tube_profiles = self.build_tube_profiles_v1(tube_builder,
-                                                    elevation_profile)
-        self.build_paths(spatial_path_2d, tube_profiles)
+        tube_profiles = self.build_tube_profiles(tube_builder, 
+                                            elevation_profile)
+        self.paths = self.build_paths(spatial_path_2d, tube_profiles)
 
 
 class SpatialPathsSets3d(object):
@@ -111,21 +107,18 @@ class SpatialPathsSets3d(object):
         print "num paths 3d: " + str(len(paths))
         paths_times_and_costs = [path.fetch_min_time_and_total_cost()
                                  for path in paths]
-        minimize_time = True
-        minimize_cost = True
-        front = paretofront.ParetoFront(paths_times_and_costs, minimize_time,
-                                                               minimize_cost)
+        front = paretofront.ParetoFront(paths_times_and_costs)
         optimal_paths_indices = front.fronts_indices[-1]
         optimal_paths = [paths[i] for i in optimal_paths_indices]
         sorted_paths = sorted(optimal_paths, key=lambda p: p.total_cost)
-        self.selected_paths = sorted_paths
-        print "num paths 3d selected: " + str(len(self.selected_paths))
+        print "num paths 3d selected: " + str(len(sorted_paths))
+        return sorted_paths
 
     def __init__(self, spatial_paths_set_2d):
         self.spatial_metadata = spatial_paths_set_2d.spatial_metadata
-        paths_sets = self.build_paths_sets(spatial_paths_set_2d.paths,
+        paths_sets = self.build_paths_sets(spatial_paths_set_2d.paths[0:2],
                                            spatial_paths_set_2d.tube_builder)
-        self.select_paths(paths_sets)
+        self.selected_paths = self.select_paths(paths_sets)
         
                                                              
 def get_spatial_paths_sets_3d(*args):

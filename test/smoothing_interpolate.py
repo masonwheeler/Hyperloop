@@ -9,7 +9,8 @@ import numpy as np
 # Custom Modules:
 import curvature
 
-#def smoothing_spline_1d(y_array, s_values, 
+import matplotlib.pyplot as plt
+import math
 
 def smoothing_splines_2d(x_array, y_array, s_values, weights, smoothing_factor):
     x_spline = scipy.interpolate.UnivariateSpline(s_values, x_array, w=weights)
@@ -39,6 +40,7 @@ def iterative_smoothing_interpolation_2d(x_array, y_array, initial_weights,
     test_smoothing_factor = initial_smoothing_factor
     if is_curvature_valid:
         while is_curvature_valid and is_smoothing_factor_bounded_below:
+            print math.log10(test_smoothing_factor)
             test_smoothing_factor *= 1.0/ smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
@@ -129,6 +131,9 @@ def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
     curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
                                                            y_spline, s_vals)
     y_vals = y_spline(s_vals)
+    print np.amax(curvature_array_2d)
+    #plt.plot(s_vals, y_vals)
+    #plt.show()
     return [y_vals, curvature_array_2d]
 
                                                       

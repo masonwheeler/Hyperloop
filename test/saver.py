@@ -9,9 +9,9 @@ import json
 def save_routes_set(routes_set):
     """Saves completed routes to json
     """
-    start = str(routes_set.start)
-    end = str(routes_set.end)
-    filename = "/" + start + "_to_" + end + "_routes.json"
+    start_name = routes_set.spatial_metadata["startName"]
+    end_name = routes_set.spatial_metadata["endName"]
+    filename = "/" + start_name + "_to_" + end_name + "_routes.json"
     save_path = DROPBOX_DIRECTORY + filename
     print "Saving routes to: " + save_path
     with open(save_path, 'w') as file_path:

@@ -16,9 +16,9 @@ class Route(object):
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.land_cost = spatiotemporal_path_4d.land_cost
-        self.land_elevations = spatiotemporal_path_4d.land_elevations
-        self.latlngs = spatiotemporal_path_4d.latlngs
-        self.pylons = []#spatiotemporal_path_4d.pylons
+        self.land_elevations = spatiotemporal_path_4d.land_elevations.tolist()
+        self.latlngs = spatiotemporal_path_4d.latlngs.tolist()       
+        self.pylons = spatiotemporal_path_4d.pylons
         self.pylon_cost = spatiotemporal_path_4d.pylon_cost
         self.speed_profile = spatiotemporal_path_4d.speed_profile
         self.total_cost = round(spatiotemporal_path_4d.total_cost / 10.0**9, 3)
