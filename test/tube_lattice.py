@@ -160,5 +160,3 @@ class TubePointsLattice(abstract_lattice.AbstractLattice):
             tube_points_slices_bounds, TubePointsSlice)
         self.resolution = self.BASE_ELEVATION_STEP_SIZE
         self.length_scale = elevation_profile.arc_length_step_size
-
-

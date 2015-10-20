@@ -14,12 +14,12 @@ import tube_lattice
 
 if config.VISUAL_MODE:
     import visualize
-    VISUALIZE_LATTICE = True
-    #VISUALIZE_LATTICE = False
-    VISUALIZE_EDGES = True
-    #VISUALIZE_EDGES = False
-    VISUALIZE_GRAPHS = True
-    #VISUALIZE_GRAPHS = False
+    #VISUALIZE_LATTICE = True
+    VISUALIZE_LATTICE = False
+    #VISUALIZE_EDGES = True
+    VISUALIZE_EDGES = False
+    #VISUALIZE_GRAPHS = True
+    VISUALIZE_GRAPHS = False
     VISUALIZE_COST_TIME_SCATTERPLOT = True
     #VISUALIZE_COST_TIME_SCATTERPLOT = False
 

@@ -233,8 +233,10 @@ class TubeGraphsSets(abstract_graphs.AbstractGraphsSets):
         costs = []
         times = []
         for tube_graph in self.selected_graphs:
-            costs.append(tube_graph.total_cost)
-            times.append(tube_graph.min_time)
+            cost = round(tube_graph.total_cost / 10.0**6, 3)
+            time = round(tube_graph.min_time / 60.0, 3)
+            costs.append(cost)
+            times.append(time)
         scatterplot_values = [costs, times]
         scatterplot = [scatterplot_values, color_string]
         return scatterplot
