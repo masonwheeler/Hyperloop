@@ -3,6 +3,7 @@ Original Developer: Jonathan Ward
 """
 
 # Standard Modules:
+import numpy as np
 import scipy.signal
 
 # Custom Modules:
@@ -61,7 +62,7 @@ class TubeEdge(object):
 
     def __init__(self, tube_point_a, tube_point_b):
         edge_length = self.compute_edge_length(tube_point_a, tube_point_b)
-        self.tube_cost = self.compute_tube_cost(edge_length)      
+        self.tube_cost = self.compute_tube_cost(edge_length)
         self.tunneling_cost = self.compute_tunneling_cost(edge_length,
                                            tube_point_a, tube_point_b)
 
@@ -73,25 +74,25 @@ class NaiveTubeProfile(object):
                                           land_elevations, order=10)
         land_elevation_peaks_indices = \
             land_elevation_peaks_indices_tuple[0].tolist()
-        tube_elevations = \
+        tube_elevations, tube_curvature_array = \
             smoothing_interpolate.bounded_curvature_extrema_interpolate(
              arc_lengths, land_elevations, land_elevation_peaks_indices,
                                       parameters.MAX_VERTICAL_CURVATURE)
+        return [tube_elevations, tube_curvature_array]
 
     def __init__(self, elevation_profile):
-        arc_lengths = elevation_profile.arc_lengths
+        arc_lengths = elevation_profile.arc_lengths        
         land_elevations = elevation_profile.land_elevations
-        tube_elevations = self.compute_tube_elevations(arc_lengths, 
-                                                       land_elevations)
-        tube_points = [TubePoint(arc_lengths[i], land_elevation[i], 
+        tube_elevations, tube_curvature_array = self.compute_tube_elevations(
+                                                arc_lengths, land_elevations)
+        tube_points = [TubePoint(arc_lengths[i], land_elevations[i],
                        tube_elevations[i]) for i in range(len(arc_lengths))]
         tube_edges = [TubeEdge(tube_points[i], tube_points[i + 1])
                       for i in range(len(tube_points) - 1)]
         tube_costs = [tube_edge.tube_cost for tube_edge in tube_edges]
         tunneling_costs = [tube_edge.tunneling_cost for tube_edge in tube_edges]
         pylons_costs = [tube_point.pylon_cost for tube_point in tube_points]
+        self.tube_curvature_array = tube_curvature_array
         self.total_pylon_cost = sum(pylons_costs)
         self.tube_cost = sum(tube_costs)
         self.tunneling_cost = sum(tunneling_costs)
-        
-        

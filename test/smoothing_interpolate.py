@@ -111,8 +111,7 @@ def bounded_error_graph_interpolation(graph_points, resolution):
     sampled_y_vals = y_spline(s_vals)
     interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])
     curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
-                                                                   y_spline,
-                                                                     s_vals)
+                                                           y_spline, s_vals)
     return [interpolated_points, curvature_array_2d]
 
 def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
@@ -127,7 +126,9 @@ def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
         weights[i] = extrema_weight    
     x_spline, y_spline = iterative_smoothing_interpolation_2d(x_vals, y_vals,
                                     weights, smoothing_factor, max_curvature)
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                           y_spline, s_vals)
     y_vals = y_spline(s_vals)
-    return y_vals
+    return [y_vals, curvature_array_2d]
 
                                                       

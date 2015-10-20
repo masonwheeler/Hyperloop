@@ -24,6 +24,7 @@ import smoothing_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
 import tube_greedy
+import tube_naive
 import util
 
 if config.VISUAL_MODE:
@@ -74,7 +75,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
             smoothing_interpolate.bounded_error_graph_interpolation,
-                       tube_greedy.elevation_profile_to_tube_graphs)
+                                        tube_naive.NaiveTubeProfile)
+                       #tube_greedy.elevation_profile_to_tube_graphs)
     if route_spatial_edges_sets != None:
         if not route_spatial_edges_sets.TUBE_READY:
             route_spatial_edges_sets.build_tubes()
