@@ -161,8 +161,8 @@ class AbstractGraphsSets(object):
             print "No graphs compatible"
             print "Number of graphs selected from set a: " + str(len(selected_a))
             print "Number of graphs selected from set b: " + str(len(selected_b))
-            print "num graphs in set a: " + str(len(graphs_set_a.unfiltered_graphs))
-            print "num graphs in set b: " + str(len(graphs_set_b.unfiltered_graphs))
+            print "num graphs in set a: " + str(len(graphs_set_a.graphs))
+            print "num graphs in set b: " + str(len(graphs_set_b.graphs))
             return None
         else:
             merged_graphs_num_edges = (graphs_set_a.graphs_num_edges +

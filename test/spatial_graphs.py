@@ -12,7 +12,7 @@ import numpy as np
 # Custom Modules: 
 import abstract_graphs
 import cacher
-import curvature
+import curvature_constrain_speed
 import elevation
 import interpolate
 import mergetree
@@ -24,25 +24,21 @@ import util
 class SpatialGraph(abstract_graphs.AbstractGraph):
     """Stores list of spatial points, their edge costs and curvature"""
 
-    def compute_min_time_and_total_cost(self, spatial_curvature_array,
-                                              tube_curvature_array,
-                                              arc_lengths):
-        max_allowed_vels_lateral = \
-            curvature.lateral_curvature_array_to_max_allowed_vels(
-                                              spatial_curvature_array)
-        max_allowed_vels_vertical = \
-            curvature.vertical_curvature_array_to_max_allowed_vels(
-                                              tube_curvature_array)
+    def compute_min_time(self, spatial_curvature_array, tube_curvature_array,
+                                                                 arc_lengths):
+        max_allowed_speeds_lateral = \
+            curvature_constrain_speed.get_lateral_curvature_constrained_speeds(
+                                                       spatial_curvature_array)
+        max_allowed_speeds_vertical = \
+            curvature_constrain_speed.get_vertical_curvature_constrained_speeds(
+                                                           tube_curvature_array)
         effective_max_allowed_speeds_by_arc_length = np.minimum(
-            max_allowed_vels_vertical, max_allowed_vels_lateral)
+            max_allowed_speeds_vertical, max_allowed_speeds_lateral)
         time_step_size = 1 #Second
-        speeds_by_time, time_elapsed = \
+        speeds_by_time, min_time = \
             reparametrize_speed.constrain_and_reparametrize_speeds(
-                     effective_max_allowed_speeds_by_arc_length, arc_lengths,
-                           time_step_size, parameters.MAX_LONGITUDINAL_ACCEL)
-        self.min_time = time_elapsed
-        self.total_cost = (self.land_cost + self.pylon_cost + self.tube_cost +
-                           self.tunneling_cost)
+        effective_max_allowed_speeds_by_arc_length, arc_lengths, time_step_size)
+        return min_time
 
     def __init__(self, abstract_graph, land_cost, pylon_cost, tube_cost,
                              tunneling_cost, latlngs, elevation_profile,
@@ -57,6 +53,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.pylon_cost = pylon_cost  # The total cost of the pylons
         self.tube_cost = tube_cost
         self.tunneling_cost = tunneling_cost
+        self.total_cost = (self.land_cost + self.pylon_cost +
+                           self.tube_cost + self.tunneling_cost)
         self.latlngs = latlngs  # The latitude longitude coordinates
         self.elevation_profile = elevation_profile
         arc_lengths = elevation_profile.arc_lengths
@@ -64,14 +62,12 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         self.spatial_curvature_array = spatial_curvature_array
         if self.spatial_curvature_array == None:
             self.min_time = None
-            self.total_cost = None
         else:
-            self.compute_min_time_and_total_cost(self.spatial_curvature_array,
-                                                 self.tube_curvature_array,
-                                                 arc_lengths)
+            self.min_time = self.compute_min_time(spatial_curvature_array, 
+                                        tube_curvature_array, arc_lengths)
 
     def fetch_min_time_and_total_cost(self):
-        if self.min_time == None or self.total_cost == None:
+        if self.min_time == None:
             return None
         else:
             min_time = round(self.min_time / 60.0, 3)
@@ -104,9 +100,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
             spatial_graph_b.elevation_profile.geospatials_partitions[0]
         boundary_a_length = len(boundary_geospatials_a)
         boundary_b_length = len(boundary_geospatials_b)
-        merged_boundary_geospatials = util.glue_list_pair(
-                                        boundary_geospatials_a,
-                                        boundary_geospatials_b)
+        merged_boundary_geospatials = util.glue_array_pair(
+            boundary_geospatials_a, boundary_geospatials_b)
         interpolated_boundary_geospatials, boundary_spatial_curvature_array = \
             graph_interpolator(merged_boundary_geospatials)
         spatial_curvature_array_a = spatial_graph_a.spatial_curvature_array
@@ -171,15 +166,15 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
 
     def to_abstract_graph(self):
         abstract_graph = abstract_graphs.AbstractGraph(self.start_id,
-                                                       self.end_id,
-                                                       self.start_angle,
-                                                       self.end_angle,
-                                                       self.abstract_coords)
+                       self.end_id, self.start_angle, self.end_angle,
+                          self.abstract_coords, self.physical_coords)
         return abstract_graph
 
 
 class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
+
     NUM_FRONTS_TO_SELECT = 3
+    GRAPH_FILTER_MIN_NUM_EDGES = 4
 
     def get_spatial_graphs_min_times_and_total_costs(self, spatial_graphs):
         spatial_graphs_min_times_and_total_costs = \
@@ -190,16 +185,18 @@ class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
         else:
             return spatial_graphs_min_times_and_total_costs
    
-    def __init__(self, spatial_graphs):
+    def __init__(self, spatial_graphs, graphs_num_edges):
         abstract_graphs.AbstractGraphsSet.__init__(self, spatial_graphs,
                       self.get_spatial_graphs_min_times_and_total_costs,
-                                              self.NUM_FRONTS_TO_SELECT)
+                            self.NUM_FRONTS_TO_SELECT, graphs_num_edges,
+                                        self.GRAPH_FILTER_MIN_NUM_EDGES)
 
     @classmethod
     def init_from_spatial_edges_set(cls, spatial_edges_set):
         spatial_graphs = [SpatialGraph.init_from_spatial_edge(spatial_edge)
                                       for spatial_edge in spatial_edges_set]
-        data = cls(spatial_graphs)
+        graphs_num_edges = 1
+        data = cls(spatial_graphs, graphs_num_edges)
         return data
 
 

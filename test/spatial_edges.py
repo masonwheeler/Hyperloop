@@ -99,7 +99,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    TUBE_READY = False
+    TUBE_READY = True
 
     NAME = "spatial_edges"
     FLAG = cacher.SPATIAL_EDGES_FLAG

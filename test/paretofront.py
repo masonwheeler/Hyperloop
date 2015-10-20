@@ -24,7 +24,7 @@ class ParetoFront(object):
     fronts_indices = []  # Contains the indices of the points in each fronts.
 
     @staticmethod
-    def vertices_to_frontindices(vertices):
+    def vertices_to_front_indices(vertices):
         """
         Computes the Pareto front given the vertices of the convex hull.
 
@@ -155,7 +155,7 @@ class ParetoFront(object):
                 # The vertices in the convex hull.
                 hull_vertices = self.points_array[hull_indices]
                 # The indices of the points in the pareto front in the hull array.
-                front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
+                front_indices_rel_hull = ParetoFront.vertices_to_front_indices(
                                                                 hull_vertices)
                 # The indices of the points in the pareto front in the points
                 # array.
@@ -163,7 +163,7 @@ class ParetoFront(object):
                 # Add the indices of the points in the pareto front to list.
                 self.fronts_indices.append(front_indices_rel_points.tolist())
                 # Remove the indices of the points in the pareto front from list.
-                self.remove_frontindices(front_indices_rel_points)
+                self.remove_front_indices(front_indices_rel_points)
 
     def build_nextfront(self):
         """
@@ -221,12 +221,12 @@ class ParetoFront(object):
                 hull_vertices = self.points_array[hull_indices_rel_points]
                 # The indices of the points in the front
                 # relative to the convex hull.
-                front_indices_rel_hull = ParetoFront.vertices_to_frontindices(
-                             hull_vertices, self.x_reverse, self.y_reverse)
+                front_indices_rel_hull = ParetoFront.vertices_to_front_indices(
+                                                                 hull_vertices)
                 # The indices of the points in the front
                 # relative to the points array.
                 front_indices_rel_points = hull_indices_rel_points[
-                    front_indices_rel_hull]
+                                                front_indices_rel_hull]
                 # Add the indices of the points in the pareto front to list.
                 front_indices_list = front_indices_rel_points.tolist()
                 self.fronts_indices.append(front_indices_list)
