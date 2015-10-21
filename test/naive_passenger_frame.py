@@ -4,6 +4,7 @@ Original Developer: Jonathan Ward
 
 import numpy as np
 
+
 class NaivePassengerFrame(object):
 
     def compute_derivative(self, x_vals, y_vals):
@@ -19,19 +20,19 @@ class NaivePassengerFrame(object):
         derivative[-1] = quotients[-1]
         return derivative
 
-    def compute_vels_vectors(self, tube_coords, times_by_arc_length):
+    def compute_vels_vectors(self, tube_coords, times_by_arc_lengths):
         x_coords, y_coords, z_coords = np.transpose(tube_coords)
-        x_vels = self.compute_derivative(times_by_arc_length, x_coords)
-        y_vels = self.compute_derivative(times_by_arc_length, y_coords)
-        z_vels = self.compute_derivative(times_by_arc_length, z_coords)
+        x_vels = self.compute_derivative(times_by_arc_lengths, x_coords)
+        y_vels = self.compute_derivative(times_by_arc_lengths, y_coords)
+        z_vels = self.compute_derivative(times_by_arc_lengths, z_coords)
         vels_vectors = np.transpose([x_vels, y_vels, z_vels])
         return vels_vectors
 
-    def compute_accels_vectors(self, vels_vectors, time_checkpoints):
+    def compute_accels_vectors(self, vels_vectors, times_by_arc_lengths):
         x_vels, y_vels, z_vels = np.transpose(vels_vectors)
-        x_accels = self.compute_derivative(time_checkpoints, x_vels)
-        y_accels = self.compute_derivative(time_checkpoints, y_vels)
-        z_accels = self.compute_derivative(time_checkpoints, z_vels)
+        x_accels = self.compute_derivative(times_by_arc_lengths, x_vels)
+        y_accels = self.compute_derivative(times_by_arc_lengths, y_vels)
+        z_accels = self.compute_derivative(times_by_arc_lengths, z_vels)
         accels_vectors = np.transpose([x_accels, y_accels, z_accels])
         return accels_vectors
 
@@ -42,7 +43,6 @@ class NaivePassengerFrame(object):
         z_vectors_list = [z_vector for i in range(vels_vectors.shape[0])]
         z_vectors = np.array(z_vectors_list)
         y_vectors = np.cross(z_vectors, tangent_vectors)
-        i = 0
         change_of_basis_matrices = [np.linalg.inv(
                                         np.matrix.transpose(
                                             np.array([
@@ -65,5 +65,3 @@ class NaivePassengerFrame(object):
                                                      times_by_arc_length)
         self.frame_accels_vectors = self.compute_naive_frame(
                                         vels_vectors, accels_vectors)
-
-

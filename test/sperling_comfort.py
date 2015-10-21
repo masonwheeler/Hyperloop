@@ -3,8 +3,6 @@ Original Developer: David Roberts
 Purpose of Module: To evaluate passenger comfort using
                    Sperling's comfort index (Wz).
 
-Last Modified: 7/16/15
-Last Modified By: Jonathan Ward
 Last Modification Purpose: To clarify naming and add citations.
 
 Citations:
@@ -13,17 +11,6 @@ Citations:
    "Experimental and Analytical Ride Comfort Evaluation of a Railway Coach"
     - K. V. Gangadharan
 
-OUTLINE of SCRIPT (comfort.py):
-input vars: {t_i}, {x_i}, {v_i}, {a_i} (four lists of points in 3_d space)
-output vars: c (comfort rating)
-
-SUB-SCRIPTS:
- 1. Find acceleration in passenger frame:
-      {t_i}, {v_i}, {a_i}  -->  {ap_i}
- 2. Take Fast Fourier Transform of passenger accel:
-      {ap_i}  -->  {ap_f}
- 3. Apply weighting filter and sum results
-      {ap_f} --> {w(f)*ap_f} --> c = sum_f |w(f)*ap_f|^2
 """
 
 # Standard Modules:
@@ -36,6 +23,34 @@ class SperlingComfortProfile(object):
     LP_NORM_POWER = 10
     PARTITION_LENGTH = 500
 
+    def partition_list(self, a_list, partition_length):
+        """Breaks up a list of data points into chunks n-elements long
+        """
+        partitions = [a_list[i:i + partition_length] for i
+                      in range(0, len(a_list), partition_length)]
+        return partitions
+
+    def partition_passenger_accelerations(self, times_by_arc_lengths,
+                                                frame_accel_vectors):
+        """
+        With the Frenet-Serret frame currently used, the normal vector
+        is the vertical direction for the pod, and the binormal vector
+        is the lateral direction.
+        """        
+        times_by_arc_lengths_partitions = self.partition_list(
+                  times_by_arc_lengths, self.PARTITION_LENGTH)
+        frame_accel_vectors_partitions = self.partition_list(
+                      frame_accel_vectors, self.PARTITION_LENGTH)
+        return frame_accels_vectors_partitions
+
+    def compute_partition_comfort_value(self, 
+            times_by_arc_length_partition, frame_accel_vectors_partition):
+        frame_x_accels, frame_y_accels, frame_z_accels = np.transpose(
+                                                 frame_accel_vectors_partition)
+        frame_x_accels_frequencies = np.fft.fft(frame_x_accels)
+        frame_y_accels_frequencies = np.fft.fft(frame_y_accels)
+        frame_z_accels_frequencies = np.fft.fft(frame_z_accels)        
+
     def get_vertical_weighting_factor(self, frequency):
         vertical_weighting_factor = 0.588 * math.sqrt(
                 (1.911 * frequency**2 + (.25 * frequency**2)**2) /
@@ -44,69 +59,16 @@ class SperlingComfortProfile(object):
             )
         return vertical_weighting_factor
 
-    def get_lateral_weighting_factor(self, frequency):
-        vertical_weighting_factor = self.get_vertical_weighting_factor(
-                                                                frequency)
-        lateral_weighting_factor = 1.25 * vertical_weighting_factor
-        return horizontal_weighting_factor
-
     def get_weighting_factors(self, frequency):
         """
         See (Gangadharan) equations (7) and (8) for weighting factors.
         """
         vertical_weighting_factor = self.get_vertical_weighting_factor(
                                                                 frequency)
-        lateral_weighting_factor = self.get_lateral_weighting_factor(frequency)
+        lateral_weighting_factor = vertical_weighting_factor * 1.25
         weighting_factors = np.array([0, vertical_weighting_factor,
                                           lateral_weighting_factor])
         return weighting_factors
-
-    def partition_list(self, a_list, partition_length):
-        """Breaks up a list of data points into chunks n-elements long
-        """
-        partition_length = max(1, partition_length)
-        partitions = [a_list[i:i + partition_length] for i
-                      in range(0, len(a_list), partition_length)]
-        return partitions
-
-    def partition_passenger_accelerations(self):
-        """
-        With the Frenet-Serret frame currently used, the normal vector
-        is the vertical direction for the pod, and the binormal vector
-        is the lateral direction.
-        """
-        self.time_interval_partitions = self.partition_list(
-                    self.time_checkpoints, self.PARTITION_LENGTH)
-        self.passenger_normal_accels_partitions = self.partition_list(
-                        self.passenger_normal_accels, self.PARTITION_LENGTH)
-        self.passenger_binormal_accels_partitions = self.partition_list(
-                        self.passenger_binormal_accels, self.PARTITION_LENGTH)
-
-        self.passenger_accels_vectors_partitions = self.partition_list(
-                        self.passenger_accels_vectors, self.PARTITION_LENGTH)
-        self.passenger_accels_magnitudes_partitions = self.partition_list(
-                        self.passenger_accels_magnitudes, self.PARTITION_LENGTH)
-    
-    def compute_passenger_acceleration_frequencies(self):
-        """
-        With the Frenet-Serret frame currently used, the normal vector
-        is the vertical direction for the pod, and the binormal vector
-        is the lateral direction.
-        """
-        self.passenger_normal_accels_frequencies_partitions = [
-            np.fft.fft(passenger_normal_accels_partition)
-            for passenger_normal_accels_partition
-             in self.passenger_normal_accels_partitions]
-        self.passenger_binormal_accels_frequencies_partitions = [
-            np.fft.fft(passenger_binormal_accels_partition)
-            for passenger_binormal_accels_partition
-             in self.passenger_binormal_accels_partitions]
-
-    def compute_passenger_acceleration_frequencies_v2(self):
-        self.passenger_accels_magnitudes_frequencies_partitions = [
-            np.fft.fft(passenger_accels_magnitudes_partition)
-            for passenger_accels_magnitudes_partition
-             in self.passenger_accels_magnitudes_partitions]
 
     def compute_frequency_weighted_accelerations(self):
         """
