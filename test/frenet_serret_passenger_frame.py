@@ -1,5 +1,5 @@
 """
-Original Developer: Jonathan Ward
+Original Developer: David Roberts
 """
 
 
@@ -21,7 +21,7 @@ class FrenetSerretPassengerFrame(object):
         derivative[-1] = quotients[-1]
         return derivative
 
-    def compute_velocities_vectors(self, tube_coords, time_checkpoints):
+    def compute_vels_vectors(self, tube_coords, time_checkpoints):
         x_coords, y_coords, z_coords = np.transpose(tube_coords)
         x_vels = self.compute_derivative(time_checkpoints, x_coord)
         y_vels = self.compute_derivative(time_checkpoints, y_coord)
@@ -56,35 +56,20 @@ class FrenetSerretPassengerFrame(object):
                                             np.array(
                                                 tangent_vectors[i],
                                                 normal_vectors[i],
-                                                binormal_vectors[i])
+                                                binormal_vectors[i]
                                                 )
+                                            )
                                         )
-                                    for i in range(len(vels_vectors))]
-        frenet_serret_accels_vectors = [
+                                    for i in range(vels_vectors.shape[0])]
+        frenet_serret_frame_accels_vectors = [
             np.dot(change_of_basis_matrices[i], accels_vectors[i])
-            for i in range(len(accels_vectors))]
+            for i in range(accels_vectors.shape[0])]
         return frenet_serret_accels_vectors        
 
     def __init__(self, tube_coords, time_checkpoints):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        vels_vectors = self.compute_vels_vectors(tube_coords, time_checkpoints)
+        accels_vectors = self.compute_accels_vectors(vels_vectors,
+                                                     time_checkpoints)
+        self.frame_accels_vectors = self.compute_frenet_serret_frame(
+                                        vels_vectors, accels_vectors)        
 
