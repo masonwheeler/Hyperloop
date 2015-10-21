@@ -9,26 +9,24 @@ import numpy as np
 import cacher
 #import sperling_comfort
 import paretofront
+import naive_passenger_frame as passenger_frame
 import util
 
 
 class SpatiotemporalPath4d(object):
         
-    def compute_comfort(self, velocity_profile):
+    def compute_comfort(self, speed_profile, spatial_path_3d):
         comfort_profile = []
         comfort_rating = 0
         return [comfort_profile, comfort_rating]
 
-    def __init__(self, velocity_profile, spatial_path_3d):
-        comfort_profile, comfort_rating = compute_comfort(velocity_profile)
-        #self.trip_time = velocity_profile.trip_time
-        #self.speed_profile = velocity_profile.speed_profile
-        #self.scalar_acceleration_profile = \
-        #    velocity_profile.scalar_acceleration_profile
+    def __init__(self, speed_profile, spatial_path_3d):
+        comfort_profile, comfort_rating = self.compute_comfort(speed_profile,
+                                                             spatial_path_3d)
+        self.speeds_by_time = speed_profile.speeds_by_time
+        self.accels_by_time = speed_profile.accels_by_time
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
-        self.speed_profile = []
-        self.scalar_acceleration_profile = []
         self.latlngs = spatial_path_3d.latlngs
         self.pylons = spatial_path_3d.pylons
         self.land_cost = spatial_path_3d.land_cost      
@@ -36,7 +34,7 @@ class SpatiotemporalPath4d(object):
         self.tube_cost = spatial_path_3d.tube_cost
         self.tunneling_cost = spatial_path_3d.tunneling_cost
         self.total_cost = spatial_path_3d.total_cost
-        self.trip_time = spatial_path_3d.min_time
+        self.trip_time = speed_profile.trip_time
         self.land_elevations = spatial_path_3d.land_elevations
         self.tube_elevations = spatial_path_3d.tube_elevations
     
@@ -91,7 +89,6 @@ class SpatiotemporalPathsSets4d(object):
         return selected_paths
 
     def __init__(self, spatial_paths_sets_3d, speed_profile_builder):
-        self.velocity_builder = velocity_builder
         self.spatial_metadata = spatial_paths_sets_3d.spatial_metadata
         paths_sets = self.build_paths_sets(spatial_paths_sets_3d.selected_paths,
                                            speed_profile_builder)

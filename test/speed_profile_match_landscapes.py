@@ -13,7 +13,7 @@ import reparametrize_speed
 
 class SpeedProfile(object):
 
-    MIN_SPEEDS = 10 #Meters/Second    
+    TIME_STEP_SIZE = 1 #Second
 
     def sort_speeds_indices(self, interior_max_speeds):
         interior_max_speeds_indices = range(len(interior_max_speeds))
@@ -24,8 +24,8 @@ class SpeedProfile(object):
                                   sorted_interior_max_speeds_indices]
         return sorted_interior_max_speeds_indices
     
-    def test_speeds_pair_v1(self, speed_a, arc_length_a,
-                                  speed_b, arc_length_b):
+    def test_speeds_pair(self, speed_a, arc_length_a,
+                               speed_b, arc_length_b):
         speed_difference = speed_b - speed_a
         arc_length_difference = arc_length_a - arc_length_b
         mean_vel = (speed_a + speed_b) / 2.0    
@@ -43,41 +43,41 @@ class SpeedProfile(object):
             arc_length_difference < arc_length_tolerance
         return is_speed_pair_compatible
             
-    def test_speed_indices_pair(self, speed_index_a,
-                                               speed_index_b):
+    def test_speed_indices_pair(self, max_speeds, arc_lengths, speed_index_a,
+                                                               speed_index_b):
         if self.index_pairs_tested[speed_index_a][speed_index_b]:
             return True
         else:
             self.index_pairs_tested[speed_index_a][speed_index_b] = True
             self.index_pairs_tested[speed_index_b][speed_index_a] = True
-            speed_a = self.max_speeds[speed_index_a]
-            arc_length_a = self.arc_lengths[speed_index_a]        
-            speed_b = self.max_speeds[speed_index_b]
-            arc_length_b = self.arc_lengths[speed_index_b]
-            are_speeds_compatible = self.test_speeds_pair_v1(speed_a,
-                                         arc_length_a, speed_b, arc_length_b)
+            speed_a = max_speeds[speed_index_a]
+            arc_length_a = arc_lengths[speed_index_a]        
+            speed_b = max_speeds[speed_index_b]
+            arc_length_b = arc_lengths[speed_index_b]
+            are_speeds_compatible = self.test_speeds_pair(speed_a, arc_length_a, 
+                                                          speed_b, arc_length_b)
             return are_speeds_compatible
         
-    def test_speed_index(self, speed_index):
+    def test_speed_index(self, speed_index, max_speeds, arc_lengths):
         [position_of_speed_index] = np.searchsorted(
             self.selected_max_speeds_indices, [speed_index])
         previous_speed_index = self.selected_max_speeds_indices[
                                    position_of_speed_index - 1]
         next_speed_index = self.selected_max_speeds_indices[
-                                  position_of_speed_index]
-        is_compatible_with_previous = self.test_speed_indices_pair(
-                             previous_speed_index, speed_index)
-        is_compatible_with_next = self.test_speed_indices_pair(
-                                    speed_index, next_speed_index)
+                                    position_of_speed_index]
+        is_compatible_with_previous = self.test_speed_indices_pair(max_speeds,
+                               arc_lengths, previous_speed_index, speed_index)
+        is_compatible_with_next = self.test_speed_indices_pair(max_speeds, 
+                               arc_lengths, speed_index, next_speed_index)
         is_speed_index_compatible = (is_compatible_with_previous and
                                          is_compatible_with_next)
         return [is_speed_index_compatible, position_of_speed_index]
 
-    def add_compatible_speed_to_profile(self):
+    def add_compatible_speed_to_profile(self, max_speeds, arc_lengths):
         for i in xrange(len(self.sorted_interior_max_speeds_indices)):
             speed_index = self.sorted_interior_max_speeds_indices[i]
             is_speed_index_compatible, position_of_speed_index = \
-                self.test_speed_index(speed_index)
+                self.test_speed_index(speed_index, max_speeds, arc_lengths)
             if is_speed_index_compatible:
                 self.sorted_interior_max_speeds_indices.pop(i)
                 self.selected_max_speeds_indices = np.insert(
@@ -86,28 +86,28 @@ class SpeedProfile(object):
                 return True
         return False
 
-    def get_speed_profile_waypoints(self, max_speeds):
+    def get_speed_profile_waypoints(self, max_speeds, arc_lengths):
         self.selected_max_speeds_indices = []
         start_speed_index = 0
         self.selected_max_speeds_indices.append(start_speed_index)
         final_speed_index = len(max_speeds) - 1
         self.selected_max_speeds_indices.append(final_speed_index)
-        interior_max_speeds = self.max_speeds[1: final_speed_index]
+        interior_max_speeds = max_speeds[1: final_speed_index]
         self.sorted_interior_max_speeds_indices = \
             self.sort_speeds_indices(interior_max_speeds)
-        self.index_pairs_tested = [[0 for i in range(len(self.max_speeds))]
-                                      for j in range(len(self.max_speeds))]
+        self.index_pairs_tested = [[0 for i in range(len(max_speeds))]
+                                      for j in range(len(max_speeds))]
         while True:
             added_compatible_speed = \
-                self.add_compatible_speed_to_profile()
+                self.add_compatible_speed_to_profile(max_speeds, arc_lengths)
             if added_compatible_speed:
                 pass
             else:
                 break
-        waypoint_arc_lengths = [self.arc_lengths[index] for index
+        waypoint_arc_lengths = [arc_lengths[index] for index
                                 in self.selected_max_speeds_indices]
-        waypoint_max_speeds = [self.max_speeds[index] for index
-                                   in self.selected_max_speeds_indices]
+        waypoint_max_speeds = [max_speeds[index] for index
+                               in self.selected_max_speeds_indices]
         return [waypoint_arc_lengths, waypoint_max_speeds]
         
     def interpolate_speed_waypoints(self, waypoint_arc_lengths,
@@ -118,18 +118,21 @@ class SpeedProfile(object):
             
     def build_speeds_by_arc_length(self, arc_lengths, max_speeds):
         waypoint_arc_lengths, waypoint_speeds = \
-            self.get_speed_profile_waypoints(max_speeds)
+            self.get_speed_profile_waypoints(max_speeds, arc_lengths)
         speed_spline = self.interpolate_speed_waypoints(waypoint_arc_lengths, 
                                                              waypoint_speeds)   
         speeds_by_arc_length = speed_spline(arc_lengths)
         return speeds_by_arc_length
 
-    def build_speeds_by_time(arc_lengths, speeds_by_arc_length):
-        
+    def reparametrize_speed(self, arc_lengths, speeds_by_arc_length):
+        speeds_by_time, cumulative_time_steps = \
+            reparametrize_speed.speeds_by_arc_length_to_speeds_by_time(
+                speeds_by_arc_length, arc_lengths, self.TIME_STEP_SIZE)
+        accels_by_time = []
+        return [cumulative_time_steps, speeds_by_time, accels_by_time]        
     
     def __init__(self, spatial_path_3d,
                  max_longitudinal_accel=None, jerk_tol=None):
-
         if max_longitudinal_accel == None:
             self.max_longitudinal_accel = parameters.MAX_LONGITUDINAL_ACCEL
         else:
@@ -140,13 +143,15 @@ class SpeedProfile(object):
         else:
             self.jerk_tol = jerk_tol
 
-        self.arc_lengths = spatial_path_3d.arc_lengths
-        self.max_speeds = spatial_path_3d.max_allowed_speeds
-        self.speeds_by_arc_length = self.build_speeds_by_arc_length(
-                                     self.arc_lengths, self.max_speeds)
-        time_checkpoints = \
-           speed.speeds_by_arc_length_to_time_checkpoints(
-                      self.speeds_by_arc_length, self.arc_lengths)
-        self.trip_time = self.time_checkpoints[-1]
-        self.speed_profile = []
-        self.scalar_acceleration_profile = []                        
+        arc_lengths = spatial_path_3d.arc_lengths
+        max_speeds = spatial_path_3d.max_allowed_speeds
+        speeds_by_arc_length = self.build_speeds_by_arc_length(arc_lengths, 
+                                                                max_speeds)
+        cumulative_time_steps, speeds_by_time, accels_by_time = \
+            self.reparametrize_speed(arc_lengths, speeds_by_arc_length)      
+        trip_time = cumulative_time_steps[-1]
+        self.cumulative_time_steps = cumulative_time_steps
+        self.speeds_by_arc_length = speeds_by_arc_length
+        self.trip_time = trip_time
+        self.speeds_by_time = speeds_by_time
+        self.accels_by_time = accels_by_time

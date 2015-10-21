@@ -53,7 +53,7 @@ class NaivePassengerFrame(object):
                                     for i in range(vels_vectors.shape[0])]
         naive_frame_accels_vectors = [
             np.dot(change_of_basis_matrices[i], accels_vectors[i])
-            for i in range(accels_vectors.shape[0])
+            for i in range(accels_vectors.shape[0])]
         return naive_frame_accels_vectors
 
     def __init__(self, tube_coords, time_checkpoints):

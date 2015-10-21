@@ -77,6 +77,7 @@ def speeds_by_arc_length_to_speeds_by_time(speeds_by_arc_length,
     time_steps = np.empty(num_time_steps)
     time_steps.fill(time_step_size)
     cumulative_time_steps = np.cumsum(time_steps)
+    cumulative_time_steps = np.append(cumulative_time_steps, trip_time)
     selected_indices = np.searchsorted(times_by_arc_length,
                                        cumulative_time_steps)
     selected_times_by_arc_length = times_by_arc_length[selected_indices]

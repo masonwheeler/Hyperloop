@@ -11,8 +11,7 @@ class Route(object):
     """For storing a single route option
     """
     def __init__(self, spatiotemporal_path_4d):
-        self.scalar_acceleration_profile = \
-            spatiotemporal_path_4d.scalar_acceleration_profile
+        self.accels_by_time = spatiotemporal_path_4d.accels_by_time
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.land_cost = spatiotemporal_path_4d.land_cost
@@ -20,7 +19,7 @@ class Route(object):
         self.latlngs = spatiotemporal_path_4d.latlngs.tolist()       
         self.pylons = spatiotemporal_path_4d.pylons
         self.pylon_cost = spatiotemporal_path_4d.pylon_cost
-        self.speed_profile = spatiotemporal_path_4d.speed_profile
+        self.speeds_by_time = spatiotemporal_path_4d.speeds_by_time.tolist()
         self.total_cost = round(spatiotemporal_path_4d.total_cost / 10.0**9, 3)
         self.trip_time = round(spatiotemporal_path_4d.trip_time / 60.0, 3)
         self.tube_cost = spatiotemporal_path_4d.tube_cost
@@ -29,7 +28,7 @@ class Route(object):
 
     def as_dict(self, index):
         route_dict = {
-            "accelerationProfile": self.scalar_acceleration_profile,
+            "accelerationProfile": self.accels_by_time,
             "comfortProfile": self.comfort_profile,
             "comfortRating": self.comfort_rating,
             "index": index,
@@ -38,7 +37,7 @@ class Route(object):
             "latlngs": self.latlngs,
             "pylons": self.pylons,
             "pylonCost": self.pylon_cost,
-            "speedProfile": self.speed_profile,
+            "speedProfile": self.speeds_by_time,
             "totalCost": self.total_cost,
             "tripTime": self.trip_time,
             "tubeCost": self.tube_cost,
