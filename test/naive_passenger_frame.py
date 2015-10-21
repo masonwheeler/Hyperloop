@@ -43,26 +43,13 @@ class NaivePassengerFrame(object):
         z_vectors = np.array(z_vectors_list)
         y_vectors = np.cross(z_vectors, tangent_vectors)
         i = 0
-        print tangent_vectors[i]
-        print y_vectors[i]
-        print z_vectors[i]
-        change_of_basis_matrix = np.linalg.inv(
-                                   np.matrix.transpose(
-                                     np.array(
-                                       tangent_vectors[i],
-                                       y_vectors[i],
-                                       z_vectors[i],
-                                       )
-                                     )
-                                   )
-        print change_of_basis_matrix
         change_of_basis_matrices = [np.linalg.inv(
                                         np.matrix.transpose(
-                                            np.array(
+                                            np.array([
                                                 tangent_vectors[i],
                                                 y_vectors[i],
-                                                z_vectors[i],
-                                                )
+                                                z_vectors[i]
+                                                ])
                                             )
                                         )
                                     for i in range(vels_vectors.shape[0])]
