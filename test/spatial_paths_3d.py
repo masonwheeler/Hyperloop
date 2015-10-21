@@ -26,13 +26,13 @@ class SpatialPath3d(object):
         max_allowed_speeds_vertical = \
             curvature_constrain_speed.get_vertical_curvature_constrained_speeds(
                                                            tube_curvature_array)
-        effective_max_allowed_speeds_by_arc_length = np.minimum(
-            max_allowed_speeds_vertical, max_allowed_speeds_lateral)
+        max_allowed_speeds = np.minimum(max_allowed_speeds_vertical, 
+                                        max_allowed_speeds_lateral)
         time_step_size = 1 #Second
         speeds_by_time, min_time = \
             reparametrize_speed.constrain_and_reparametrize_speeds(
-        effective_max_allowed_speeds_by_arc_length, arc_lengths, time_step_size)
-        return min_time
+                   max_allowed_speeds, arc_lengths, time_step_size)
+        return [min_time, max_allowed_speeds]
 
     def compute_total_cost(self):
         total_cost = (self.land_cost + self.pylon_cost +
@@ -51,8 +51,9 @@ class SpatialPath3d(object):
         self.arc_lengths = tube_profile.arc_lengths
         self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
         self.tube_curvature_array = tube_profile.tube_curvature_array
-        self.min_time = self.compute_min_time(self.spatial_curvature_array,
-                               self.tube_curvature_array, self.arc_lengths)
+        self.min_time, self.max_allowed_speeds = self.compute_min_time(
+            self.spatial_curvature_array, self.tube_curvature_array, 
+                                                   self.arc_lengths)
         self.total_cost = self.compute_total_cost()
 
     def fetch_min_time_and_total_cost(self):
