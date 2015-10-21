@@ -30,27 +30,11 @@ SUB-SCRIPTS:
 import math
 import numpy as np
 
-class ComfortProfile(object):
+
+class SperlingComfortProfile(object):
 
     LP_NORM_POWER = 10
     PARTITION_LENGTH = 500
-
-    def numerical_derivative(self, f, t):
-        """Implements a numerical derivative
-        """
-        N = len(f)
-        df = [0] * N
-        for i in range(1, N - 1):
-            df[i] = 0.5 * ((f[i + 1] - f[i]) / (t[i + 1] - t[i]) +
-                           (f[i] - f[i - 1]) / (t[i] - t[i - 1]))
-        df[0] = (f[1] - f[0]) / (t[1] - t[0])
-        df[N - 1] = (f[N - 1] - f[N - 2]) / (t[N - 1] - t[N - 2])
-        return df
-
-    def compute_component_derivative(self, spatial_component_coords):
-        spatial_component_derivative = self.numerical_derivative(
-                        spatial_component_coords, self.time_checkpoints)
-        return spatial_component_derivative
 
     def get_vertical_weighting_factor(self, frequency):
         vertical_weighting_factor = 0.588 * math.sqrt(
@@ -234,16 +218,5 @@ class ComfortProfile(object):
                                                  self.LP_NORM_POWER)
         return comfort_rating
 
-    def __init__(self, velocity_profile, tube_coords):
-        self.time_check_points = velocity_profile.time_check_points
-        self.compute_velocities_vectors()
-        self.compute_accelerations_vectors()
-        self.compute_accelerations_vectors_in_passenger_frame()
-
-
-
-
-
-
-
+    def __init__(self, passenger_frame):
 

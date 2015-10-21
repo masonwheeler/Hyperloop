@@ -3,12 +3,23 @@ Original Developer: Jonathan Ward
 """
 
 
-class NaivePodOrientation(object):
-
-    def __init__(self):
+import numpy as np
 
 
-class FrenetSerretPodOrientation(object):
+class FrenetSerretPassengerFrame(object):
+
+    def compute_derivative(self, x_vals, y_vals):
+        y_diffs = np.ediff1d(y_vals)
+        x_diffs = np.ediff1d(x_vals)
+        quotients = np.divide(y_diffs, x_diffs)
+        quotients_a = quotients[:-1]
+        quotients_b = quotients[1:]
+        mean_quotients = (quotients_a + quotients_b) / 2.0
+        derivative = np.empty(x_vals.shape[0])
+        derivative[1:-1] = mean_quotients
+        derivative[0] = quotients[0]
+        derivative[-1] = quotients[-1]
+        return derivative
 
     def compute_velocities_vectors(self, tube_coords, time_checkpoints):
         x_coords, y_coords, z_coords = np.transpose(tube_coords)
@@ -54,7 +65,7 @@ class FrenetSerretPodOrientation(object):
             for i in range(len(accels_vectors))]
         return frenet_serret_accels_vectors        
 
-    def __init__(self, vels_vectors, accels_vectors):
+    def __init__(self, tube_coords, time_checkpoints):
 
 
 
