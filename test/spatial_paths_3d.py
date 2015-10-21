@@ -39,15 +39,22 @@ class SpatialPath3d(object):
                       self.tube_cost + self.tunneling_cost)
         return total_cost
 
+    def get_tube_coords(self, tube_elevations, geospatials):
+        x_coords, y_coords = np.transpose(geospatials)
+        z_coords = tube_elevations
+        tube_coords = np.transpose([x_coords, y_coords, z_coords])
+        return tube_coords
+
     def __init__(self, tube_profile, spatial_path_2d):
+        geospatials = spatial_path_2d.geospatials
+        tube_elevations = tube_profile.tube_elevations
         self.land_cost = spatial_path_2d.land_cost
         self.pylon_cost = tube_profile.total_pylon_cost
         self.tube_cost = tube_profile.tube_cost
-        self.tunneling_cost = tube_profile.tunneling_cost        
+        self.tunneling_cost = tube_profile.tunneling_cost
         self.latlngs = spatial_path_2d.latlngs
         self.pylons = tube_profile.build_pylons()
         self.land_elevations = tube_profile.land_elevations
-        self.tube_elevations = tube_profile.tube_elevations
         self.arc_lengths = tube_profile.arc_lengths
         self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
         self.tube_curvature_array = tube_profile.tube_curvature_array
@@ -55,6 +62,8 @@ class SpatialPath3d(object):
             self.spatial_curvature_array, self.tube_curvature_array, 
                                                    self.arc_lengths)
         self.total_cost = self.compute_total_cost()
+        self.tube_coords = self.get_tube_coords(tube_elevations, geospatials)
+        self.tube_elevations = tube_elevations
 
     def fetch_min_time_and_total_cost(self):
         min_time = round(self.min_time / 60.0, 3)

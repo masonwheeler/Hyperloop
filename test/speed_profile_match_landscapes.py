@@ -125,11 +125,13 @@ class SpeedProfile(object):
         return speeds_by_arc_length
 
     def reparametrize_speed(self, arc_lengths, speeds_by_arc_length):
+        times_by_arc_length = \
+            reparametrize_speed.speeds_by_arc_length_to_times_by_arc_length(
+                                          speeds_by_arc_length, arc_lengths)        
         speeds_by_time, cumulative_time_steps = \
             reparametrize_speed.speeds_by_arc_length_to_speeds_by_time(
                 speeds_by_arc_length, arc_lengths, self.TIME_STEP_SIZE)
-        accels_by_time = []
-        return [cumulative_time_steps, speeds_by_time, accels_by_time]        
+        return [times_by_arc_length, cumulative_time_steps, speeds_by_time]
     
     def __init__(self, spatial_path_3d,
                  max_longitudinal_accel=None, jerk_tol=None):
@@ -147,11 +149,11 @@ class SpeedProfile(object):
         max_speeds = spatial_path_3d.max_allowed_speeds
         speeds_by_arc_length = self.build_speeds_by_arc_length(arc_lengths, 
                                                                 max_speeds)
-        cumulative_time_steps, speeds_by_time, accels_by_time = \
+        times_by_arc_length, cumulative_time_steps, speeds_by_time = \
             self.reparametrize_speed(arc_lengths, speeds_by_arc_length)      
-        trip_time = cumulative_time_steps[-1]
-        self.cumulative_time_steps = cumulative_time_steps
+        trip_time = times_by_arc_length[-1]
+        self.times_by_arc_length = times_by_arc_length
         self.speeds_by_arc_length = speeds_by_arc_length
         self.trip_time = trip_time
         self.speeds_by_time = speeds_by_time
-        self.accels_by_time = accels_by_time
+        self.accels_by_time = [] #accels_by_time
