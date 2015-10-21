@@ -44,9 +44,9 @@ class SpatiotemporalPath4d(object):
 class SpatiotemporalPathsSet4d(object):
 
     def build_velocity_profiles_v1(self, spatial_path_3d):
-        #velocity_profile = self.velocity_builder(spatial_path_3d)
-        #velocity_profiles = [velocity_profile]
-        velocity_profiles = [0]
+        velocity_profile = self.velocity_builder(spatial_path_3d)
+        velocity_profiles = [velocity_profile]
+        #velocity_profiles = [0]
         return velocity_profiles
 
     def build_paths(self, spatial_path_3d, velocity_profiles):
