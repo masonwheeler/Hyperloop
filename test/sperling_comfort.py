@@ -41,7 +41,7 @@ class SperlingComfortProfile(object):
                   times_by_arc_lengths, self.PARTITION_LENGTH)
         frame_accel_vectors_partitions = self.partition_list(
                       frame_accel_vectors, self.PARTITION_LENGTH)
-        return frame_accels_vectors_partitions
+        return [times_by_arc_length_partitions, frame_accels_vectors_partitions]
 
     def get_vertical_weighting_factor(self, frequency):
         """
@@ -59,8 +59,9 @@ class SperlingComfortProfile(object):
         lateral_weighting_factor = vertical_weighting_factor * 1.25
         return lateral_weighting_factor
 
-    def weigh_accels_frequencies(frame_component_accels_fft,
-                component_weighting_function, time_interval):
+    def get_component_comfort(frame_component_accels,
+             component_weighting_function, time_interval):   
+        frame_component_accels_fft = np.fft.fft(frame_component_accels)
         frequency_spectrum_width = frame_component_accels_fft.shape[0]
         frame_component_accels_freqs = (frame_component_accels_fft /
                                         frame_spectrum_width)
@@ -70,9 +71,12 @@ class SperlingComfortProfile(object):
         weighting_factors_array = np.array(weighting_factors)
         weighted_component_accels_freqs = np.dot(weighting_factors,
                                       frame_component_accels_freqs)
-        return weighted_component_accels_freqs
+        weighted_component_accels_freqs_rms = np.sqrt(np.sum(np.square(
+                                        weighted_component_accels_freqs)))
+        component_comfort_rating = 4.42*weighted_component_accels_freqs_rms**0.3
+        return component_comfort_rating
 
-    def compute_partition_comfort_value(self, 
+    def compute_partition_comfort_rating(self, 
             times_by_arc_length_partition, frame_accel_vectors_partition):
         """
         See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
@@ -81,7 +85,11 @@ class SperlingComfortProfile(object):
                                                  frame_accel_vectors_partition)
         time_interval = (times_by_arc_length_partition[-1] - 
                          times_by_arc_length_partition[0])
-        
+        y_comfort_rating = self.get_component_comfort(frame_y_accels, 
+                    self.get_lateral_weighting_factor, time_interval)
+        z_comfort_rating = self.get_component_comfort(frame_z_accels, 
+                    self.get_lateral_weighting_factor, time_interval)
+        return [y_comfort_rating, z_comfort_rating]
 
     def compute_Lp_norm(self, t, x, p):
         """Computes the discrete L^p norm of a given list of elements
@@ -96,4 +104,3 @@ class SperlingComfortProfile(object):
         return comfort_rating
 
     def __init__(self, passenger_frame):
-
