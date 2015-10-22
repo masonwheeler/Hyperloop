@@ -81,9 +81,7 @@ class SpatialPathsSet3d(object):
     """
 
     def build_tube_profiles(self, tube_builder, elevation_profile):
-        t1 = time.time()
         tube_profile = tube_builder(elevation_profile)
-        print time.time() - t1
         tube_profiles = [tube_profile]
         return tube_profiles
 

@@ -78,6 +78,7 @@ def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
     test_smoothing_factor = initial_smoothing_factor
     if is_error_valid:
         while not is_error_valid:
+            print "test smoothing factor: " + str(test_smoothing_factor)
             test_smoothing_factor *= 1.0 / smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_error_valid = error_test_2d(x_spline, y_spline, s_values,
@@ -102,12 +103,8 @@ def bounded_error_graph_interpolation(graph_points, resolution):
     weights[0] = weights[-1] = end_weights
     smoothing_factor = 10**4
     x_spline, y_spline = smoothing_interpolation_with_max_error(
-                                                   points_x_vals_array,
-                                                   points_y_vals_array,
-                                                                s_vals,
-                                                               weights,
-                                                      smoothing_factor,
-                                                            resolution)
+        points_x_vals_array, points_y_vals_array, s_vals, weights,
+                                     smoothing_factor, resolution)
     sampled_x_vals = x_spline(s_vals)
     sampled_y_vals = y_spline(s_vals)
     interpolated_points = np.transpose([sampled_x_vals, sampled_y_vals])

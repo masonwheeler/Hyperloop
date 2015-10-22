@@ -175,8 +175,8 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
 
 class SpatialGraphsSet(abstract_graphs.AbstractGraphsSet):
 
-    NUM_FRONTS_TO_SELECT = 3
-    GRAPH_FILTER_MIN_NUM_EDGES = 4
+    NUM_FRONTS_TO_SELECT = 2
+    GRAPH_FILTER_MIN_NUM_EDGES = 2
 
     def get_spatial_graphs_min_times_and_total_costs(self, spatial_graphs):
         spatial_graphs_min_times_and_total_costs = \
