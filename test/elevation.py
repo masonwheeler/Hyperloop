@@ -42,7 +42,7 @@ class ElevationProfile(object):
         arc_length_step_size = (parameters.PYLON_SPACING / 
                                    elevation_points_to_pylon_points_ratio)
         geospatials, arc_lengths = util.build_grid(start_geospatial,
-                                                     end_geospatial)
+                               end_geospatial, arc_length_step_size)
         latlngs = geospatials_to_latlngs(geospatials)
         data = cls(geospatials, latlngs, arc_lengths)
         return data        
@@ -66,7 +66,6 @@ class ElevationProfile(object):
         merged_arc_lengths = util.shift_and_glue_array_pair(
                             elevation_profile_a.arc_lengths,
                             elevation_profile_b.arc_lengths)
-        #arc_length_step_size = elevation_profile_a.arc_length_step_size
         data = cls(merged_geospatials, merged_latlngs, merged_arc_lengths, 
                    land_elevations=merged_land_elevations,
                    geospatials_partitions=merged_geospatials_partitions)

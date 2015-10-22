@@ -143,8 +143,10 @@ class ParetoFront(object):
                 try:
                     convex_hull = scipy.spatial.ConvexHull(self.points_array)
                 # If convex hull not built, raise a value error.
-                except scipy.spatial.qhull.QhullError:
-                    print "all points are in a line."
+                except scipy.spatial.qhull.QhullError:    
+                    print "degenerate hull."
+                    print self.points_array
+                    print ParetoFront.remove_duplicates(self.points_array)
                     raise ValueError("All points are in a line.")
                 # If another strange error occurs, record that.
                 except ValueError:
@@ -204,7 +206,9 @@ class ParetoFront(object):
                     convex_hull = scipy.spatial.ConvexHull(pruned_points)
                 # if convex hull not built, raise a value error.
                 except scipy.spatial.qhull.QhullError:
-                    print "all points are in a line."
+                    print "degenerate hull."
+                    print self.points_array
+                    print ParetoFront.remove_duplicates(self.points_array)
                     raise ValueError("All points are in a line.")
                 # If another strange error occurs, record that.
                 except ValueError:

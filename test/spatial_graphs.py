@@ -70,8 +70,10 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         if self.min_time == None:
             return None
         else:
-            min_time = round(self.min_time / 60.0, 3)
-            total_cost = round(self.total_cost / 10.0**9, 3)
+            min_time = round(self.min_time, 6)
+            total_cost = round(self.total_cost / 10.0**6, 6)
+            print "min time: " + str(min_time)
+            print "total cost: " + str(total_cost)
             return [min_time, total_cost]
 
     @classmethod
