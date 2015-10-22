@@ -7,7 +7,7 @@ import numpy as np
 
 # Custom Modules:
 import cacher
-#import sperling_comfort
+import sperling_comfort
 import paretofront
 import naive_passenger_frame
 import util
@@ -20,8 +20,10 @@ class SpatiotemporalPath4d(object):
         times_by_arc_length = speed_profile.times_by_arc_length
         passenger_frame = naive_passenger_frame.NaivePassengerFrame(tube_coords,
                                                             times_by_arc_length)
-        comfort_profile = []
-        comfort_rating = 0
+        sperling_comfort_profile = sperling_comfort.SperlingComfortProfile(
+                                                               passenger_frame)
+        comfort_profile = sperling_comfort_profile.comfort_profile
+        comfort_rating = sperling_comfort_profile.comfort_rating
         return [comfort_profile, comfort_rating]
 
     def __init__(self, speed_profile, spatial_path_3d):
