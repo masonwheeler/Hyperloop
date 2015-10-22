@@ -63,5 +63,6 @@ class NaivePassengerFrame(object):
                                                  times_by_arc_length)
         accels_vectors = self.compute_accels_vectors(vels_vectors,
                                                      times_by_arc_length)
+        self.times_by_arc_length = times_by_arc_length
         self.frame_accels_vectors = self.compute_naive_frame(
                                         vels_vectors, accels_vectors)

@@ -30,19 +30,6 @@ class SperlingComfortProfile(object):
                       in range(0, len(a_list), partition_length)]
         return partitions
 
-    def partition_passenger_accelerations(self, times_by_arc_lengths,
-                                                frame_accel_vectors):
-        """
-        With the Frenet-Serret frame currently used, the normal vector
-        is the vertical direction for the pod, and the binormal vector
-        is the lateral direction.
-        """        
-        times_by_arc_lengths_partitions = self.partition_list(
-                  times_by_arc_lengths, self.PARTITION_LENGTH)
-        frame_accel_vectors_partitions = self.partition_list(
-                      frame_accel_vectors, self.PARTITION_LENGTH)
-        return [times_by_arc_length_partitions, frame_accels_vectors_partitions]
-
     def get_vertical_weighting_factor(self, frequency):
         """
         See (Gangadharan) equations (7) and (8) for weighting factors.
@@ -89,18 +76,42 @@ class SperlingComfortProfile(object):
                     self.get_lateral_weighting_factor, time_interval)
         z_comfort_rating = self.get_component_comfort(frame_z_accels, 
                     self.get_lateral_weighting_factor, time_interval)
-        return [y_comfort_rating, z_comfort_rating]
+        total_comfort_rating = np.sqrt(y_comfort_rating**2 + 
+                                       z_comfort_rating**2)
+        return total_comfort_rating
 
-    def compute_Lp_norm(self, t, x, p):
+    def compute_lp_norm(self, total_time, time_intervals, x, p):
         """Computes the discrete L^p norm of a given list of elements
         """
-        summand = [(x[i]**p) * (t[i] - t[i - 1]) for i in range(1, len(t))]
-        riemann_sum = sum(summand) / t[-1]
-        return riemann_sum**(1. / p)
+        summand = [(x[i]**p) * (time_intervals[i]) for i in range(1, len(x))]
+        riemann_sum = sum(summand) / total_time
+        lp_norm = riemann_sum**(1. / p)
+        return lp_norm
 
-    def comfort_profile_to_comfort_rating(self, comfort_profile):    
-        comfort_rating = self.compute_Lp_norm(t_comfort, self.comfort_profile,
-                                                 self.LP_NORM_POWER)
-        return comfort_rating
+    def compute_comfort_profile(self, times_by_arc_lengths,
+                                       frame_accel_vectors):
+        """
+        Partition the accels and times.
+        """
+        total_time = times_by_arc_lengths[-1]
+        times_by_arc_lengths_partitions = self.partition_list(
+                  times_by_arc_lengths, self.PARTITION_LENGTH)
+        time_intervals = [(time_partition[-1] - time_partition[0])
+                          for time_partition in times_by_arc_lengths_partitions]
+        frame_accel_vectors_partitions = self.partition_list(
+                      frame_accel_vectors, self.PARTITION_LENGTH)
+        comfort_profile = [self.compute_partition_comfort_rating(
+                               times_by_arc_length_partitions[i], 
+                               frame_accel_vectors_partitions[i])
+                           for i in range(len(times_by_arc_lengths_partitions))]
+        comfort_rating = self.compute_lp_norm(total_time, time_intervals, 
+                                              comfort_profile, self.LP_NORM_POWER)
+        return [comfort_profile, comfort_rating]
 
     def __init__(self, passenger_frame):
+        times_by_arc_length = passenger_frame.times_by_arc_length
+        frame_accels_vectors = passenger_frame.frame_accels_vectors
+        comfort_profile, comfort_rating = self.compute_comfort_profile(
+                                 times_by_arc_length, frame_accels_vectors)
+        self.comfort_profile = comfort_profile
+        self.comfort_rating = comfort_rating
