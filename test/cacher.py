@@ -20,7 +20,7 @@ import config
 #Cache Overwriting Switches#
 ############################
 
-USE_CACHED_DIRECTIONS = True
+USE_CACHED_DIRECTIONS = False
 USE_CACHED_SPATIAL_LATTICE = True
 USE_CACHED_SPATIAL_EDGES = True
 USE_CACHED_SPATIAL_GRAPHS = False

@@ -72,8 +72,6 @@ class SpatialGraph(abstract_graphs.AbstractGraph):
         else:
             min_time = round(self.min_time, 6)
             total_cost = round(self.total_cost / 10.0**6, 6)
-            print "min time: " + str(min_time)
-            print "total cost: " + str(total_cost)
             return [min_time, total_cost]
 
     @classmethod
@@ -242,8 +240,10 @@ class SpatialGraphsSets(abstract_graphs.AbstractGraphsSets):
         costs = []
         times = []
         for graph in self.selected_graphs:
-            costs.append(graph.total_cost)
-            times.append(graph.time)
+            cost = round(graph.total_cost / 10.0**9, 2)
+            time = round(graph.min_time / 60.0, 2)
+            costs.append(cost)
+            times.append(time)
         scatterplot_values = [costs, times]
         scatterplot = [scatterplot_values, color_string]
         return scatterplot
