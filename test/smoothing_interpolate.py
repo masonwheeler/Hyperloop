@@ -33,7 +33,7 @@ def iterative_smoothing_interpolation_2d(x_array, y_array, initial_weights,
     is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
                                           s_values, curvature_threshold)
     smoothing_multiple = 2.0
-    max_smoothing_factor = 10**20
+    max_smoothing_factor = 10**10
     min_smoothing_factor = 10**(-10)
     is_smoothing_factor_bounded_above = True
     is_smoothing_factor_bounded_below = True
@@ -117,7 +117,7 @@ def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
                                                             max_curvature):
     print max_curvature
     extrema_weight = 10**3
-    smoothing_factor = 10**10
+    smoothing_factor = 10**4
     num_points = len(x_vals)
     s_vals = np.arange(num_points)
     weights = np.empty(num_points)

@@ -15,6 +15,9 @@ Last Modification Purpose:
     Refactoring
 """
 
+#Standard Modules
+import numpy as np
+
 # Custom Modules
 import config
 import mergetree
@@ -88,12 +91,13 @@ class AbstractGraphsSet(object):
     def select_graphs(self, num_fronts_to_select):
         try:
             self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
-            selected_graphs_indices = self.front.fronts_indices[-1]
+            selected_graphs_indices = self.front.front_indices
             current_num_fronts = 1
-            while (self.front.build_nextfront() and
+            while (self.front.build_next_front() and
                    current_num_fronts <= num_fronts_to_select):
                 current_num_fronts += 1
-                selected_graphs_indices += self.front.fronts_indices[-1]
+                selected_graphs_indices = np.append(selected_graphs_indices, 
+                                                   self.front.front_indices)
             return selected_graphs_indices
         except ValueError:
             print "encountered value error"
@@ -106,6 +110,8 @@ class AbstractGraphsSet(object):
         self.graphs_a_b_vals = graphs_evaluator(graphs)
         if graphs_num_edges > graph_filter_min_num_edges:
             selected_graphs_indices = self.select_graphs(num_fronts_to_select)
+            print selected_graphs_indices
+            print len(graphs)
             self.selected_graphs = [graphs[i] for i in selected_graphs_indices]
         else: 
             self.selected_graphs = graphs
