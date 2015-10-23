@@ -76,9 +76,12 @@ class TubeEdge(object):
 
 class NaiveTubeProfile(object):
 
-    def compute_tube_elevations(self, arc_lengths, land_elevations):
+    def compute_tube_elevations(self, arc_lengths, land_elevations, 
+                                              peak_resolution=None):
+        if peak_resolution == None:
+            peak_resolution = 10
         land_elevation_peaks_indices_tuple = scipy.signal.argrelmax(
-                                          land_elevations, order=10)
+                             land_elevations, order=peak_resolution)
         land_elevation_peaks_indices = \
             land_elevation_peaks_indices_tuple[0].tolist()
         tube_elevations, tube_curvature_array = \
@@ -91,11 +94,11 @@ class NaiveTubeProfile(object):
         pylons = [tube_point.build_pylon() for tube_point in self.tube_points]
         return pylons
 
-    def __init__(self, elevation_profile):
+    def __init__(self, elevation_profile, peak_resolution=None):
         arc_lengths = elevation_profile.arc_lengths        
         land_elevations = elevation_profile.land_elevations
         tube_elevations, tube_curvature_array = self.compute_tube_elevations(
-                                                arc_lengths, land_elevations)
+                               arc_lengths, land_elevations, peak_resolution)
         latlngs = elevation_profile.latlngs
         tube_points = [TubePoint(arc_lengths[i], land_elevations[i],
                                      tube_elevations[i], latlngs[i]) 

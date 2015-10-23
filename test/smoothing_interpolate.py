@@ -33,13 +33,14 @@ def iterative_smoothing_interpolation_2d(x_array, y_array, initial_weights,
     is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
                                           s_values, curvature_threshold)
     smoothing_multiple = 2.0
-    max_smoothing_factor = 10**10
+    max_smoothing_factor = 10**20
     min_smoothing_factor = 10**(-10)
     is_smoothing_factor_bounded_above = True
     is_smoothing_factor_bounded_below = True
     test_smoothing_factor = initial_smoothing_factor
     if is_curvature_valid:
         while is_curvature_valid and is_smoothing_factor_bounded_below:
+            print test_smoothing_factor
             test_smoothing_factor *= 1.0/ smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
@@ -114,8 +115,9 @@ def bounded_error_graph_interpolation(graph_points, resolution):
 
 def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
                                                             max_curvature):
+    print max_curvature
     extrema_weight = 10**3
-    smoothing_factor = 10**4
+    smoothing_factor = 10**10
     num_points = len(x_vals)
     s_vals = np.arange(num_points)
     weights = np.empty(num_points)

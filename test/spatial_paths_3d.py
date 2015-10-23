@@ -70,6 +70,18 @@ class SpatialPath3d(object):
         total_cost = round(self.total_cost / 10.0**9, 3)
         return [min_time, total_cost]
 
+    def get_plottable_tube_curvature(self, color_string):
+        tube_curvature_list = self.tube_curvature_array.tolist()
+        tube_curvature_points = [self.arc_lengths, tube_curvature_list]
+        plottable_tube_curvature = [tube_curvature_points, color_string]
+        return plottable_tube_curvature
+    
+    def get_plottable_spatial_curvature(self, color_string):                
+        spatial_curvature_list = self.spatial_curvature_array.tolist()
+        spatial_curvature_points = [self.arc_lengths, spatial_curvature_list]
+        plottable_spatial_curvature = [spatial_curvature_points, color_string]
+        return plottable_spatial_curvature
+
     def get_plottable_tube_elevations(self, color_string):
         tube_elevations_points = [self.arc_lengths, self.tube_elevations]
         plottable_tube_elevations = [tube_elevations_points, color_string]
@@ -87,10 +99,10 @@ class SpatialPath3d(object):
         return plottable_tube_coords_3d
 
 
-class SpatialPathsSet3d(object):
-  
+class SpatialPathsSet3d(object):    
+
     def build_tube_profiles(self, tube_builder, elevation_profile):
-        tube_profile = tube_builder(elevation_profile)
+        tube_profile = tube_builder(elevation_profile, peak_resolution=100)
         tube_profiles = [tube_profile]
         return tube_profiles
 

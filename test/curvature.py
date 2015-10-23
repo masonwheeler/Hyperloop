@@ -211,6 +211,8 @@ def test_curvature_validity(curvature_array, curvature_threshhold):
 def curvature_test_2d(x_spline, y_spline, s_values, curvature_threshold):
     splines_curvature = parametric_splines_2d_curvature(x_spline, y_spline,
                                                         s_values)
+    print "spline curvature: " 
+    print np.amax(splines_curvature)   
     is_curvature_valid = test_curvature_validity(splines_curvature,
                                                curvature_threshold)
     return is_curvature_valid

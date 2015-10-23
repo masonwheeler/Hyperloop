@@ -143,16 +143,28 @@ def build_spatial_paths_3d(route_spatial_paths_set_2d):
         if VISUALIZE_PATHS_3D_ELEVATIONS:
             for path_3d in route_spatial_paths_sets_3d.selected_paths:
                 are_axes_equal = False
+                plottable_tube_curvature = \
+                    path_3d.get_plottable_tube_curvature('g')
+                plottable_spatial_curvature = \
+                    path_3d.get_plottable_spatial_curvature('y')
                 plottable_tube_elevations = \
                     path_3d.get_plottable_tube_elevations('r')
                 plottable_land_elevations = \
                     path_3d.get_plottable_land_elevations('b')
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
+                                        plottable_tube_curvature)
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
+                                        plottable_spatial_curvature)
                 visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                                         plottable_tube_elevations)
                 visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
                                         plottable_land_elevations)
+                visualize.plot_objects(visualize.CURVATURE_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
                 visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
                                        are_axes_equal)
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
                 visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
                 visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
         if VISUALIZE_PATHS_COST_TIME_SCATTERPLOT:
