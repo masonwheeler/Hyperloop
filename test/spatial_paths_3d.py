@@ -70,16 +70,25 @@ class SpatialPath3d(object):
         total_cost = round(self.total_cost / 10.0**9, 3)
         return [min_time, total_cost]
 
-import time
+    def get_plottable_tube_elevations(self, color_string):
+        tube_elevations_points = [self.arc_lengths, self.tube_elevations]
+        plottable_tube_elevations = [tube_elevations_points, color_string]
+        return plottable_tube_elevations
+
+    def get_plottable_land_elevations(self, color_string):
+        land_elevations_points = [self.arc_lengths, self.land_elevations]
+        plottable_land_elevations = [land_elevations_points, color_string]
+        return plottable_land_elevations
+
+    def get_plottable_tube_coords_3d(self, color_string):
+        tube_coords_3d_points_array = np.transpose(self.tube_coords)
+        tube_coords_3d_points = tube_coords_3d_points_array.tolist()
+        plottable_tube_coords_3d = [tube_coords_3d_points, color_string]
+        return plottable_tube_coords_3d
+
 
 class SpatialPathsSet3d(object):
   
-    NUM_TUBE_PROFILES = 5
-    """
-    DEFAULT_MAX_CURVATURE = (parameters.MAX_VERTICAL_ACCEL /
-                             parameters.MAX_SPEED**2)
-    """
-
     def build_tube_profiles(self, tube_builder, elevation_profile):
         tube_profile = tube_builder(elevation_profile)
         tube_profiles = [tube_profile]
@@ -127,8 +136,27 @@ class SpatialPathsSets3d(object):
         paths_sets = self.build_paths_sets(spatial_paths_set_2d.paths[0:2],
                                            spatial_paths_set_2d.tube_builder)
         self.selected_paths = self.select_paths(paths_sets)
-        
-                                                             
+
+    def get_plottable_paths_tube_coords_3d(self, color_string):
+        plottable_paths_tube_coords_3d = []
+        for path_3d in self.selected_paths:
+            plottable_path_3d = path_3d.to_plottable(color_string)
+            plottable_paths_3d.append(plottable_path_3d)
+        return plottable_paths_3d 
+
+    def get_cost_time_scatterplot(self, color_string):
+        costs = []
+        times = []
+        for path in self.selected_paths:
+            cost = round(path.total_cost / 10.0**9, 2)
+            time = round(path.min_time / 60.0, 2)
+            costs.append(cost)
+            times.append(time)
+        scatterplot_values = [costs, times]
+        scatterplot = [scatterplot_values, color_string]
+        return scatterplot
+                          
+                                   
 def get_spatial_paths_sets_3d(*args):
     spatial_paths_set_3d = cacher.get_object(SpatialPathsSets3d.NAME,
                                              SpatialPathsSets3d,

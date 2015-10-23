@@ -35,9 +35,10 @@ if config.VISUAL_MODE:
     VISUALIZE_LATTICE = False
     VISUALIZE_EDGES = False
     VISUALIZE_GRAPHS = False
-    VISUALIZE_COST_TIME_SCATTERPLOT = False
+    VISUALIZE_GRAPHS_COST_TIME_SCATTERPLOT = False
     VISUALIZE_PATHS_2D = False
-    VISUALIZE_PATHS_3D = True
+    VISUALIZE_PATHS_3D_ELEVATIONS = True
+    VISUALIZE_PATHS_COST_TIME_SCATTERPLOT = True
 
 
 def build_directions(start, end):
@@ -100,13 +101,13 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                 visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D,
                                        are_axes_equal)
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
-        if VISUALIZE_COST_TIME_SCATTERPLOT:
+        if VISUALIZE_GRAPHS_COST_TIME_SCATTERPLOT:
             are_axes_equal = False
             cost_time_scatterplot = \
                 route_spatial_graphs_sets.get_cost_time_scatterplot('r.')
             visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
             visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
-                                   are_axes_equal)
+                                   are_axes_equal)            
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):
@@ -139,9 +140,28 @@ def build_spatial_paths_3d(route_spatial_paths_set_2d):
     route_spatial_paths_sets_3d = spatial_paths_3d.get_spatial_paths_sets_3d(
                                                   route_spatial_paths_set_2d)
     if config.VISUAL_MODE:
-        if VISUALIZE_PATHS_3D:
-            plottable_paths_3d = \
-                route_spatial_paths_set_3d.get_plottable_paths()            
+        if VISUALIZE_PATHS_3D_ELEVATIONS:
+            for path_3d in route_spatial_paths_sets_3d.selected_paths:
+                are_axes_equal = False
+                plottable_tube_elevations = \
+                    path_3d.get_plottable_tube_elevations('r')
+                plottable_land_elevations = \
+                    path_3d.get_plottable_land_elevations('b')
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                        plottable_tube_elevations)
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                        plottable_land_elevations)
+                visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        if VISUALIZE_PATHS_COST_TIME_SCATTERPLOT:
+            are_axes_equal = False
+            cost_time_scatterplot = \
+                route_spatial_paths_sets_3d.get_cost_time_scatterplot('g.')
+            visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
+            visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
+                                   are_axes_equal)
     return route_spatial_paths_sets_3d
 
 def city_pair_to_paths_3d(start, end):
