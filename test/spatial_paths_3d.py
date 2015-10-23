@@ -137,7 +137,7 @@ class SpatialPathsSets3d(object):
         paths_times_and_costs = [path.fetch_min_time_and_total_cost()
                                  for path in paths]
         front = paretofront.ParetoFront(paths_times_and_costs)
-        optimal_paths_indices = front.fronts_indices[-1]
+        optimal_paths_indices = front.front_indices
         optimal_paths = [paths[i] for i in optimal_paths_indices]
         sorted_paths = sorted(optimal_paths, key=lambda p: p.total_cost)
         print "num paths 3d selected: " + str(len(sorted_paths))

@@ -141,9 +141,10 @@ class ParetoFront(object):
                 # if convex hull not built, raise a value error.
                 except scipy.spatial.qhull.QhullError:
                     print "degenerate hull."
-                    print points_array
-                    print ParetoFront.get_unique_indices(points_array)
-                    raise ValueError("All points are in a line.")
+                    unique_indices = ParetoFront.get_unique_indices(points_array)
+                    pruned_points_indices = ParetoFront.remove_front_indices(
+                                       pruned_points_indices, unique_indices)
+                    return [True, [unique_indices, pruned_points_indices]]
                 # If another strange error occurs, record that.
                 except ValueError:
                     print "Qhull encountered other error"
@@ -165,11 +166,10 @@ class ParetoFront(object):
                 # relative to the points array.
                 front_indices = hull_indices_rel_points[front_indices_rel_hull]
                 # Add the indices of the points in the pareto front to list.
-                front_indices_list = front_indices.tolist()
                 # Remove the indices of the points in the pareto front from list.
                 pruned_points_indices = ParetoFront.remove_front_indices(
                                     pruned_points_indices, front_indices)
-                return [True, [front_indices_list, pruned_points_indices]]
+                return [True, [front_indices, pruned_points_indices]]
 
     def __init__(self, points):
         # Raw points array may contain duplicates
