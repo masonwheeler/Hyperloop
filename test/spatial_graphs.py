@@ -207,8 +207,10 @@ class SpatialGraphsSets(abstract_graphs.AbstractGraphsSets):
     IS_SKIPPED = cacher.SKIP_GRAPHS
     
     def graph_interpolator(self, graph_geospatials):
+        #interpolated_geospatials, curvature = self.spatial_interpolator(
+        #                graph_geospatials, self.spatial_base_resolution)
         interpolated_geospatials, curvature = self.spatial_interpolator(
-                        graph_geospatials, self.spatial_base_resolution)
+                    graph_geospatials, parameters.MAX_LATERAL_CURVATURE)
         return [interpolated_geospatials, curvature]
 
     def merge_two_spatial_graphs(self, spatial_graph_a, spatial_graph_b):

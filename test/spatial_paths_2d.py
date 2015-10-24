@@ -15,6 +15,9 @@ Last Modification Purpose:
     Created Module
 """
 
+# Standard Modules:
+import numpy as np
+
 # Custom Modules:
 import cacher
 import config
@@ -32,6 +35,8 @@ class SpatialPath2d(object):
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
         self.geospatials, self.spatial_curvature_array = \
            spatial_interpolator(graph_geospatials, base_resolution)
+        print "max spatial curvature"
+        print np.amax(self.spatial_curvature_array)
         self.latlngs = geospatials_to_latlngs(self.geospatials)
         self.land_cost = spatial_graph.land_cost
         self.elevation_profile = spatial_graph.elevation_profile

@@ -22,7 +22,7 @@ class SpatialPath3d(object):
                                                                  arc_lengths):
         max_allowed_speeds_lateral = \
             curvature_constrain_speed.get_lateral_curvature_constrained_speeds(
-                                                       spatial_curvature_array)
+                                                       spatial_curvature_array)        
         max_allowed_speeds_vertical = \
             curvature_constrain_speed.get_vertical_curvature_constrained_speeds(
                                                            tube_curvature_array)
@@ -57,7 +57,11 @@ class SpatialPath3d(object):
         self.land_elevations = tube_profile.land_elevations
         self.arc_lengths = tube_profile.arc_lengths
         self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
+        print "max spatial curvature array"
+        print np.amax(self.spatial_curvature_array)
         self.tube_curvature_array = tube_profile.tube_curvature_array
+        print "max tube curvature array"
+        print np.amax(self.tube_curvature_array)
         self.min_time, self.max_allowed_speeds = self.compute_min_time(
             self.spatial_curvature_array, self.tube_curvature_array, 
                                                    self.arc_lengths)

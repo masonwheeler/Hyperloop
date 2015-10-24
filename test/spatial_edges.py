@@ -108,10 +108,13 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.parallel_resolution
         max_curvature = parameters.MAX_LATERAL_CURVATURE
+        print "max lateral curvature"
+        print max_curvature
         spatial_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
         degree_constraint = angle_constraint.compute_angle_constraint(
                               length_scale, self.spatial_interpolator,
                                     max_curvature, spatial_resolution)
+        print degree_constraint
         return degree_constraint            
 
     def build_coordinates(self):

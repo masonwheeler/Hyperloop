@@ -9,8 +9,6 @@ import numpy as np
 # Custom Modules:
 import curvature
 
-import matplotlib.pyplot as plt
-import math
 
 def smoothing_splines_2d(x_array, y_array, s_values, weights, smoothing_factor):
     x_spline = scipy.interpolate.UnivariateSpline(s_values, x_array, w=weights)
@@ -79,7 +77,6 @@ def smoothing_interpolation_with_max_error(x_array, y_array, s_values,
     test_smoothing_factor = initial_smoothing_factor
     if is_error_valid:
         while not is_error_valid:
-            print "test smoothing factor: " + str(test_smoothing_factor)
             test_smoothing_factor *= 1.0 / smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_error_valid = error_test_2d(x_spline, y_spline, s_values,
@@ -113,9 +110,25 @@ def bounded_error_graph_interpolation(graph_points, resolution):
                                                            y_spline, s_vals)
     return [interpolated_points, curvature_array_2d]
 
+def get_bounded_curvature_graph_interpolation(graph_points, max_curvature):
+    x_vals, y_vals = np.transpose(graph_points)
+    num_points = graph_points.shape[0]
+    s_vals = np.arange(num_points)
+    end_weights = 10**3
+    weights = np.empty(num_points)
+    weights.fill(1)
+    weights[0] = weights[-1] = end_weights
+    smoothing_factor = 10**4
+    x_spline, y_spline = iterative_smoothing_interpolation_2d(x_vals, y_vals,
+                                    weights, smoothing_factor, max_curvature)
+    curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
+                                                           y_spline, s_vals)
+    x_vals = x_spline(s_vals)
+    y_vals = y_spline(s_vals)
+    return [[x_vals, y_vals], curvature_array_2d]
+
 def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
                                                             max_curvature):
-    print max_curvature
     extrema_weight = 10**3
     smoothing_factor = 10**4
     num_points = len(x_vals)
