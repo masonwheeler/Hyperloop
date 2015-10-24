@@ -147,6 +147,7 @@ class SpeedProfile(object):
 
         arc_lengths = spatial_path_3d.arc_lengths
         max_speeds = spatial_path_3d.max_allowed_speeds
+        max_speeds[0] = max_speeds[-1] = 0.0
         speeds_by_arc_length = self.build_speeds_by_arc_length(arc_lengths, 
                                                                 max_speeds)
         times_by_arc_length, cumulative_time_steps, speeds_by_time = \

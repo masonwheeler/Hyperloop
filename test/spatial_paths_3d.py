@@ -57,16 +57,10 @@ class SpatialPath3d(object):
         self.land_elevations = tube_profile.land_elevations
         self.arc_lengths = tube_profile.arc_lengths
         self.spatial_curvature_array = spatial_path_2d.spatial_curvature_array
-        print "max spatial curvature array"
-        print np.amax(self.spatial_curvature_array)
         self.tube_curvature_array = tube_profile.tube_curvature_array
-        print "max tube curvature array"
-        print np.amax(self.tube_curvature_array)
         self.min_time, self.max_allowed_speeds = self.compute_min_time(
             self.spatial_curvature_array, self.tube_curvature_array, 
                                                    self.arc_lengths)
-        print "min time: "
-        print round(self.min_time / 60.0, 3)
         self.total_cost = self.compute_total_cost()
         self.tube_coords = self.get_tube_coords(tube_elevations, geospatials)
         self.tube_elevations = tube_elevations
