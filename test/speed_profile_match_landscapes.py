@@ -155,5 +155,6 @@ class SpeedProfile(object):
         self.times_by_arc_length = times_by_arc_length
         self.speeds_by_arc_length = speeds_by_arc_length
         self.trip_time = trip_time
+        self.cumulative_time_steps = cumulative_time_steps
         self.speeds_by_time = speeds_by_time
         self.accels_by_time = [] #accels_by_time

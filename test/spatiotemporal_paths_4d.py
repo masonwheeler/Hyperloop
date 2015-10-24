@@ -21,17 +21,20 @@ class SpatiotemporalPath4d(object):
         passenger_frame = naive_passenger_frame.NaivePassengerFrame(tube_coords,
                                                             times_by_arc_length)
         sperling_comfort_profile = sperling_comfort.SperlingComfortProfile(
-                                                               passenger_frame)
-        comfort_profile = sperling_comfort_profile.comfort_profile
-        comfort_rating = sperling_comfort_profile.comfort_rating
-        return [comfort_profile, comfort_rating]
+                                                               passenger_frame)        
+        return sperling_comfort_profile
 
     def __init__(self, speed_profile, spatial_path_3d):
-        self.comfort_profile, self.comfort_rating = self.compute_comfort(
-                                          speed_profile, spatial_path_3d)
-        self.time_check_points = speed_profile
+        sperling_comfort_profile = self.compute_comfort(speed_profile, 
+                                                        spatial_path_3d)
+        self.comfort_profile = sperling_comfort_profile.comfort_profile
+        self.comfort_rating = sperling_comfort_profile.comfort_rating
+        self.comfort_interval_time_checkpoints = \
+            sperling_comfort_profile.comfort_interval_time_checkpoints
+        self.times_by_arc_length = speed_profile.times_by_arc_length
         self.speeds_by_time = speed_profile.speeds_by_time
         self.accels_by_time = speed_profile.accels_by_time
+        self.cumulative_time_steps = speed_profile.cumulative_time_steps
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
         self.latlngs = spatial_path_3d.latlngs
@@ -48,8 +51,24 @@ class SpatiotemporalPath4d(object):
     def get_time_and_cost(self):
         return [self.trip_time, self.total_cost]
 
-    def get_plottable_comfort_profile
+    def get_plottable_comfort_profile(self, color_string):
+        comfort_profile_points = [self.comfort_interval_time_checkpoints,
+                                  self.comfort_profile]
+        plottable_comfort_profile = [comfort_profile_points, color_string]
+        return plottable_comfort_profile
 
+    def get_plottable_speeds_by_arc_length(self, color_string):
+        speeds_by_arc_length_points = [self.arc_lengths,
+                                       self.speeds_by_arc_length]
+        plottable_speeds_by_arc_length = [speeds_by_arc_length_points, 
+                                          color_string]
+        return plottale_speeds_by_arc_length
+
+    def get_plottable_speeds_by_time(self, color_string):
+        speeds_by_time_points = [self.cumulative_time_steps, 
+                                 self.speeds_by_time]
+        plottable_speeds_by_time = [speeds_by_time_points, color_string]
+        return plottable_speeds_by_time            
 
 class SpatiotemporalPathsSet4d(object):
 

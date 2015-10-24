@@ -100,6 +100,8 @@ class SperlingComfortProfile(object):
         total_time = times_by_arc_lengths[-1]
         times_by_arc_lengths_partitions = self.partition_list(
                   times_by_arc_lengths, self.PARTITION_LENGTH)
+        time_checkpoints = [time_partition[-1] for time_partition in
+                            times_by_arc_lengths_partitions]
         time_intervals = [(time_partition[-1] - time_partition[0])
                           for time_partition in times_by_arc_lengths_partitions]
         frame_accel_vectors_partitions = self.partition_list(
