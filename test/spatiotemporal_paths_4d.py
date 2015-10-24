@@ -30,13 +30,11 @@ class SpatiotemporalPath4d(object):
         self.comfort_profile = sperling_comfort_profile.comfort_profile
         self.comfort_rating = sperling_comfort_profile.comfort_rating
         self.comfort_interval_time_checkpoints = \
-            sperling_comfort_profile.comfort_interval_time_checkpoints
+            sperling_comfort_profile.time_checkpoints
         self.times_by_arc_length = speed_profile.times_by_arc_length
         self.speeds_by_time = speed_profile.speeds_by_time
         self.accels_by_time = speed_profile.accels_by_time
         self.cumulative_time_steps = speed_profile.cumulative_time_steps
-        self.comfort_profile = comfort_profile
-        self.comfort_rating = comfort_rating
         self.latlngs = spatial_path_3d.latlngs
         self.pylons = spatial_path_3d.pylons
         self.land_cost = spatial_path_3d.land_cost      

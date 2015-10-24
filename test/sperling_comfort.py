@@ -112,12 +112,13 @@ class SperlingComfortProfile(object):
                            for i in range(len(times_by_arc_lengths_partitions))]
         comfort_rating = self.compute_lp_norm(total_time, time_intervals, 
                                               comfort_profile, self.LP_NORM_POWER)
-        return [comfort_profile, comfort_rating]
+        return [comfort_profile, comfort_rating, time_checkpoints]
 
     def __init__(self, passenger_frame):
         times_by_arc_length = passenger_frame.times_by_arc_length
         frame_accels_vectors = passenger_frame.frame_accels_vectors
-        comfort_profile, comfort_rating = self.compute_comfort_profile(
-                                 times_by_arc_length, frame_accels_vectors)
+        comfort_profile, comfort_rating, time_checkpoints = \
+        self.compute_comfort_profile(times_by_arc_length, frame_accels_vectors)
+        self.time_checkpoints = time_checkpoints
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
