@@ -27,8 +27,9 @@ class SpatiotemporalPath4d(object):
         return [comfort_profile, comfort_rating]
 
     def __init__(self, speed_profile, spatial_path_3d):
-        comfort_profile, comfort_rating = self.compute_comfort(speed_profile,
-                                                             spatial_path_3d)
+        self.comfort_profile, self.comfort_rating = self.compute_comfort(
+                                          speed_profile, spatial_path_3d)
+        self.time_check_points = speed_profile
         self.speeds_by_time = speed_profile.speeds_by_time
         self.accels_by_time = speed_profile.accels_by_time
         self.comfort_profile = comfort_profile
@@ -46,6 +47,8 @@ class SpatiotemporalPath4d(object):
     
     def get_time_and_cost(self):
         return [self.trip_time, self.total_cost]
+
+    def get_plottable_comfort_profile
 
 
 class SpatiotemporalPathsSet4d(object):
