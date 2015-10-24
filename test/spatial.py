@@ -76,8 +76,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
     """
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
-        smoothing_interpolate.bounded_curvature_graph_interpolation,
-    #        smoothing_interpolate.bounded_error_graph_interpolation,
+          smoothing_interpolate.bounded_curvature_graph_interpolate,
+     #        smoothing_interpolate.bounded_error_graph_interpolate,
                                         tube_naive.NaiveTubeProfile)
     if route_spatial_edges_sets != None:
         if not route_spatial_edges_sets.TUBE_READY:

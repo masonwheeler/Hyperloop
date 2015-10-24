@@ -11,7 +11,9 @@ def save_routes_set(routes_set):
     """
     start_name = routes_set.spatial_metadata["startName"]
     end_name = routes_set.spatial_metadata["endName"]
-    filename = "/" + start_name + "_to_" + end_name + "_routes.json"
+    start_file_name = start_name.replace(" ", "_")
+    end_file_name = end_name.replace(" ", "_")
+    filename = "/" + start_file_name + "_to_" + end_file_name + "_routes.json"
     save_path = DROPBOX_DIRECTORY + filename
     print "Saving routes to: " + save_path
     with open(save_path, 'w') as file_path:

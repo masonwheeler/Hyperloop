@@ -65,6 +65,8 @@ class SpatialPath3d(object):
         self.min_time, self.max_allowed_speeds = self.compute_min_time(
             self.spatial_curvature_array, self.tube_curvature_array, 
                                                    self.arc_lengths)
+        print "min time: "
+        print round(self.min_time / 60.0, 3)
         self.total_cost = self.compute_total_cost()
         self.tube_coords = self.get_tube_coords(tube_elevations, geospatials)
         self.tube_elevations = tube_elevations
@@ -106,7 +108,7 @@ class SpatialPath3d(object):
 class SpatialPathsSet3d(object):    
 
     def build_tube_profiles(self, tube_builder, elevation_profile):
-        tube_profile = tube_builder(elevation_profile, peak_resolution=100)
+        tube_profile = tube_builder(elevation_profile, peak_resolution=200)
         tube_profiles = [tube_profile]
         return tube_profiles
 
@@ -149,7 +151,9 @@ class SpatialPathsSets3d(object):
 
     def __init__(self, spatial_paths_set_2d):
         self.spatial_metadata = spatial_paths_set_2d.spatial_metadata
-        paths_sets = self.build_paths_sets(spatial_paths_set_2d.paths[0:2],
+        test_paths = [spatial_paths_set_2d.paths[0], 
+                      spatial_paths_set_2d.paths[-1]]
+        paths_sets = self.build_paths_sets(test_paths,
                                            spatial_paths_set_2d.tube_builder)
         self.selected_paths = self.select_paths(paths_sets)
 
@@ -180,4 +184,4 @@ def get_spatial_paths_sets_3d(*args):
                                              SpatialPathsSets3d.FLAG,
                                              SpatialPathsSets3d.IS_SKIPPED)
     return spatial_paths_set_3d
- 
+

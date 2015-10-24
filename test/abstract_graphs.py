@@ -110,8 +110,6 @@ class AbstractGraphsSet(object):
         self.graphs_a_b_vals = graphs_evaluator(graphs)
         if graphs_num_edges > graph_filter_min_num_edges:
             selected_graphs_indices = self.select_graphs(num_fronts_to_select)
-            print selected_graphs_indices
-            print len(graphs)
             self.selected_graphs = [graphs[i] for i in selected_graphs_indices]
         else: 
             self.selected_graphs = graphs

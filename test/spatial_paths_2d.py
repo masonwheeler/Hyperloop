@@ -33,10 +33,8 @@ class SpatialPath2d(object):
                                                      geospatials_to_latlngs):
         graph_geospatials = spatial_graph.elevation_profile.geospatials
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
-        self.geospatials, self.spatial_curvature_array = \
-           spatial_interpolator(graph_geospatials, base_resolution)
-        print "max spatial curvature"
-        print np.amax(self.spatial_curvature_array)
+        self.geospatials, self.spatial_curvature_array = spatial_interpolator(
+                          graph_geospatials, parameters.MAX_LATERAL_CURVATURE)
         self.latlngs = geospatials_to_latlngs(self.geospatials)
         self.land_cost = spatial_graph.land_cost
         self.elevation_profile = spatial_graph.elevation_profile

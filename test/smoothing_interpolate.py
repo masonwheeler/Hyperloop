@@ -31,14 +31,13 @@ def iterative_smoothing_interpolation_2d(x_array, y_array, initial_weights,
     is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
                                           s_values, curvature_threshold)
     smoothing_multiple = 2.0
-    max_smoothing_factor = 10**10
+    max_smoothing_factor = 10**20
     min_smoothing_factor = 10**(-10)
     is_smoothing_factor_bounded_above = True
     is_smoothing_factor_bounded_below = True
     test_smoothing_factor = initial_smoothing_factor
     if is_curvature_valid:
         while is_curvature_valid and is_smoothing_factor_bounded_below:
-            print test_smoothing_factor
             test_smoothing_factor *= 1.0/ smoothing_multiple
             set_smoothing_factors_2d(x_spline, y_spline, test_smoothing_factor)
             is_curvature_valid = curvature.curvature_test_2d(x_spline, y_spline,
@@ -110,7 +109,7 @@ def bounded_error_graph_interpolation(graph_points, resolution):
                                                            y_spline, s_vals)
     return [interpolated_points, curvature_array_2d]
 
-def get_bounded_curvature_graph_interpolation(graph_points, max_curvature):
+def bounded_curvature_graph_interpolate(graph_points, max_curvature):
     x_vals, y_vals = np.transpose(graph_points)
     num_points = graph_points.shape[0]
     s_vals = np.arange(num_points)
@@ -118,14 +117,15 @@ def get_bounded_curvature_graph_interpolation(graph_points, max_curvature):
     weights = np.empty(num_points)
     weights.fill(1)
     weights[0] = weights[-1] = end_weights
-    smoothing_factor = 10**4
+    smoothing_factor = 10**10
     x_spline, y_spline = iterative_smoothing_interpolation_2d(x_vals, y_vals,
                                     weights, smoothing_factor, max_curvature)
     curvature_array_2d = curvature.parametric_splines_2d_curvature(x_spline,
                                                            y_spline, s_vals)
     x_vals = x_spline(s_vals)
     y_vals = y_spline(s_vals)
-    return [[x_vals, y_vals], curvature_array_2d]
+    interpolated_points = np.transpose(np.array([x_vals, y_vals]))
+    return [interpolated_points, curvature_array_2d]
 
 def bounded_curvature_extrema_interpolate(x_vals, y_vals, extrema_indices,
                                                             max_curvature):

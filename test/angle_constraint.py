@@ -32,8 +32,8 @@ def test_path_points(path_points, interpolator, max_curvature, max_error):
                                                               max_curvature)
     #is_curvature_acceptable = curvature.test_curvature_validity(
     #                             curvature_array, max_curvature)
-    is_error_valid = test_error_validity(path_points, interpolated_points, 
-                                                                max_error)
+    is_error_valid = test_error_validity(sampled_path_points, 
+                              interpolated_points, max_error)
     if config.VISUAL_MODE and VISUALIZE_CONSTRAINT:
         import visualize
         path_points_x_vals, path_points_y_vals = zip(*path_points)  
@@ -49,7 +49,7 @@ def test_path_points(path_points, interpolator, max_curvature, max_error):
         visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, False)
         visualize.PLOT_QUEUE_SPATIAL_2D.pop()
         visualize.PLOT_QUEUE_SPATIAL_2D.pop()
-    return is_curvature_acceptable
+    return is_error_valid
 
 def compute_angle_constraint(length_scale, interpolator, max_curvature,
                                                              max_error):
