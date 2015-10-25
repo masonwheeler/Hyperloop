@@ -41,7 +41,7 @@ TUNNELING_COST_PER_METER = 32.0 * 10.0**3 #Dollars
 ##########################
 
 MIN_SPEED = MAX_SPEED / 2.0
-JERK_TOL = 2
+JERK_TOL = 2.0
 
 ####################
 #Derived Parameters#

@@ -12,7 +12,7 @@ if config.VISUAL_MODE:
     import visualize
     VISUALIZE_COMFORT = False
     VISUALIZE_SPEEDS_BY_ARC_LENGTH = True
-    VISUALIZE_SPEEDS_BY_TIME = True
+    VISUALIZE_SPEEDS_BY_TIME = False
     VISUALIZE_ACCELS_BY_TIME = False
     
 

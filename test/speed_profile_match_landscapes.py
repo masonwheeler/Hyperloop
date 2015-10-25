@@ -10,6 +10,8 @@ import scipy.interpolate
 import parameters
 import reparametrize_speed
 
+import matplotlib.pyplot as plt
+import time
 
 class SpeedProfile(object):
 
@@ -26,12 +28,23 @@ class SpeedProfile(object):
     
     def test_speeds_pair(self, speed_a, arc_length_a,
                                speed_b, arc_length_b):
+        ##print "speed a: " + str(speed_a)
+        ##print "speed b: " + str(speed_b)
+        ##print "arc length a: " + str(arc_length_a)
+        ##print "arc length b: " + str(arc_length_b)
         speed_difference = speed_b - speed_a
-        arc_length_difference = arc_length_a - arc_length_b
-        mean_vel = (speed_a + speed_b) / 2.0    
+        ##print "speed difference: " + str(speed_difference)
+        arc_length_difference = arc_length_b - arc_length_a
+        ##print "arc length difference: " + str(arc_length_difference)
+        mean_speed = (speed_a + speed_b) / 2.0
+        ##print "mean speed: " + str(mean_speed)
+        time_elapsed = arc_length_difference / mean_speed
+        ##print "time elapsed: " + str(time_elapsed)
+        acceleration = speed_difference / time_elapsed
+        ##print "acceleration: " + str(acceleration)
         
-        variable_a = self.max_longitudinal_accel / mean_vel
-        variable_b = self.jerk_tol / mean_vel**2
+        variable_a = self.max_longitudinal_accel / mean_speed
+        variable_b = parameters.JERK_TOL / mean_speed**2
         
         threshold_arc_length = 2 * variable_a / variable_b
         if arc_length_difference > threshold_arc_length:
@@ -41,12 +54,14 @@ class SpeedProfile(object):
                 (arc_length_difference - (variable_a /variable_b)) * variable_a
         is_speed_pair_compatible = \
             arc_length_difference < arc_length_tolerance
+        ##print is_speed_pair_compatible
+        ##time.sleep(5)
         return is_speed_pair_compatible
             
     def test_speed_indices_pair(self, max_speeds, arc_lengths, speed_index_a,
                                                                speed_index_b):
         if self.index_pairs_tested[speed_index_a][speed_index_b]:
-            return True
+            return False
         else:
             self.index_pairs_tested[speed_index_a][speed_index_b] = True
             self.index_pairs_tested[speed_index_b][speed_index_a] = True
@@ -59,6 +74,7 @@ class SpeedProfile(object):
             return are_speeds_compatible
         
     def test_speed_index(self, speed_index, max_speeds, arc_lengths):
+        
         [position_of_speed_index] = np.searchsorted(
             self.selected_max_speeds_indices, [speed_index])
         previous_speed_index = self.selected_max_speeds_indices[
@@ -104,16 +120,23 @@ class SpeedProfile(object):
                 pass
             else:
                 break
+        print self.selected_max_speeds_indices
         waypoint_arc_lengths = [arc_lengths[index] for index
                                 in self.selected_max_speeds_indices]
         waypoint_max_speeds = [max_speeds[index] for index
                                in self.selected_max_speeds_indices]
+        print waypoint_arc_lengths[1] - waypoint_arc_lengths[0]
+        print waypoint_max_speeds[1] - waypoint_max_speeds[0]
+        print waypoint_arc_lengths[-1] - waypoint_arc_lengths[-2]
+        print waypoint_max_speeds[-1] - waypoint_max_speeds[-2]
         return [waypoint_arc_lengths, waypoint_max_speeds]
         
     def interpolate_speed_waypoints(self, waypoint_arc_lengths,
                                           waypoint_max_speeds):
         speed_spline = scipy.interpolate.PchipInterpolator(
                         waypoint_arc_lengths, waypoint_max_speeds)
+        ##plt.plot(waypoint_arc_lengths, waypoint_max_speeds, 'b.')
+        ##plt.show()
         return speed_spline
             
     def build_speeds_by_arc_length(self, arc_lengths, max_speeds):
