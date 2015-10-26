@@ -148,6 +148,29 @@ class SperlingComfortProfile(object):
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
 
+def wz(f):
+    return 0.588*math.sqrt((1.911 * f**2 + (.25 * f**2)**2) / ((1 - 0.2777 *f**2)**2 + (1.563 * f - 0.0368 * f**3)**2))
+
+def w(f):
+    return [0, wz(f), 1.25 * wz(f)]
+
+def fw_RMS(af, T, mu):
+    N = len(af)+0.0
+    T = T+0.0
+    L = int(math.floor(N/2))
+    awf = [w(m/T)[mu] * af[m] for m in range(-L, L+1)]
+    Sum = sum([np.absolute(accel)**2 for accel in awf])
+    return Sum
+
+#def comfort(v, a, T, mu):
+def comfort(a, T, mu):
+    #N = len(v)
+    N = len(a)
+    #al = aPassenger(v, a, mu)
+    alf = np.fft.fft(a) / N
+    afw_RMS = fw_RMS(alf, T, mu)
+    return 4.42*(afw_RMS)**0.3
+
 
 def sperling_test_function(f):
     test_value = 2.10173 * (
@@ -172,6 +195,9 @@ def test_sperling_comfort_index(f, n):
     component_comfort = SperlingComfortProfile.get_component_comfort(
                                                  accels, operator, t)
     test_value = sperling_test_function(f)
+    mu = 1
+    old_comfort_value = comfort(accels, t, mu)
+    print old_comfort_value
     print component_comfort
     print test_value
 
