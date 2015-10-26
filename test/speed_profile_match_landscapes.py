@@ -10,8 +10,6 @@ import scipy.interpolate
 import parameters
 import reparametrize_speed
 
-import matplotlib.pyplot as plt
-import time
 
 class SpeedProfile(object):
 
@@ -34,8 +32,8 @@ class SpeedProfile(object):
         time_elapsed = arc_length_difference / mean_speed
         acceleration = speed_diff / time_elapsed
         
-        variable_a = self.max_longitudinal_accel / mean_speed
-        variable_b = parameters.JERK_TOL / mean_speed**2
+        variable_a = self.max_longitudinal_accel / (2 * mean_speed)
+        variable_b = self.max_longitudinal_jerk / mean_speed**2
         
         threshold_arc_length = 2 * variable_a / variable_b
         if arc_length_difference < threshold_arc_length:
@@ -116,8 +114,8 @@ class SpeedProfile(object):
         
     def interpolate_speed_waypoints(self, waypoint_arc_lengths,
                                           waypoint_max_speeds):
-        #speed_spline = scipy.interpolate.PchipInterpolator(
-        #                waypoint_arc_lengths, waypoint_max_speeds)
+        ##speed_spline = scipy.interpolate.PchipInterpolator(
+        ##                waypoint_arc_lengths, waypoint_max_speeds)
         speed_spline = scipy.interpolate.InterpolatedUnivariateSpline(
                             waypoint_arc_lengths, waypoint_max_speeds)
         return speed_spline
@@ -134,10 +132,10 @@ class SpeedProfile(object):
         times_by_arc_length = \
             reparametrize_speed.speeds_by_arc_length_to_times_by_arc_length(
                                           speeds_by_arc_length, arc_lengths)
-        print "speeds by arc length: " 
-        print speeds_by_arc_length[:100]
-        print "arc lengths: "
-        print arc_lengths[:100]
+        ##print "speeds by arc length: " 
+        ##print speeds_by_arc_length[:100]
+        ##print "arc lengths: "
+        ##print arc_lengths[:100]
         speeds_by_time, cumulative_time_steps = \
             reparametrize_speed.speeds_by_arc_length_to_speeds_by_time(
                 speeds_by_arc_length, arc_lengths, self.TIME_STEP_SIZE)
@@ -146,18 +144,32 @@ class SpeedProfile(object):
         ##print "speeds by time: " 
         ##print speeds_by_time[:100]
         return [times_by_arc_length, cumulative_time_steps, speeds_by_time]
+
+    def compute_accels_by_time(self, cumulative_time_steps, speeds_by_time):
+        speeds_by_time_spline = scipy.interpolate.InterpolatedUnivariateSpline(
+                                     cumulative_time_steps, speeds_by_time)
+        accels_by_time_spline = speeds_by_time_spline.derivative(n=1)
+        accels_by_time = accels_by_time_spline(cumulative_time_steps)
+        print np.amax(accels_by_time)
+        #print "accels by time: " 
+        #print accels_by_time[:100]
+        jerk_by_time_spline = speeds_by_time_spline.derivative(n=2)
+        jerk_by_time = jerk_by_time_spline(cumulative_time_steps)
+        #print "jerk by time: "
+        #print jerk_by_time[:100]
+        return [accels_by_time, jerk_by_time]
     
     def __init__(self, spatial_path_3d,
-                 max_longitudinal_accel=None, jerk_tol=None):
+                 max_longitudinal_accel=None, max_longitudinal_jerk=None):
         if max_longitudinal_accel == None:
             self.max_longitudinal_accel = parameters.MAX_LONGITUDINAL_ACCEL
         else:
             self.max_longitudinal_accel = max_longitudinal_accel
 
-        if jerk_tol == None:
-            self.jerk_tol = parameters.JERK_TOL
+        if max_longitudinal_jerk == None:
+            self.max_longitudinal_jerk = parameters.MAX_LONGITUDINAL_JERK
         else:
-            self.jerk_tol = jerk_tol
+            self.max_longitudinal_jerk = max_longitudinal_jerk
 
         arc_lengths = spatial_path_3d.arc_lengths
         max_speeds = spatial_path_3d.max_allowed_speeds
@@ -165,12 +177,14 @@ class SpeedProfile(object):
         speeds_by_arc_length = self.build_speeds_by_arc_length(arc_lengths, 
                                                                 max_speeds)
         times_by_arc_length, cumulative_time_steps, speeds_by_time = \
-            self.reparametrize_speed(arc_lengths, speeds_by_arc_length)      
+            self.reparametrize_speed(arc_lengths, speeds_by_arc_length)
+        accels_by_time, jerk_by_time = self.compute_accels_by_time(
+                             cumulative_time_steps, speeds_by_time)
         trip_time = times_by_arc_length[-1]
-        print "TRIP TIME: " + str(round(trip_time / 60.0, 2))
         self.times_by_arc_length = times_by_arc_length
         self.speeds_by_arc_length = speeds_by_arc_length
         self.trip_time = trip_time
         self.cumulative_time_steps = cumulative_time_steps
         self.speeds_by_time = speeds_by_time
-        self.accels_by_time = [] #accels_by_time
+        self.accels_by_time = accels_by_time
+        self.jerk_by_time = jerk_by_time
