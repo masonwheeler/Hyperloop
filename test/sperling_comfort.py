@@ -29,25 +29,27 @@ class SperlingComfortProfile(object):
         partitions = [a_list[i:i + partition_length] for i
                       in range(0, len(a_list), partition_length)]
         return partitions
-
-    def get_vertical_weighting_factor(self, frequency):
+    
+    @staticmethod
+    def get_vertical_weighting_factor(f):
         """
         See (Gangadharan) equations (7) and (8) for weighting factors.
         """
         vertical_weighting_factor = 0.588 * np.sqrt(
-                (1.911 * frequency**2 + (.25 * frequency**2)**2) /
-                ((1 - 0.2777 * frequency**2)**2 +
-                 (1.563 * frequency - 0.0368 * frequency**3)**2)
+                (1.911 * f**2 + (.25 * f**2)**2) /
+                ((1 - (0.2777 * f**2))**2 +
+                 (1.563 * f - 0.0368 * f**3)**2)
             )
         return vertical_weighting_factor
 
     def get_lateral_weighting_factor(self, frequency):
-        vertical_weighting_factor = self.get_vertical_weighting_factor(
-                                                              frequency)
+        vertical_weighting_factor = \
+            SperlingComfortProfile.get_vertical_weighting_factor(frequency)
         lateral_weighting_factor = vertical_weighting_factor * 1.25
         return lateral_weighting_factor
-
-    def get_component_comfort(self, frame_component_accels,
+    
+    @staticmethod
+    def get_component_comfort(frame_component_accels,
              component_weighting_function, time_interval):
         """
         See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
@@ -75,8 +77,8 @@ class SperlingComfortProfile(object):
         frame_x_accels, frame_y_accels, frame_z_accels = np.transpose(
                                                  frame_accel_vectors_partition)
         time_interval = (times_partition[-1] - times_partition[0])
-        y_comfort_rating = self.get_component_comfort(frame_y_accels, 
-                    self.get_lateral_weighting_factor, time_interval)
+        y_comfort_rating = SperlingComfortProfile.get_component_comfort(
+            frame_y_accels, self.get_lateral_weighting_factor, time_interval)
         z_comfort_rating = self.get_component_comfort(frame_z_accels, 
                     self.get_lateral_weighting_factor, time_interval)
         total_comfort_rating = np.sqrt(y_comfort_rating**2 + 
@@ -123,12 +125,35 @@ class SperlingComfortProfile(object):
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
 
-def sperling_test_function(test_frequency):
+
+def sperling_test_function(f):
     test_value = 2.10173 * (
                            (7.97828 * f**4 + 243.944 * f**2) /
                            (f**6 - 28.006 * f**4 + 1393.82 * f**2 + 738.422)
                            )**0.15
     return test_value
 
-def test_sperling_comfort_index(test_frequency):
-    SperlingComfortProfile
+def get_monofrequency_accels(f, t):
+    times = np.arange(0, t, 0.01)
+    ##print times
+    args = 2 * np.pi * f * times
+    ##print args
+    accels = np.sin(args)
+    ##print accels
+    return accels
+
+def test_sperling_comfort_index(f, n):
+    t = float(n) / float(f)
+    accels = get_monofrequency_accels(f, t)
+    operator = SperlingComfortProfile.get_vertical_weighting_factor
+    component_comfort = SperlingComfortProfile.get_component_comfort(
+                                                 accels, operator, t)
+    test_value = sperling_test_function(f)
+    print component_comfort
+    print test_value
+
+
+N = 100
+F = 1
+
+test_sperling_comfort_index(F, N)
