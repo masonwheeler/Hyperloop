@@ -32,28 +32,27 @@ class SpeedProfile(object):
         ##print "speed b: " + str(speed_b)
         ##print "arc length a: " + str(arc_length_a)
         ##print "arc length b: " + str(arc_length_b)
-        speed_difference = speed_b - speed_a
+        speed_diff = abs(speed_b - speed_a)
         ##print "speed difference: " + str(speed_difference)
-        arc_length_difference = arc_length_b - arc_length_a
-        ##print "arc length difference: " + str(arc_length_difference)
+        arc_length_difference = abs(arc_length_b - arc_length_a)
+        ##print "arc length difference: " + str(arc_length_difference)       
         mean_speed = (speed_a + speed_b) / 2.0
         ##print "mean speed: " + str(mean_speed)
-        time_elapsed = arc_length_difference / mean_speed
+        ##time_elapsed = arc_length_difference / mean_speed
         ##print "time elapsed: " + str(time_elapsed)
-        acceleration = speed_difference / time_elapsed
+        ##acceleration = speed_difference / time_elapsed
         ##print "acceleration: " + str(acceleration)
         
         variable_a = self.max_longitudinal_accel / mean_speed
         variable_b = parameters.JERK_TOL / mean_speed**2
         
         threshold_arc_length = 2 * variable_a / variable_b
-        if arc_length_difference > threshold_arc_length:
-            arc_length_tolerance = (arc_length_difference /2)**2 * variable_b
+        if arc_length_difference < threshold_arc_length:
+            max_speed_diff = (arc_length_difference / 2)**2 * variable_b
         else:
-            arc_length_tolerance = \
-                (arc_length_difference - (variable_a /variable_b)) * variable_a
-        is_speed_pair_compatible = \
-            arc_length_difference < arc_length_tolerance
+            max_speed_diff = \
+                (arc_length_difference - (variable_a / variable_b)) * variable_a
+        is_speed_pair_compatible = (speed_diff < max_speed_diff)
         ##print is_speed_pair_compatible
         ##time.sleep(5)
         return is_speed_pair_compatible
@@ -69,8 +68,20 @@ class SpeedProfile(object):
             arc_length_a = arc_lengths[speed_index_a]        
             speed_b = max_speeds[speed_index_b]
             arc_length_b = arc_lengths[speed_index_b]
-            are_speeds_compatible = self.test_speeds_pair(speed_a, arc_length_a, 
+            are_speeds_compatible = self.test_speeds_pair(speed_a, arc_length_a,
                                                           speed_b, arc_length_b)
+            """
+            if speed_index_a == 0 and are_speeds_compatible:
+                print "speed a: " + str(speed_a)
+                print "speed b: " + str(speed_b)
+                print "arc length a: " + str(arc_length_a)
+                print "arc length b: " + str(arc_length_b)
+            if speed_index_b == len(max_speeds) - 1 and are_speeds_compatible:
+                print "speed a: " + str(speed_a)
+                print "speed b: " + str(speed_b)
+                print "arc length a: " + str(arc_length_a)
+                print "arc length b: " + str(arc_length_b)
+            """
             return are_speeds_compatible
         
     def test_speed_index(self, speed_index, max_speeds, arc_lengths):
@@ -126,9 +137,9 @@ class SpeedProfile(object):
         waypoint_max_speeds = [max_speeds[index] for index
                                in self.selected_max_speeds_indices]
         print waypoint_arc_lengths[1] - waypoint_arc_lengths[0]
-        print waypoint_max_speeds[1] - waypoint_max_speeds[0]
+        ##print waypoint_max_speeds[1] - waypoint_max_speeds[0]
         print waypoint_arc_lengths[-1] - waypoint_arc_lengths[-2]
-        print waypoint_max_speeds[-1] - waypoint_max_speeds[-2]
+        ##print waypoint_max_speeds[-1] - waypoint_max_speeds[-2]
         return [waypoint_arc_lengths, waypoint_max_speeds]
         
     def interpolate_speed_waypoints(self, waypoint_arc_lengths,
