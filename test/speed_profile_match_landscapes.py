@@ -114,8 +114,6 @@ class SpeedProfile(object):
         
     def interpolate_speed_waypoints(self, waypoint_arc_lengths,
                                           waypoint_max_speeds):
-        ##speed_spline = scipy.interpolate.PchipInterpolator(
-        ##                waypoint_arc_lengths, waypoint_max_speeds)
         speed_spline = scipy.interpolate.InterpolatedUnivariateSpline(
                             waypoint_arc_lengths, waypoint_max_speeds)
         return speed_spline
@@ -132,17 +130,9 @@ class SpeedProfile(object):
         times_by_arc_length = \
             reparametrize_speed.speeds_by_arc_length_to_times_by_arc_length(
                                           speeds_by_arc_length, arc_lengths)
-        ##print "speeds by arc length: " 
-        ##print speeds_by_arc_length[:100]
-        ##print "arc lengths: "
-        ##print arc_lengths[:100]
         speeds_by_time, cumulative_time_steps = \
             reparametrize_speed.speeds_by_arc_length_to_speeds_by_time(
                 speeds_by_arc_length, arc_lengths, self.TIME_STEP_SIZE)
-        ##print "cumulative time steps:"
-        ##print cumulative_time_steps[:100]
-        ##print "speeds by time: " 
-        ##print speeds_by_time[:100]
         return [times_by_arc_length, cumulative_time_steps, speeds_by_time]
 
     def compute_accels_by_time(self, cumulative_time_steps, speeds_by_time):
@@ -150,13 +140,8 @@ class SpeedProfile(object):
                                      cumulative_time_steps, speeds_by_time)
         accels_by_time_spline = speeds_by_time_spline.derivative(n=1)
         accels_by_time = accels_by_time_spline(cumulative_time_steps)
-        print np.amax(accels_by_time)
-        #print "accels by time: " 
-        #print accels_by_time[:100]
         jerk_by_time_spline = speeds_by_time_spline.derivative(n=2)
         jerk_by_time = jerk_by_time_spline(cumulative_time_steps)
-        #print "jerk by time: "
-        #print jerk_by_time[:100]
         return [accels_by_time, jerk_by_time]
     
     def __init__(self, spatial_path_3d,

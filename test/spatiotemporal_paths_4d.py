@@ -31,8 +31,6 @@ class SpatiotemporalPath4d(object):
         self.comfort_rating = sperling_comfort_profile.comfort_rating
         self.comfort_interval_time_checkpoints = \
             sperling_comfort_profile.time_checkpoints
-        #print "comfort interval time checkpoints: " 
-        #print self.comfort_interval_time_checkpoints
         self.arc_lengths = spatial_path_3d.arc_lengths
         self.times_by_arc_length = speed_profile.times_by_arc_length
         self.speeds_by_arc_length = speed_profile.speeds_by_arc_length
@@ -72,7 +70,23 @@ class SpatiotemporalPath4d(object):
         speeds_by_time_points = [cumulative_time_steps_list, 
                                  speeds_by_time_list]
         plottable_speeds_by_time = [speeds_by_time_points, color_string]
-        return plottable_speeds_by_time            
+        return plottable_speeds_by_time
+
+    def get_plottable_accels_by_time(self, color_string):
+        cumulative_time_steps_list = self.cumulative_time_steps.tolist()
+        accels_by_time_list = self.accels_by_time.tolist()
+        accels_by_time_points = [cumulative_time_steps_list,
+                                 speeds_by_time_list]
+        plottable_accels_by_time = [accels_by_time_points, color_string]
+        return plottable_accels_by_time
+
+    def get_plottable_jerk_by_time(self, color_string):
+        cumulative_time_steps_list = self.cumulative_time_steps.tolist()
+        jerk_by_time_list = self.jerk_by_time.tolist()
+        jerk_by_time_points = [cumulative_time_steps_list,
+                               jerk_by_time_list]
+        plottable_jerk_by_time = [jerk_by_time_points, color_string]
+        return plottable_jerk_by_time
 
 
 class SpatiotemporalPathsSet4d(object):

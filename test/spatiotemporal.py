@@ -12,8 +12,9 @@ if config.VISUAL_MODE:
     import visualize
     VISUALIZE_COMFORT = False
     VISUALIZE_SPEEDS_BY_ARC_LENGTH = False
-    VISUALIZE_SPEEDS_BY_TIME = True
-    VISUALIZE_ACCELS_BY_TIME = False
+    VISUALIZE_SPEEDS_BY_TIME = False
+    VISUALIZE_ACCELS_BY_TIME = True
+    VISUALIZE_JERK_BY_TIME = False
     
 
 def paths_3d_to_paths_4d(spatial_paths_sets_3d):
@@ -50,6 +51,22 @@ def paths_3d_to_paths_4d(spatial_paths_sets_3d):
                                        are_axes_equal)
                 visualize.SPEED_PROFILE_PLOT_QUEUE.pop()
             if VISUALIZE_ACCELS_BY_TIME:
-                pass
+                are_axes_equal = False
+                plottable_accels_by_time = \
+                    path_4d.get_plottable_accels_by_time('b-')
+                visualize.SPEED_PROFILE_PLOT_QUEUE.append(
+                                     plottable_accels_by_time)
+                visualize.plot_objects(visualize.SPEED_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
+                visualize.SPEED_PROFILE_PLOT_QUEUE.pop()
+            if VISUALIZE_JERK_BY_TIME:
+                are_axes_equal = False
+                plottable_jerk_by_time = \
+                    path_4d.get_plottable_jerk_by_time('g-')
+                visualize.SPEED_PROFILE_PLOT_QUEUE.append(
+                                       plottable_jerk_by_time)
+                visualize.plot_objects(visualize.SPEED_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
+                visualize.SPEED_PROFILE_PLOT_QUEUE.pop()
     return spatiotemporal_paths_sets_4d
     

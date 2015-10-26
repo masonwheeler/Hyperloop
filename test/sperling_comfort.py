@@ -21,7 +21,7 @@ import numpy as np
 class SperlingComfortProfile(object):
 
     LP_NORM_POWER = 10
-    PARTITION_LENGTH = 500
+    PARTITION_LENGTH = 180 #Partition into 3 minute intervals
 
     def partition_list(self, a_list, partition_length):
         """Breaks up a list of data points into chunks n-elements long
@@ -71,11 +71,10 @@ class SperlingComfortProfile(object):
         return component_comfort_rating
 
     def compute_partition_comfort_rating(self, 
-            times_by_arc_length_partition, frame_accel_vectors_partition):
+            times_partition, frame_accel_vectors_partition):
         frame_x_accels, frame_y_accels, frame_z_accels = np.transpose(
                                                  frame_accel_vectors_partition)
-        time_interval = (times_by_arc_length_partition[-1] - 
-                         times_by_arc_length_partition[0])
+        time_interval = (times_partition[-1] - times_partition[0])
         y_comfort_rating = self.get_component_comfort(frame_y_accels, 
                     self.get_lateral_weighting_factor, time_interval)
         z_comfort_rating = self.get_component_comfort(frame_z_accels, 
@@ -92,33 +91,44 @@ class SperlingComfortProfile(object):
         lp_norm = riemann_sum**(1. / p)
         return lp_norm
 
-    def compute_comfort_profile(self, times_by_arc_lengths,
+    def compute_comfort_profile(self, cumulative_time_steps,
                                        frame_accel_vectors):
         """
         Partition the accels and times.
         """
-        total_time = times_by_arc_lengths[-1]
-        times_by_arc_lengths_partitions = self.partition_list(
-                  times_by_arc_lengths, self.PARTITION_LENGTH)
+        total_time = cumulative_time_steps[-1]
+        times_partitions = self.partition_list(
+                  cumulative_time_steps, self.PARTITION_LENGTH)
         time_checkpoints = [time_partition[-1] for time_partition in
-                            times_by_arc_lengths_partitions]
+                            times_partitions]
         time_intervals = [(time_partition[-1] - time_partition[0])
-                          for time_partition in times_by_arc_lengths_partitions]
+                          for time_partition in times_partitions]
         frame_accel_vectors_partitions = self.partition_list(
                       frame_accel_vectors, self.PARTITION_LENGTH)
         comfort_profile = [self.compute_partition_comfort_rating(
-                               times_by_arc_lengths_partitions[i], 
+                                             times_partitions[i], 
                                frame_accel_vectors_partitions[i])
-                           for i in range(len(times_by_arc_lengths_partitions))]
+                           for i in range(len(times_partitions))]
         comfort_rating = self.compute_lp_norm(total_time, time_intervals, 
                                               comfort_profile, self.LP_NORM_POWER)
         return [comfort_profile, comfort_rating, time_checkpoints]
 
     def __init__(self, passenger_frame):
-        times_by_arc_length = passenger_frame.times_by_arc_length
+        cumulative_time_steps = passenger_frame.cumulative_time_steps
         frame_accels_vectors = passenger_frame.frame_accels_vectors
         comfort_profile, comfort_rating, time_checkpoints = \
-        self.compute_comfort_profile(times_by_arc_length, frame_accels_vectors)
+           self.compute_comfort_profile(cumulative_time_steps, 
+                                         frame_accels_vectors)
         self.time_checkpoints = time_checkpoints
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
+
+def sperling_test_function(test_frequency):
+    test_value = 2.10173 * (
+                           (7.97828 * f**4 + 243.944 * f**2) /
+                           (f**6 - 28.006 * f**4 + 1393.82 * f**2 + 738.422)
+                           )**0.15
+    return test_value
+
+def test_sperling_comfort_index(test_frequency):
+    SperlingComfortProfile
