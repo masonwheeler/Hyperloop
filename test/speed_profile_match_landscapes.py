@@ -116,8 +116,10 @@ class SpeedProfile(object):
         
     def interpolate_speed_waypoints(self, waypoint_arc_lengths,
                                           waypoint_max_speeds):
-        speed_spline = scipy.interpolate.PchipInterpolator(
-                        waypoint_arc_lengths, waypoint_max_speeds)
+        #speed_spline = scipy.interpolate.PchipInterpolator(
+        #                waypoint_arc_lengths, waypoint_max_speeds)
+        speed_spline = scipy.interpolate.InterpolatedUnivariateSpline(
+                            waypoint_arc_lengths, waypoint_max_speeds)
         return speed_spline
             
     def build_speeds_by_arc_length(self, arc_lengths, max_speeds):
@@ -131,10 +133,18 @@ class SpeedProfile(object):
     def reparametrize_speed(self, arc_lengths, speeds_by_arc_length):
         times_by_arc_length = \
             reparametrize_speed.speeds_by_arc_length_to_times_by_arc_length(
-                                          speeds_by_arc_length, arc_lengths)        
+                                          speeds_by_arc_length, arc_lengths)
+        print "speeds by arc length: " 
+        print speeds_by_arc_length[:100]
+        print "arc lengths: "
+        print arc_lengths[:100]
         speeds_by_time, cumulative_time_steps = \
             reparametrize_speed.speeds_by_arc_length_to_speeds_by_time(
                 speeds_by_arc_length, arc_lengths, self.TIME_STEP_SIZE)
+        ##print "cumulative time steps:"
+        ##print cumulative_time_steps[:100]
+        ##print "speeds by time: " 
+        ##print speeds_by_time[:100]
         return [times_by_arc_length, cumulative_time_steps, speeds_by_time]
     
     def __init__(self, spatial_path_3d,
@@ -157,6 +167,7 @@ class SpeedProfile(object):
         times_by_arc_length, cumulative_time_steps, speeds_by_time = \
             self.reparametrize_speed(arc_lengths, speeds_by_arc_length)      
         trip_time = times_by_arc_length[-1]
+        print "TRIP TIME: " + str(round(trip_time / 60.0, 2))
         self.times_by_arc_length = times_by_arc_length
         self.speeds_by_arc_length = speeds_by_arc_length
         self.trip_time = trip_time
