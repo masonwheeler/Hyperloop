@@ -47,7 +47,7 @@ class SpatiotemporalPath4d(object):
         self.trip_time = speed_profile.trip_time
         self.land_elevations = spatial_path_3d.land_elevations
         self.tube_elevations = spatial_path_3d.tube_elevations
-    
+   
     def get_time_and_cost(self):
         return [self.trip_time, self.total_cost]
 
@@ -65,10 +65,29 @@ class SpatiotemporalPath4d(object):
         return plottable_speeds_by_arc_length
 
     def get_plottable_speeds_by_time(self, color_string):
-        speeds_by_time_points = [self.cumulative_time_steps, 
-                                 self.speeds_by_time]
+        cumulative_time_steps_list = self.cumulative_time_steps.tolist()
+        speeds_by_time_list = self.speeds_by_time.tolist()
+        speeds_by_time_points = [cumulative_time_steps_list, 
+                                 speeds_by_time_list]
         plottable_speeds_by_time = [speeds_by_time_points, color_string]
-        return plottable_speeds_by_time            
+        return plottable_speeds_by_time
+
+    def get_plottable_accels_by_time(self, color_string):
+        cumulative_time_steps_list = self.cumulative_time_steps.tolist()
+        accels_by_time_list = self.accels_by_time.tolist()
+        accels_by_time_points = [cumulative_time_steps_list,
+                                 speeds_by_time_list]
+        plottable_accels_by_time = [accels_by_time_points, color_string]
+        return plottable_accels_by_time
+
+    def get_plottable_jerk_by_time(self, color_string):
+        cumulative_time_steps_list = self.cumulative_time_steps.tolist()
+        jerk_by_time_list = self.jerk_by_time.tolist()
+        jerk_by_time_points = [cumulative_time_steps_list,
+                               jerk_by_time_list]
+        plottable_jerk_by_time = [jerk_by_time_points, color_string]
+        return plottable_jerk_by_time
+
 
 class SpatiotemporalPathsSet4d(object):
 

@@ -11,7 +11,7 @@ class Route(object):
     """For storing a single route option
     """
     def __init__(self, spatiotemporal_path_4d):
-        self.accels_by_time = spatiotemporal_path_4d.accels_by_time
+        self.accels_by_time = spatiotemporal_path_4d.accels_by_time.tolist()
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.land_cost = spatiotemporal_path_4d.land_cost

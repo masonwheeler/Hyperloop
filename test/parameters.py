@@ -27,6 +27,8 @@ MAX_LATERAL_ACCEL = 0.5 * 9.81 #Meters/Second^2
 MAX_LONGITUDINAL_ACCEL = 0.5 * 9.81 #Meters/Second^2
 MAX_VERTICAL_ACCEL = 0.3 * 9.81 #Meters/Second^2
 
+MAX_LONGITUDINAL_JERK = 2.0
+
 ######################
 #Financial Parameters#
 ######################
@@ -41,7 +43,6 @@ TUNNELING_COST_PER_METER = 32.0 * 10.0**3 #Dollars
 ##########################
 
 MIN_SPEED = MAX_SPEED / 2.0
-JERK_TOL = 2.0
 
 ####################
 #Derived Parameters#

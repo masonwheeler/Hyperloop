@@ -2,40 +2,49 @@
 Original Developer: Jonathan Ward
 """
 
+# Standard Modules:
 import numpy as np
-
+import scipy.interpolate
 
 class NaivePassengerFrame(object):
 
-    def compute_derivative(self, x_vals, y_vals):
-        y_diffs = np.ediff1d(y_vals)
-        x_diffs = np.ediff1d(x_vals)
-        quotients = np.divide(y_diffs, x_diffs)
-        quotients_a = quotients[:-1]
-        quotients_b = quotients[1:]
-        mean_quotients = (quotients_a + quotients_b) / 2.0
-        derivative = np.empty(x_vals.shape[0])
-        derivative[1:-1] = mean_quotients
-        derivative[0] = quotients[0]
-        derivative[-1] = quotients[-1]
-        return derivative
-
-    def compute_vels_vectors(self, tube_coords, times_by_arc_lengths):
-        x_coords, y_coords, z_coords = np.transpose(tube_coords)
-        x_vels = self.compute_derivative(times_by_arc_lengths, x_coords)
-        y_vels = self.compute_derivative(times_by_arc_lengths, y_coords)
-        z_vels = self.compute_derivative(times_by_arc_lengths, z_coords)
-        vels_vectors = np.transpose([x_vels, y_vels, z_vels])
-        return vels_vectors
-
-    def compute_accels_vectors(self, vels_vectors, times_by_arc_lengths):
-        x_vels, y_vels, z_vels = np.transpose(vels_vectors)
-        x_accels = self.compute_derivative(times_by_arc_lengths, x_vels)
-        y_accels = self.compute_derivative(times_by_arc_lengths, y_vels)
-        z_accels = self.compute_derivative(times_by_arc_lengths, z_vels)
-        accels_vectors = np.transpose([x_accels, y_accels, z_accels])
-        return accels_vectors
-
+    def reparametrize_components_coords(self, tube_coords, 
+                times_by_arc_lengths, cumulative_time_steps):
+        (x_coords_by_arc_length, 
+         y_coords_by_arc_length, 
+         z_coords_by_arc_length) = np.transpose(tube_coords)
+        x_coords_spline = scipy.interpolate.InterpolatedUnivariateSpline(
+                             times_by_arc_length, x_coords_by_arc_length)
+        y_coords_spline = scipy.interpolate.InterpolatedUnivariateSpline(
+                             times_by_arc_length, y_coords_by_arc_length)
+        z_coords_spline = scipy.interpolate.InterpolatedUnivariateSpline(
+                             times_by_arc_length, z_coords_by_arc_length)
+        x_coords_by_time = x_coords_spline(cumulative_time_steps)
+        y_coords_by_time = y_coords_spline(cumulative_time_steps)
+        z_coords_by_time = z_coords_spline(cumulative_time_steps)
+        coords_by_time_vectors = np.transpose([x_coords_by_time,
+                                               y_coords_by_time,
+                                               z_coords_by_time])
+        x_vels_spline = x_coords_spline.derivative(n=1)
+        y_vels_spline = y_coords_spline.derivative(n=1)
+        z_vels_spline = z_coords_spline.derivative(n=1)
+        x_vels_by_time = x_vels_spline(cumulative_time_steps)
+        y_vels_by_time = y_vels_spline(cumulative_time_steps)
+        z_vels_by_time = z_vels_spline(cumulative_time_steps)
+        vels_by_time_vectors = np.transpose([x_vels_by_time,
+                                             y_vels_by_time,
+                                             z_vels_by_time])
+        x_accels_spline = x_coords_spline.derivative(n=2)
+        y_accels_spline = y_coords_spline.derivative(n=2)
+        z_accels_spline = z_coords_spline.derivative(n=2)
+        x_accels_by_time = x_accels_spline(cumulative_time_steps)
+        y_accels_by_time = y_accels_spline(cumulative_time_steps)
+        z_accels_by_time = z_accels_spline(cumulative_time_steps)
+        accels_by_time_vectors = np.transpose([x_accels_by_time,
+                                             y_accels_by_time,
+                                             z_accels_by_time])
+        return [vels_by_time_vectors, accels_by_time_vectors]
+  
     def compute_naive_frame(self, vels_vectors, accels_vectors):
         vels_norms = np.linalg.norm(vels_vectors, axis=1)
         tangent_vectors = vels_vectors / vels_norms[:,None]
@@ -58,11 +67,9 @@ class NaivePassengerFrame(object):
             for i in range(accels_vectors.shape[0])]
         return naive_frame_accels_vectors
 
-    def __init__(self, tube_coords, times_by_arc_length):
-        vels_vectors = self.compute_vels_vectors(tube_coords,
-                                                 times_by_arc_length)
-        accels_vectors = self.compute_accels_vectors(vels_vectors,
-                                                     times_by_arc_length)
-        self.times_by_arc_length = times_by_arc_length
+    def __init__(self, tube_coords, times_by_arc_length, cumulative_time_steps):
+        vels_vectors, accels_vectors = self.reparametrize_components_coords(
+                    tube_coords, times_by_arc_length, cumulative_time_steps)
+        self.cumulative_time_steps = cumulative_time_steps
         self.frame_accels_vectors = self.compute_naive_frame(
                                         vels_vectors, accels_vectors)
