@@ -9,7 +9,7 @@ import scipy.interpolate
 class NaivePassengerFrame(object):
 
     def reparametrize_components_coords(self, tube_coords, 
-                times_by_arc_lengths, cumulative_time_steps):
+                times_by_arc_length, cumulative_time_steps):
         (x_coords_by_arc_length, 
          y_coords_by_arc_length, 
          z_coords_by_arc_length) = np.transpose(tube_coords)

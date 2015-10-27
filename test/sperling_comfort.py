@@ -158,9 +158,10 @@ def test_sperling_comfort_index(frequency, num_periods, num_accel_samples):
     print "Test value: "
     print test_value
     return component_comfort
-
+"""
 num_accel_samples = 10**4
 num_periods = 10.0
 frequency = 0.01
 
 test_sperling_comfort_index(frequency, num_periods, num_accel_samples)
+"""

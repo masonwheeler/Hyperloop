@@ -18,8 +18,9 @@ class SpatiotemporalPath4d(object):
     def compute_comfort(self, speed_profile, spatial_path_3d):
         tube_coords = spatial_path_3d.tube_coords
         times_by_arc_length = speed_profile.times_by_arc_length
+        cumulative_time_steps = speed_profile.cumulative_time_steps
         passenger_frame = naive_passenger_frame.NaivePassengerFrame(tube_coords,
-                                                            times_by_arc_length)
+                                     times_by_arc_length, cumulative_time_steps)
         sperling_comfort_profile = sperling_comfort.SperlingComfortProfile(
                                                                passenger_frame)        
         return sperling_comfort_profile
