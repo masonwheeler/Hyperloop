@@ -1,0 +1,161 @@
+{
+  "@schema" : "http://json-schema.org/draft-04/schema#",
+
+  "title": "routes set",
+
+  "description": "The set of potential Hyperloop Routes between a given city pair",
+
+  "definitions" : {
+    "latLng": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [{
+        "anyOf": [{
+          "type": "number",
+          "minimum": 0,
+          "maximum": 90,
+        }, {
+          "type": "number",
+          "minimum": -180,
+          "maximum": +180,
+        }],
+      }],
+    },
+
+    "pylon" : {
+      "type" : "object"
+      "properties" : {
+        "cost" : {
+          "description" : "The construction cost of the pylon",
+          "type" : "number",
+        },
+        "height" : {
+          "description" : "The height of the pylon",
+          "type" : "number",
+        },
+        "latlng" : {
+          "description" : "The latitude and longitude of the pylon",
+          "type" : { "$ref" : "#/definitions/latLng"}
+        }
+      }
+    },
+
+    "route" : {
+      "type" : "object",
+      "properties": {
+        "accelerationProfile" : {
+          "description" : "The list of scalar accelerations of the pod taken at given time intervals",
+          "type" : "array",
+          "items" : {
+            "type" : "number"   
+          }
+        },
+        "comfortProfile" : {
+          "description" : "The list of comfort values for the velocity profile taken at given time intervals",
+          "type" : "array",
+          "items" : {
+            "type" : "number"
+          }
+        },
+        "comfortRating" : {
+          "description" : "The overall route comfort rating, derived from the comfort profile",
+          "type" : "array",
+          "items" : {
+            "type" : "number"
+          }
+        },    
+        "index" : { 
+          "description" : "The unique index of the route in the routes set",
+          "type" : "positive integer"
+        },
+        "landCost" : {
+          "description" : "The cost of land acquisition along the route",
+          "type" : "number"
+        },
+        "landElevations" : {
+          "description" : "The elevation of the land along the route",
+          "type" : "array",
+          "items" : {
+            "type" : "number"
+          }
+        },
+        "latlngs" : {
+          "description" : "The latitude and longitude coordinates taken along the route at a given arc_length_spacing",
+          "type" : "array",
+          "items" : {
+            "type" : ["latitude" : "number", "longitude" : "number"]          
+          }
+        },
+        "pylons" : {
+          "description" : "The pylons used to support the tube",
+          "type" : "array",
+          "items" : {
+            "type" : { "$ref" : "#/definitions/pylon"}
+          }
+        },
+        "pylonCost" : {
+          "description" : "The total cost of the constructed pylons",
+          "type" : "number"          
+        },
+        "speedProfile" : {
+          "description" : "The list of speeds of the pod taken at given time intervals",
+          "type" : "array",
+          "items" : {
+            "type" : "number"   
+          }
+        },
+        "totalCost" : {
+          "description" : "The total cost of constructing the route",
+          "type" : "number"          
+        },
+        "tripTime" : {
+          "description" : "The travel time for the route",
+          "type" : "number"    
+        },
+        "tubeCost" : {
+          "description" : "The construction cost for the tube",
+          "type" : "number"
+        },        
+        "tubeElevations" : {
+          "description" : "The elevation of the tube along the route",
+          "type" : "array",
+          "items" : {
+            "type" : "number"
+          }
+        },
+        "tunnelingCost" : {
+          "description" : "The cost of tunneling along the route",
+          "type" : "number"          
+        }
+      }
+    },
+
+    "city" : {
+      "type" : "object",
+      "properties" : {
+        "name" : "string",
+        "coordinates" : { "$ref" : "#/definitions/latLng"}
+      }
+    }
+  }
+
+  "properties" : {
+    "startCity" : {
+      "description" : "The start city in the route (city given first in file name)",
+      "type" :  { "$ref" : "#/definitions/city"}
+    },
+    "endCity" : {
+      "description" : "The start city in the route (city given first in file name)",
+      "type" :  { "$ref" : "#/definitions/city"}
+    },
+    "routes" : {
+      "description" : "The routes in the routes set",
+      "type" : "array",
+      "items" : { "$ref" : "#/definitions/route"}
+    }
+  }
+}
+
+  
+
