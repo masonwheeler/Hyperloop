@@ -42,6 +42,7 @@ class Route(object):
             "pylonCount" : self.pylon_count,
             "speedProfile": self.speeds_by_time,
             "totalCost": self.total_cost,
+            "totalDistance" : self.total_distance,
             "tripTime": self.trip_time,
             "tubeCost": self.tube_cost,
             "tubeElevations": self.tube_elevations,

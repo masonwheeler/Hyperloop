@@ -18,13 +18,13 @@
         }, {
           "type": "number",
           "minimum": -180,
-          "maximum": +180,
+          "maximum": 180,
         }],
       }],
     },
 
     "pylon" : {
-      "type" : "object"
+      "type" : "object",
       "properties" : {
         "cost" : {
           "description" : "The construction cost of the pylon",
@@ -66,8 +66,9 @@
           }
         },    
         "index" : { 
-          "description" : "The unique index of the route in the routes set",
-          "type" : "positive integer"
+          "description" : "The unique index of the route in the routes set, starting at 1",
+          "type" : "integer",
+          "min" : 1
         },
         "landCost" : {
           "description" : "The cost of land acquisition along the route",
@@ -84,7 +85,7 @@
           "description" : "The latitude and longitude coordinates taken along the route at a given arc_length_spacing",
           "type" : "array",
           "items" : {
-            "type" : ["latitude" : "number", "longitude" : "number"]          
+            "type" : { "$ref" : "#/definitions/latLng"}
           }
         },
         "pylons" : {
@@ -98,6 +99,10 @@
           "description" : "The total cost of the constructed pylons",
           "type" : "number"          
         },
+        "pylonCount" : {
+          "description" : "The total number of pylons used in the route",
+          "type" : "integer"
+        }
         "speedProfile" : {
           "description" : "The list of speeds of the pod taken at given time intervals",
           "type" : "array",
@@ -107,7 +112,11 @@
         },
         "totalCost" : {
           "description" : "The total cost of constructing the route",
-          "type" : "number"          
+          "type" : "number"
+        },
+        "totalDistance" : {
+          "description" : "The total distance of the route",
+          "type" : "number"
         },
         "tripTime" : {
           "description" : "The travel time for the route",
@@ -138,7 +147,7 @@
         "coordinates" : { "$ref" : "#/definitions/latLng"}
       }
     }
-  }
+  },
 
   "properties" : {
     "startCity" : {
