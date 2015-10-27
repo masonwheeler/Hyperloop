@@ -48,39 +48,6 @@ class SperlingComfortProfile(object):
             SperlingComfortProfile.get_vertical_weighting_factor(frequency)
         lateral_weighting_factor = vertical_weighting_factor * 1.25
         return lateral_weighting_factor
-    
-    @staticmethod
-    def get_component_comfort(frame_component_accels,
-             component_weighting_function, time_interval):
-        """
-        See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
-        """
-        frame_component_accels_fft = np.fft.fft(frame_component_accels) 
-        freqs_spectrum_width = frame_component_accels_fft.shape[0]
-        frame_component_accels_freqs = (frame_component_accels_fft /
-                                        freqs_spectrum_width)
-        positive_width = int(math.ceil(freqs_spectrum_width / 2.0))      
-        negative_width = int(math.floor(freqs_spectrum_width / 2.0))
-        weighting_factors = [component_weighting_function(index/time_interval)
-                            for index in range(-negative_width, positive_width)]
-        weighting_factors_array = np.array(weighting_factors)
-        weighted_component_accels_freqs = np.multiply(weighting_factors_array,
-                                                 frame_component_accels_freqs)       
-        #awf = [weighting_factors_array[m] * frame_component_accels_freqs[m] 
-        #       for m in range(-negative_width, positive_width)]
-        ##print "weights 2: "
-        ##print frame_component_accels_freqs[:10]
-        ##print weighting_factors_array[:10]
-        ##print weighted_component_accels_freqs[:10]
-        ##absolute_freqs = np.absolute(weighted_component_accels_freqs)
-        ##print absolute_freqs[:10]
-        weighted_component_accels_freqs_rms = np.sqrt(
-                                                np.sum(
-                                                  np.square(
-                                                    np.absolute(
-                                              weighted_component_accels_freqs))))
-        component_comfort_rating = 4.42*weighted_component_accels_freqs_rms**0.3
-        return component_comfort_rating
 
     def compute_partition_comfort_rating(self, 
             times_partition, frame_accel_vectors_partition):
@@ -134,42 +101,33 @@ class SperlingComfortProfile(object):
         self.time_checkpoints = time_checkpoints
         self.comfort_profile = comfort_profile
         self.comfort_rating = comfort_rating
-
-def wz(f):
-    return 0.588*np.sqrt((1.911 * f**2 + (.25 * f**2)**2) / ((1 - 0.2777 *f**2)**2 + (1.563 * f - 0.0368 * f**3)**2))
-
-def w(f):
-    return [0, wz(f), 1.25 * wz(f)]
-
-def fw_RMS(af, T, mu):
-    N = af.shape[0]
-    T = T
-    L = int(math.floor(N/2))
-    ##awf = [w(m/T)[mu] * af[m] for m in range(-L, L)]
-    weights = [w(m/T)[mu] for m in range(-L, L)]
-    weights_array = np.array(weights)
-    ##print "weights 1: " 
-    ##print weights_array[:10]
-    awf = np.multiply(weights_array, af)
-    ##print af[:10]
-    ##print weights_array[:10]
-    ##print awf[:10]
-    ##WEIGHTS.append(af)
-    ##WEIGHTS.append(awf)   
-    Sum = np.sum(np.square(np.absolute(awf)))
-    ##print Sum
-    return Sum
-
-#def comfort(v, a, T, mu):
-def comfort(a, T, mu):
-    #N = len(v)
-    N = a.shape[0]
-    ##print "Accels length 1:"
-    ##print N
-    #al = aPassenger(v, a, mu)
-    alf = np.fft.fft(a) / N
-    afw_RMS = fw_RMS(alf, T, mu)
-    return 4.42*(afw_RMS)**0.15
+    
+    @staticmethod
+    def get_component_comfort(frame_component_accels,
+             component_weighting_function, time_interval):
+        """
+        See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
+        """
+        ##print frame_component_accels
+        frame_component_accels_fft = np.fft.fft(frame_component_accels) 
+        freqs_spectrum_width = frame_component_accels_fft.shape[0]
+        frame_component_accels_freqs = (frame_component_accels_fft /
+                                        freqs_spectrum_width)
+        frame_component_accels_freqs = np.round(frame_component_accels_freqs, 5)
+        positive_width = int(math.ceil(freqs_spectrum_width / 2.0))
+        negative_width = int(math.floor(freqs_spectrum_width / 2.0))
+        weighting_factors = [component_weighting_function(index/time_interval)
+                            for index in range(-negative_width, positive_width)]
+        weighting_factors_array = np.array(weighting_factors)
+        weighted_component_accels_freqs = np.multiply(weighting_factors_array,
+                                                 frame_component_accels_freqs)
+        weighted_component_accels_freqs_rms = np.sqrt(
+                                                np.sum(
+                                                  np.square(
+                                                    np.absolute(
+                                              weighted_component_accels_freqs))))
+        component_comfort_rating = 4.42*(weighted_component_accels_freqs_rms**0.3)
+        return component_comfort_rating
 
 
 def sperling_test_function(f):
@@ -179,37 +137,26 @@ def sperling_test_function(f):
                            )**0.15
     return test_value
 
-def get_monofrequency_accels(f, t, time_sampling):
-    times = np.arange(0, t, time_sampling)
-    print len(times)
-    ##print times
-    args = 2 * np.pi * f * times
-    ##print args
+def get_monofrequency_accels(frequency, total_time, num_accel_samples):
+    times = np.linspace(0, total_time, num_accel_samples)
+    args = 2 * np.pi * frequency * times
     accels = np.sin(args)
-    ##print accels
     return accels
 
-def test_sperling_comfort_index(f, n, time_sampling):
-    t = n / f
-    accels = get_monofrequency_accels(f, t, time_sampling)
-    mu = 1
-    old_comfort_value = comfort(accels, t, mu)
+def test_sperling_comfort_index(frequency, num_periods, num_accel_samples):
+    total_time = num_periods / frequency
+    accels = get_monofrequency_accels(frequency, total_time, num_accel_samples)
     operator = SperlingComfortProfile.get_vertical_weighting_factor
     component_comfort = SperlingComfortProfile.get_component_comfort(
-                                                 accels, operator, t)
-    test_value = sperling_test_function(f)
-    print old_comfort_value
+                                        accels, operator, total_time)
+    test_value = sperling_test_function(frequency)
+    print "actual value: " 
     print component_comfort
+    print "Test value: "
     print test_value
-    #weights1, weights2 = WEIGHTS
-    #print len(weights1)
-    #print len(weights2)
-    #print weights1[:10]
-    #print weights2[:10]
-    #print weights1 == weights2
 
-TIME_SAMPLING = 1.0
-N = 10.0
-F = 0.1
+num_accel_samples = 10**3
+num_periods = 10.0
+frequency = 1.0
 
-test_sperling_comfort_index(F, N, TIME_SAMPLING)
+test_sperling_comfort_index(frequency, num_periods, num_accel_samples)
