@@ -21,21 +21,31 @@ import numpy as np
 # Custom Modules:
 import cacher
 import config
-import elevation
-import interpolate
-import landcover
+##import elevation
+##import landcover
 import parameters
+import util
 
 
 class SpatialPath2d(object):
+
+    def compute_total_distance(self, geospatials):
+        geospatial_edges = util.to_pairs(geospatials)
+        geospatial_vectors = [edge[1] - edge[0] for edge in geospatial_edges]
+        edge_lengths = np.linalg.norm(geospatial_vectors, axis=1)
+        total_distance = np.sum(edge_lengths)
+        return total_distance
 
     def __init__(self, spatial_graph, spatial_interpolator, base_resolution,
                                                      geospatials_to_latlngs):
         graph_geospatials = spatial_graph.elevation_profile.geospatials
         self.arc_lengths = spatial_graph.elevation_profile.arc_lengths
-        self.geospatials, self.spatial_curvature_array = spatial_interpolator(
+        geospatials, spatial_curvature_array = spatial_interpolator(
                           graph_geospatials, parameters.MAX_LATERAL_CURVATURE)
-        self.latlngs = geospatials_to_latlngs(self.geospatials)
+        self.total_distance = self.compute_total_distance(geospatials)
+        self.spatial_curvature_array = spatial_curvature_array
+        self.geospatials = geospatials
+        self.latlngs = geospatials_to_latlngs(geospatials)
         self.land_cost = spatial_graph.land_cost
         self.elevation_profile = spatial_graph.elevation_profile
         #self.elevation_profile = elevation.ElevationProfile(

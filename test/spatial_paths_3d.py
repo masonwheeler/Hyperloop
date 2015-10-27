@@ -62,6 +62,7 @@ class SpatialPath3d(object):
             self.spatial_curvature_array, self.tube_curvature_array, 
                                                    self.arc_lengths)
         self.total_cost = self.compute_total_cost()
+        self.total_distance = spatial_path_2d.total_distance
         self.tube_coords = self.get_tube_coords(tube_elevations, geospatials)
         self.tube_elevations = tube_elevations
 

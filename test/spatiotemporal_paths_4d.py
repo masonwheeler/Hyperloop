@@ -45,6 +45,7 @@ class SpatiotemporalPath4d(object):
         self.tube_cost = spatial_path_3d.tube_cost
         self.tunneling_cost = spatial_path_3d.tunneling_cost
         self.total_cost = spatial_path_3d.total_cost
+        self.total_distance = spatial_path_3d.total_distance
         self.trip_time = speed_profile.trip_time
         self.land_elevations = spatial_path_3d.land_elevations
         self.tube_elevations = spatial_path_3d.tube_elevations

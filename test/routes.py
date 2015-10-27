@@ -18,9 +18,11 @@ class Route(object):
         self.land_elevations = spatiotemporal_path_4d.land_elevations.tolist()
         self.latlngs = spatiotemporal_path_4d.latlngs.tolist()       
         self.pylons = spatiotemporal_path_4d.pylons
+        self.pylon_count = len(self.pylons)
         self.pylon_cost = spatiotemporal_path_4d.pylon_cost
         self.speeds_by_time = spatiotemporal_path_4d.speeds_by_time.tolist()
         self.total_cost = round(spatiotemporal_path_4d.total_cost / 10.0**9, 3)
+        self.total_distance = spatiotemporal_path_4d.total_distance
         self.trip_time = round(spatiotemporal_path_4d.trip_time / 60.0, 3)
         self.tube_cost = spatiotemporal_path_4d.tube_cost
         self.tube_elevations = spatiotemporal_path_4d.tube_elevations.tolist()
@@ -37,6 +39,7 @@ class Route(object):
             "latlngs": self.latlngs,
             "pylons": self.pylons,
             "pylonCost": self.pylon_cost,
+            "pylonCount" : self.pylon_count,
             "speedProfile": self.speeds_by_time,
             "totalCost": self.total_cost,
             "tripTime": self.trip_time,
