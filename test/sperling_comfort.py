@@ -17,7 +17,6 @@ Citations:
 import math
 import numpy as np
 
-WEIGHTS = []
 
 class SperlingComfortProfile(object):
 
@@ -108,30 +107,34 @@ class SperlingComfortProfile(object):
         """
         See (Forstberg) equation (3.1) for Sperling Comfort Index equation.
         """
-        ##print frame_component_accels
         frame_component_accels_fft = np.fft.fft(frame_component_accels) 
         freqs_spectrum_width = frame_component_accels_fft.shape[0]
         frame_component_accels_freqs = (frame_component_accels_fft /
                                         freqs_spectrum_width)
-        frame_component_accels_freqs = np.round(frame_component_accels_freqs, 5)
+        frame_component_accels_freqs = np.round(frame_component_accels_freqs, 1)
+        nonzero_indices = np.where(frame_component_accels_freqs != 0)
         positive_width = int(math.ceil(freqs_spectrum_width / 2.0))
         negative_width = int(math.floor(freqs_spectrum_width / 2.0))
         weighting_factors = [component_weighting_function(index/time_interval)
                             for index in range(-negative_width, positive_width)]
+        wrapped_freqs = [frame_component_accels_freqs[i] for i 
+                         in range(-negative_width, positive_width)]
+        wrapped_freqs_array = np.array(wrapped_freqs)
+        wrapped_nonzero_indices = np.where(wrapped_freqs_array != 0)
+        wrapped_nonzero_freqs = wrapped_freqs_array[wrapped_nonzero_indices]
         weighting_factors_array = np.array(weighting_factors)
         weighted_component_accels_freqs = np.multiply(weighting_factors_array,
-                                                 frame_component_accels_freqs)
-        weighted_component_accels_freqs_rms = np.sqrt(
-                                                np.sum(
-                                                  np.square(
-                                                    np.absolute(
-                                              weighted_component_accels_freqs))))
-        component_comfort_rating = 4.42*(weighted_component_accels_freqs_rms**0.3)
+                                                          wrapped_freqs_array)
+        weighted_component_accels_freqs_sum = np.sum(
+                                                np.square(
+                                                  np.absolute(
+                                              weighted_component_accels_freqs)))
+        component_comfort_rating = 4.42*(weighted_component_accels_freqs_sum**0.15)
         return component_comfort_rating
 
 
 def sperling_test_function(f):
-    test_value = 2.10173 * (
+    test_value = 4.42173 * (
                            (7.97828 * f**4 + 243.944 * f**2) /
                            (f**6 - 28.006 * f**4 + 1393.82 * f**2 + 738.422)
                            )**0.15
@@ -154,9 +157,10 @@ def test_sperling_comfort_index(frequency, num_periods, num_accel_samples):
     print component_comfort
     print "Test value: "
     print test_value
+    return component_comfort
 
-num_accel_samples = 10**3
+num_accel_samples = 10**4
 num_periods = 10.0
-frequency = 1.0
+frequency = 0.01
 
 test_sperling_comfort_index(frequency, num_periods, num_accel_samples)
