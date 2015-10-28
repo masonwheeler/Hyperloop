@@ -12,7 +12,7 @@ import util
 def distance_along_edge_to_point(edge, distance_along_edge):
     edge_start, edge_end = edge
     edge_vector = util.subtract(edge_end, edge_start)
-    edge_length = util.norm(edge_vector)
+    edge_length = util.norm(edge_vector)    
     scale_factor = distance_along_edge / edge_length
     scaled_vector = util.scale(scale_factor, edge_vector)
     point = util.add(scaled_vector, edge_start)

@@ -23,10 +23,10 @@ def fix_input_string(input_string):
 if __name__ == "__main__":
     config.CWD = os.getcwd()
     if config.TESTING_MODE:
-        core.pair_analysis("Los_Angeles", "San_Francisco")
+    #    core.pair_analysis("Los_Angeles", "San_Francisco")
     #    core.pair_analysis("Dallas","Austin")
-    #    core.pair_analysis("Portland","San_Francisco")
-    #    core.pair_analysis("New_York", "Boston")
+        core.pair_analysis("New_York", "Boston")
+        
     else:
         if len(sys.argv) == 1:
             START_CITY = raw_input("Input start city or start lat lon pair: ")

@@ -68,7 +68,8 @@ def test_curvature_validity(curvature_array, max_allowed_curvature):
     absolute_curvature_array = np.absolute(curvature_array)
     max_absolute_curvature = np.amax(absolute_curvature_array)
     is_curvature_valid = (max_absolute_curvature <= max_allowed_curvature)
-"""
+
+    """
     curvature_size = curvature_array.size
     curvature_threshhold_array = np.empty(curvature_size)
     curvature_threshhold_array.fill(curvature_threshhold)
@@ -78,7 +79,8 @@ def test_curvature_validity(curvature_array, max_allowed_curvature):
     excess_curvature_array = relative_curvature_array.clip(min=0)
     total_excess_curvature = np.sum(excess_curvature_array)
     is_curvature_valid = (total_excess_curvature == 0)
-"""
+    """
+
     return is_curvature_valid
 
 def curvature_test_2d(x_spline, y_spline, s_values, max_allowed_curvature):
