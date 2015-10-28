@@ -14,6 +14,7 @@ import pyproj
 import util
 import config
 
+
 def get_omerc_proj(start_lon_lat, end_lon_lat):
     """Provides the Oblique Mercator Projection"""
     start_lon, start_lat = start_lon_lat

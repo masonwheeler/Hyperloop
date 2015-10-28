@@ -12,6 +12,7 @@ import numpy as np
 
 # Custom Modules
 import parameters
+import srtm
 import usgs
 import util
 

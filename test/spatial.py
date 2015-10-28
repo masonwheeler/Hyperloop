@@ -23,7 +23,6 @@ import spatial_graphs
 import smoothing_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
-import tube_greedy
 import tube_naive
 import util
 
@@ -77,7 +76,6 @@ def build_spatial_edges_sets(route_spatial_lattice):
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
           smoothing_interpolate.bounded_curvature_graph_interpolate,
-     #        smoothing_interpolate.bounded_error_graph_interpolate,
                                         tube_naive.NaiveTubeProfile)
     if route_spatial_edges_sets != None:
         if not route_spatial_edges_sets.TUBE_READY:

@@ -35,6 +35,7 @@ import config
 import proj
 import util
 
+
 class Directions(object):
 
     NAME = "directions"
@@ -118,7 +119,6 @@ class Directions(object):
         """decodes a list of polylines
         """
         return [self.decode_polyline(polyline) for polyline in polylines]
-
 
     def get_directions_latlngs(self, start, end):
         """Applies decoding functions to Google API response"""

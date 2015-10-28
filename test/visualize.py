@@ -9,7 +9,6 @@ Last Modification Purpose: To remove unnecessary functions and lines.
 
 # Standard Modules
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 
 PLOT_QUEUE_SPATIAL_2D = []

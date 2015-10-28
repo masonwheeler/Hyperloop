@@ -38,12 +38,6 @@ PYLON_COST_PER_METER = 1.5 * 10.0**3 #Dollars
 TUBE_COST_PER_METER = 4.0 * 10.0**3 #Dollars
 TUNNELING_COST_PER_METER = 32.0 * 10.0**3 #Dollars
 
-##########################
-#Speed Profile Parameters#
-##########################
-
-MIN_SPEED = MAX_SPEED / 2.0
-
 ####################
 #Derived Parameters#
 ####################

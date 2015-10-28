@@ -8,6 +8,7 @@ import numpy as np
 # Custom Modules:
 import util
 
+
 def distance_along_edge_to_point(edge, distance_along_edge):
     edge_start, edge_end = edge
     edge_vector = util.subtract(edge_end, edge_start)

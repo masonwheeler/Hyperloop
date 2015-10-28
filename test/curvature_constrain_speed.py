@@ -19,13 +19,12 @@ def curvature_array_to_max_allowed_speeds(curvature_array, accel_constraint):
     return max_allowed_speeds
 
 def curvature_array_to_bounded_max_allowed_speeds(curvature_array,
-    accel_constraint, max_possible_speed):
+                            accel_constraint, max_possible_speed):
     curvature_array_length = curvature_array.size
     max_possible_speeds = np.empty(curvature_array_length)
     max_possible_speeds.fill(max_possible_speed)
     max_allowed_speeds = curvature_array_to_max_allowed_speeds(curvature_array,
                                                           accel_constraint)
-
     bounded_max_allowed_speeds = np.minimum(max_allowed_speeds, max_possible_speeds)
     return bounded_max_allowed_speeds
 

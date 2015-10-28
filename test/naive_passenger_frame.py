@@ -6,6 +6,7 @@ Original Developer: Jonathan Ward
 import numpy as np
 import scipy.interpolate
 
+
 class NaivePassengerFrame(object):
 
     def reparametrize_components_coords(self, tube_coords, 
@@ -19,12 +20,12 @@ class NaivePassengerFrame(object):
                              times_by_arc_length, y_coords_by_arc_length)
         z_coords_spline = scipy.interpolate.InterpolatedUnivariateSpline(
                              times_by_arc_length, z_coords_by_arc_length)
-        x_coords_by_time = x_coords_spline(cumulative_time_steps)
-        y_coords_by_time = y_coords_spline(cumulative_time_steps)
-        z_coords_by_time = z_coords_spline(cumulative_time_steps)
-        coords_by_time_vectors = np.transpose([x_coords_by_time,
-                                               y_coords_by_time,
-                                               z_coords_by_time])
+        #x_coords_by_time = x_coords_spline(cumulative_time_steps)
+        #y_coords_by_time = y_coords_spline(cumulative_time_steps)
+        #z_coords_by_time = z_coords_spline(cumulative_time_steps)
+        #coords_by_time_vectors = np.transpose([x_coords_by_time,
+        #                                       y_coords_by_time,
+        #                                       z_coords_by_time])
         x_vels_spline = x_coords_spline.derivative(n=1)
         y_vels_spline = y_coords_spline.derivative(n=1)
         z_vels_spline = z_coords_spline.derivative(n=1)

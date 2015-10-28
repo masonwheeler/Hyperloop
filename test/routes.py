@@ -6,6 +6,9 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To add classes providing useful structure.
 """
 
+# Custom Modules:
+import util
+
 
 class Route(object):    
     """For storing a single route option

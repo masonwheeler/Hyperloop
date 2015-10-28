@@ -64,7 +64,11 @@ def parametric_splines_2d_curvature(x_spline, y_spline, s_values):
         y_first_deriv_values, y_second_deriv_values)
     return curvature_array_2d
 
-def test_curvature_validity(curvature_array, curvature_threshhold):
+def test_curvature_validity(curvature_array, max_allowed_curvature):
+    absolute_curvature_array = np.absolute(curvature_array)
+    max_absolute_curvature = np.amax(absolute_curvature_array)
+    is_curvature_valid = (max_absolute_curvature <= max_allowed_curvature)
+"""
     curvature_size = curvature_array.size
     curvature_threshhold_array = np.empty(curvature_size)
     curvature_threshhold_array.fill(curvature_threshhold)
@@ -74,12 +78,13 @@ def test_curvature_validity(curvature_array, curvature_threshhold):
     excess_curvature_array = relative_curvature_array.clip(min=0)
     total_excess_curvature = np.sum(excess_curvature_array)
     is_curvature_valid = (total_excess_curvature == 0)
+"""
     return is_curvature_valid
 
-def curvature_test_2d(x_spline, y_spline, s_values, curvature_threshold):
+def curvature_test_2d(x_spline, y_spline, s_values, max_allowed_curvature):
     splines_curvature = parametric_splines_2d_curvature(x_spline, y_spline,
                                                         s_values)
     is_curvature_valid = test_curvature_validity(splines_curvature,
-                                               curvature_threshold)
+                                             max_allowed_curvature)
     return is_curvature_valid
 

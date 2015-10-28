@@ -78,10 +78,6 @@ class SpatialEdge(abstract_edges.AbstractEdge):
               self.ELEVATION_POINTS_TO_PYLON_POINTS_RATIO)
     
     def build_tube(self, tube_builder):
-        """
-        selected_tube_graphs = tube_builder(self.elevation_profile)
-        tube_profile = selected_tube_graphs[0]
-        """
         tube_profile = tube_builder(self.elevation_profile)
         self.tube_curvature_array = tube_profile.tube_curvature_array
         self.pylon_cost = tube_profile.total_pylon_cost
