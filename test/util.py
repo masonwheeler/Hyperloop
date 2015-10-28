@@ -19,21 +19,15 @@ import config
 
 # Points Operations:
 
-NDIGITS = 6  # the number of digits used for rounding
-
-def round_num(num):
-    """Rounds number to predefined number of places"""
-    return round(num, NDIGITS)
-
-def round_nums(nums):
+def round_nums(nums, ndigits):
     """Rounds a list of numbers"""
-    return [round_num(num) for num in nums]
+    return [round(num, ndigits) for num in nums]
 
-def round_points(points):
+def round_points(points, ndigits):
     """
     Rounds the values in each point in a list of points
     """
-    return [round_nums(point) for point in points]
+    return [round_nums(point, ndigits) for point in points]
 
 def to_pairs(points):
     """
@@ -206,15 +200,15 @@ def build_grid_1d(start_value, end_value, spacing):
         grid = [value + start_value for value in values]
         return grid
 
-def sample_list(in_list, num_samples):
-    fractions = [float(i)/float(num_samples) for i in range(num_samples)]
-    difference = in_list[-1] - in_list[0]
-    samples = [fraction * difference + in_list[0] for fraction in fractions]
-    return samples
+#def sample_list(in_list, num_samples):
+#    fractions = [float(i)/float(num_samples) for i in range(num_samples)]
+#    difference = in_list[-1] - in_list[0]
+#    samples = [fraction * difference + in_list[0] for fraction in fractions]
+#    return samples
 
-def bisect_list(in_list):
-    bisected_list = sample_list(in_list, 3)
-    return bisected_list
+#def bisect_list(in_list):
+#    bisected_list = sample_list(in_list, 3)
+#    return bisected_list
 
 # Edge Operations:
 
