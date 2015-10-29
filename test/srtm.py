@@ -21,37 +21,31 @@ import math
 class NoSuchTileError(Exception):
     """Raised when there is no tile for a region."""
     def __init__(self, lat, lon):
-        Exception.__init__()
         self.lat = lat
         self.lon = lon
-
-    def __str__(self):
-        return "No SRTM tile for %d, %d available!" % (self.lat, self.lon)
+        message = "No SRTM tile for %d, %d available!" % (self.lat, self.lon)
+        super(NoSuchTileError, self).__init__(message)
 
 
 class WrongTileError(Exception):
     """Raised when the value of a pixel outside the tile area is requested."""
     def __init__(self, tile_lat, tile_lon, req_lat, req_lon):
-        Exception.__init__()
         self.tile_lat = tile_lat
         self.tile_lon = tile_lon
         self.req_lat = req_lat
         self.req_lon = req_lon
-
-    def __str__(self):
-        return "SRTM tile for %d, %d does not contain data for %d, %d!" % (
+        message = "SRTM tile for %d, %d does not contain data for %d, %d!" % (
             self.tile_lat, self.tile_lon, self.req_lat, self.req_lon)
+        super(WrongTileError, self).__init__(message)
 
 
 class InvalidTileError(Exception):
     """Raised when the SRTM tile file contains invalid data."""
     def __init__(self, lat, lon):
-        Exception.__init__()
         self.lat = lat
         self.lon = lon
-
-    def __str__(self):
-        return "SRTM tile for %d, %d is invalid!" % (self.lat, self.lon)
+        message = "SRTM tile for %d, %d is invalid!" % (self.lat, self.lon)
+        super(InvalidTileError, self).__init__(message)
 
 
 class SRTMDownloader:
@@ -247,7 +241,7 @@ class SRTMTile:
         """
 
     @staticmethod
-    def get_bounding_coordinates(latlng_coord):
+    def get_bounding_coords(latlng_coord):
         """Get the top left corner of the latlng tile which the coord falls in
         """
         ##print latlng_coord
