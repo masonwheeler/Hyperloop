@@ -58,7 +58,7 @@ class SRTMDownloader:
     """Automatically download SRTM tiles."""
     def __init__(self, server="dds.cr.usgs.gov",
                  directory="/srtm/version2_1/SRTM3/",
-                 cachedir="cache",
+                 cachedir="srtmcache",
                  protocol="http"):
         self.protocol=protocol
         self.server = server
