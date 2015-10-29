@@ -20,7 +20,7 @@ import util
 elevationDownloader = srtm.SRTMDownloader()
 elevationDownloader.loadFileList()
 lastSRTMTile = None
-
+lastBoundingLatLng = None
 
 class ElevationProfile(object):
     
@@ -31,36 +31,53 @@ class ElevationProfile(object):
         return land_elevations
 
     def get_land_elevations_srtm(self):
+
+        global lastBoundingLatLng 
+        global lastSRTMTile 
+
         bounding_latlngs = [srtm.SRTMTile.get_bounding_coord(latlng)
                             for latlng in self.latlngs]
-        bounding_latlngs_lists = []
-        last_bounding_latlng = bounding_latlngs[0]
-        for bounding_latlng in bounding_latlngs:    
-            if bounding_latlng != last_bounding_latlng:
-                bounding_latlngs_lists.append([])
-                bounding_latlngs_lists[-1].append(bounding_latlng)
-                last_bounding_latlng = bounding_latlng
-            else:
-                bounding_latlngs_lists[-1].append(bounding_latlng)
-        tile_latlngs = [latlngs_list[0] for latlngs_list 
-                        in bounding_latlngs_lists]
-        tiles = [elevationDownloader.getTile(tile_latlng) 
-                 for tile_latlng in tile_latlngs]
-        bounding_latlngs_lists_lengths = [len(latlngs_list) for latlngs_list
-                                          in boundings_latlngs_lists]
-        last_index = 0
-        latlngs_lists = []
-        for list_length in bounding_latlngs_lists_lengths:
-            latlngs_list = self.latlngs[last_index : last_index + list_length]
-            latlngs_lists.append(latlngs_list)
-            last_index += list_length
+        bounding_latlngs_unchanged = [bounding_latlng == lastBoundingLatLng 
+                                      for bounding_latlng in bounding_latlngs]
+        if all(bounding_latlngs_unchanged):
+            tiles = [lastSRTMTile]            
+            land_elevations = [tile.getAltitudeFromLatLon(latlng)
+                               for latlng in self.latlngs]
+        else:
+            bounding_latlngs_lists = []
+            last_bounding_latlng = bounding_latlngs[0]
+            for bounding_latlng in bounding_latlngs:    
+                if bounding_latlng != last_bounding_latlng:
+                    bounding_latlngs_lists.append([])
+                    bounding_latlngs_lists[-1].append(bounding_latlng)
+                    last_bounding_latlng = bounding_latlng
+                else:
+                    bounding_latlngs_lists[-1].append(bounding_latlng)
+            tile_latlngs = [latlngs_list[0] for latlngs_list 
+                            in bounding_latlngs_lists]
+            tiles = [elevationDownloader.getTile(tile_latlng) 
+                     for tile_latlng in tile_latlngs]
+            bounding_latlngs_lists_lengths = [len(latlngs_list) for latlngs_list
+                                              in boundings_latlngs_lists]
+            last_index = 0
+            latlngs_lists = []
+            for list_length in bounding_latlngs_lists_lengths:
+                latlngs_list = self.latlngs[last_index:last_index + list_length]
+                latlngs_lists.append(latlngs_list)
+                last_index += list_length
 
-        for i in range(len(bounding_latlngs_lists)):
-            tile = tiles[i]
-            latlngs_list = latlngs_lists[i]
-            land_elevations_list = [tile.getAltitudeFromLatLon(latlng) 
-                                    for latlng in latlngs_list]
-        return land_elevations_list
+            land_elevations_lists = []
+            for i in range(len(latlngs_lists)):
+                tile = tiles[i]
+                latlngs_list = latlngs_lists[i]
+                land_elevations_list = [tile.getAltitudeFromLatLon(latlng) 
+                                        for latlng in latlngs_list]
+                land_elevations_lists.append(land_elevation_list)
+            land_elevations = util.fast_concat(land_elevations_lists)
+
+        lastBoundingLatlng = bounding_latlngs[-1]
+        lastSRTMTile = tiles[-1]
+        return land_elevations
 
     def __init__(self, geospatials, latlngs, arc_lengths,
                  land_elevations=None, geospatials_partitions=None):

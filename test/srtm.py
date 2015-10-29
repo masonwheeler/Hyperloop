@@ -10,7 +10,7 @@ from HTMLParser import HTMLParser
 import ftplib
 import httplib
 import re
-import pickle
+import dill as pickle
 import os.path
 import os
 import zipfile
@@ -71,7 +71,7 @@ class SRTMDownloader:
         self.filelist = {}
         self.filename_regex = re.compile(
                 r"([NS])(\d{2})([EW])(\d{3})\.hgt\.zip")
-        self.filelist_file = self.cachedir + "/filelist_python"
+        self.filelist_file = self.cachedir + "/srtm_filelist"
         self.ftpfile = None
         self.ftp_bytes_transfered = 0
 
@@ -156,7 +156,7 @@ class SRTMDownloader:
                 self.filelist[self.parseFilename(filename)] = (
                             continent, filename)
 
-            print self.filelist
+            #print self.filelist
         # Add meta info
         self.filelist["server"] = self.server
         self.filelist["directory"] = self.directory
