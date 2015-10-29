@@ -200,16 +200,6 @@ def build_grid_1d(start_value, end_value, spacing):
         grid = [value + start_value for value in values]
         return grid
 
-#def sample_list(in_list, num_samples):
-#    fractions = [float(i)/float(num_samples) for i in range(num_samples)]
-#    difference = in_list[-1] - in_list[0]
-#    samples = [fraction * difference + in_list[0] for fraction in fractions]
-#    return samples
-
-#def bisect_list(in_list):
-#    bisected_list = sample_list(in_list, 3)
-#    return bisected_list
-
 # Edge Operations:
 
 def edge_to_vector(edge):

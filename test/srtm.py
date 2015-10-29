@@ -1,8 +1,11 @@
+"""
+Original Developer: Jonathan Ward
+Citation: http://svn.openstreetmap.org/applications/utils/import/srtm2wayinfo/python/srtm.py
+Purpose of Module: Load and process SRTM data.
+"""
+
 # pylint: disable-msg=C0103
 
-"""Load and process SRTM data."""
-
-#import xml.dom.minidom
 from HTMLParser import HTMLParser
 import ftplib
 import httplib
@@ -13,6 +16,7 @@ import os
 import zipfile
 import array
 import math
+
 
 class NoSuchTileError(Exception):
     """Raised when there is no tile for a region."""
@@ -38,6 +42,7 @@ class WrongTileError(Exception):
         return "SRTM tile for %d, %d does not contain data for %d, %d!" % (
             self.tile_lat, self.tile_lon, self.req_lat, self.req_lon)
 
+
 class InvalidTileError(Exception):
     """Raised when the SRTM tile file contains invalid data."""
     def __init__(self, lat, lon):
@@ -47,6 +52,7 @@ class InvalidTileError(Exception):
 
     def __str__(self):
         return "SRTM tile for %d, %d is invalid!" % (self.lat, self.lon)
+
 
 class SRTMDownloader:
     """Automatically download SRTM tiles."""
@@ -156,8 +162,6 @@ class SRTMDownloader:
         self.filelist["directory"] = self.directory
         with open(self.filelist_file , 'wb') as output:
             pickle.dump(self.filelist, output)
-
-
         
     def parseFilename(self, filename):
         """Get lat/lon values from filename."""
@@ -226,8 +230,6 @@ class SRTMDownloader:
                 print "oh no = status=%d %s" \
                       % (r1.status,r1.reason)
 
-
-
     def ftpCallback(self, data):
         """Called by ftplib when some bytes have been received."""
         self.ftpfile.write(data)
@@ -243,6 +245,17 @@ class SRTMTile:
         easier for as to interpolate the value, because for every point we
         only have to look at a single tile.
         """
+
+    @staticmethod
+    def get_bounding_coordinates(latlng_coord):
+        """Get the top left corner of the latlng tile which the coord falls in
+        """
+        ##print latlng_coord
+        lat, lng = latlng_coord
+        lat_bound = int(math.ceil(lat))
+        lng_bound = int(math.ceil(abs(lng)))
+        return [lat_bound, lng_bound]
+
     def __init__(self, f, lat, lon):
         zipf = zipfile.ZipFile(f, 'r')
         names = zipf.namelist()
@@ -258,7 +271,7 @@ class SRTMTile:
         if len(self.data) != self.size * self.size:
             raise InvalidTileError(lat, lon)
         self.lat = lat
-        self.lon = lon
+        self.lon = lon  
 
     @staticmethod
     def _avg(value1, value2, weight):
@@ -305,7 +318,6 @@ class SRTMTile:
             return None # -32768 is a special value for areas with no data
         return value
         
-
     def getAltitudeFromLatLon(self, lat, lon):
         """Get the altitude of a lat lon pair, using the four neighbouring
             pixels for interpolation.
@@ -336,7 +348,6 @@ class SRTMTile:
         return value
 
 
-
 class parseHTMLDirectoryListing(HTMLParser):
 
     def __init__(self):
@@ -361,7 +372,6 @@ class parseHTMLDirectoryListing(HTMLParser):
                 if attr[0]=='href':
                     self.currHref = attr[1]
             
-
     def handle_endtag(self, tag):
         #print "Encountered the end of a %s tag" % tag
         if tag=="title":
@@ -388,6 +398,7 @@ class parseHTMLDirectoryListing(HTMLParser):
 
     def getDirListing(self):
         return self.dirList
+
 
 #DEBUG ONLY
 if __name__ == '__main__':

@@ -16,6 +16,9 @@ import srtm
 import usgs
 import util
 
+elevationDownloader = srtm.SRTMDownloader()
+elevationDownloader.loadFileList()
+
 class ElevationProfile(object):
     
     def get_land_elevations(self):
@@ -23,6 +26,12 @@ class ElevationProfile(object):
                                 for latlng in self.latlngs]
         land_elevations = np.array(land_elevations_list)
         return land_elevations
+
+    def get_land_elevations_srtm(self):
+        start_latlng = self.latlngs[0]
+        end_latlng = self.latlngs[-1]
+                        
+        #land_elevations_list = [srtm
 
     def __init__(self, geospatials, latlngs, arc_lengths,
                  land_elevations=None, geospatials_partitions=None):
