@@ -73,11 +73,12 @@ class ElevationProfile(object):
                 land_elevations_list = [tile.getAltitudeFromLatLon(latlng[0], 
                                                                    latlng[1])
                                         for latlng in latlngs_list]
-                land_elevations_lists.append(land_elevation_list)
+                land_elevations_lists.append(land_elevations_list)
             land_elevations = util.fast_concat(land_elevations_lists)
 
         lastBoundingLatlng = bounding_latlngs[-1]
         lastSRTMTile = tiles[-1]
+        land_elevations = np.array(land_elevations)
         return land_elevations
 
     def __init__(self, geospatials, latlngs, arc_lengths,

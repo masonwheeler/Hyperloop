@@ -65,7 +65,7 @@ class SRTMDownloader:
         self.filelist = {}
         self.filename_regex = re.compile(
                 r"([NS])(\d{2})([EW])(\d{3})\.hgt\.zip")
-        self.filelist_file = self.cachedir + "/srtm_filelist"
+        self.filelist_file = self.cachedir + "/srtm_filelist.txt"
         self.ftpfile = None
         self.ftp_bytes_transfered = 0
 
@@ -246,8 +246,8 @@ class SRTMTile:
         """
         ##print latlng_coord
         lat, lng = latlng_coord
-        lat_bound = int(math.ceil(lat))
-        lng_bound = int(math.ceil(abs(lng)))
+        lat_bound = int(math.floor(lat))
+        lng_bound = int(math.floor(lng))
         return [lat_bound, lng_bound]
 
     def __init__(self, f, lat, lon):
@@ -315,7 +315,7 @@ class SRTMTile:
     def getAltitudeFromLatLon(self, lat, lon):
         """Get the altitude of a lat lon pair, using the four neighbouring
             pixels for interpolation.
-        """
+        """     
         # print "-----\nFromLatLon", lon, lat
         lat -= self.lat
         lon -= self.lon
