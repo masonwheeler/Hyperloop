@@ -25,7 +25,10 @@ if __name__ == "__main__":
     if config.TESTING_MODE:
     #    core.pair_analysis("Los_Angeles", "San_Francisco")
     #    core.pair_analysis("Dallas","Austin")
-        core.pair_analysis("New_York", "Boston")
+    #    core.pair_analysis("New_York", "Boston")
+    #    core.pair_analysis("Shanghai", "Beijing")
+    #    core.pair_analysis("Medina", "Mecca")        
+        core.pair_analysis("Paris", "Brussels")
         
     else:
         if len(sys.argv) == 1:

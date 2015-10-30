@@ -116,7 +116,7 @@ class SpatiotemporalPathsSets4d(object):
     IS_SKIPPED = cacher.SKIP_PATHS_4D
     
     def build_paths_sets(self, spatial_paths_3d, speed_profile_builder):
-        paths_sets = [SpatiotemporalPathsSet4d(spatial_path_3d,
+        paths_sets = [SpatiotemporalPathsSet4d(spatial_paths_3d[0],
                                                speed_profile_builder)
                       for spatial_path_3d in spatial_paths_3d]
         return paths_sets

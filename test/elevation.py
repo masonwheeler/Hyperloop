@@ -35,16 +35,16 @@ class ElevationProfile(object):
         global lastBoundingLatLng 
         global lastSRTMTile 
 
-        bounding_latlngs = [srtm.SRTMTile.get_bounding_coord(latlng)
+        bounding_latlngs = [srtm.SRTMTile.get_bounding_coords(latlng)
                             for latlng in self.latlngs]
         bounding_latlngs_unchanged = [bounding_latlng == lastBoundingLatLng 
                                       for bounding_latlng in bounding_latlngs]
         if all(bounding_latlngs_unchanged):
             tiles = [lastSRTMTile]            
-            land_elevations = [tile.getAltitudeFromLatLon(latlng)
+            land_elevations = [tile.getAltitudeFromLatLon(latlng[0], latlng[1])
                                for latlng in self.latlngs]
         else:
-            bounding_latlngs_lists = []
+            bounding_latlngs_lists = [[]]
             last_bounding_latlng = bounding_latlngs[0]
             for bounding_latlng in bounding_latlngs:    
                 if bounding_latlng != last_bounding_latlng:
@@ -55,10 +55,10 @@ class ElevationProfile(object):
                     bounding_latlngs_lists[-1].append(bounding_latlng)
             tile_latlngs = [latlngs_list[0] for latlngs_list 
                             in bounding_latlngs_lists]
-            tiles = [elevationDownloader.getTile(tile_latlng) 
+            tiles = [elevationDownloader.getTile(tile_latlng[0], tile_latlng[1]) 
                      for tile_latlng in tile_latlngs]
             bounding_latlngs_lists_lengths = [len(latlngs_list) for latlngs_list
-                                              in boundings_latlngs_lists]
+                                              in bounding_latlngs_lists]
             last_index = 0
             latlngs_lists = []
             for list_length in bounding_latlngs_lists_lengths:
@@ -70,13 +70,15 @@ class ElevationProfile(object):
             for i in range(len(latlngs_lists)):
                 tile = tiles[i]
                 latlngs_list = latlngs_lists[i]
-                land_elevations_list = [tile.getAltitudeFromLatLon(latlng) 
+                land_elevations_list = [tile.getAltitudeFromLatLon(latlng[0], 
+                                                                   latlng[1])
                                         for latlng in latlngs_list]
-                land_elevations_lists.append(land_elevation_list)
+                land_elevations_lists.append(land_elevations_list)
             land_elevations = util.fast_concat(land_elevations_lists)
 
         lastBoundingLatlng = bounding_latlngs[-1]
         lastSRTMTile = tiles[-1]
+        land_elevations = np.array(land_elevations)
         return land_elevations
 
     def __init__(self, geospatials, latlngs, arc_lengths,
@@ -88,7 +90,8 @@ class ElevationProfile(object):
             geospatials_partitions = [geospatials]
         self.geospatials_partitions = geospatials_partitions
         if land_elevations == None:
-            self.land_elevations = self.get_land_elevations()
+            self.land_elevations = self.get_land_elevations_srtm()
+            #self.land_elevations = self.get_land_elevations_usgs()
         else:
             self.land_elevations = land_elevations
 

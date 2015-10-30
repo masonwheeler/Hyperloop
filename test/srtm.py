@@ -21,37 +21,31 @@ import math
 class NoSuchTileError(Exception):
     """Raised when there is no tile for a region."""
     def __init__(self, lat, lon):
-        Exception.__init__()
         self.lat = lat
         self.lon = lon
-
-    def __str__(self):
-        return "No SRTM tile for %d, %d available!" % (self.lat, self.lon)
+        message = "No SRTM tile for %d, %d available!" % (self.lat, self.lon)
+        super(NoSuchTileError, self).__init__(message)
 
 
 class WrongTileError(Exception):
     """Raised when the value of a pixel outside the tile area is requested."""
     def __init__(self, tile_lat, tile_lon, req_lat, req_lon):
-        Exception.__init__()
         self.tile_lat = tile_lat
         self.tile_lon = tile_lon
         self.req_lat = req_lat
         self.req_lon = req_lon
-
-    def __str__(self):
-        return "SRTM tile for %d, %d does not contain data for %d, %d!" % (
+        message = "SRTM tile for %d, %d does not contain data for %d, %d!" % (
             self.tile_lat, self.tile_lon, self.req_lat, self.req_lon)
+        super(WrongTileError, self).__init__(message)
 
 
 class InvalidTileError(Exception):
     """Raised when the SRTM tile file contains invalid data."""
     def __init__(self, lat, lon):
-        Exception.__init__()
         self.lat = lat
         self.lon = lon
-
-    def __str__(self):
-        return "SRTM tile for %d, %d is invalid!" % (self.lat, self.lon)
+        message = "SRTM tile for %d, %d is invalid!" % (self.lat, self.lon)
+        super(InvalidTileError, self).__init__(message)
 
 
 class SRTMDownloader:
@@ -71,7 +65,7 @@ class SRTMDownloader:
         self.filelist = {}
         self.filename_regex = re.compile(
                 r"([NS])(\d{2})([EW])(\d{3})\.hgt\.zip")
-        self.filelist_file = self.cachedir + "/srtm_filelist"
+        self.filelist_file = self.cachedir + "/srtm_filelist.txt"
         self.ftpfile = None
         self.ftp_bytes_transfered = 0
 
@@ -247,13 +241,13 @@ class SRTMTile:
         """
 
     @staticmethod
-    def get_bounding_coordinates(latlng_coord):
+    def get_bounding_coords(latlng_coord):
         """Get the top left corner of the latlng tile which the coord falls in
         """
         ##print latlng_coord
         lat, lng = latlng_coord
-        lat_bound = int(math.ceil(lat))
-        lng_bound = int(math.ceil(abs(lng)))
+        lat_bound = int(math.floor(lat))
+        lng_bound = int(math.floor(lng))
         return [lat_bound, lng_bound]
 
     def __init__(self, f, lat, lon):
@@ -321,7 +315,7 @@ class SRTMTile:
     def getAltitudeFromLatLon(self, lat, lon):
         """Get the altitude of a lat lon pair, using the four neighbouring
             pixels for interpolation.
-        """
+        """     
         # print "-----\nFromLatLon", lon, lat
         lat -= self.lat
         lon -= self.lon
