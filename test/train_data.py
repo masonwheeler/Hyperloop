@@ -1,5 +1,6 @@
 """
 Original Developer: Jonathan Ward
+Todo: Get speeds from legs
 """
 
 # Standard Modules:
@@ -23,7 +24,7 @@ class TrainDataDownloader(object):
                start + '&destination=' + end + \
                '&mode=transit' + '&transit_mode=rail' + \
                '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
-        print url
+        #print url
         raw_train_data = urllib2.urlopen(url)
         string_train_data = self.http_to_string(raw_train_data)
         return string_train_data

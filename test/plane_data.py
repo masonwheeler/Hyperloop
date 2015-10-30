@@ -2,11 +2,16 @@
 Original Developer: Jonathan Ward
 """
 
+# Standard Modules:
 from bs4 import BeautifulSoup
 from geopy.distance import great_circle
 import json
+from pyproj import Geod
 import urllib2
 import urlparse
+
+# Custom Modules:
+import util
 
 
 class PlaneDataDownloader(object):
@@ -49,21 +54,39 @@ class PlaneDataDownloader(object):
         lng = dict_response['results'][0]['geometry']['location']['lng']
         return [lat, lng]
 
-    def compute_distance(self, start, end):
+    def reverse_geocode(self, start, end):
         #print start
         #print end
         start_latlng = self.get_latlng(start)
         end_latlng = self.get_latlng(end)
         #print start_latlng
         #print end_latlng
+        return [start_latlng, end_latlng]
+
+    def compute_distance(self, start_latlng, end_latlng):
         total_distance = great_circle(start_latlng, end_latlng).meters
         return total_distance
 
+    def build_great_circle(self, start_latlng, end_latlng, distance):
+        num_points = int(distance / 100.0)
+        geod = Geod(ellps='WGS84')
+        start_lat, start_lon = start_latlng
+        end_lat, end_lon = end_latlng
+        lonlats = geod.npts(start_lon, start_lat, end_lon, end_lat, num_points)
+        ##print len(lonlats)
+        ##print lonlats[:10]
+        latlngs = util.swap_pairs(lonlats)
+        return latlngs
+
     def __init__(self, start, end):
         total_time = self.get_time_from_flight_durations(start, end)
-        total_distance = self.compute_distance(start, end)        
+        start_latlng, end_latlng = self.reverse_geocode(start, end)
+        total_distance = self.compute_distance(start_latlng, end_latlng)
+        latlngs = self.build_great_circle(start_latlng, end_latlng, 
+                                                    total_distance)
         self.total_time = total_time
         self.total_distance = total_distance
+        self.latlngs = latlngs
 
 
 if __name__ == '__main__':
