@@ -37,15 +37,25 @@ class PlaneDataDownloader(object):
 
     def get_latlng(self, address):
         url = 'https://maps.googleapis.com/maps/api/geocode/json?' + \
-              'address=address' + \
-              '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
-        url_response = urllib2.urlopen(url)
+              'address=' + address + \
+              '&key=AIzaSyBkiX4t39S75fE8Cqk5guvoLJEVurKyRpA'
+              #'&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
+        #print url
+        url_response = urllib2.urlopen(url)       
         string_response = self.http_to_string(url_response)
         dict_response = json.loads(string_response)
+        #print dict_response
+        lat = dict_response['results'][0]['geometry']['location']['lat']
+        lng = dict_response['results'][0]['geometry']['location']['lng']
+        return [lat, lng]
 
     def compute_distance(self, start, end):
+        #print start
+        #print end
         start_latlng = self.get_latlng(start)
         end_latlng = self.get_latlng(end)
+        #print start_latlng
+        #print end_latlng
         total_distance = great_circle(start_latlng, end_latlng).meters
         return total_distance
 
