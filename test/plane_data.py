@@ -3,6 +3,7 @@ Original Developer: Jonathan Ward
 """
 
 from bs4 import BeautifulSoup
+import geopy
 import re
 import urllib2
 import urlparse
