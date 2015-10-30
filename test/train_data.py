@@ -98,7 +98,7 @@ class TrainDataDownloader(object):
 
     def __init__(self, start, end):
         total_time, total_distance, latlngs = self.get_train_data(start, end)
-        self.total_time = total_time
+        self.total_time = round(total_time / 60.0, 3)
         self.total_distance = total_distance
         self.latlngs = latlngs
 
