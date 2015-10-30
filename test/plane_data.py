@@ -20,9 +20,11 @@ import util
 class PlaneDataDownloader(object):
     
     PLANE_MAX_SPEED = 216.0 #Meters/Second
+    MAX_ACCEL = 2.0 # Meters/Second^2
+    MAX_JERK = 1.0 # Meters/Second^3
     ARC_LENGTH_SPACING = 50.0 #Meters
-    TAXI_IN_TIME = 6.9 #Min
-    TAXI_OUT_TIME = 16.7 #Min
+    TAXI_IN_TIME = 15.0 #Min
+    TAXI_OUT_TIME = 15.0 #Min
 
     def get_time_from_flight_durations(self, start, end):
         base_url = "http://www.flight-durations.com/"
@@ -76,7 +78,7 @@ class PlaneDataDownloader(object):
         latlngs = util.swap_pairs(lonlats)
         return latlngs
 
-    def build_speed_profile(self, total_distance, total_time):
+    def build_speed_profile(self, total_distance):
         num_arc_lengths = int(total_distance / self.ARC_LENGTH_SPACING)
         steps = np.empty(num_arc_lengths)
         steps.fill(self.ARC_LENGTH_SPACING)        
@@ -85,23 +87,21 @@ class PlaneDataDownloader(object):
         max_speeds_by_arc_length.fill(self.PLANE_MAX_SPEED)
         print "computing speed profile..."
         speed_profile = speed_profile_match_landscapes.SpeedProfile(arc_lengths,
-                                                       max_speeds_by_arc_length)
+            max_speeds_by_arc_length, max_longitudinal_accel=self.MAX_ACCEL,
+                                      max_longitudinal_jerk=self.MAX_JERK)
         print "computed speed profile"
         return speed_profile
 
     def __init__(self, start, end):
-        total_time = self.get_time_from_flight_durations(start, end)
         start_latlng, end_latlng = self.reverse_geocode(start, end)
         total_distance = self.compute_distance(start_latlng, end_latlng)
-        speed_profile = self.build_speed_profile(total_distance, total_time)
+        speed_profile = self.build_speed_profile(total_distance)
         air_time = round(speed_profile.trip_time / 60.0, 2)
         taxiing_time = self.TAXI_IN_TIME + self.TAXI_OUT_TIME
         total_flight_time = air_time + taxiing_time
-        print total_flight_time, "minutes."
-        #print speed_profile.speeds_by_arc_length[:10]        
         latlngs = self.build_great_circle(start_latlng, end_latlng, 
                                                     total_distance)
-        self.total_time = total_time
+        self.total_time = total_flight_time
         self.total_distance = total_distance
         self.latlngs = latlngs
 
@@ -109,6 +109,8 @@ class PlaneDataDownloader(object):
 if __name__ == '__main__':
     start = "San_Francisco"
     end = "Los_Angeles"
+    #start = "New_York"
+    #end = "Boston"
     #start = "Paris"
     #end = "Brussels"
     plane_data_downloader = PlaneDataDownloader(start, end)
