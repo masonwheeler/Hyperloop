@@ -124,6 +124,7 @@ class SpeedProfile(object):
         speed_spline = self.interpolate_speed_waypoints(waypoint_arc_lengths, 
                                                              waypoint_speeds)   
         speeds_by_arc_length = speed_spline(arc_lengths)
+        print speeds_by_arc_length
         return speeds_by_arc_length
 
     def reparametrize_speed(self, arc_lengths, speeds_by_arc_length):
@@ -144,7 +145,7 @@ class SpeedProfile(object):
         jerk_by_time = jerk_by_time_spline(cumulative_time_steps)
         return [accels_by_time, jerk_by_time]
     
-    def __init__(self, spatial_path_3d,
+    def __init__(self, arc_lengths, max_speeds,
                  max_longitudinal_accel=None, max_longitudinal_jerk=None):
         if max_longitudinal_accel == None:
             self.max_longitudinal_accel = parameters.MAX_LONGITUDINAL_ACCEL
@@ -156,8 +157,6 @@ class SpeedProfile(object):
         else:
             self.max_longitudinal_jerk = max_longitudinal_jerk
 
-        arc_lengths = spatial_path_3d.arc_lengths
-        max_speeds = spatial_path_3d.max_allowed_speeds
         max_speeds[0] = max_speeds[-1] = 0.0
         speeds_by_arc_length = self.build_speeds_by_arc_length(arc_lengths, 
                                                                 max_speeds)

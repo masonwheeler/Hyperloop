@@ -94,7 +94,8 @@ class SpatiotemporalPath4d(object):
 class SpatiotemporalPathsSet4d(object):
 
     def build_speed_profiles(self, spatial_path_3d, speed_profile_builder):
-        speed_profile = speed_profile_builder(spatial_path_3d)
+        speed_profile = speed_profile_builder(spatial_path_3d.arc_lengths,
+                                              spatial_path_3d.max_allowed_speeds)
         speed_profiles = [speed_profile]
         return speed_profiles
 
