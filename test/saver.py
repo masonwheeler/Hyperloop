@@ -5,7 +5,7 @@ Original Developer: Jonathan Ward
 # Standard Modules:
 import json
 
-DROPBOX_DIRECTORY = "/home/ubuntu/Dropbox/save"
+DROPBOX_DIRECTORY = "/home/ubuntu/Dropbox/htt_ro/RouteJson"
 
 def save_routes_set(routes_set):
     """Saves completed routes to json

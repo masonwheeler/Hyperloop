@@ -4,7 +4,7 @@ Citation: http://www.rita.dot.gov/bts/sites/rita.dot.gov.bts/files/publications/
 """
 
 # Standard Modules:
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 from geopy.distance import great_circle
 import json
 import numpy as np
@@ -92,8 +92,8 @@ class PlaneDataDownloader(object):
         print "computed speed profile"
         return speed_profile
 
-    def __init__(self, start, end):
-        start_latlng, end_latlng = self.reverse_geocode(start, end)
+    def __init__(self, start_latlng, end_latlng):
+        #start_latlng, end_latlng = self.reverse_geocode(start, end)
         total_distance = self.compute_distance(start_latlng, end_latlng)
         speed_profile = self.build_speed_profile(total_distance)
         air_time = round(speed_profile.trip_time / 60.0, 2)
@@ -113,6 +113,6 @@ if __name__ == '__main__':
     #end = "Boston"
     #start = "Paris"
     #end = "Brussels"
-    plane_data_downloader = PlaneDataDownloader(start, end)
-    print plane_data_downloader.total_time, "minutes."
-    print plane_data_downloader.total_distance, "meters."
+    plane_data = PlaneDataDownloader(start, end)
+    print plane_data.total_time, "minutes."
+    print plane_data.total_distance, "meters."

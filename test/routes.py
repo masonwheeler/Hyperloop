@@ -63,13 +63,18 @@ class RoutesSet(object):
         for index in range(len(routes)):
             route_dict = routes[index].as_dict(index + 1)
             routes_dicts_list.append(route_dict)
-        return routes_dicts_list
+        return routes_dicts_list    
+
+    def get_plane_data(self):
+
+    def get_train_data(self):
 
     def __init__(self, spatiotemporal_paths_sets_4d):
         self.spatial_metadata = spatiotemporal_paths_sets_4d.spatial_metadata
+        plane_data = 
         self.routes_dicts_list = self.build_routes_dicts_list(
-                            spatiotemporal_paths_sets_4d)
-    
+                            spatiotemporal_paths_sets_4d)       
+ 
     def as_dict(self):
         routes_set_dict = {
             "startCity": {
