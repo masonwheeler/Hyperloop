@@ -17,11 +17,13 @@ import geotiff
 import parameters
 import util
 
+
 #######################################
 #For NLCD (National Landcover Dataset)#
 #######################################
 
 LAND_COVER_GEOTIFF_FILE_PATH = "/nlcd/us.tif"
+
 
 ################
 #Land Cost Data#
@@ -85,7 +87,6 @@ def cost_densities_to_landcost(landcover_cost_densities):
                        for cost_density in landcover_cost_densities]
     land_cost = sum(landcover_costs)
     return land_cost
-
 
 def get_land_cost(landcover_latlngs):
     """Computes the total land acquisition cost for a list of lat lng points

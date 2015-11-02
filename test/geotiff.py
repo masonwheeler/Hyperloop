@@ -7,11 +7,13 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: to clarify naming
 """
 
+# Standard Modules:
 import numpy as np
 from osgeo import gdal
 import pyproj
 import rasterio
 import struct
+
 
 def get_pixel_val(coord_transform, geotiff_data, raster_band, lonlat_coord):
     """Gets the pixel value corresponding to the given lon lat pair

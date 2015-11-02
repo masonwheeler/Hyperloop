@@ -23,19 +23,21 @@ import spatial_graphs
 import smoothing_interpolate
 import spatial_paths_2d
 import spatial_paths_3d
-import tube_greedy
+import tube_naive
 import util
+
 
 if config.VISUAL_MODE:
     import visualize
     VISUALIZE_DIRECTIONS = False
     VISUALIZE_SPLINE = False
     VISUALIZE_LATTICE = False
-    VISUALIZE_EDGES = True
+    VISUALIZE_EDGES = False
     VISUALIZE_GRAPHS = False
-    VISUALIZE_COST_TIME_SCATTERPLOT = False
+    VISUALIZE_GRAPHS_COST_TIME_SCATTERPLOT = False
     VISUALIZE_PATHS_2D = False
-    VISUALIZE_PATHS_3D = True
+    VISUALIZE_PATHS_3D_ELEVATIONS = False
+    VISUALIZE_PATHS_COST_TIME_SCATTERPLOT = False
 
 
 def build_directions(start, end):
@@ -73,8 +75,8 @@ def build_spatial_edges_sets(route_spatial_lattice):
     """
     route_spatial_edges_sets = spatial_edges.get_spatial_edges_sets(
                                               route_spatial_lattice,
-            smoothing_interpolate.bounded_error_graph_interpolation,
-                       tube_greedy.elevation_profile_to_tube_graphs)
+          smoothing_interpolate.bounded_curvature_graph_interpolate,
+                                        tube_naive.NaiveTubeProfile)
     if route_spatial_edges_sets != None:
         if not route_spatial_edges_sets.TUBE_READY:
             route_spatial_edges_sets.build_tubes()
@@ -98,13 +100,13 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                 visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D,
                                        are_axes_equal)
                 visualize.PLOT_QUEUE_SPATIAL_2D.pop()
-        if VISUALIZE_COST_TIME_SCATTERPLOT:
+        if VISUALIZE_GRAPHS_COST_TIME_SCATTERPLOT:
             are_axes_equal = False
             cost_time_scatterplot = \
                 route_spatial_graphs_sets.get_cost_time_scatterplot('r.')
             visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
             visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
-                                   are_axes_equal)
+                                   are_axes_equal)            
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):
@@ -115,9 +117,9 @@ def build_spatial_paths_set_2d(route_spatial_graphs_sets):
     if config.VISUAL_MODE:
         if VISUALIZE_PATHS_2D:
             plottable_paths_2d = \
-                route_spatial_paths_set_2d.get_plottable_paths('c-')
+                route_spatial_paths_set_2d.get_plottable_paths('k-')
             plottable_paths_graphs_2d = \
-                route_spatial_paths_set_2d.get_plottable_graphs('y-')
+                route_spatial_paths_set_2d.get_plottable_graphs('m-')
             plottable_paths_and_graphs = zip(plottable_paths_2d,
                                              plottable_paths_graphs_2d)
             are_axes_equal = True
@@ -137,11 +139,41 @@ def build_spatial_paths_3d(route_spatial_paths_set_2d):
     route_spatial_paths_sets_3d = spatial_paths_3d.get_spatial_paths_sets_3d(
                                                   route_spatial_paths_set_2d)
     if config.VISUAL_MODE:
-        if VISUALIZE_PATHS_3D:
-            plottable_paths_3d = \
-                route_spatial_paths_set_3d.get_plottable_paths()
+        if VISUALIZE_PATHS_3D_ELEVATIONS:
+            for path_3d in route_spatial_paths_sets_3d.selected_paths:
+                are_axes_equal = False
+                plottable_tube_curvature = \
+                    path_3d.get_plottable_tube_curvature('g')
+                plottable_spatial_curvature = \
+                    path_3d.get_plottable_spatial_curvature('y')
+                plottable_tube_elevations = \
+                    path_3d.get_plottable_tube_elevations('r')
+                plottable_land_elevations = \
+                    path_3d.get_plottable_land_elevations('b')
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
+                                        plottable_tube_curvature)
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.append(
+                                        plottable_spatial_curvature)
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                        plottable_tube_elevations)
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.append(
+                                        plottable_land_elevations)
+                visualize.plot_objects(visualize.CURVATURE_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
+                visualize.plot_objects(visualize.ELEVATION_PROFILE_PLOT_QUEUE,
+                                       are_axes_equal)
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
+                visualize.CURVATURE_PROFILE_PLOT_QUEUE.pop()
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+                visualize.ELEVATION_PROFILE_PLOT_QUEUE.pop()
+        if VISUALIZE_PATHS_COST_TIME_SCATTERPLOT:
+            are_axes_equal = False
+            cost_time_scatterplot = \
+                route_spatial_paths_sets_3d.get_cost_time_scatterplot('g.')
+            visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
+            visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
+                                   are_axes_equal)
     return route_spatial_paths_sets_3d
-
 
 def city_pair_to_paths_3d(start, end):
     result = []
@@ -155,8 +187,10 @@ def city_pair_to_paths_3d(start, end):
         route_spatial_paths_sets_3d = build_spatial_paths_3d(
                                       route_spatial_paths_set_2d)
         if config.VISUAL_MODE:
-            are_axes_equal = True
-            visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
+            if len(visualize.PLOT_QUEUE_SPATIAL_2D) > 0:
+                are_axes_equal = True
+                visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
+                                       are_axes_equal)
         result.append(route_spatial_paths_sets_3d)
     return result
 

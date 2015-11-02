@@ -6,22 +6,26 @@ Last Modified By: Jonathan Ward
 Last Modification Purpose: To add classes providing useful structure.
 """
 
+# Custom Modules:
+import util
+
 
 class Route(object):    
     """For storing a single route option
     """
     def __init__(self, spatiotemporal_path_4d):
-        self.scalar_acceleration_profile = \
-            spatiotemporal_path_4d.scalar_acceleration_profile
+        self.accels_by_time = spatiotemporal_path_4d.accels_by_time.tolist()
         self.comfort_profile = spatiotemporal_path_4d.comfort_profile
         self.comfort_rating = spatiotemporal_path_4d.comfort_rating
         self.land_cost = spatiotemporal_path_4d.land_cost
-        self.land_elevations = spatiotemporal_path_4d.land_elevations
-        self.latlngs = spatiotemporal_path_4d.latlngs
-        self.pylons = []#spatiotemporal_path_4d.pylons
+        self.land_elevations = spatiotemporal_path_4d.land_elevations.tolist()
+        self.latlngs = spatiotemporal_path_4d.latlngs.tolist()       
+        self.pylons = spatiotemporal_path_4d.pylons
+        self.pylon_count = len(self.pylons)
         self.pylon_cost = spatiotemporal_path_4d.pylon_cost
-        self.speed_profile = spatiotemporal_path_4d.speed_profile
+        self.speeds_by_time = spatiotemporal_path_4d.speeds_by_time.tolist()
         self.total_cost = round(spatiotemporal_path_4d.total_cost / 10.0**9, 3)
+        self.total_distance = spatiotemporal_path_4d.total_distance
         self.trip_time = round(spatiotemporal_path_4d.trip_time / 60.0, 3)
         self.tube_cost = spatiotemporal_path_4d.tube_cost
         self.tube_elevations = spatiotemporal_path_4d.tube_elevations.tolist()
@@ -29,7 +33,7 @@ class Route(object):
 
     def as_dict(self, index):
         route_dict = {
-            "accelerationProfile": self.scalar_acceleration_profile,
+            "accelerationProfile": self.accels_by_time,
             "comfortProfile": self.comfort_profile,
             "comfortRating": self.comfort_rating,
             "index": index,
@@ -38,8 +42,10 @@ class Route(object):
             "latlngs": self.latlngs,
             "pylons": self.pylons,
             "pylonCost": self.pylon_cost,
-            "speedProfile": self.speed_profile,
+            "pylonCount" : self.pylon_count,
+            "speedProfile": self.speeds_by_time,
             "totalCost": self.total_cost,
+            "totalDistance" : self.total_distance,
             "tripTime": self.trip_time,
             "tubeCost": self.tube_cost,
             "tubeElevations": self.tube_elevations,
@@ -57,13 +63,18 @@ class RoutesSet(object):
         for index in range(len(routes)):
             route_dict = routes[index].as_dict(index + 1)
             routes_dicts_list.append(route_dict)
-        return routes_dicts_list
+        return routes_dicts_list    
+
+    def get_plane_data(self):
+
+    def get_train_data(self):
 
     def __init__(self, spatiotemporal_paths_sets_4d):
         self.spatial_metadata = spatiotemporal_paths_sets_4d.spatial_metadata
+        plane_data = 
         self.routes_dicts_list = self.build_routes_dicts_list(
-                            spatiotemporal_paths_sets_4d)
-    
+                            spatiotemporal_paths_sets_4d)       
+ 
     def as_dict(self):
         routes_set_dict = {
             "startCity": {

@@ -70,8 +70,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
         else:
             self.land_cost = 0
 
-    def get_elevation_profile(self):
-        
+    def get_elevation_profile(self):        
         self.elevation_profile = \
             elevation.ElevationProfile.init_from_geospatial_pair(
               self.start_point.geospatial, self.end_point.geospatial,
@@ -79,15 +78,11 @@ class SpatialEdge(abstract_edges.AbstractEdge):
               self.ELEVATION_POINTS_TO_PYLON_POINTS_RATIO)
     
     def build_tube(self, tube_builder):
-        selected_tube_graphs = tube_builder(self.elevation_profile)
-        tube_curvature_arrays = [graph.tube_curvature_array for graph 
-                                 in selected_tube_graphs]        
-        print len(selected_tube_graphs)
-        raise ValueError
-        ##self.tube_curvature_array = tube_profile.tube_curvature_array
-        ##self.pylon_cost = tube_profile.pylons_cost
-        ##self.tube_cost = tube_profile.tube_cost 
-        ##self.tunneling_cost = tube_profile.tunneling_cost
+        tube_profile = tube_builder(self.elevation_profile)
+        self.tube_curvature_array = tube_profile.tube_curvature_array
+        self.pylon_cost = tube_profile.total_pylon_cost
+        self.tube_cost = tube_profile.tube_cost 
+        self.tunneling_cost = tube_profile.tunneling_cost
             
     def __init__(self, start_point, end_point):
         abstract_edges.AbstractEdge.__init__(self, start_point, end_point)
@@ -100,7 +95,7 @@ class SpatialEdge(abstract_edges.AbstractEdge):
 
 class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
-    TUBE_READY = False
+    TUBE_READY = True
 
     NAME = "spatial_edges"
     FLAG = cacher.SPATIAL_EDGES_FLAG
@@ -108,12 +103,14 @@ class SpatialEdgesSets(abstract_edges.AbstractEdgesSets):
 
     def compute_spatial_degree_constraint(self, spatial_lattice):
         length_scale = spatial_lattice.parallel_resolution
-        max_curvature = curvature.compute_curvature_threshold(
-            parameters.MIN_SPEED, parameters.MAX_LATERAL_ACCEL)
+        max_curvature = parameters.MAX_LATERAL_CURVATURE
+        print "max lateral curvature"
+        print max_curvature
         spatial_resolution = spatial_lattice.SPATIAL_BASE_RESOLUTION
         degree_constraint = angle_constraint.compute_angle_constraint(
                               length_scale, self.spatial_interpolator,
                                     max_curvature, spatial_resolution)
+        print degree_constraint
         return degree_constraint            
 
     def build_coordinates(self):

@@ -15,6 +15,9 @@ Last Modification Purpose:
     Refactoring
 """
 
+#Standard Modules
+import numpy as np
+
 # Custom Modules
 import config
 import mergetree
@@ -88,12 +91,13 @@ class AbstractGraphsSet(object):
     def select_graphs(self, num_fronts_to_select):
         try:
             self.front = paretofront.ParetoFront(self.graphs_a_b_vals)
-            selected_graphs_indices = self.front.fronts_indices[-1]
+            selected_graphs_indices = self.front.front_indices
             current_num_fronts = 1
-            while (self.front.build_nextfront() and
+            while (self.front.build_next_front() and
                    current_num_fronts <= num_fronts_to_select):
                 current_num_fronts += 1
-                selected_graphs_indices += self.front.fronts_indices[-1]
+                selected_graphs_indices = np.append(selected_graphs_indices, 
+                                                   self.front.front_indices)
             return selected_graphs_indices
         except ValueError:
             print "encountered value error"
@@ -159,10 +163,6 @@ class AbstractGraphsSets(object):
                     merged_graphs.append(merged_graph)
         if (len(merged_graphs) == 0):
             print "No graphs compatible"
-            print "Number of graphs selected from set a: " + str(len(selected_a))
-            print "Number of graphs selected from set b: " + str(len(selected_b))
-            print "num graphs in set a: " + str(len(graphs_set_a.unfiltered_graphs))
-            print "num graphs in set b: " + str(len(graphs_set_b.unfiltered_graphs))
             return None
         else:
             merged_graphs_num_edges = (graphs_set_a.graphs_num_edges +

@@ -16,10 +16,18 @@ PLOT_QUEUE_SCATTERPLOT = []
 ELEVATION_PROFILE_PLOT_QUEUE = []
 CURVATURE_PROFILE_PLOT_QUEUE = []
 SPEED_PROFILE_PLOT_QUEUE = []
+COMFORT_PROFILE_PLOT_QUEUE = []
 
 def plot_object(object_data, style):
     x_values, y_values = object_data
     plt.plot(x_values, y_values, style)
+
+def plot_3d_object(object_data, style):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x_values, y_values, z_values = object_data
+    ax.plot(x_values, y_values, z_values)
+    plt.show()
 
 def plot_objects(objects, are_axes_equal):
     for each_object in objects:

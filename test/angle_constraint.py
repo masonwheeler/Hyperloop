@@ -14,13 +14,26 @@ import sample_path
 
 VISUALIZE_CONSTRAINT = False
 
-def test_path_points(path_points, interpolator, max_curvature, resolution):
+def test_error_validity(path_points, interpolated_points, max_error):
+    path_points_arrays = np.array([np.array(point) for point in path_points])
+    interpolated_points_arrays = np.array([np.array(point) for point
+                                           in interpolated_points])
+    vectors = path_points_arrays - interpolated_points_arrays
+    distances = np.linalg.norm(vectors, axis=1)
+    is_error_valid = np.all(distances < max_error)
+    return is_error_valid
+
+def test_path_points(path_points, interpolator, max_curvature, max_error):
     sampled_path_points, arc_lengths = sample_path.sample_path_points(
-                                                  path_points, resolution)
+                                                  path_points, max_error)
+    #interpolated_points, curvature_array = interpolator(sampled_path_points,
+    #                                                             resolution)
     interpolated_points, curvature_array = interpolator(sampled_path_points,
-                                                                 resolution)
-    is_curvature_acceptable = curvature.test_curvature_validity(
-                                 curvature_array, max_curvature)
+                                                              max_curvature)
+    #is_curvature_acceptable = curvature.test_curvature_validity(
+    #                             curvature_array, max_curvature)
+    is_error_valid = test_error_validity(sampled_path_points, 
+                              interpolated_points, max_error)
     if config.VISUAL_MODE and VISUALIZE_CONSTRAINT:
         import visualize
         path_points_x_vals, path_points_y_vals = zip(*path_points)  
@@ -36,7 +49,7 @@ def test_path_points(path_points, interpolator, max_curvature, resolution):
         visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, False)
         visualize.PLOT_QUEUE_SPATIAL_2D.pop()
         visualize.PLOT_QUEUE_SPATIAL_2D.pop()
-    return is_curvature_acceptable
+    return is_error_valid
 
 def compute_angle_constraint(length_scale, interpolator, max_curvature,
                                                              max_error):

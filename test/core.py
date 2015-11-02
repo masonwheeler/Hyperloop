@@ -20,7 +20,7 @@ import routes
 def pair_analysis(start, end):
     """Builds routes between start and end points
     """
-    cacher.create_necessaryfolders(start, end)
+    cacher.create_necessary_folders(start, end)
     time_a = time.time()
     index = 0
     for paths_3d in spatial.city_pair_to_paths_3d(start, end):

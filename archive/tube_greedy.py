@@ -14,14 +14,14 @@ import tube_lattice
 
 if config.VISUAL_MODE:
     import visualize
-    VISUALIZE_LATTICE = True
-    #VISUALIZE_LATTICE = False
-    VISUALIZE_EDGES = True
-    #VISUALIZE_EDGES = False
-    VISUALIZE_GRAPHS = True
-    #VISUALIZE_GRAPHS = False
-    VISUALIZE_COST_TIME_SCATTERPLOT = True
-    #VISUALIZE_COST_TIME_SCATTERPLOT = False
+    #VISUALIZE_LATTICE = True
+    VISUALIZE_LATTICE = False
+    #VISUALIZE_EDGES = True
+    VISUALIZE_EDGES = False
+    #VISUALIZE_GRAPHS = True
+    VISUALIZE_GRAPHS = False
+    #VISUALIZE_COST_TIME_SCATTERPLOT = True
+    VISUALIZE_COST_TIME_SCATTERPLOT = False
 
 
 def compute_tube_angle_constraint(length_scale, resolution):
@@ -35,9 +35,9 @@ def elevation_profile_to_tube_points_lattice(elevation_profile,
                            elevation_mesh_bisection_depth=None,
                           arc_length_mesh_bisection_depth=None):
     if elevation_mesh_bisection_depth == None:
-        elevation_mesh_bisection_depth = 2
+        elevation_mesh_bisection_depth = 1
     if arc_length_mesh_bisection_depth == None:
-        arc_length_mesh_bisection_depth = 4
+        arc_length_mesh_bisection_depth = 3
     tube_points_lattice = tube_lattice.TubePointsLattice(elevation_profile,
            elevation_mesh_bisection_depth, arc_length_mesh_bisection_depth)
     if config.VISUAL_MODE and VISUALIZE_LATTICE:
@@ -72,7 +72,6 @@ def tube_points_lattice_to_tube_edges_sets(tube_points_lattice):
     tube_angle_constraint = compute_tube_angle_constraint(length_scale,
                                                             resolution)
     print "tube angle constraint: " + str(tube_angle_constraint)
-    #raise ValueError
     tube_edges_sets = tube_edges.TubeEdgesSets(tube_points_lattice,
                                              tube_angle_constraint)
     if config.VISUAL_MODE and VISUALIZE_EDGES:

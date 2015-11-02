@@ -1,4 +1,0 @@
-"""
-Original Developer: Jonathan Ward
-"""
-

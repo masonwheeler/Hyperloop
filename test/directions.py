@@ -35,6 +35,7 @@ import config
 import proj
 import util
 
+
 class Directions(object):
 
     NAME = "directions"
@@ -134,7 +135,7 @@ class Directions(object):
         util.smart_print("Decoded directions.")
         raw_latlngs = self.remove_duplicates(latlngs_with_duplicates)
         util.smart_print("Removed duplicate Coordinates.")
-        directions_latlngs = util.round_points(raw_latlngs)
+        directions_latlngs = util.round_points(raw_latlngs, 8)
         directions_latlngs_array = np.array([np.array(latlng) for latlng
                                              in directions_latlngs])
         return directions_latlngs_array
