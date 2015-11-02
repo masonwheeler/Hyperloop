@@ -44,7 +44,7 @@ def build_directions(start, end):
     """Build Directions Object
     """
     route_directions = directions.get_directions(start, end)
-    return route_directions
+    return route_directions.values
 
 def build_spatial_lattice(route_directions):
     """Build lattice between directions points and spline points
@@ -106,7 +106,7 @@ def build_spatial_graphs_sets(route_spatial_edges_sets):
                 route_spatial_graphs_sets.get_cost_time_scatterplot('r.')
             visualize.PLOT_QUEUE_SCATTERPLOT.append(cost_time_scatterplot)
             visualize.plot_objects(visualize.PLOT_QUEUE_SCATTERPLOT,
-                                   are_axes_equal)            
+                                   are_axes_equal)
     return route_spatial_graphs_sets
 
 def build_spatial_paths_set_2d(route_spatial_graphs_sets):
