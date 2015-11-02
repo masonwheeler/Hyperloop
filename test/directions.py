@@ -6,13 +6,13 @@ Purpose of Module:
     To pull directions data from the Google Maps API.
 
 Last Modified:
-    9/8/15
+    11/2/15
 
 Last Modified By:
-    Jonathan Ward
+    Mason Wheeler
 
 Last Modification Purpose:
-    To add the Directions class.
+    Adding alternate route functionality
 
 Todo:
     Add method to get alternative Google directions routes.
@@ -45,26 +45,32 @@ class Directions(object):
         """removes duplicates from a list while preserving order"""
         return list(OrderedDict.fromkeys(list(itertools.chain(*in_list))))
 
-    def http_to_string(self, http_data):
+    @staticmethod
+    def http_to_string(http_data):
         """Reads HTTP bytecode response and converts it to a string"""
         byte_data = http_data.read()
         string_data = byte_data.decode("utf-8")
         return string_data
 
-    def fetch_google_directions(self, origin, destination):
+    @staticmethod
+    def from_google_directions(origin, destination):
         """Pulls directions from Google API"""
         url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' + \
             origin + '&destination=' + destination + \
             '&key=AIzaSyDNlWzlyeHuRVbWrMSM2ojZm-LzINVcoX4'
         util.smart_print("url: " + url)
         raw_directions = urllib2.urlopen(url)
-        string_directions = self.http_to_string(raw_directions)
-        return string_directions
-
-    def string_to_polylines(self, string_data):
-        """Converts Directions string to JSON and extracts the polylines."""
+        string_directions = http_to_string(raw_directions)
         dict_response = json.loads(string_data)
-        steps = dict_response['routes'][0]['legs'][0]['steps']
+        routes = dict_response['routes']
+        result = []
+        for route in routes:
+            result.append(Directions(origin, destination, route))
+        return result
+
+    def string_to_polylines(self, route_data):
+        """Converts Directions string to JSON and extracts the polylines."""
+        steps = route_data['legs'][0]['steps']
         polylines = []
         for step in steps:
             polylines.append(step["polyline"]["points"])
@@ -120,11 +126,9 @@ class Directions(object):
         return [self.decode_polyline(polyline) for polyline in polylines]
 
 
-    def get_directions_latlngs(self, start, end):
+    def get_directions_latlngs(self, route_data):
         """Applies decoding functions to Google API response"""
-        string_directions = self.fetch_google_directions(start, end)
-        util.smart_print("Obtained directions.")
-        polyline_directions = self.string_to_polylines(string_directions)
+        polyline_directions = self.string_to_polylines(route_data)
         util.smart_print("Opened directions.")
         latlngs_with_duplicates = self.decode_polylines(polyline_directions)
         util.smart_print("Decoded directions.")
@@ -137,12 +141,12 @@ class Directions(object):
 
     def geospatials_to_latlngs(self, geospatials):
         latlngs = proj.geospatials_to_latlngs(geospatials, self.projection)
-        return latlngs        
+        return latlngs
 
-    def __init__(self, start, end):
+    def __init__(self, start, end, route_data):
         start_name = start.replace("_", " ")
         end_name = end.replace("_", " ")
-        self.latlngs = self.get_directions_latlngs(start, end)
+        self.latlngs = self.get_directions_latlngs(route_data)
         start_latlng = list(self.latlngs[0])
         end_latlng = list(self.latlngs[-1])
         self.spatial_metadata = {"startName" : start_name,
@@ -154,12 +158,20 @@ class Directions(object):
                                       self.latlngs, self.projection)
 
 
+class Routes(object):
+    NAME = "routes"
+    FLAG = cacher.DIRECTIONS_FLAG
+    IS_SKIPPED = cacher.SKIP_DIRECTIONS
+
+    def __init__(self, start, end):
+        self.values = Directions.from_google_directions(start, end)
+
 def get_directions(*args):
     """Fetchs Directions if already cached, else builds Directions.
     """
-    directions = cacher.get_object(Directions.NAME,
-                                   Directions,
+    directions = cacher.get_object(Routes.NAME,
+                                   Routes,
                                    args,
-                                   Directions.FLAG,
-                                   Directions.IS_SKIPPED)
+                                   Routes.FLAG,
+                                   Routes.IS_SKIPPED)
     return directions

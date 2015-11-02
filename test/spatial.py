@@ -5,14 +5,14 @@ Original Developer:
 Purpose of Module:
     To provide an abstraction for handling all spatial aspects of the program
 
-Last Modified: 
-    9/8/15
+Last Modified:
+    11/02/15
 
 Last Modified By:
-    Jonathan Ward
+    Mason Wheeler
 
 Last Modification Purpose:
-    Created Module
+    Adding alternate route functionality
 """
 
 import config
@@ -139,22 +139,24 @@ def build_spatial_paths_3d(route_spatial_paths_set_2d):
     if config.VISUAL_MODE:
         if VISUALIZE_PATHS_3D:
             plottable_paths_3d = \
-                route_spatial_paths_set_3d.get_plottable_paths()            
+                route_spatial_paths_set_3d.get_plottable_paths()
     return route_spatial_paths_sets_3d
 
 
 def city_pair_to_paths_3d(start, end):
-    route_directions = build_directions(start, end)
-    route_spatial_lattice = build_spatial_lattice(route_directions)
-    route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
-    route_spatial_graphs_sets = build_spatial_graphs_sets(
-                                     route_spatial_edges_sets)
-    route_spatial_paths_set_2d = build_spatial_paths_set_2d(
-                                      route_spatial_graphs_sets)
-    route_spatial_paths_sets_3d = build_spatial_paths_3d(
-                                  route_spatial_paths_set_2d)
-    if config.VISUAL_MODE:
-        are_axes_equal = True
-        visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
-    return route_spatial_paths_sets_3d
+    result = []
+    for route_directions in build_directions(start, end):
+        route_spatial_lattice = build_spatial_lattice(route_directions)
+        route_spatial_edges_sets = build_spatial_edges_sets(route_spatial_lattice)
+        route_spatial_graphs_sets = build_spatial_graphs_sets(
+                                         route_spatial_edges_sets)
+        route_spatial_paths_set_2d = build_spatial_paths_set_2d(
+                                          route_spatial_graphs_sets)
+        route_spatial_paths_sets_3d = build_spatial_paths_3d(
+                                      route_spatial_paths_set_2d)
+        if config.VISUAL_MODE:
+            are_axes_equal = True
+            visualize.plot_objects(visualize.PLOT_QUEUE_SPATIAL_2D, are_axes_equal)
+        result.append(route_spatial_paths_sets_3d)
+    return result
 
